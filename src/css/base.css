@@ -1,0 +1,143 @@
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+:root {
+  interpolate-size: allow-keywords;
+  -webkit-text-size-adjust: none;
+  text-size-adjust: none;
+}
+
+body {
+  margin: 0;
+  min-block-size: 100dvh;
+  font-family: var(--font-body);
+  font-size: var(--text-md);
+  line-height: var(--leading-normal);
+  color: var(--foreground);
+  background: var(--page-background);
+  background-attachment: fixed;
+  accent-color: var(--primary);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Scanlines are pure decoration: no pointer events, gone when --fx-scanlines is 0. */
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: var(--z-toast);
+  opacity: var(--fx-scanlines);
+  background: repeating-linear-gradient(0deg, currentColor 0 1px, transparent 1px 3px);
+}
+
+h1, h2, h3, h4, h5, h6 {
+  margin: 0;
+  font-family: var(--font-heading);
+  font-weight: var(--heading-weight);
+  text-transform: var(--heading-case);
+  letter-spacing: var(--heading-tracking);
+  line-height: var(--leading-tight);
+  text-wrap: balance;
+}
+
+h1 { font-size: var(--text-4xl); text-shadow: var(--fx-glow); }
+h2 { font-size: var(--text-3xl); }
+h3 { font-size: var(--text-xl); }
+h4 { font-size: var(--text-lg); }
+
+p {
+  margin: 0;
+  text-wrap: pretty;
+}
+
+a {
+  color: var(--primary);
+  text-underline-offset: 0.2em;
+  text-decoration-thickness: 1px;
+}
+
+a:hover {
+  text-decoration-thickness: 2px;
+}
+
+:focus-visible {
+  outline: var(--focus-width) solid var(--focus-color);
+  outline-offset: var(--focus-offset);
+}
+
+::selection {
+  background: color-mix(in oklch, var(--primary) 30%, transparent);
+}
+
+/* Scroll targets clear sticky headers, and in-page jumps respect reduced motion. */
+@media (prefers-reduced-motion: no-preference) {
+  :root { scroll-behavior: smooth; }
+}
+
+.ds-eyebrow {
+  font-family: var(--font-label);
+  font-size: var(--text-xs);
+  font-weight: 600;
+  text-transform: var(--label-case);
+  letter-spacing: max(var(--label-tracking), 0.06em);
+  color: var(--muted-foreground);
+}
+
+.ds-muted {
+  color: var(--muted-foreground);
+}
+
+.ds-visually-hidden:not(:focus, :active) {
+  position: absolute;
+  inline-size: 1px;
+  block-size: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.ds-skip-link {
+  position: absolute;
+  inset-block-start: var(--space-2);
+  inset-inline-start: var(--space-2);
+  z-index: var(--z-toast);
+  padding: var(--space-2) var(--space-4);
+  border-radius: var(--radius-control);
+  background: var(--primary);
+  color: var(--primary-foreground);
+  translate: 0 -200%;
+}
+
+.ds-skip-link:focus-visible {
+  translate: 0 0;
+}
+
+.ds-stack { display: flex; flex-direction: column; gap: var(--gap, var(--space-4)); }
+.ds-row { display: flex; flex-wrap: wrap; align-items: center; gap: var(--gap, var(--space-3)); }
+
+/*
+ * A nested appearance scope. Set all three of data-chrome, data-palette, and data-mode on it:
+ * chrome tokens that reference palette colors resolve where they're declared.
+ */
+.ds-scope {
+  position: relative;
+  isolation: isolate;
+  font-family: var(--font-body);
+  color: var(--foreground);
+  background: var(--page-background);
+  accent-color: var(--primary);
+}
+
+.ds-scope::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  border-radius: inherit;
+  opacity: var(--fx-scanlines);
+  background: repeating-linear-gradient(0deg, currentColor 0 1px, transparent 1px 3px);
+}

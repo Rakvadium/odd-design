@@ -1,0 +1,50 @@
+/* Holoterminal: sharp, monospaced, phosphor glow. Best in dark mode. */
+[data-chrome="holoterminal"] {
+  --font-body: "Outfit Variable", ui-sans-serif, system-ui, sans-serif;
+  --font-heading: "JetBrains Mono Variable", ui-monospace, monospace;
+  --font-label: "JetBrains Mono Variable", ui-monospace, monospace;
+  --heading-weight: 600;
+  --heading-case: uppercase;
+  --heading-tracking: 0.04em;
+  --label-case: uppercase;
+  --label-tracking: 0.08em;
+
+  --radius-control: 2px;
+  --radius-surface: 4px;
+  --radius-overlay: 4px;
+  --radius-chip: var(--radius-control);
+  --border-width: 1px;
+  --edge-surface: color-mix(in oklch, var(--primary) 45%, var(--border));
+  --edge-control: var(--control-border);
+  --edge-control-filled: transparent;
+  --surface-alpha: 100%;
+
+  --density: 0.95;
+
+  --shadow-control: 0 0 0 1px color-mix(in oklch, var(--primary) 18%, transparent);
+  --shadow-control-hover: 0 0 4px var(--primary), 0 0 16px color-mix(in oklch, var(--primary) 45%, transparent);
+  --shadow-control-active: var(--shadow-control-hover);
+  --shadow-surface: 0 0 0 1px color-mix(in oklch, var(--primary) 10%, transparent),
+    0 0 24px -8px color-mix(in oklch, var(--primary) 30%, transparent);
+  --shadow-surface-hover: 0 0 0 1px color-mix(in oklch, var(--primary) 40%, transparent),
+    0 0 32px -6px color-mix(in oklch, var(--primary) 50%, transparent);
+  --shadow-overlay: 0 0 0 1px color-mix(in oklch, var(--primary) 40%, transparent),
+    0 0 60px -10px color-mix(in oklch, var(--primary) 45%, transparent);
+  --press-transform: none;
+
+  --focus-color: var(--primary);
+  --focus-width: 2px;
+  --focus-offset: 3px;
+  --focus-glow: 0 0 0 3px color-mix(in oklch, var(--primary) 35%, transparent),
+    0 0 18px color-mix(in oklch, var(--primary) 55%, transparent);
+
+  --ease: steps(4, end);
+
+  --fx-glow: 0 0 18px color-mix(in oklch, var(--primary) 55%, transparent);
+  --fx-scanlines: 0.06;
+  --fx-backdrop: none;
+  --page-background:
+    linear-gradient(color-mix(in oklch, var(--primary) 7%, transparent) 1px, transparent 1px) 0 0 / 32px 32px,
+    linear-gradient(90deg, color-mix(in oklch, var(--primary) 7%, transparent) 1px, transparent 1px) 0 0 / 32px 32px,
+    var(--background);
+}

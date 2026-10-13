@@ -1,0 +1,21 @@
+/* Default: warm paper and espresso, with an ember accent. Ported from uvsdecks "default". */
+:where(:root),
+[data-palette="default"] {
+  --background: light-dark(oklch(0.965 0.007 70), oklch(0.19 0.012 55));
+  --foreground: light-dark(oklch(0.22 0.02 40), oklch(0.95 0.012 70));
+  --surface: light-dark(oklch(0.99 0.004 60), oklch(0.235 0.014 52));
+  --surface-foreground: var(--foreground);
+  --overlay: light-dark(oklch(1 0 0), oklch(0.26 0.016 52));
+  --overlay-foreground: var(--foreground);
+  --muted: light-dark(oklch(0.925 0.012 60), oklch(0.28 0.016 50));
+  --muted-foreground: light-dark(oklch(0.46 0.02 50), oklch(0.77 0.02 65));
+  --border: light-dark(oklch(0.87 0.014 55), oklch(0.33 0.02 50));
+  --control-border: light-dark(oklch(0.6 0.02 50), oklch(0.58 0.02 55));
+  --ring: light-dark(oklch(0.56 0.19 38), oklch(0.72 0.17 40));
+  --primary: light-dark(oklch(0.3 0.02 40), oklch(0.84 0.05 60));
+  --primary-foreground: light-dark(oklch(0.97 0.008 70), oklch(0.18 0.02 45));
+  --secondary: light-dark(oklch(0.91 0.035 50), oklch(0.31 0.035 42));
+  --secondary-foreground: light-dark(oklch(0.25 0.03 40), oklch(0.95 0.012 70));
+  --accent: light-dark(oklch(0.55 0.19 38), oklch(0.72 0.17 40));
+  --accent-foreground: light-dark(oklch(0.99 0.005 70), oklch(0.16 0.02 45));
+}

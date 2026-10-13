@@ -1,0 +1,31 @@
+{
+  "name": "design-system",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Framework-free, accessible design system. Chrome sets the feel, palette sets the color.",
+  "exports": {
+    ".": "./src/css/index.css",
+    "./appearance": "./src/js/appearance.ts"
+  },
+  "scripts": {
+    "storybook": "storybook dev -p 6006 --no-open",
+    "build-storybook": "storybook build",
+    "test": "bun test tests",
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@fontsource-variable/bricolage-grotesque": "^5.3.0",
+    "@fontsource-variable/jetbrains-mono": "^5.3.0",
+    "@fontsource-variable/outfit": "^5.3.0",
+    "@storybook/addon-a11y": "10.6.2",
+    "@storybook/addon-docs": "10.6.2",
+    "@storybook/html-vite": "10.6.2",
+    "@types/bun": "^1.4.3",
+    "@types/culori": "^4.0.1",
+    "culori": "^4.0.2",
+    "storybook": "10.6.2",
+    "typescript": "^7.0.2",
+    "vite": "^8.3.4"
+  }
+}

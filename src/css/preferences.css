@@ -1,0 +1,40 @@
+/* OS and user preferences. This layer beats every palette and chrome. */
+
+@media (prefers-contrast: more) {
+  :where(:root, [data-palette], [data-chrome]) {
+    --muted-foreground: var(--foreground);
+    --border: var(--control-border);
+    --edge-surface: var(--control-border);
+    --surface-alpha: 100%;
+    --fx-glow: none;
+    --fx-scanlines: 0;
+    --fx-backdrop: none;
+    --focus-width: 3px;
+  }
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  :where(:root, [data-palette], [data-chrome]) {
+    --surface-alpha: 100%;
+    --fx-backdrop: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :where(:root, [data-palette], [data-chrome]) {
+    --press-transform: none;
+    --duration-fast: 0ms;
+    --duration-base: 0ms;
+    --duration-slow: 0ms;
+  }
+}
+
+/* Windows High Contrast and similar. The browser owns color; we keep shapes and focus legible. */
+@media (forced-colors: active) {
+  :where(:root, [data-palette], [data-chrome]) {
+    --focus-color: Highlight;
+    --focus-glow: 0 0 0 0 transparent;
+    --fx-glow: none;
+    --fx-scanlines: 0;
+  }
+}

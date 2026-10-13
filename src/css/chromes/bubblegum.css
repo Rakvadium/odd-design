@@ -1,0 +1,45 @@
+/* Bubblegum: chunky, playful, neo-brutalist. Ink outlines and hard offset shadows. */
+[data-chrome="bubblegum"] {
+  --font-body: "Bricolage Grotesque Variable", ui-sans-serif, system-ui, sans-serif;
+  --font-heading: var(--font-body);
+  --font-label: var(--font-body);
+  --heading-weight: 800;
+  --heading-case: none;
+  --heading-tracking: -0.02em;
+  --label-case: none;
+  --label-tracking: 0;
+
+  --radius-control: 0.625rem;
+  --radius-surface: 1rem;
+  --radius-overlay: 1.25rem;
+  --radius-chip: var(--radius-pill);
+  --border-width: 2px;
+  --edge-surface: var(--foreground);
+  --edge-control: var(--foreground);
+  --edge-control-filled: var(--edge-control);
+  --surface-alpha: 100%;
+
+  --density: 1.05;
+
+  --shadow-control: 3px 3px 0 var(--foreground);
+  --shadow-control-hover: 4px 4px 0 var(--foreground);
+  --shadow-control-active: 0 0 0 var(--foreground);
+  --shadow-surface: 5px 5px 0 var(--foreground);
+  --shadow-surface-hover: 7px 7px 0 var(--primary);
+  --shadow-overlay: 8px 8px 0 var(--foreground);
+  --press-transform: translate(3px, 3px);
+
+  --focus-color: var(--foreground);
+  --focus-width: 3px;
+  --focus-offset: 3px;
+  --focus-glow: 0 0 0 0 transparent;
+
+  --ease: cubic-bezier(0.5, 1.6, 0.4, 0.8);
+
+  --fx-glow: none;
+  --fx-scanlines: 0;
+  --fx-backdrop: none;
+  --page-background:
+    radial-gradient(color-mix(in oklch, var(--foreground) 14%, transparent) 1px, transparent 1.5px) 0 0 / 18px 18px,
+    var(--background);
+}

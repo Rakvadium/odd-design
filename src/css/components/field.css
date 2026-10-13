@@ -1,0 +1,176 @@
+/*
+ * <div class="ds-field">
+ *   <label class="ds-label" for="email">Email</label>
+ *   <input class="ds-input" id="email" aria-describedby="email-hint">
+ *   <p class="ds-hint" id="email-hint">We never share it.</p>
+ * </div>
+ * When invalid: render <p class="ds-error" id="email-error">, set aria-invalid="true",
+ * and add the error id to aria-describedby. Don't keep a hidden error in the DOM;
+ * hidden elements referenced by aria-describedby are still announced.
+ */
+.ds-field {
+  display: grid;
+  gap: var(--space-2);
+}
+
+.ds-label {
+  font-family: var(--font-label);
+  font-size: var(--text-sm);
+  font-weight: 600;
+  text-transform: var(--label-case);
+  letter-spacing: var(--label-tracking);
+}
+
+/* The asterisk is decorative; `required` is what screen readers announce. */
+.ds-field:has(:required) > .ds-label::after {
+  content: " *" / "";
+  color: var(--danger);
+}
+
+.ds-hint {
+  font-size: var(--text-sm);
+  color: var(--muted-foreground);
+}
+
+.ds-error {
+  display: flex;
+  gap: var(--space-2);
+  align-items: baseline;
+  font-size: var(--text-sm);
+  font-weight: 500;
+  color: var(--danger);
+}
+.ds-error::before {
+  content: "!" / "";
+  display: inline-grid;
+  place-items: center;
+  flex-shrink: 0;
+  inline-size: 1.25em;
+  block-size: 1.25em;
+  border-radius: 50%;
+  background: var(--danger);
+  color: var(--danger-foreground);
+  font-size: 0.8em;
+  font-weight: 800;
+}
+
+.ds-input,
+.ds-select,
+.ds-textarea {
+  inline-size: 100%;
+  min-block-size: var(--control-height);
+  padding: 0 calc(var(--control-padding-inline) * 0.85);
+  border: var(--border-width) solid var(--edge-control);
+  border-radius: var(--radius-control);
+  background-color: var(--background);
+  color: var(--foreground);
+  font: inherit;
+  font-size: var(--text-md);
+  transition-property: border-color, box-shadow;
+  transition-duration: var(--duration-fast);
+  transition-timing-function: var(--ease);
+}
+
+.ds-textarea {
+  padding-block: var(--space-3);
+  min-block-size: calc(var(--control-height) * 2.5);
+  field-sizing: content;
+  resize: vertical;
+}
+
+.ds-input::placeholder,
+.ds-textarea::placeholder {
+  color: var(--muted-foreground);
+  opacity: 1;
+}
+
+.ds-input:hover,
+.ds-select:hover,
+.ds-textarea:hover {
+  border-color: color-mix(in oklch, var(--edge-control) 50%, var(--foreground));
+}
+
+.ds-input:focus-visible,
+.ds-select:focus-visible,
+.ds-textarea:focus-visible {
+  outline-offset: 0;
+  border-color: var(--focus-color);
+  box-shadow: var(--focus-glow);
+}
+
+/* :user-invalid only matches after the user has interacted, so pristine forms are never red. */
+.ds-input:is(:user-invalid, [aria-invalid="true"]),
+.ds-select:is(:user-invalid, [aria-invalid="true"]),
+.ds-textarea:is(:user-invalid, [aria-invalid="true"]) {
+  border-color: var(--danger);
+}
+
+.ds-input:disabled,
+.ds-select:disabled,
+.ds-textarea:disabled {
+  cursor: not-allowed;
+  background-color: var(--muted);
+  opacity: 0.7;
+}
+
+/* Native select with a drawn chevron. Upgraded below where customizable <select> exists. */
+.ds-select {
+  appearance: none;
+  padding-inline-end: 2.5rem;
+  background-image: linear-gradient(45deg, transparent 50%, currentColor 50%),
+    linear-gradient(135deg, currentColor 50%, transparent 50%);
+  background-position: right 1.15rem center, right 0.8rem center;
+  background-size: 0.35rem 0.35rem;
+  background-repeat: no-repeat;
+}
+
+@supports (appearance: base-select) {
+  .ds-select,
+  .ds-select::picker(select) {
+    appearance: base-select;
+  }
+  .ds-select {
+    display: flex;
+    align-items: center;
+    background-image: none;
+    padding-inline-end: calc(var(--control-padding-inline) * 0.85);
+  }
+  .ds-select::picker-icon {
+    color: var(--muted-foreground);
+    transition: rotate var(--duration-base) var(--ease);
+  }
+  .ds-select:open::picker-icon {
+    rotate: 180deg;
+  }
+  .ds-select::picker(select) {
+    margin-block: var(--space-1);
+    padding: var(--space-1);
+    border: var(--border-width) solid var(--edge-surface);
+    border-radius: calc(var(--radius-control) + var(--space-1));
+    background: var(--overlay-fill);
+    color: var(--overlay-foreground);
+    box-shadow: var(--shadow-overlay);
+    backdrop-filter: var(--fx-backdrop);
+  }
+  .ds-select option {
+    padding: var(--space-2) var(--space-3);
+    border-radius: var(--radius-control);
+  }
+  .ds-select option:is(:hover, :focus-visible) {
+    background: var(--muted);
+    outline: none;
+  }
+  .ds-select option:checked {
+    font-weight: 600;
+  }
+  .ds-select option::checkmark {
+    color: var(--primary);
+  }
+}
+
+@media (forced-colors: active) {
+  .ds-select {
+    appearance: auto;
+    background-image: none;
+  }
+}

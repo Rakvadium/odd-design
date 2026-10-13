@@ -1,0 +1,86 @@
+/*
+ * Native modal dialog opened with invoker commands; no JS:
+ *   <button class="ds-button" commandfor="confirm" command="show-modal">Delete…</button>
+ *   <dialog class="ds-dialog" id="confirm" aria-labelledby="confirm-title" closedby="any">
+ *     <h2 id="confirm-title">…</h2> …
+ *     <button class="ds-button" commandfor="confirm" command="close">Close</button>
+ *   </dialog>
+ * showModal() gives focus trapping, Escape to close, inert background, and focus return.
+ */
+.ds-dialog {
+  inline-size: min(32rem, 100% - 2rem);
+  max-block-size: min(40rem, 100dvh - 2rem);
+  padding: var(--surface-padding);
+  border: var(--border-width) solid var(--edge-surface);
+  border-radius: var(--radius-overlay);
+  background: var(--overlay-fill);
+  color: var(--overlay-foreground);
+  box-shadow: var(--shadow-overlay);
+  backdrop-filter: var(--fx-backdrop);
+  overscroll-behavior: contain;
+
+  opacity: 0;
+  scale: 0.96;
+  translate: 0 0.5rem;
+  transition-property: opacity, scale, translate, display, overlay;
+  transition-duration: var(--duration-base);
+  transition-timing-function: var(--ease);
+  transition-behavior: allow-discrete;
+}
+
+.ds-dialog[open] {
+  opacity: 1;
+  scale: 1;
+  translate: 0 0;
+}
+
+@starting-style {
+  .ds-dialog[open] {
+    opacity: 0;
+    scale: 0.96;
+    translate: 0 0.5rem;
+  }
+}
+
+.ds-dialog::backdrop {
+  background: var(--scrim);
+  opacity: 0;
+  transition-property: opacity, display, overlay;
+  transition-duration: var(--duration-base);
+  transition-behavior: allow-discrete;
+}
+
+.ds-dialog[open]::backdrop {
+  opacity: 1;
+}
+
+@starting-style {
+  .ds-dialog[open]::backdrop {
+    opacity: 0;
+  }
+}
+
+.ds-dialog-body {
+  display: grid;
+  gap: var(--space-4);
+}
+
+.ds-dialog-title {
+  font-size: var(--text-xl);
+}
+
+.ds-dialog-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: var(--space-3);
+  margin-block-start: var(--space-2);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ds-dialog,
+  .ds-dialog[open] {
+    scale: 1;
+    translate: 0 0;
+  }
+}

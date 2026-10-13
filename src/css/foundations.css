@@ -1,0 +1,70 @@
+/* Scales that stay fixed across every palette and chrome. */
+:root {
+  --text-xs: 0.75rem;
+  --text-sm: 0.875rem;
+  --text-md: 1rem;
+  --text-lg: 1.125rem;
+  --text-xl: clamp(1.25rem, 1.1rem + 0.5vw, 1.5rem);
+  --text-2xl: clamp(1.5rem, 1.25rem + 1vw, 2rem);
+  --text-3xl: clamp(1.875rem, 1.4rem + 2vw, 2.75rem);
+  --text-4xl: clamp(2.25rem, 1.5rem + 3.2vw, 3.75rem);
+
+  --leading-tight: 1.15;
+  --leading-normal: 1.55;
+
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.5rem;
+  --space-6: 2rem;
+  --space-8: 3rem;
+  --space-10: 4rem;
+
+  --radius-pill: 999px;
+
+  --duration-fast: 120ms;
+  --duration-base: 200ms;
+  --duration-slow: 320ms;
+
+  /* Z ladder. Append new layers here; don't pick a number because it looked high enough. */
+  --z-sticky: 30;
+  --z-shell: 40;
+  --z-overlay: 50;
+  --z-popover: 200;
+  --z-toast: 500;
+
+  color-scheme: light dark;
+}
+
+/* Mode is just color-scheme. Every palette token is light-dark(), so "system" follows the OS with no JS. */
+[data-mode="light"] { color-scheme: light; }
+[data-mode="dark"] { color-scheme: dark; }
+[data-mode="system"] { color-scheme: light dark; }
+
+/*
+ * Derived tokens. Declared on every element that can carry an axis, not only :root,
+ * so a nested [data-chrome] / [data-palette] wrapper recomputes them (see the Matrix story).
+ */
+:where(:root, [data-palette], [data-chrome], [data-mode]) {
+  --control-height: max(24px, calc(2.5rem * var(--density)));
+  --control-height-sm: max(24px, calc(2rem * var(--density)));
+  --control-height-lg: max(24px, calc(3rem * var(--density)));
+  --control-padding-inline: calc(1rem * var(--density));
+  --surface-padding: calc(1.5rem * var(--density));
+  --surface-fill: color-mix(in oklch, var(--surface) var(--surface-alpha), transparent);
+  --overlay-fill: color-mix(in oklch, var(--overlay) var(--surface-alpha), transparent);
+  --scrim: color-mix(in oklch, var(--background) 55%, transparent);
+}
+
+/* Status tones: shared defaults that a palette may override. */
+:where(:root, [data-palette]) {
+  --danger: light-dark(oklch(0.53 0.2 27), oklch(0.72 0.17 25));
+  --danger-foreground: light-dark(oklch(0.99 0 0), oklch(0.17 0.03 25));
+  --success: light-dark(oklch(0.52 0.13 150), oklch(0.76 0.15 150));
+  --success-foreground: light-dark(oklch(0.99 0 0), oklch(0.18 0.04 150));
+  --warning: light-dark(oklch(0.8 0.15 80), oklch(0.82 0.15 80));
+  --warning-foreground: light-dark(oklch(0.24 0.05 65), oklch(0.2 0.04 65));
+  --info: light-dark(oklch(0.52 0.14 245), oklch(0.76 0.12 240));
+  --info-foreground: light-dark(oklch(0.99 0 0), oklch(0.18 0.03 240));
+}

@@ -1,0 +1,118 @@
+// The token contract: what every palette and every chrome must define.
+// CSS, stories, and tests all read from here, so adding a token here makes the
+// contract test fail until every palette or chrome supplies it.
+
+export const PALETTES = ["default", "aurora", "sorbet"] as const;
+export const CHROMES = ["calm", "glass", "bubblegum", "holoterminal"] as const;
+export const MODES = ["system", "light", "dark"] as const;
+
+export type Palette = (typeof PALETTES)[number];
+export type Chrome = (typeof CHROMES)[number];
+export type Mode = (typeof MODES)[number];
+
+/** Color roles. Palettes own these and nothing else. */
+export const PALETTE_TOKENS = [
+  "background",
+  "foreground",
+  "surface",
+  "surface-foreground",
+  "overlay",
+  "overlay-foreground",
+  "muted",
+  "muted-foreground",
+  "border",
+  "control-border",
+  "ring",
+  "primary",
+  "primary-foreground",
+  "secondary",
+  "secondary-foreground",
+  "accent",
+  "accent-foreground",
+  "danger",
+  "danger-foreground",
+  "success",
+  "success-foreground",
+  "warning",
+  "warning-foreground",
+  "info",
+  "info-foreground",
+] as const;
+
+/** Feel roles. Chromes own these and must not set palette hues. */
+export const CHROME_TOKENS = [
+  // Type
+  "font-body",
+  "font-heading",
+  "font-label",
+  "heading-weight",
+  "heading-case",
+  "heading-tracking",
+  "label-case",
+  "label-tracking",
+  // Shape
+  "radius-control",
+  "radius-surface",
+  "radius-overlay",
+  "radius-chip",
+  "border-width",
+  "edge-surface",
+  "edge-control",
+  "edge-control-filled",
+  "surface-alpha",
+  // Density
+  "density",
+  // Elevation
+  "shadow-control",
+  "shadow-control-hover",
+  "shadow-control-active",
+  "shadow-surface",
+  "shadow-surface-hover",
+  "shadow-overlay",
+  "press-transform",
+  // Focus
+  "focus-color",
+  "focus-width",
+  "focus-offset",
+  "focus-glow",
+  // Motion
+  "ease",
+  // FX
+  "fx-glow",
+  "fx-scanlines",
+  "fx-backdrop",
+  "page-background",
+] as const;
+
+type PaletteToken = (typeof PALETTE_TOKENS)[number];
+
+/**
+ * WCAG 2.2 AA pairs every palette must pass in light and dark.
+ * 4.5 = text (1.4.3). 3 = UI boundaries and focus indicators (1.4.11).
+ */
+export const CONTRAST_PAIRS: ReadonlyArray<[fg: PaletteToken, bg: PaletteToken, min: number]> = [
+  ["foreground", "background", 4.5],
+  ["surface-foreground", "surface", 4.5],
+  ["overlay-foreground", "overlay", 4.5],
+  ["muted-foreground", "background", 4.5],
+  ["muted-foreground", "surface", 4.5],
+  ["muted-foreground", "muted", 4.5],
+  ["foreground", "muted", 4.5],
+  ["primary-foreground", "primary", 4.5],
+  ["secondary-foreground", "secondary", 4.5],
+  ["accent-foreground", "accent", 4.5],
+  ["danger-foreground", "danger", 4.5],
+  ["success-foreground", "success", 4.5],
+  ["warning-foreground", "warning", 4.5],
+  ["info-foreground", "info", 4.5],
+  // Links and error text sit directly on page surfaces.
+  ["primary", "background", 4.5],
+  ["primary", "surface", 4.5],
+  ["danger", "background", 4.5],
+  ["danger", "surface", 4.5],
+  // Input borders and focus rings are non-text UI.
+  ["control-border", "background", 3],
+  ["control-border", "surface", 3],
+  ["ring", "background", 3],
+  ["ring", "surface", 3],
+];

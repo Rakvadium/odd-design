@@ -1,0 +1,66 @@
+/*
+ * <details class="ds-disclosure" name="faq"><summary>Question</summary><div>Answer</div></details>
+ * Sharing a `name` makes a group exclusive (an accordion) with no JS.
+ * ::details-content animates height where supported; elsewhere it opens instantly.
+ */
+.ds-disclosure {
+  border-block-end: var(--border-width) solid var(--border);
+}
+
+.ds-disclosure > summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  min-block-size: var(--control-height-lg);
+  padding-block: var(--space-3);
+  font-family: var(--font-heading);
+  font-weight: 600;
+  text-transform: var(--heading-case);
+  letter-spacing: var(--heading-tracking);
+  list-style: none;
+  cursor: pointer;
+}
+
+.ds-disclosure > summary::-webkit-details-marker {
+  display: none;
+}
+
+.ds-disclosure > summary::after {
+  content: "";
+  flex-shrink: 0;
+  inline-size: 0.55rem;
+  block-size: 0.55rem;
+  border-inline-end: 2px solid currentColor;
+  border-block-end: 2px solid currentColor;
+  rotate: 45deg;
+  translate: 0 -25%;
+  transition: rotate var(--duration-base) var(--ease), translate var(--duration-base) var(--ease);
+}
+
+.ds-disclosure[open] > summary::after {
+  rotate: 225deg;
+  translate: 0 25%;
+}
+
+.ds-disclosure > summary:hover {
+  color: var(--primary);
+}
+
+.ds-disclosure::details-content {
+  block-size: 0;
+  overflow: clip;
+  transition-property: block-size, content-visibility;
+  transition-duration: var(--duration-slow);
+  transition-timing-function: var(--ease);
+  transition-behavior: allow-discrete;
+}
+
+.ds-disclosure[open]::details-content {
+  block-size: auto;
+}
+
+.ds-disclosure > :not(summary) {
+  padding-block-end: var(--space-4);
+  color: var(--muted-foreground);
+}

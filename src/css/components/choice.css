@@ -1,0 +1,132 @@
+/*
+ * Checkbox / radio:  <label class="ds-choice"><input type="checkbox"> Label</label>
+ * Switch:            <label class="ds-choice"><input type="checkbox" role="switch" class="ds-switch"> Label</label>
+ * Segmented:         <fieldset class="ds-segmented"><legend>View</legend>
+ *                      <label><input type="radio" name="view" checked> Grid</label> ...</fieldset>
+ * All native inputs, so keyboard (Space, arrow keys between radios) and forms work with no JS.
+ */
+.ds-choice {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-3);
+  min-block-size: 24px;
+  cursor: pointer;
+}
+
+.ds-choice input:is([type="checkbox"], [type="radio"]):not(.ds-switch) {
+  inline-size: 1.125rem;
+  block-size: 1.125rem;
+  margin: 0;
+  accent-color: var(--primary);
+  cursor: pointer;
+}
+
+.ds-choice:has(:disabled) {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+/* Switch: track is the background color, thumb is a radial gradient that slides. */
+.ds-switch {
+  --_track: color-mix(in oklch, var(--muted-foreground) 45%, var(--muted));
+  --_size: calc(1.5rem * var(--density));
+
+  appearance: none;
+  flex-shrink: 0;
+  inline-size: calc(var(--_size) * 1.75);
+  block-size: var(--_size);
+  margin: 0;
+  border: var(--border-width) solid color-mix(in oklch, var(--edge-control) 60%, transparent);
+  border-radius: var(--radius-chip);
+  background:
+    radial-gradient(circle closest-side, var(--surface) 92%, transparent 100%)
+      left 1px center / calc(var(--_size) - 4px) calc(var(--_size) - 4px) no-repeat,
+    var(--_track);
+  cursor: pointer;
+  transition: background-position var(--duration-base) var(--ease), background-color var(--duration-base) var(--ease);
+}
+
+.ds-switch:checked {
+  --_track: var(--primary);
+  background:
+    radial-gradient(circle closest-side, var(--primary-foreground) 92%, transparent 100%)
+      right 1px center / calc(var(--_size) - 4px) calc(var(--_size) - 4px) no-repeat,
+    var(--_track);
+}
+
+/* Native checkbox in forced colors: the browser renders it with system colors. */
+@media (forced-colors: active) {
+  .ds-switch {
+    appearance: auto;
+    inline-size: 1.125rem;
+    block-size: 1.125rem;
+  }
+}
+
+/* Segmented control: a radio group dressed as one control. */
+.ds-segmented {
+  display: inline-flex;
+  gap: 2px;
+  margin: 0;
+  padding: 3px;
+  border: var(--border-width) solid var(--edge-surface);
+  border-radius: calc(var(--radius-control) + 3px);
+  background: var(--muted);
+}
+
+.ds-segmented > legend {
+  position: absolute;
+  inline-size: 1px;
+  block-size: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.ds-segmented > label {
+  position: relative;
+  display: inline-grid;
+  place-items: center;
+  min-block-size: calc(var(--control-height-sm));
+  padding-inline: var(--control-padding-inline);
+  border-radius: var(--radius-control);
+  color: var(--muted-foreground);
+  font-family: var(--font-label);
+  font-size: var(--text-sm);
+  font-weight: 600;
+  text-transform: var(--label-case);
+  letter-spacing: var(--label-tracking);
+  cursor: pointer;
+  transition-property: background-color, color, box-shadow;
+  transition-duration: var(--duration-fast);
+  transition-timing-function: var(--ease);
+}
+
+.ds-segmented > label > input {
+  position: absolute;
+  inset: 0;
+  margin: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.ds-segmented > label:hover {
+  color: var(--foreground);
+}
+
+.ds-segmented > label:has(:checked) {
+  background: var(--surface);
+  color: var(--foreground);
+  box-shadow: var(--shadow-control);
+}
+
+.ds-segmented > label:has(:focus-visible) {
+  outline: var(--focus-width) solid var(--focus-color);
+  outline-offset: 1px;
+}
+
+@media (forced-colors: active) {
+  .ds-segmented > label:has(:checked) {
+    outline: 2px solid Highlight;
+  }
+}

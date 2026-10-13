@@ -1,0 +1,20 @@
+/* Sorbet: raspberry and mint on strawberry milk. */
+[data-palette="sorbet"] {
+  --background: light-dark(oklch(0.965 0.018 350), oklch(0.18 0.025 345));
+  --foreground: light-dark(oklch(0.27 0.04 350), oklch(0.95 0.02 350));
+  --surface: light-dark(oklch(0.99 0.012 85), oklch(0.225 0.03 345));
+  --surface-foreground: var(--foreground);
+  --overlay: light-dark(oklch(1 0 0), oklch(0.25 0.032 345));
+  --overlay-foreground: var(--foreground);
+  --muted: light-dark(oklch(0.93 0.03 200), oklch(0.27 0.03 330));
+  --muted-foreground: light-dark(oklch(0.45 0.04 350), oklch(0.78 0.04 350));
+  --border: light-dark(oklch(0.88 0.04 350), oklch(0.34 0.05 345));
+  --control-border: light-dark(oklch(0.6 0.09 350), oklch(0.6 0.09 350));
+  --ring: light-dark(oklch(0.55 0.2 350), oklch(0.78 0.14 350));
+  --primary: light-dark(oklch(0.54 0.2 350), oklch(0.78 0.14 350));
+  --primary-foreground: light-dark(oklch(0.99 0 0), oklch(0.18 0.04 350));
+  --secondary: light-dark(oklch(0.84 0.08 195), oklch(0.78 0.09 195));
+  --secondary-foreground: light-dark(oklch(0.25 0.04 210), oklch(0.18 0.03 210));
+  --accent: light-dark(oklch(0.9 0.1 90), oklch(0.86 0.12 90));
+  --accent-foreground: light-dark(oklch(0.27 0.05 70), oklch(0.2 0.04 70));
+}

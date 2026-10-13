@@ -1,0 +1,53 @@
+/*
+ * <span class="ds-badge" data-tone="neutral|primary|success|warning|danger|info" data-solid>
+ * Soft badges keep text in --foreground and carry tone in the tint and dot, so contrast never
+ * depends on the tone color. Solid badges use the tone/foreground pair the palette test checks.
+ */
+.ds-badge {
+  --_tone: var(--muted-foreground);
+
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4em;
+  padding: 0.2em 0.65em;
+  border: var(--border-width) solid color-mix(in oklch, var(--_tone) 35%, transparent);
+  border-radius: var(--radius-chip);
+  background: color-mix(in oklch, var(--_tone) 14%, var(--background));
+  color: var(--foreground);
+  font-family: var(--font-label);
+  font-size: var(--text-xs);
+  font-weight: 600;
+  line-height: 1.4;
+  text-transform: var(--label-case);
+  letter-spacing: var(--label-tracking);
+  white-space: nowrap;
+}
+
+.ds-badge::before {
+  content: "";
+  inline-size: 0.5em;
+  block-size: 0.5em;
+  border-radius: 50%;
+  background: var(--_tone);
+}
+
+.ds-badge[data-tone="primary"] { --_tone: var(--primary); }
+.ds-badge[data-tone="success"] { --_tone: var(--success); }
+.ds-badge[data-tone="warning"] { --_tone: var(--warning); }
+.ds-badge[data-tone="danger"] { --_tone: var(--danger); }
+.ds-badge[data-tone="info"] { --_tone: var(--info); }
+
+.ds-badge[data-solid] {
+  border-color: transparent;
+  background: var(--_tone);
+}
+.ds-badge[data-solid]::before { display: none; }
+.ds-badge[data-solid][data-tone="primary"] { color: var(--primary-foreground); }
+.ds-badge[data-solid][data-tone="success"] { color: var(--success-foreground); }
+.ds-badge[data-solid][data-tone="warning"] { color: var(--warning-foreground); }
+.ds-badge[data-solid][data-tone="danger"] { color: var(--danger-foreground); }
+.ds-badge[data-solid][data-tone="info"] { color: var(--info-foreground); }
+.ds-badge[data-solid]:is(:not([data-tone]), [data-tone="neutral"]) {
+  background: var(--foreground);
+  color: var(--background);
+}

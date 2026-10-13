@@ -1,0 +1,29 @@
+/*
+ * Layer order is the ownership model:
+ *   foundations  fixed scales nobody themes (type, space, motion durations, z)
+ *   palette      color roles           [data-palette]
+ *   chrome       feel roles            [data-chrome]
+ *   preferences  user/OS overrides     prefers-contrast, forced-colors
+ *   base         element defaults
+ *   components   .ds-* classes
+ * Later layers win, so a user's OS preference always beats a palette or chrome.
+ */
+@layer foundations, palette, chrome, preferences, base, components;
+
+@import "./foundations.css" layer(foundations);
+@import "./palettes/default.css" layer(palette);
+@import "./palettes/aurora.css" layer(palette);
+@import "./palettes/sorbet.css" layer(palette);
+@import "./chromes/calm.css" layer(chrome);
+@import "./chromes/glass.css" layer(chrome);
+@import "./chromes/bubblegum.css" layer(chrome);
+@import "./chromes/holoterminal.css" layer(chrome);
+@import "./preferences.css" layer(preferences);
+@import "./base.css" layer(base);
+@import "./components/button.css" layer(components);
+@import "./components/field.css" layer(components);
+@import "./components/choice.css" layer(components);
+@import "./components/card.css" layer(components);
+@import "./components/badge.css" layer(components);
+@import "./components/dialog.css" layer(components);
+@import "./components/disclosure.css" layer(components);

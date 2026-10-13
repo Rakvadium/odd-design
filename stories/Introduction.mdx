@@ -1,0 +1,32 @@
+import { Meta } from "@storybook/addon-docs/blocks";
+
+<Meta title="Introduction" />
+
+# Design system
+
+A framework-free design system built on CSS custom properties and native HTML. Appearance has three independent axes:
+
+| Axis | Attribute | Owns |
+| --- | --- | --- |
+| **Chrome** | `data-chrome` | Feel: type, case, radius, borders, density, shadows, focus style, easing, effects |
+| **Palette** | `data-palette` | Color roles: surfaces, text, brand, status, borders, focus ring |
+| **Mode** | `data-mode` | `light`, `dark`, or `system`. Sets `color-scheme`; every palette color is `light-dark()`, so `system` needs no JS |
+
+Any chrome works with any palette. Use the toolbar above to switch, or open **Showcase → Matrix** to see every pair at once.
+
+## Rules the tests enforce
+
+- Every palette defines every color role, and only color roles.
+- Every palette meets WCAG 2.2 AA in light and dark: 4.5:1 for text, 3:1 for input borders and focus rings.
+- Every chrome defines every feel token and contains no hue. It can only reference palette colors.
+- Components never check which chrome or palette is active. They read tokens.
+
+Run `bun test` to check.
+
+## Accessibility built in
+
+- Native elements (`<button>`, `<dialog>`, `<details>`, radio groups) supply keyboard support and semantics.
+- A visible `:focus-visible` ring in every chrome, at least 2px.
+- Controls are at least 24px tall (WCAG 2.5.8 target size).
+- `prefers-reduced-motion`, `prefers-contrast: more`, `prefers-reduced-transparency`, and `forced-colors` (Windows High Contrast) live in a `preferences` layer that overrides any palette or chrome.
+- Errors use `:user-invalid`, so a field isn't flagged before the user has touched it.

@@ -1,0 +1,46 @@
+/* Calm: soft, quiet, readable. The default. */
+:where(:root),
+[data-chrome="calm"] {
+  --font-body: "Outfit Variable", ui-sans-serif, system-ui, sans-serif;
+  --font-heading: var(--font-body);
+  --font-label: var(--font-body);
+  --heading-weight: 650;
+  --heading-case: none;
+  --heading-tracking: -0.015em;
+  --label-case: none;
+  --label-tracking: 0.01em;
+
+  --radius-control: 0.625rem;
+  --radius-surface: 0.875rem;
+  --radius-overlay: 1.125rem;
+  --radius-chip: var(--radius-pill);
+  --border-width: 1px;
+  --edge-surface: var(--border);
+  --edge-control: var(--control-border);
+  --edge-control-filled: transparent;
+  --surface-alpha: 100%;
+
+  --density: 1;
+
+  --shadow-control: 0 1px 2px light-dark(oklch(0 0 0 / 0.06), oklch(0 0 0 / 0.3));
+  --shadow-control-hover: 0 2px 6px -1px light-dark(oklch(0 0 0 / 0.1), oklch(0 0 0 / 0.4));
+  --shadow-control-active: var(--shadow-control);
+  --shadow-surface: 0 1px 3px light-dark(oklch(0 0 0 / 0.05), oklch(0 0 0 / 0.3)),
+    0 8px 24px -12px light-dark(oklch(0 0 0 / 0.12), oklch(0 0 0 / 0.5));
+  --shadow-surface-hover: 0 2px 6px light-dark(oklch(0 0 0 / 0.06), oklch(0 0 0 / 0.35)),
+    0 16px 40px -16px light-dark(oklch(0 0 0 / 0.18), oklch(0 0 0 / 0.6));
+  --shadow-overlay: 0 24px 64px -16px light-dark(oklch(0 0 0 / 0.25), oklch(0 0 0 / 0.7));
+  --press-transform: scale(0.98);
+
+  --focus-color: var(--ring);
+  --focus-width: 2px;
+  --focus-offset: 2px;
+  --focus-glow: 0 0 0 0 transparent;
+
+  --ease: cubic-bezier(0.2, 0, 0, 1);
+
+  --fx-glow: none;
+  --fx-scanlines: 0;
+  --fx-backdrop: none;
+  --page-background: linear-gradient(180deg, var(--muted) 0%, var(--background) 24rem);
+}

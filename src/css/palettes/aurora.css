@@ -1,0 +1,20 @@
+/* Aurora: cool night sky, cyan primary, magenta secondary. */
+[data-palette="aurora"] {
+  --background: light-dark(oklch(0.975 0.008 255), oklch(0.15 0.02 268));
+  --foreground: light-dark(oklch(0.2 0.03 260), oklch(0.94 0.02 220));
+  --surface: light-dark(oklch(0.995 0.004 255), oklch(0.2 0.025 265));
+  --surface-foreground: var(--foreground);
+  --overlay: light-dark(oklch(1 0 0), oklch(0.22 0.028 265));
+  --overlay-foreground: var(--foreground);
+  --muted: light-dark(oklch(0.935 0.018 255), oklch(0.26 0.03 262));
+  --muted-foreground: light-dark(oklch(0.46 0.04 258), oklch(0.76 0.05 225));
+  --border: light-dark(oklch(0.88 0.02 255), oklch(0.32 0.04 262));
+  --control-border: light-dark(oklch(0.6 0.04 255), oklch(0.58 0.06 250));
+  --ring: light-dark(oklch(0.52 0.13 210), oklch(0.82 0.15 195));
+  --primary: light-dark(oklch(0.5 0.12 215), oklch(0.82 0.15 195));
+  --primary-foreground: light-dark(oklch(0.99 0 0), oklch(0.15 0.03 250));
+  --secondary: light-dark(oklch(0.5 0.22 315), oklch(0.7 0.2 315));
+  --secondary-foreground: light-dark(oklch(0.99 0 0), oklch(0.13 0.03 315));
+  --accent: light-dark(oklch(0.5 0.2 285), oklch(0.74 0.16 285));
+  --accent-foreground: light-dark(oklch(0.99 0 0), oklch(0.13 0.03 285));
+}
