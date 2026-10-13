@@ -1,7 +1,5 @@
 import type { Preview } from "@storybook/html-vite";
-import "@fontsource-variable/outfit";
-import "@fontsource-variable/jetbrains-mono";
-import "@fontsource-variable/bricolage-grotesque";
+import "../src/css/fonts.css";
 import "../src/css/index.css";
 import { applyAppearance, CHROMES, MODES, PALETTES, type Appearance } from "../src/js/appearance.ts";
 

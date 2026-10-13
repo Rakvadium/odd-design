@@ -1,14 +1,28 @@
 {
-  "name": "design-system",
+  "name": "odd-design",
   "version": "0.0.0",
   "private": true,
   "type": "module",
   "description": "Framework-free, accessible design system. Chrome sets the feel, palette sets the color.",
+  "files": ["dist"],
   "exports": {
-    ".": "./src/css/index.css",
-    "./appearance": "./src/js/appearance.ts"
+    ".": {
+      "types": "./dist/css.d.ts",
+      "default": "./dist/odd-design.css"
+    },
+    "./fonts.css": {
+      "types": "./dist/css.d.ts",
+      "default": "./dist/fonts.css"
+    },
+    "./appearance": {
+      "types": "./dist/appearance.d.ts",
+      "default": "./dist/appearance.js"
+    },
+    "./first-paint.js": "./dist/first-paint.js"
   },
   "scripts": {
+    "build": "bun scripts/build.ts",
+    "prepare": "bun scripts/build.ts",
     "storybook": "storybook dev -p 6006 --no-open",
     "build-storybook": "storybook build",
     "test": "bun test tests",
