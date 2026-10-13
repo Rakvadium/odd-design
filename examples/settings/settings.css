@@ -1,0 +1,77 @@
+/* Page layout only. Everything visual comes from odd-design tokens and components. */
+.page-width {
+  inline-size: min(68rem, 100% - 2 * var(--space-5));
+  margin-inline: auto;
+}
+
+.page-header {
+  padding-block: var(--space-8) var(--space-6);
+}
+
+.page-header > .page-width {
+  justify-content: space-between;
+  align-items: end;
+}
+
+.page-layout {
+  display: grid;
+  gap: var(--space-6);
+  padding-block-end: var(--space-10);
+}
+
+.page-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1);
+}
+
+@media (min-width: 56rem) {
+  .page-layout {
+    grid-template-columns: 12rem 1fr;
+    align-items: start;
+  }
+
+  .page-nav {
+    position: sticky;
+    inset-block-start: var(--space-5);
+    flex-direction: column;
+  }
+
+  .page-nav > .ds-button {
+    justify-content: flex-start;
+  }
+}
+
+main > section {
+  scroll-margin-block-start: var(--space-5);
+}
+
+.field-grid {
+  display: grid;
+  gap: var(--space-5);
+  grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
+  align-items: start;
+}
+
+.form-actions {
+  justify-content: flex-end;
+}
+
+.form-actions > [role="status"] {
+  margin-inline-end: auto;
+}
+
+.choice-group {
+  --gap: var(--space-2);
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.choice-group > legend {
+  margin-block-end: var(--space-2);
+}
+
+.danger-zone {
+  border-color: var(--danger);
+}

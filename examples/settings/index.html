@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="en" data-chrome="calm" data-palette="default" data-mode="system">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Account settings</title>
+    <link rel="icon" href="data:,">
+    <script type="module" src="/main.ts"></script>
+  </head>
+  <body>
+    <a class="ds-skip-link" href="#main">Skip to content</a>
+
+    <header class="page-header">
+      <div class="page-width ds-row">
+        <div class="ds-stack" style="--gap: var(--space-2)">
+          <p class="ds-eyebrow">Deckhouse</p>
+          <h1>Account settings</h1>
+        </div>
+        <div class="ds-row" style="--gap: var(--space-2)">
+          <span class="ds-badge" data-tone="primary" data-solid>Pro plan</span>
+          <span class="ds-badge" data-tone="success">Email verified</span>
+        </div>
+      </div>
+    </header>
+
+    <div class="page-width page-layout">
+      <nav aria-label="Settings sections" class="page-nav">
+        <a class="ds-button" data-variant="ghost" href="#profile">Profile</a>
+        <a class="ds-button" data-variant="ghost" href="#notifications">Notifications</a>
+        <a class="ds-button" data-variant="ghost" href="#appearance">Appearance</a>
+        <a class="ds-button" data-variant="ghost" href="#danger">Danger zone</a>
+        <a class="ds-button" data-variant="ghost" href="#faq">Help</a>
+      </nav>
+
+      <main id="main" class="ds-stack" style="--gap: var(--space-6)">
+        <section id="profile" class="ds-card" aria-labelledby="profile-title">
+          <div class="ds-stack" style="--gap: var(--space-1)">
+            <h2 id="profile-title" class="ds-card-title">Profile</h2>
+            <p class="ds-muted">How other players see you.</p>
+          </div>
+          <form id="profile-form" class="ds-stack" novalidate>
+            <div class="field-grid">
+              <div class="ds-field">
+                <label class="ds-label" for="name">Display name</label>
+                <input class="ds-input" id="name" name="name" autocomplete="nickname" required value="Rowan Vale">
+              </div>
+              <div class="ds-field">
+                <label class="ds-label" for="email">Email</label>
+                <input class="ds-input" id="email" name="email" type="email" autocomplete="email" required value="rowan@example.com" aria-describedby="email-hint">
+                <p class="ds-hint" id="email-hint">Used for sign-in and receipts. Never shown publicly.</p>
+              </div>
+            </div>
+            <div class="ds-field">
+              <label class="ds-label" for="bio">Bio</label>
+              <textarea class="ds-textarea" id="bio" name="bio" maxlength="280" aria-describedby="bio-hint">Control player since season 2. Usually found in the Extended queue.</textarea>
+              <p class="ds-hint" id="bio-hint">Up to 280 characters.</p>
+            </div>
+            <div class="field-grid">
+              <div class="ds-field">
+                <label class="ds-label" for="format">Favorite format</label>
+                <select class="ds-select" id="format" name="format">
+                  <option>Standard</option>
+                  <option selected>Extended</option>
+                  <option>Retro</option>
+                  <option>Draft</option>
+                </select>
+              </div>
+              <div class="ds-field">
+                <label class="ds-label" for="region">Region</label>
+                <select class="ds-select" id="region" name="region">
+                  <option>Americas</option>
+                  <option selected>Europe</option>
+                  <option>Asia Pacific</option>
+                </select>
+              </div>
+            </div>
+            <div class="ds-card-footer form-actions">
+              <p id="profile-status" class="ds-muted" role="status"></p>
+              <button class="ds-button" type="reset" data-variant="ghost">Discard</button>
+              <button class="ds-button" type="submit" data-variant="primary">Save profile</button>
+            </div>
+          </form>
+        </section>
+
+        <section id="notifications" class="ds-card" aria-labelledby="notifications-title">
+          <div class="ds-stack" style="--gap: var(--space-1)">
+            <h2 id="notifications-title" class="ds-card-title">Notifications</h2>
+            <p class="ds-muted">Choose what reaches your inbox.</p>
+          </div>
+          <div class="ds-stack" style="--gap: var(--space-3)">
+            <label class="ds-choice"><input type="checkbox" role="switch" class="ds-switch" checked> Security alerts</label>
+            <label class="ds-choice"><input type="checkbox" role="switch" class="ds-switch" checked> Comments on my decks</label>
+            <label class="ds-choice"><input type="checkbox" role="switch" class="ds-switch"> Tournament invites</label>
+          </div>
+          <fieldset class="ds-stack choice-group">
+            <legend class="ds-label">Product news</legend>
+            <label class="ds-choice"><input type="radio" name="digest" value="weekly" checked> Weekly digest</label>
+            <label class="ds-choice"><input type="radio" name="digest" value="monthly"> Monthly digest</label>
+            <label class="ds-choice"><input type="radio" name="digest" value="never"> Never</label>
+          </fieldset>
+        </section>
+
+        <section id="appearance" class="ds-card" aria-labelledby="appearance-title">
+          <div class="ds-stack" style="--gap: var(--space-1)">
+            <h2 id="appearance-title" class="ds-card-title">Appearance</h2>
+            <p class="ds-muted">Chrome changes the feel, palette changes the color, mode picks light or dark. Changes apply right away and stick on this device.</p>
+          </div>
+          <div id="appearance-controls" class="ds-stack"></div>
+        </section>
+
+        <section id="danger" class="ds-card danger-zone" aria-labelledby="danger-title">
+          <div class="ds-row" style="justify-content: space-between">
+            <h2 id="danger-title" class="ds-card-title">Danger zone</h2>
+            <span class="ds-badge" data-tone="danger">Permanent</span>
+          </div>
+          <p class="ds-muted">Deleting your account removes your profile, 12 decks, and match history. You can't undo this.</p>
+          <div class="ds-row">
+            <button class="ds-button" type="button" data-variant="danger" commandfor="confirm-delete" command="show-modal">Delete account…</button>
+          </div>
+        </section>
+
+        <section id="faq" class="ds-card" aria-labelledby="faq-title">
+          <h2 id="faq-title" class="ds-card-title">Help</h2>
+          <div>
+            <details class="ds-disclosure" name="faq">
+              <summary>Who can see my email?</summary>
+              <div>Only you. It's used for sign-in and receipts and never appears on your profile.</div>
+            </details>
+            <details class="ds-disclosure" name="faq">
+              <summary>Where is my appearance saved?</summary>
+              <div>In this browser's local storage, so each device keeps its own choice.</div>
+            </details>
+            <details class="ds-disclosure" name="faq">
+              <summary>Can I export my decks before deleting?</summary>
+              <div>Yes. Open any deck and choose Export. Deleted accounts can't be recovered.</div>
+            </details>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <dialog class="ds-dialog" id="confirm-delete" aria-labelledby="confirm-delete-title" closedby="any">
+      <div class="ds-dialog-body">
+        <h2 class="ds-dialog-title" id="confirm-delete-title">Delete your account?</h2>
+        <p class="ds-muted">This removes your profile, 12 decks, and match history. You can't undo this.</p>
+        <div class="ds-dialog-actions">
+          <button class="ds-button" type="button" commandfor="confirm-delete" command="close" autofocus>Keep account</button>
+          <button class="ds-button" type="button" data-variant="danger" commandfor="confirm-delete" command="close">Delete account</button>
+        </div>
+      </div>
+    </dialog>
+  </body>
+</html>
