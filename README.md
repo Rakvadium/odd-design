@@ -1,4 +1,4 @@
-# Design system
+# odd-design
 
 A framework-free, accessible design system made of CSS custom properties, native HTML, and one small TypeScript helper. Storybook is the workbench.
 
@@ -17,16 +17,39 @@ Any chrome pairs with any palette. Chromes: `calm`, `glass`, `bubblegum`, `holot
 ```sh
 bun install
 bun run storybook   # http://localhost:6006
-bun test            # token contract + WCAG contrast
+bun test            # token contract, WCAG contrast, and the built dist/
+bun run build       # dist/
 ```
 
 ## Use it
 
+`bun run build` writes `dist/`. `bun install` runs it too, through `prepare`. The package exports:
+
+| Export | File | What it is |
+| --- | --- | --- |
+| `odd-design` | `dist/odd-design.css` | Every layer in one file, no `@import`. |
+| `odd-design/fonts.css` | `dist/fonts.css` | Outfit, Bricolage Grotesque, and JetBrains Mono, with their `.woff2` files in `dist/files/`. Optional; without it the stacks fall back to system fonts. |
+| `odd-design/appearance` | `dist/appearance.js` | `applyAppearance`, `loadAppearance`, `saveAppearance`, and the `CHROMES`/`PALETTES`/`MODES` lists, with types. |
+| `odd-design/first-paint.js` | `dist/first-paint.js` | A classic script that applies the saved appearance. Inline it at the top of `<head>` so the first frame is already right. |
+
+With a bundler:
+
+```ts
+import "odd-design/fonts.css";
+import "odd-design";
+import { applyAppearance, loadAppearance } from "odd-design/appearance";
+```
+
+With Vite, set `build.cssTarget` to browsers that support `light-dark()` (Chrome 123, Firefox 120, Safari 17.5). The default target makes the minifier rewrite every palette color into `--lightningcss-light`/`--lightningcss-dark` variables.
+
+In plain HTML, copy `dist/` next to the page:
+
 ```html
-<html data-chrome="calm" data-palette="default" data-mode="system">
+<html lang="en" data-chrome="calm" data-palette="default" data-mode="system">
   <head>
-    <script>/* FIRST_PAINT_SCRIPT from src/js/appearance.ts */</script>
-    <link rel="stylesheet" href="design-system/src/css/index.css">
+    <script src="odd-design/first-paint.js"></script>
+    <link rel="stylesheet" href="odd-design/fonts.css">
+    <link rel="stylesheet" href="odd-design/odd-design.css">
   </head>
   <body>
     <button class="ds-button" data-variant="primary">Save</button>
@@ -34,9 +57,20 @@ bun test            # token contract + WCAG contrast
 </html>
 ```
 
-Fonts are not bundled. Load Outfit, Bricolage Grotesque, and JetBrains Mono (for example with `@fontsource-variable/*`), or the stacks fall back to system fonts.
-
 A subtree can have its own appearance: add `class="ds-scope"` and set all three attributes on it.
+
+### Example
+
+`examples/settings/` is an account settings page that imports only through the package exports. It inlines the first-paint script with a small Vite plugin and builds its appearance controls from `CHROMES`, `PALETTES`, and `MODES`.
+
+```sh
+bun install                      # at the repo root; builds dist/
+cd examples/settings
+bun install
+bun run dev                      # or: bun run build && bun run preview
+```
+
+The example depends on `file:../../dist`, not the repo root. bun installs a `file:` folder by linking every file in it and installing its devDependencies, so the root would pull in Storybook and recurse into `examples/`. The build writes `dist/package.json` for this. Rebuilding updates the linked files in place; run `bun install` in the example again only if the build adds a new file.
 
 ## How it fits together
 
