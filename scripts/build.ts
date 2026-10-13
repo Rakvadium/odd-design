@@ -1,4 +1,4 @@
-import { cpSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { copyFileSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
 import { FIRST_PAINT_SCRIPT } from "../src/js/appearance.ts";
@@ -28,13 +28,13 @@ function bundleFonts(entry: string) {
   const copied = new Set<string>();
   const out = packages.map((pkg) => {
     const index = Bun.resolveSync(pkg, root);
-    const files = join(dirname(index), "files");
-    for (const file of readdirSync(files)) {
-      if (copied.has(file)) throw new Error(`Font file ${file} exists in more than one package`);
-      copied.add(file);
+    const text = readFileSync(index, "utf8");
+    for (const [, file] of text.matchAll(/url\(\.\/files\/([^)]+)\)/g)) {
+      if (copied.has(file!)) throw new Error(`Font file ${file} exists in more than one package`);
+      copied.add(file!);
+      copyFileSync(join(dirname(index), "files", file!), join(dist, "files", file!));
     }
-    cpSync(files, join(dist, "files"), { recursive: true });
-    return `/* ${pkg} */\n${readFileSync(index, "utf8").trim()}\n`;
+    return `/* ${pkg} */\n${text.trim()}\n`;
   });
   return out.join("\n");
 }

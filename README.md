@@ -42,7 +42,7 @@ import { applyAppearance, loadAppearance } from "odd-design/appearance";
 
 With Vite, set `build.cssTarget` to browsers that support `light-dark()` (Chrome 123, Firefox 120, Safari 17.5). The default target makes the minifier rewrite every palette color into `--lightningcss-light`/`--lightningcss-dark` variables.
 
-In plain HTML, copy `dist/` next to the page:
+In plain HTML, copy `dist/` next to the page as `odd-design/`:
 
 ```html
 <html lang="en" data-chrome="calm" data-palette="default" data-mode="system">
