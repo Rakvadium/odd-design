@@ -1,0 +1,40 @@
+# odd-design verification map
+
+This directory is the maintained source for verifying the user-facing behavior of odd-design. A user here is either someone browsing Storybook or a developer whose markup uses `.ds-*` classes under `data-chrome`, `data-palette`, and `data-mode`. Read this index before driving, then use the matching feature file as the recipe.
+
+## Baseline preconditions
+
+- `bun install` has run, and `bun test` passes (25 tests at the time of writing).
+- `S=.agents/skills/verify-odd-design/scripts/ctl.ts`, and every command runs from the repo root.
+- A run started by this verification: `bun $S up --run <id>` printed `READY`, and `bun $S doctor --run <id>` printed no `FAIL`.
+- Never drive a Storybook this run did not start. That includes the user's `bun run storybook` on port 6006.
+- No browser emulation is active. If a previous step used `emulate`, run `bun $S emulate` with no arguments to clear it.
+
+## Driving conventions
+
+- Every recipe starts with `goto <storyId> "<globals>"`. A `goto` re-renders the story and resets in-page state.
+- Globals are `chrome:<calm|glass|bubblegum|holoterminal>;palette:<default|aurora|sorbet>;mode:<system|light|dark>`. Leave out an axis to keep its default (`calm`, `default`, `system`).
+- Change state only through `click`, `press`, `type`, and `focus`. Use `eval` and `state` only for reading.
+- Select by ids, `commandfor`, `name`/`value`, `role`, `aria-*`, and `.ds-*` classes, or add `--text` with visible text. Do not use coordinates.
+- Commands in the recipes leave out `--run <id>` for brevity. Add it to every call, or export `VERIFY_RUN=<id>`.
+
+## Proof and skip reporting
+
+- Capture the user action and the resulting state: a before and after `screenshot`, plus a `state`, `eval`, or `aria` read that confirms what the pixels show.
+- Read each screenshot before citing it. Name the run ID, story ID, and globals with every artifact.
+- Evidence lives in `.verify/evidence/<run>/`. `transcript.log` records every step automatically.
+- Report a path you could not drive, such as the manager toolbar or the a11y addon panel, with the attempted command. Do not report it as verified through the iframe instead.
+- For token or palette changes, include `bun test` output alongside the visual proof.
+
+## Feature entry contract
+
+Each feature file starts with an H1 and one paragraph on the user-visible behavior, then exactly four H2s in this order: `Sub-features`, `How to get to it (user POV)`, `Driving it with ctl.ts` (starting with `Preconditions:`), and `Gotchas`. Keep implementation detail out of the map. Name only stories, handles, commands, and observable proof.
+
+## Features
+
+- [Appearance axes](./appearance-axes.md) covers the chrome, palette, and mode globals; `mode:system` following the OS; scoped appearance; the Matrix; and the OS-preference overrides.
+- [Sample app appearance dialog](./sample-app.md) covers the Showcase screen's no-JS dialog that re-themes its own scope live.
+- [Buttons](./buttons.md) covers variants, sizes, icon-only, busy and disabled states, Playground args, and keyboard focus.
+- [Forms](./forms.md) covers text fields with `:user-invalid`, the select, checkboxes and radios, switches, and the segmented control.
+- [Surfaces](./surfaces.md) covers cards with a whole-card link, badges, the modal dialog via invoker commands, and the exclusive disclosure.
+- [Contrast and foundations](./foundations.md) covers live WCAG ratios per palette, swatches, the type scale, and the `bun test` contract.
