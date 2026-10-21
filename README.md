@@ -18,7 +18,10 @@ Any chrome pairs with any palette. Chromes: `calm`, `glass`, `bubblegum`, `holot
 bun install
 bun run storybook   # http://localhost:6006
 bun test            # token contract, WCAG contrast, palette generator, color math
+bun run test:browsers   # Playwright: the axe sweep and behavior checks in Firefox and WebKit
 ```
+
+`test:browsers` needs Playwright's own browsers once: `bunx playwright install firefox webkit`. It builds a static Storybook, runs it in both engines, and writes an HTML report with screenshots to `.verify/playwright/report`.
 
 ## Use it
 
@@ -75,6 +78,7 @@ bun .agents/skills/verify-odd-design/scripts/ctl.ts axe --run a11y    # every st
 - The sweep fails on any violation. Results axe couldn't decide are printed as `REVIEW` with axe's reason.
 - `.storybook/a11y-rules.txt` records the 63 rules the tags resolve to on the pinned axe-core. The sweep fails if the rules that ran differ, so an axe upgrade that adds or drops rules shows up as a diff to review. Accept it with `--update-rules`.
 - axe can't measure contrast over gradients, so text on page backgrounds is proven by `bun test` instead.
+- `bun run test:browsers` runs the same sweep, with the same rules and the same record, in Firefox and WebKit. Chrome stays on the harness.
 
 ## Add a palette
 

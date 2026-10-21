@@ -11,5 +11,5 @@
     "skipLibCheck": true,
     "verbatimModuleSyntax": true
   },
-  "include": ["src", "stories", "tests", ".storybook"]
+  "include": ["src", "stories", "tests", ".storybook", "e2e", "playwright.config.ts"]
 }

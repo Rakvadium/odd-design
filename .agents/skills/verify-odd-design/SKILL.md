@@ -100,6 +100,20 @@ Proof standards:
 - Read every screenshot you cite. Name the run ID, story ID, and globals with each artifact.
 - There are no mocks and no backend. If something cannot be driven (for example, the a11y addon panel lives in the manager UI, not the iframe), say so rather than substituting a different path.
 
+## Firefox and WebKit
+
+The harness drives Chrome only. For the other engines, use the Playwright suite in `e2e/`:
+
+```sh
+bunx playwright install firefox webkit   # once
+bun run test:browsers                    # or: bunx playwright test e2e/behavior.spec.ts --project=firefox
+```
+
+- It builds a static Storybook to `.verify/playwright/storybook` and serves it on port 6107, so it never touches a harness run or the user's port 6006.
+- `e2e/axe.spec.ts` is the `ctl.ts axe` sweep with the same rule set and record. `e2e/behavior.spec.ts` checks overlays, keyboard behaviors, the slider, and preferences.
+- Each behavior test records whether the engine used the native feature or the fallback (`interestfor`, `closedby`, anchor positioning, slider fill) as an annotation, and attaches screenshots. Read them in `.verify/playwright/report`.
+- These are Playwright's patched builds, not Firefox or Safari as shipped. Playwright's WebKit on Windows draws variable fonts at their thinnest weight, though layout uses the requested one, so thin text in a WebKit screenshot is not a bug in the CSS. `emulateMedia({ forcedColors })` in WebKit matches the media query but doesn't swap in system colors. Real Safari needs a Mac (see `docs/follow-ups.md`).
+
 ## Cleanup
 
 ```sh
@@ -110,4 +124,5 @@ This kills only the Storybook and Chrome PIDs recorded at `up`, including their 
 
 ## Helpers
 
+- `e2e/story.ts` has `openStory` and `storyIds` for new Playwright specs.
 - `scripts/ctl.ts` runs with `bun .agents/skills/verify-odd-design/scripts/ctl.ts help`. Each command is described above. It has no npm dependencies and needs only Bun plus a local Chromium-family browser.
