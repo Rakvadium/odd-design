@@ -1,0 +1,93 @@
+/*
+ * Tabs. Markup and keyboard: src/js/tabs.ts (enhanceTabs). The tab list wears the segmented
+ * control's look, so a view switcher reads the same whether it's tabs or radios.
+ * aria-orientation="vertical" on the tablist puts the tabs in a column beside the panels.
+ */
+.ds-tabs {
+  display: grid;
+  gap: var(--space-4);
+}
+
+.ds-tabs:has(> [role="tablist"][aria-orientation="vertical"]) {
+  grid-template-columns: auto 1fr;
+  align-items: start;
+}
+
+.ds-tabs > [role="tablist"] {
+  display: inline-flex;
+  justify-self: start;
+  gap: 2px;
+  padding: 3px;
+  border: var(--border-width) solid var(--edge-surface);
+  border-radius: calc(var(--radius-control) + 3px);
+  background: var(--muted);
+}
+
+.ds-tabs > [role="tablist"][aria-orientation="vertical"] {
+  flex-direction: column;
+  align-items: stretch;
+}
+
+.ds-tabs [role="tab"] {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  min-block-size: var(--control-height-sm);
+  margin: 0;
+  padding-inline: var(--control-padding-inline);
+  border: 0;
+  border-radius: var(--radius-control);
+  background: none;
+  color: var(--muted-foreground);
+  font: inherit;
+  font-family: var(--font-label);
+  font-size: var(--text-sm);
+  font-weight: 600;
+  text-transform: var(--label-case);
+  letter-spacing: var(--label-tracking);
+  white-space: nowrap;
+  cursor: pointer;
+  transition-property: background-color, color, box-shadow;
+  transition-duration: var(--duration-fast);
+  transition-timing-function: var(--ease);
+}
+
+[aria-orientation="vertical"] > [role="tab"] {
+  justify-content: flex-start;
+}
+
+.ds-tabs [role="tab"] svg {
+  inline-size: 1rem;
+  block-size: 1rem;
+  flex-shrink: 0;
+}
+
+.ds-tabs [role="tab"]:hover {
+  color: var(--foreground);
+}
+
+.ds-tabs [role="tab"][aria-selected="true"] {
+  background: var(--surface);
+  color: var(--foreground);
+  box-shadow: var(--shadow-control);
+}
+
+.ds-tabs [role="tab"]:focus-visible {
+  outline-offset: 1px;
+}
+
+.ds-tabs [role="tab"]:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+.ds-tabs [role="tabpanel"]:focus-visible {
+  border-radius: var(--radius-surface);
+}
+
+@media (forced-colors: active) {
+  .ds-tabs [role="tab"][aria-selected="true"] {
+    outline: 2px solid Highlight;
+  }
+}

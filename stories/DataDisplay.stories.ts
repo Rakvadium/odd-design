@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/html-vite";
+import { enhanceSelectAll } from "../src/js/enhance.ts";
 
 const meta = { title: "Components/Data Display" } satisfies Meta;
 
@@ -17,16 +18,18 @@ export const Table: Story = {
     docs: {
       description: {
         story:
-          "A native table in a scroll wrapper that keyboard users can focus and scroll. Checking a row's checkbox tints the row. The sorted column carries `aria-sort`; the page does the sorting.",
+          "A native table in a scroll wrapper that keyboard users can focus and scroll. Checking a row's checkbox tints the row, and `enhanceSelectAll` makes the header checkbox select every row and show a mixed state. The sorted column carries `aria-sort`; the page does the sorting.",
       },
     },
   },
-  render: () => `<div class="ds-table-wrap" tabindex="0" role="region" aria-labelledby="decks-caption" style="max-inline-size: 48rem">
+  render: () => {
+    const root = document.createElement("div");
+    root.innerHTML = `<div class="ds-table-wrap" tabindex="0" role="region" aria-labelledby="decks-caption" style="max-inline-size: 48rem">
     <table class="ds-table">
       <caption id="decks-caption">Your decks, sorted by name</caption>
       <thead>
         <tr>
-          <th scope="col"><input type="checkbox" aria-label="Select all decks"></th>
+          <th scope="col"><input type="checkbox" data-select-all aria-label="Select all decks"></th>
           <th scope="col" aria-sort="ascending"><button class="ds-table-sort">Deck</button></th>
           <th scope="col"><button class="ds-table-sort">Format</button></th>
           <th scope="col" data-numeric><button class="ds-table-sort">Cards</button></th>
@@ -59,7 +62,10 @@ export const Table: Story = {
         </tr>
       </tfoot>
     </table>
-  </div>`,
+  </div>`;
+    requestAnimationFrame(() => enhanceSelectAll(root.querySelector("table")!));
+    return root;
+  },
 };
 
 /** A stand-in profile photo, so the story needs no network. */
@@ -73,7 +79,7 @@ export const Avatar: Story = {
     docs: {
       description: {
         story:
-          "An image avatar has `alt` text; an initials avatar is `role=\"img\"` with an `aria-label`. Next to a visible name, hide the avatar instead so the name isn't read twice. The shape follows the chrome's chip radius.",
+          "An image avatar has `alt` text; an initials avatar is `role=\"img\"` with an `aria-label`. With `data-initials`, `avatarFallback` swaps an image that fails to load (Jo Park's) for initials and keeps its name. Next to a visible name, hide the avatar instead so the name isn't read twice. The shape follows the chrome's chip radius.",
       },
     },
   },
@@ -83,6 +89,7 @@ export const Avatar: Story = {
       <span class="ds-avatar" role="img" aria-label="Ana Rojas">AR</span>
       <span class="ds-avatar" data-size="lg" role="img" aria-label="Ana Rojas">AR</span>
       <span class="ds-avatar" data-size="lg"><img src="${photo("#8a5cf6", "#f472b6")}" alt="Kai Nakamura"></span>
+      <span class="ds-avatar" data-size="lg" data-initials="JP" id="broken-avatar"><img src="/missing-avatar.png" alt="Jo Park"></span>
     </div>
     <div class="ds-avatar-group" role="group" aria-label="Collaborators">
       <span class="ds-avatar"><img src="${photo("#0ea5e9", "#22c55e")}" alt="Mira Okafor"></span>

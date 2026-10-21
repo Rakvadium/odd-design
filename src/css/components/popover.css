@@ -18,11 +18,14 @@
  *   <div class="ds-hover-card" id="preview-midnight" popover="hint">…</div>
  *   Treat it as a bonus: everything in it must also be reachable by following the link.
  *
+ * Menus (.ds-menu, see src/js/menu.ts) share the surface, motion, and anchoring below.
+ *
  * Positioning: the invoker is the implicit anchor. Popovers and hover cards open below the
  * invoker, aligned to its start edge; tooltips open above it. Each flips when it runs out of room.
  * Without anchor positioning they fall back to the browser's default: centered in the viewport.
  */
 .ds-popover,
+.ds-menu,
 .ds-hover-card {
   max-block-size: calc(100dvh - 2rem);
   overflow: auto;
@@ -54,6 +57,7 @@
 }
 
 .ds-popover,
+.ds-menu,
 .ds-hover-card,
 .ds-tooltip {
   opacity: 0;
@@ -64,13 +68,13 @@
   transition-behavior: allow-discrete;
 }
 
-:is(.ds-popover, .ds-hover-card, .ds-tooltip):popover-open {
+:is(.ds-popover, .ds-menu, .ds-hover-card, .ds-tooltip):popover-open {
   opacity: 1;
   scale: 1;
 }
 
 @starting-style {
-  :is(.ds-popover, .ds-hover-card, .ds-tooltip):popover-open {
+  :is(.ds-popover, .ds-menu, .ds-hover-card, .ds-tooltip):popover-open {
     opacity: 0;
     scale: 0.96;
   }
@@ -78,6 +82,7 @@
 
 @supports (position-area: block-end) {
   .ds-popover,
+  .ds-menu,
   .ds-hover-card,
   .ds-tooltip {
     inset: auto;
@@ -85,6 +90,7 @@
   }
 
   .ds-popover,
+  .ds-menu,
   .ds-hover-card {
     position-area: block-end span-inline-end;
     position-try-fallbacks: flip-block, flip-inline, flip-block flip-inline;

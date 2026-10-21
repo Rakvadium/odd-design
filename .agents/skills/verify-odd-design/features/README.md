@@ -40,4 +40,5 @@ Each feature file starts with an H1 and one paragraph on the user-visible behavi
 - [Feedback](./feedback.md) covers alerts per tone, progress and meter bars (including range colors and forced colors), and skeletons with reduced motion.
 - [Data display](./data-display.md) covers the table (row selection, sort indicators, focusable scroll wrapper), avatars and groups, and separators.
 - [Overlays](./overlays.md) covers the anchored popover and its flip, tooltips and hover cards via `interestfor`, sheets from each side, and the alert dialog.
+- [Interactive](./interactive.md) covers the menu keyboard and choosing, automatic and manual tabs, toasts (including over a modal dialog), table select-all, and the avatar image fallback.
 - [Contrast and foundations](./foundations.md) covers live WCAG ratios per palette (including soft tints), swatches, the type scale, headings, and the `bun test` contract.

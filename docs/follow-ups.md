@@ -10,15 +10,16 @@ Open items from the component build-out (porting uvs-decks-gg's coverage to nati
 - **Sheets under RTL and touch.** `data-side="start|end"` under `dir="rtl"` and `interestfor` on touch (long-press) are unverified. (step 2)
 - **Unobserved paths.** These are written but not proven: the slider without scroll-driven animations (fill should stay empty), the slider fill under `:dir(rtl)`, Enter submitting the `ds-search` form (the story prevents submit), and the restyled search clear button (it only shows while hovered or focused with a value). (step 1)
 
-## Behavior that needs JS (step 3)
+## Behaviors (src/js)
 
-- **Tooltip and hover card fallback.** `interestfor` ships in Chromium only, so tooltips and hover cards never show in Firefox or Safari. Names still hold where `aria-labelledby` is used. A small module should open the hint popover on hover or focus and close it on leave, blur, or Escape, and step aside where `interestForElement` exists. (step 2)
-- **`closedby="any"` fallback.** Safari lacks `closedby`, so a backdrop click doesn't close `ds-dialog` or `ds-sheet` there. Escape still works. Add a backdrop-click handler that steps aside where `closedBy` exists. (step 2)
-- **Avatar image fallback.** When an image fails to load, show initials instead, like the Radix avatar in uvs-decks-gg. CSS can't detect a failed load. (step 1)
-- **Table select-all.** The header checkbox in the Table story does nothing, and it has no indeterminate state. Sorting is the page's job and is documented; select-all isn't. (step 1)
+- **The interestfor and closedby fallbacks are written but have never run.** `interestForFallback` and `closedByFallback` in `src/js/fallbacks.ts` only act where the browser lacks the feature. Chrome has both, and their Blink flags were removed after shipping, so the harness can't turn them off, and no Firefox is installed here. Prove them in Firefox (no `interestfor`) and Safari (no `interestfor` or `closedby`). Check the hint popover's positioning there too, since it relies on `showPopover({ source })`. (step 3)
+- **Toast announcements are inferred, not heard.** The region is a polite live region present before each toast, and it is in the accessibility tree over modals. No screen reader has confirmed the announcement, including the first toast after the region moves into a dialog, which is inserted after a 150 ms delay. (step 3)
+- **Toasts already showing when a modal opens go inert.** The region moves into a dialog only when the next toast is shown. Moving it as soon as a dialog opens would need a hook on `showModal()`. (step 3)
+- **No submenus.** `enhanceMenu` handles one level. uvs-decks-gg's dropdown menu supports nested submenus. (step 3)
 
 ## Design debt
 
+- **`focusgroup` seam.** All arrow-key movement goes through `src/js/roving.ts`. When `focusgroup` is in more than Chromium and its role and tab-order bugs are fixed, hand the work to the browser there. (step 3)
 - **`color-mix(in oklch)` can walk the hue wheel.** The tints and the alert icon moved to `oklab` for this reason. `ds-button` hover still mixes `--_bg` and `--_fg` in oklch. Audit every remaining oklch mix of two different hues. (step 1)
 - **Bar fills are not contrast-tested against their rail.** For example, the light-mode warning fill on `--track` is low contrast. The rule is "always show the value as text," and nothing enforces it. (step 1)
 - **Slider hover ring is clipped at the far ends.** This is a side effect of `overflow: hidden`, which the fill technique needs. It's cosmetic. (step 1)

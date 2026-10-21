@@ -31,6 +31,9 @@
 @import "./components/dialog.css" layer(components);
 @import "./components/sheet.css" layer(components);
 @import "./components/popover.css" layer(components);
+@import "./components/menu.css" layer(components);
+@import "./components/tabs.css" layer(components);
+@import "./components/toast.css" layer(components);
 @import "./components/disclosure.css" layer(components);
 @import "./components/alert.css" layer(components);
 @import "./components/meter.css" layer(components);

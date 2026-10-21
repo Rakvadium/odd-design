@@ -40,5 +40,5 @@ Preconditions:
 - The `#email` field is invalid on load because it hardcodes `aria-invalid="true"`, not because of `:user-invalid`. Do not confuse the two sub-features.
 - Clicking the `<label>` is the user path for the choice controls. The bare `<input>` may sit visually under custom styling.
 - `--_progress` comes from a scroll-driven animation. If it stays at `0` for every slider, the browser lacks `timeline-scope` support (the fill is then plain by design). Report the version from `doctor`.
-- `ctl.ts press` has no `Home`/`End`/`PageUp` keys. Use arrow keys for slider proofs.
+- `ctl.ts press` has no `PageUp`/`PageDown` keys. Use arrow keys, `Home`, and `End` for slider proofs.
 - `appearance: base-select` support depends on the Chrome version. Report the browser version from `doctor` with any select proof.

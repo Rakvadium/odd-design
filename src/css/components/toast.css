@@ -1,0 +1,92 @@
+/*
+ * Toasts, built and placed by createToaster() in src/js/toast.ts. The region is a manual popover in
+ * the bottom inline-end corner. It lets clicks through between toasts and stacks the newest last.
+ * Tone shows as a dot beside the title; the text is always --overlay-foreground.
+ */
+.ds-toaster {
+  inset: auto;
+  inset-block-end: var(--space-4);
+  inset-inline-end: var(--space-4);
+  inline-size: min(22rem, 100vw - 2rem);
+  margin: 0;
+  padding: 0;
+  overflow: visible;
+  border: 0;
+  background: none;
+  pointer-events: none;
+}
+
+.ds-toaster > ol {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.ds-toast {
+  --_tone: var(--muted-foreground);
+
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  align-items: start;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-3) var(--space-3) var(--space-4);
+  border: var(--border-width) solid var(--edge-surface);
+  border-radius: var(--radius-surface);
+  background: var(--overlay-fill);
+  color: var(--overlay-foreground);
+  box-shadow: var(--shadow-overlay);
+  backdrop-filter: var(--fx-backdrop);
+  font-size: var(--text-sm);
+  pointer-events: auto;
+
+  transition-property: opacity, translate;
+  transition-duration: var(--duration-base);
+  transition-timing-function: var(--ease);
+}
+
+@starting-style {
+  .ds-toast {
+    opacity: 0;
+    translate: 0 0.75rem;
+  }
+}
+
+.ds-toast[data-state="closing"] {
+  opacity: 0;
+  translate: 1rem 0;
+}
+
+.ds-toast[data-tone="info"] { --_tone: var(--info); }
+.ds-toast[data-tone="success"] { --_tone: var(--success); }
+.ds-toast[data-tone="warning"] { --_tone: var(--warning); }
+.ds-toast[data-tone="danger"] { --_tone: var(--danger); }
+
+.ds-toast-body {
+  display: grid;
+  gap: var(--space-1);
+  align-self: center;
+  min-inline-size: 0;
+}
+
+.ds-toast-title {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-weight: 600;
+}
+
+.ds-toast-title::before {
+  content: "";
+  flex-shrink: 0;
+  inline-size: 0.5rem;
+  block-size: 0.5rem;
+  border-radius: 50%;
+  background: var(--_tone);
+}
+
+.ds-toast-description {
+  color: var(--muted-foreground);
+}

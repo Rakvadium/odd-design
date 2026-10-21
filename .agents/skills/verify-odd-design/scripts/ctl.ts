@@ -192,6 +192,18 @@ const KEYS: Record<string, { key: string; code: string; keyCode: number; text?: 
   ArrowUp: { key: "ArrowUp", code: "ArrowUp", keyCode: 38 },
   ArrowRight: { key: "ArrowRight", code: "ArrowRight", keyCode: 39 },
   ArrowDown: { key: "ArrowDown", code: "ArrowDown", keyCode: 40 },
+  Home: { key: "Home", code: "Home", keyCode: 36 },
+  End: { key: "End", code: "End", keyCode: 35 },
+};
+
+/** A single letter or digit presses that key, so typeahead sees a real keydown (type does not). */
+const keyFor = (name: string) => {
+  if (KEYS[name]) return KEYS[name];
+  if (/^[a-z0-9]$/i.test(name)) {
+    const upper = name.toUpperCase();
+    return { key: name, code: /\d/.test(name) ? `Digit${name}` : `Key${upper}`, keyCode: upper.charCodeAt(0), text: name };
+  }
+  return undefined;
 };
 
 async function axTree(page: Page) {
@@ -234,7 +246,7 @@ const commands: Record<string, (args: string[]) => Promise<void>> = {
   hover <css> [--text T]               real mouse move onto the first match (leaves the pointer there)
   focus <css> [--text T]               focus the first match
   wait <ms>                            pause, for delays like interestfor's show delay (max 5000)
-  press <Key>                          real key press: ${Object.keys(KEYS).join(", ")}
+  press <Key>                          real key press: ${Object.keys(KEYS).join(", ")}, or one letter/digit
   type <text>                          insert text at the focused element
   emulate <feature=value>...           media features, e.g. prefers-color-scheme=dark prefers-reduced-motion=reduce
   screenshot <file.png> [--full]       save to .verify/evidence/<run>/ (or an absolute path)
@@ -419,7 +431,7 @@ const commands: Record<string, (args: string[]) => Promise<void>> = {
   },
 
   async press([name]) {
-    const k = KEYS[name ?? ""] ?? fail(`unknown key ${name}; known: ${Object.keys(KEYS).join(", ")}`);
+    const k = keyFor(name ?? "") ?? fail(`unknown key ${name}; known: ${Object.keys(KEYS).join(", ")}, or one letter/digit`);
     const page = await Page.connect(readState());
     const base = { key: k.key, code: k.code, windowsVirtualKeyCode: k.keyCode, nativeVirtualKeyCode: k.keyCode };
     await page.send("Input.dispatchKeyEvent", { type: k.text ? "keyDown" : "rawKeyDown", ...base, text: k.text });

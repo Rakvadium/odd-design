@@ -4,6 +4,12 @@ import "@fontsource-variable/jetbrains-mono";
 import "@fontsource-variable/bricolage-grotesque";
 import "../src/css/index.css";
 import { applyAppearance, CHROMES, MODES, PALETTES, type Appearance } from "../src/js/appearance.ts";
+import { avatarFallback, closedByFallback, interestForFallback } from "../src/js/enhance.ts";
+
+// Page-wide fallbacks, installed once as an app would. Each is a no-op where the browser has the feature.
+interestForFallback();
+closedByFallback();
+avatarFallback();
 
 const toolbar = (title: string, icon: string, items: readonly string[]) => ({
   description: title,

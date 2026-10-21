@@ -22,7 +22,7 @@ Preconditions:
 - The baseline from the README.
 
 - **Contract tests.** Run `bun test 2>&1 | tee .verify/evidence/<run>/bun-test.txt`. The exit code is `0`, and the summary reads `N pass` and `0 fail`.
-- **Live contrast per palette.** For each palette `p` in `default aurora sorbet`, run `bun $S goto foundations--contrast "palette:p"` and then `bun $S eval '[...document.querySelectorAll(".pair-result")].map(r => r.textContent.trim())'`. All 56 entries (28 pairs, 22 palette pairs plus 6 tint pairs, × light and dark) start with `Pass`, and none start with `Fail` or are empty. Capture `foundations/contrast-p.png --full`.
+- **Live contrast per palette.** For each palette `p` in `default aurora sorbet`, run `bun $S goto foundations--contrast "palette:p"` and then `bun $S eval '[...document.querySelectorAll(".pair-result")].map(r => r.textContent.trim())'`. All 60 entries (30 pairs, 24 palette pairs plus 6 tint pairs, × light and dark) start with `Pass`, and none start with `Fail` or are empty. Capture `foundations/contrast-p.png --full`.
 - **Swatches.** Run `bun $S goto foundations--palette "palette:aurora;mode:dark"` and capture `foundations/palette-aurora-dark.png`. Ten swatches are visible, each showing `Aa` and its `--token` name.
 - **Type per chrome.** Run `bun $S goto foundations--type "chrome:holoterminal"` and `bun $S eval 'getComputedStyle(document.querySelector("h1")).fontFamily'`, then repeat with `chrome:bubblegum`. The font families differ, and the screenshot shows holoterminal's uppercase headings.
 

@@ -97,3 +97,24 @@ A subtree can have its own appearance: add `class="ds-scope"` and set all three 
 | `ds-hover-card` | `<div popover="hint">` | A preview via `interestfor`. Its content must also be reachable through the link. |
 | `ds-sheet` | `<dialog>` | Opens with `command="show-modal"`; `data-side="start|end|top|bottom"`. |
 | alert dialog | `<dialog class="ds-dialog" role="alertdialog">` | Leave out `closedby="any"` so only Escape or a button closes it. |
+| `ds-menu`, `ds-menu-item` | `<div popover role="menu">` | Needs `enhanceMenu`. `menuitemcheckbox`/`menuitemradio` with `aria-checked`; `data-tone="danger"`. |
+| `ds-tabs` | `role="tablist"`, `tab`, `tabpanel` | Needs `enhanceTabs`. `data-activation="manual"`, `aria-orientation="vertical"`. |
+| `ds-toaster`, `ds-toast` | built by `createToaster()` | A polite live region in the corner; it moves into an open modal dialog so toasts stay live. |
+
+## Behaviors
+
+Menus, tabs, and toasts have no HTML element yet, so `design-system/enhance` (`src/js/enhance.ts`) adds them on top of native markup. Each function takes an element and returns a cleanup function. No dependencies, no framework.
+
+```js
+import { enhance, createToaster } from "design-system/enhance";
+
+enhance();                   // menus, tab sets, select-all tables, and the fallbacks below, under document
+const toaster = createToaster();
+toaster.show({ title: "Deck saved", tone: "success" });
+```
+
+- `enhanceMenu(menu)`, `enhanceTabs(root)`, `enhanceSelectAll(table)`: one widget each. Call them for elements added after `enhance()`.
+- `createToaster({ label, max, parent })`: `show({ title, description, tone, duration, action })` returns `{ dismiss }`.
+- `avatarFallback()`: an `.ds-avatar[data-initials]` whose image fails to load shows its initials.
+- `interestForFallback()` and `closedByFallback()`: tooltips and hover cards, and `closedby="any"`, in browsers without them. They do nothing where the browser has the feature.
+- `roving(container, options)`: the shared arrow-key, Home/End, and typeahead helper the widgets use.

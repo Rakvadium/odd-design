@@ -6,7 +6,8 @@
   "description": "Framework-free, accessible design system. Chrome sets the feel, palette sets the color.",
   "exports": {
     ".": "./src/css/index.css",
-    "./appearance": "./src/js/appearance.ts"
+    "./appearance": "./src/js/appearance.ts",
+    "./enhance": "./src/js/enhance.ts"
   },
   "scripts": {
     "storybook": "storybook dev -p 6006 --no-open",

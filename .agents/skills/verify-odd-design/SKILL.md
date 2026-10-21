@@ -55,6 +55,7 @@ Stories render in isolation at `iframe.html?id=<storyId>`, which skips the manag
 | Feedback | `components-feedback--alert`, `--progress`, `--skeleton` |
 | Data Display | `components-data-display--table`, `--avatar`, `--separator` |
 | Overlays | `components-overlays--popover`, `--tooltip`, `--hover-card`, `--sheet`, `--alert-dialog` |
+| Interactive | `components-interactive--menu`, `--tabs`, `--toast` |
 | Docs | `introduction--docs` (MDX; `goto` targets stories, so open docs via the manager URL if needed) |
 
 The current list is always at `curl -s http://127.0.0.1:<port>/index.json`.
@@ -67,7 +68,7 @@ bun $S click 'button[commandfor="appearance"]'            # real mouse events at
 bun $S click '.ds-button' --text 'Done'                    # filter by visible text
 bun $S hover 'button[interestfor="tip-copy"]' ; bun $S wait 1200   # pointer stays put; wait covers interest delays
 bun $S focus '#name' ; bun $S type 'x' ; bun $S press Backspace ; bun $S press Tab
-bun $S press Escape                          # also Enter Space Tab Backspace Arrow{Left,Right,Up,Down}
+bun $S press Escape                          # also Enter Space Tab Backspace Home End Arrow{Left,Right,Up,Down}, or one letter
 bun $S emulate prefers-color-scheme=dark prefers-reduced-motion=reduce prefers-contrast=more forced-colors=active
 bun $S emulate                               # no args clears; each call replaces the previous set; persists until cleared or down
 bun $S eval 'getComputedStyle(document.querySelector(".ds-button")).borderRadius'   # read-only assertions
