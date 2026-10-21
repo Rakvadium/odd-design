@@ -17,6 +17,15 @@ Open items from the component build-out (porting uvs-decks-gg's coverage to nati
 - **Toasts already showing when a modal opens go inert.** The region moves into a dialog only when the next toast is shown. Moving it as soon as a dialog opens would need a hook on `showModal()`. (step 3)
 - **No submenus.** `enhanceMenu` handles one level. uvs-decks-gg's dropdown menu supports nested submenus. (step 3)
 
+## Palettes and chromes (step 4)
+
+- **Review the ported palettes' repairs.** Contrast repair changed some looks from uvs-decks-gg. calm-storm's light primary went from L 0.746 to 0.536, and white text on danger in dark mode became dark text in all five (uvs-decks-gg kept `#fff` as an owner exception). The port script printed every change; the before values are in uvs-decks-gg's `src/styles/themes/`. (step 4)
+- **Bright brand colors lose their brightness in light mode.** `--primary` is both a fill and link text, so a pale yellow must darken to olive everywhere to pass as text. Splitting off a text-only role (say `--primary-text`) would let buttons keep the exact brand color. That's a contract change, so it needs a decision. (step 4)
+- **Custom palettes aren't persisted.** `loadAppearance` only accepts the shipped palette ids, and `FIRST_PAINT_SCRIPT` can't rebuild a generated palette. An app has to store the seeds and call `applyPalette` before first paint itself. (step 4)
+- **No per-chrome custom palettes.** uvs-decks-gg lets a custom seed pair differ per chrome. Here one custom palette serves every chrome. (step 4)
+- **Expressive's uppercase and tracking wrap tight rows.** In the sample app, a card header ("Rotating soon" plus "55 cards") wraps to two lines. Holoterminal does the same. It's a layout pressure to design for, not a component bug. (step 4)
+- **Darkmatter is close to calm.** It differs in radii, flatter shadows, and a flat page background. Check it still earns its place as a separate chrome. (step 4)
+
 ## Design debt
 
 - **`focusgroup` seam.** All arrow-key movement goes through `src/js/roving.ts`. When `focusgroup` is in more than Chromium and its role and tab-order bugs are fixed, hand the work to the browser there. (step 3)

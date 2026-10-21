@@ -63,9 +63,10 @@
   }
 }
 
-/* Segmented control: a radio group dressed as one control. */
+/* Segmented control: a radio group dressed as one control. It wraps when the options outgrow the row. */
 .ds-segmented {
   display: inline-flex;
+  flex-wrap: wrap;
   gap: 2px;
   margin: 0;
   padding: 3px;
@@ -96,6 +97,7 @@
   font-weight: 600;
   text-transform: var(--label-case);
   letter-spacing: var(--label-tracking);
+  white-space: nowrap;
   cursor: pointer;
   transition-property: background-color, color, box-shadow;
   transition-duration: var(--duration-fast);

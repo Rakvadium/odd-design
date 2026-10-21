@@ -48,7 +48,7 @@ Stories render in isolation at `iframe.html?id=<storyId>`, which skips the manag
 | Area | IDs |
 | --- | --- |
 | Showcase | `showcase--sample-app`, `showcase--matrix` |
-| Foundations | `foundations--contrast`, `foundations--palette`, `foundations--type`, `foundations--headings` |
+| Foundations | `foundations--contrast`, `foundations--palette`, `foundations--type`, `foundations--headings`, `foundations-custom-palette--generator` (args `primary`, `secondary`) |
 | Button | `components-button--playground` (args), `--variants`, `--sizes`, `--states` |
 | Forms | `components-forms--text-fields`, `--select`, `--choices`, `--switch`, `--segmented`, `--slider`, `--search` |
 | Surfaces | `components-surfaces--card`, `--badge`, `--dialog`, `--disclosure` |
@@ -76,7 +76,7 @@ bun $S eval 'getComputedStyle(document.querySelector(".ds-button")).borderRadius
 
 Rules for driving:
 
-- Valid globals are `chrome` ∈ `calm glass bubblegum holoterminal`, `palette` ∈ `default aurora sorbet`, and `mode` ∈ `system light dark`. The toolbar defaults are `calm`, `default`, and `system`.
+- Valid globals are `chrome` ∈ `calm glass bubblegum holoterminal expressive darkmatter`, `palette` ∈ `default aurora sorbet calm-storm cyberpunk cotton-candy caffeine singularity`, and `mode` ∈ `system light dark`. The toolbar defaults are `calm`, `default`, and `system`.
 - Prefer stable handles: ids and `commandfor`/`command` attributes in the stories, `input[name=…][value=…]`, `[role=switch]`, `aria-*`, and `.ds-*` classes. Do not use coordinates or nth-child.
 - Change state with `click`, `press`, and `type`, which send real input events. Use `eval` only to read state, never to set it. Setting `.value`, calling `.showModal()`, or toggling attributes bypasses exactly what you are trying to prove: `:user-invalid`, invoker commands, `closedby`, and the native radio behavior.
 - `mode:system` follows the browser's `prefers-color-scheme`, so pair it with `emulate`. `emulate` lasts until it is cleared or the run goes `down`.

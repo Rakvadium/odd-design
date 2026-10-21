@@ -1,11 +1,24 @@
 import { describe, expect, test } from "bun:test";
 import { parse, wcagContrast } from "culori";
-import { CHROMES, CHROME_TOKENS, CONTRAST_PAIRS, PALETTES, PALETTE_TOKENS, TINT_PAIRS } from "../src/js/contract.ts";
+import { CHROMES, CHROME_TOKENS, CONTRAST_PAIRS, PALETTES, PALETTE_TOKENS, STATUS_DEFAULTS, TINT_PERCENT, TINT_PAIRS, TINT_SOURCE, TINTS } from "../src/js/contract.ts";
 import { block, read, resolve } from "./css.ts";
 
 const foundations = read("foundations.css");
 const statusDefaults = block(foundations, ":where(:root, [data-palette])");
 const derived = block(foundations, ":where(:root, [data-palette], [data-chrome], [data-mode])");
+
+test("foundations status colors match STATUS_DEFAULTS", () => {
+  const css = Object.fromEntries([...statusDefaults]);
+  const expected = Object.fromEntries(Object.entries(STATUS_DEFAULTS).map(([t, [l, d]]) => [t, `light-dark(${l}, ${d})`]));
+  expect(css).toEqual(expected);
+});
+
+// The palette generator computes tints from TINT_SOURCE and TINT_PERCENT, so the CSS must agree.
+test("foundations tints match TINT_SOURCE and TINT_PERCENT", () => {
+  for (const tint of TINTS) {
+    expect(derived.get(`tint-${tint}`)).toBe(`color-mix(in oklab, var(--${TINT_SOURCE[tint]}) ${TINT_PERCENT}%, var(--background))`);
+  }
+});
 
 describe.each(PALETTES)("palette %s", (palette) => {
   const own = block(read(`palettes/${palette}.css`), `[data-palette="${palette}"]`);

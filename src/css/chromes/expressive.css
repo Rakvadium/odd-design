@@ -1,0 +1,53 @@
+/* Expressive: strong glow depth, kinetic motion, display headings. Ported from uvs-decks-gg "expressive". */
+[data-chrome="expressive"] {
+  --font-body: "Outfit Variable", ui-sans-serif, system-ui, sans-serif;
+  --font-heading: var(--font-body);
+  --font-label: var(--font-body);
+  --heading-weight: 750;
+  --heading-case: uppercase;
+  --heading-tracking: 0.05em;
+  --label-case: uppercase;
+  --label-tracking: 0.08em;
+
+  --radius-control: 0.625rem;
+  --radius-surface: 0.875rem;
+  --radius-overlay: 1rem;
+  --radius-chip: var(--radius-pill);
+  --border-width: 1px;
+  --edge-surface: color-mix(in oklch, var(--primary) 22%, var(--border));
+  --edge-control: var(--control-border);
+  --edge-control-filled: transparent;
+  --surface-alpha: 100%;
+
+  --density: 1;
+
+  /* Every elevation glows in the palette's primary, so depth tracks whichever palette is active. */
+  --shadow-control: 0 0 2px color-mix(in oklch, var(--primary) 55%, transparent),
+    0 0 8px color-mix(in oklch, var(--primary) 30%, transparent);
+  --shadow-control-hover: 0 0 4px var(--primary), 0 0 14px color-mix(in oklch, var(--primary) 60%, transparent),
+    0 0 20px color-mix(in oklch, var(--primary) 25%, transparent);
+  --shadow-control-active: var(--shadow-control);
+  --shadow-surface: 0 0 20px -5px color-mix(in oklch, var(--primary) 18%, transparent),
+    0 2px 6px light-dark(oklch(0 0 0 / 0.06), oklch(0 0 0 / 0.3));
+  --shadow-surface-hover: 0 0 30px -5px color-mix(in oklch, var(--primary) 35%, transparent),
+    0 0 0 1px color-mix(in oklch, var(--primary) 30%, transparent);
+  --shadow-overlay: 0 0 2px color-mix(in oklch, var(--primary) 30%, transparent),
+    0 0 8px color-mix(in oklch, var(--primary) 45%, transparent),
+    0 22px 48px -8px color-mix(in oklch, var(--primary) 24%, light-dark(oklch(0 0 0 / 0.12), oklch(0 0 0 / 0.5)));
+  --press-transform: scale(0.97);
+
+  --focus-color: var(--primary);
+  --focus-width: 2px;
+  --focus-offset: 2px;
+  --focus-glow: 0 0 12px color-mix(in oklch, var(--primary) 45%, transparent);
+
+  --ease: cubic-bezier(0.22, 1.25, 0.36, 1);
+
+  --fx-glow: 0 0 20px color-mix(in oklch, var(--primary) 55%, transparent);
+  --fx-scanlines: 0;
+  --fx-backdrop: none;
+  --page-background:
+    radial-gradient(56rem 32rem at 0% 0%, color-mix(in oklch, var(--primary) 12%, transparent), transparent 70%),
+    radial-gradient(48rem 30rem at 100% 0%, color-mix(in oklch, var(--secondary) 10%, transparent), transparent 70%),
+    linear-gradient(180deg, var(--background), color-mix(in oklch, var(--muted) 20%, var(--background)));
+}

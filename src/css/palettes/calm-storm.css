@@ -1,0 +1,22 @@
+/* Calm Storm: ported from uvs-decks-gg "calm-storm", with contrast repaired to the contract. */
+[data-palette="calm-storm"] {
+  --background: light-dark(oklch(0.985 0 0), oklch(0.141 0.005 285.82));
+  --foreground: light-dark(oklch(0.141 0.005 285.82), oklch(0.977 0.013 236.62));
+  --surface: light-dark(oklch(0.9716 0.0066 286.28), oklch(0.1964 0.0419 217.43));
+  --surface-foreground: light-dark(oklch(0.293 0.066 243.16), oklch(0.9491 0 0));
+  --overlay: light-dark(oklch(0.985 0 0), oklch(0.141 0.005 285.82));
+  --overlay-foreground: light-dark(oklch(0.293 0.066 243.16), oklch(0.951 0.026 236.82));
+  --muted: light-dark(oklch(0.901 0.058 230.9), oklch(0.293 0.066 243.16));
+  --muted-foreground: light-dark(oklch(0.391 0.09 240.88), oklch(0.977 0.013 236.62));
+  --border: light-dark(oklch(0.705 0.015 286.07), oklch(0.37 0.013 285.81));
+  --control-border: light-dark(oklch(0.645 0.015 286.07), oklch(0.505 0.013 285.81));
+  --ring: light-dark(oklch(0.638 0.1102 230.32), oklch(0.828 0.111 230.32));
+  --primary: light-dark(oklch(0.536 0.1103 232.66), oklch(0.685 0.169 237.32));
+  --primary-foreground: light-dark(oklch(0.985 0.012 232.66), oklch(0.17 0.03 237.32));
+  --secondary: light-dark(oklch(0.293 0.066 243.16), oklch(0.901 0.058 230.9));
+  --secondary-foreground: light-dark(oklch(0.951 0.026 236.82), oklch(0.293 0.066 243.16));
+  --accent: light-dark(oklch(0.545 0.1122 232.66), oklch(0.72 0.155 237.32));
+  --accent-foreground: light-dark(oklch(0.985 0.01 236.62), oklch(0.141 0.005 285.82));
+  --danger: light-dark(oklch(0.572 0.2322 25.33), oklch(0.637 0.237 25.33));
+  --danger-foreground: light-dark(oklch(1 0 0), oklch(0.17 0.03 25.33));
+}

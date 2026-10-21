@@ -4,7 +4,7 @@ This directory is the maintained source for verifying the user-facing behavior o
 
 ## Baseline preconditions
 
-- `bun install` has run, and `bun test` passes (31 tests at the time of writing).
+- `bun install` has run, and `bun test` passes (78 tests at the time of writing).
 - `S=.agents/skills/verify-odd-design/scripts/ctl.ts`, and every command runs from the repo root.
 - A run started by this verification: `bun $S up --run <id>` printed `READY`, and `bun $S doctor --run <id>` printed no `FAIL`.
 - Never drive a Storybook this run did not start. That includes the user's `bun run storybook` on port 6006.
@@ -13,7 +13,7 @@ This directory is the maintained source for verifying the user-facing behavior o
 ## Driving conventions
 
 - Every recipe starts with `goto <storyId> "<globals>"`. A `goto` re-renders the story and resets in-page state.
-- Globals are `chrome:<calm|glass|bubblegum|holoterminal>;palette:<default|aurora|sorbet>;mode:<system|light|dark>`. Leave out an axis to keep its default (`calm`, `default`, `system`).
+- Globals are `chrome:<calm|glass|bubblegum|holoterminal|expressive|darkmatter>;palette:<default|aurora|sorbet|calm-storm|cyberpunk|cotton-candy|caffeine|singularity>;mode:<system|light|dark>`. Leave out an axis to keep its default (`calm`, `default`, `system`).
 - Change state only through `click`, `hover`, `press`, `type`, and `focus`. Use `wait <ms>` for browser delays such as `interestfor`. Use `eval` and `state` only for reading.
 - Select by ids, `commandfor`, `name`/`value`, `role`, `aria-*`, and `.ds-*` classes, or add `--text` with visible text. Do not use coordinates.
 - Commands in the recipes leave out `--run <id>` for brevity. Add it to every call, or export `VERIFY_RUN=<id>`.
@@ -41,4 +41,4 @@ Each feature file starts with an H1 and one paragraph on the user-visible behavi
 - [Data display](./data-display.md) covers the table (row selection, sort indicators, focusable scroll wrapper), avatars and groups, and separators.
 - [Overlays](./overlays.md) covers the anchored popover and its flip, tooltips and hover cards via `interestfor`, sheets from each side, and the alert dialog.
 - [Interactive](./interactive.md) covers the menu keyboard and choosing, automatic and manual tabs, toasts (including over a modal dialog), table select-all, and the avatar image fallback.
-- [Contrast and foundations](./foundations.md) covers live WCAG ratios per palette (including soft tints), swatches, the type scale, headings, and the `bun test` contract.
+- [Contrast and foundations](./foundations.md) covers live WCAG ratios per palette (including soft tints), swatches, the type scale, headings, the custom palette generator, and the `bun test` contract.

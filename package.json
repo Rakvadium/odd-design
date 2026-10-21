@@ -7,7 +7,8 @@
   "exports": {
     ".": "./src/css/index.css",
     "./appearance": "./src/js/appearance.ts",
-    "./enhance": "./src/js/enhance.ts"
+    "./enhance": "./src/js/enhance.ts",
+    "./palette": "./src/js/palette.ts"
   },
   "scripts": {
     "storybook": "storybook dev -p 6006 --no-open",

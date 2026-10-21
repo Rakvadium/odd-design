@@ -1,0 +1,49 @@
+/* Darkmatter: flat and quiet, with generous radii and barely-there shadows. Ported from uvs-decks-gg "darkmatter". */
+[data-chrome="darkmatter"] {
+  --font-body: "Outfit Variable", ui-sans-serif, system-ui, sans-serif;
+  --font-heading: var(--font-body);
+  --font-label: var(--font-body);
+  --heading-weight: 600;
+  --heading-case: none;
+  --heading-tracking: -0.01em;
+  --label-case: none;
+  --label-tracking: 0.01em;
+
+  --radius-control: 0.75rem;
+  --radius-surface: 1rem;
+  --radius-overlay: 1.25rem;
+  --radius-chip: var(--radius-pill);
+  --border-width: 1px;
+  --edge-surface: var(--border);
+  --edge-control: var(--control-border);
+  --edge-control-filled: transparent;
+  --surface-alpha: 100%;
+
+  --density: 1;
+
+  /* Borders carry the structure; shadows only hint at height. */
+  --shadow-control: 0 1px 4px light-dark(oklch(0 0 0 / 0.03), oklch(0 0 0 / 0.2));
+  --shadow-control-hover: 0 1px 4px light-dark(oklch(0 0 0 / 0.05), oklch(0 0 0 / 0.25)),
+    0 2px 4px -1px light-dark(oklch(0 0 0 / 0.05), oklch(0 0 0 / 0.25));
+  --shadow-control-active: var(--shadow-control);
+  --shadow-surface: 0 1px 4px light-dark(oklch(0 0 0 / 0.05), oklch(0 0 0 / 0.25)),
+    0 1px 2px -1px light-dark(oklch(0 0 0 / 0.05), oklch(0 0 0 / 0.25));
+  --shadow-surface-hover: 0 1px 4px light-dark(oklch(0 0 0 / 0.05), oklch(0 0 0 / 0.25)),
+    0 4px 6px -1px light-dark(oklch(0 0 0 / 0.06), oklch(0 0 0 / 0.3));
+  --shadow-overlay: 0 1px 4px light-dark(oklch(0 0 0 / 0.05), oklch(0 0 0 / 0.3)),
+    0 8px 10px -1px light-dark(oklch(0 0 0 / 0.08), oklch(0 0 0 / 0.4)),
+    0 1px 4px light-dark(oklch(0 0 0 / 0.13), oklch(0 0 0 / 0.5));
+  --press-transform: scale(0.99);
+
+  --focus-color: var(--ring);
+  --focus-width: 2px;
+  --focus-offset: 2px;
+  --focus-glow: 0 0 0 0 transparent;
+
+  --ease: cubic-bezier(0.4, 0, 0.2, 1);
+
+  --fx-glow: none;
+  --fx-scanlines: 0;
+  --fx-backdrop: none;
+  --page-background: var(--background);
+}

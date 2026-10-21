@@ -14,10 +14,17 @@
 @import "./palettes/default.css" layer(palette);
 @import "./palettes/aurora.css" layer(palette);
 @import "./palettes/sorbet.css" layer(palette);
+@import "./palettes/calm-storm.css" layer(palette);
+@import "./palettes/cyberpunk.css" layer(palette);
+@import "./palettes/cotton-candy.css" layer(palette);
+@import "./palettes/caffeine.css" layer(palette);
+@import "./palettes/singularity.css" layer(palette);
 @import "./chromes/calm.css" layer(chrome);
 @import "./chromes/glass.css" layer(chrome);
 @import "./chromes/bubblegum.css" layer(chrome);
 @import "./chromes/holoterminal.css" layer(chrome);
+@import "./chromes/expressive.css" layer(chrome);
+@import "./chromes/darkmatter.css" layer(chrome);
 @import "./preferences.css" layer(preferences);
 @import "./base.css" layer(base);
 @import "./components/typography.css" layer(components);

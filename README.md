@@ -10,14 +10,14 @@ Appearance has three independent axes:
 | Palette | `data-palette` | Color roles: surfaces, text, brand, status, borders, focus ring |
 | Mode | `data-mode` | `light`, `dark`, or `system` |
 
-Any chrome pairs with any palette. Chromes: `calm`, `glass`, `bubblegum`, `holoterminal`. Palettes: `default`, `aurora`, `sorbet`.
+Any chrome pairs with any palette. Chromes: `calm`, `glass`, `bubblegum`, `holoterminal`, `expressive`, `darkmatter`. Palettes: `default`, `aurora`, `sorbet`, `calm-storm`, `cyberpunk`, `cotton-candy`, `caffeine`, `singularity`. You can also generate a palette from your own brand colors (see Custom palettes).
 
 ## Commands
 
 ```sh
 bun install
 bun run storybook   # http://localhost:6006
-bun test            # token contract + WCAG contrast
+bun test            # token contract, WCAG contrast, palette generator, color math
 ```
 
 ## Use it
@@ -58,12 +58,32 @@ A subtree can have its own appearance: add `class="ds-scope"` and set all three 
 - Text on every soft tint (`--tint-*`, used by badges, alerts, avatars, and selected table rows) passes 4.5:1 in light and dark. The test evaluates the same `color-mix()` the browser does.
 - Every chrome defines all feel tokens, defines no color roles, and contains no chromatic color literal.
 - No component selector mentions `data-chrome` or `data-palette`.
+- The tint and status-color values in `foundations.css` match the contract, which the palette generator also reads.
+- The palette generator meets every contrast pair for 146 seed pairs across the hue wheel, checked both by its own math and through the CSS it emits.
+- `src/js/color.ts` agrees with culori on parsing, contrast, gamut clamping, and mixing.
 
 ## Add a palette
 
-1. Copy `src/css/palettes/aurora.css`, rename the selector, and edit the colors.
+1. Copy `src/css/palettes/aurora.css`, rename the selector, and edit the colors. Or generate one from brand colors with `paletteCss` (see Custom palettes).
 2. Add the id to `PALETTES` in `src/js/contract.ts` and import the file in `index.css`.
 3. Run `bun test` and fix any contrast failures it reports.
+
+## Custom palettes
+
+`design-system/palette` (`src/js/palette.ts`) builds a full palette, light and dark, from one or two brand colors and holds it to the same contract as the shipped palettes.
+
+```js
+import { applyPalette, generatePalette, paletteCss } from "design-system/palette";
+
+const palette = generatePalette({ primary: "#7c3aed", secondary: "#f472b6" });
+applyPalette(palette);                        // defines [data-palette="custom"] in the palette layer
+document.documentElement.dataset.palette = "custom";
+paletteCss("my-brand", palette);              // or ship it as a file like src/css/palettes/*.css
+```
+
+Every role is laid out from the seeds, then `repairPalette` moves the lightness of any role that fails a contrast pair until all pass. Hue and chroma stay as given, so a pale brand color may come out darker in light mode: a pale yellow becomes olive there, because yellow link text can't reach 4.5:1 on a light page. Try it in **Foundations → Custom Palette**. The color math is dependency-free.
+
+The five palettes ported from uvs-decks-gg went through the same repair. Their input borders were darkened to 3:1, a few primaries and danger tones were nudged, and white text on danger in dark mode became dark text.
 
 ## Add a chrome
 

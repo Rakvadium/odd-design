@@ -1,0 +1,22 @@
+/* Singularity: ported from uvs-decks-gg "singularity", with contrast repaired to the contract. */
+[data-palette="singularity"] {
+  --background: light-dark(oklch(1 0 0), oklch(0.1797 0.0043 308.19));
+  --foreground: light-dark(oklch(0.2101 0.0318 264.66), oklch(0.8109 0 0));
+  --surface: light-dark(oklch(1 0 0), oklch(0.1822 0 0));
+  --surface-foreground: var(--foreground);
+  --overlay: light-dark(oklch(1 0 0), oklch(0.1797 0.0043 308.19));
+  --overlay-foreground: var(--foreground);
+  --muted: light-dark(oklch(0.967 0.0029 264.54), oklch(0.252 0 0));
+  --muted-foreground: light-dark(oklch(0.541 0.0234 264.36), oklch(0.6318 0 0));
+  --border: light-dark(oklch(0.9276 0.0058 264.53), oklch(0.252 0 0));
+  --control-border: light-dark(oklch(0.6626 0.0058 264.53), oklch(0.497 0 0));
+  --ring: light-dark(oklch(0.6716 0.1368 48.51), oklch(0.7214 0.1337 49.98));
+  --primary: light-dark(oklch(0.5766 0.1368 48.51), oklch(0.7214 0.1337 49.98));
+  --primary-foreground: light-dark(oklch(1 0 0), oklch(0.1797 0.0043 308.19));
+  --secondary: light-dark(oklch(0.536 0.0398 196.03), oklch(0.594 0.0443 196.02));
+  --secondary-foreground: light-dark(oklch(1 0 0), oklch(0.1797 0.0043 308.19));
+  --accent: light-dark(oklch(0.6716 0.1368 48.51), oklch(0.7214 0.1337 49.98));
+  --accent-foreground: light-dark(oklch(0.17 0.03 48.51), oklch(0.1797 0.0043 308.19));
+  --danger: light-dark(oklch(0.5868 0.2078 25.33), oklch(0.594 0.0443 196.02));
+  --danger-foreground: light-dark(oklch(1 0 0), oklch(0.17 0.0111 196.02));
+}

@@ -2,8 +2,8 @@
 // CSS, stories, and tests all read from here, so adding a token here makes the
 // contract test fail until every palette or chrome supplies it.
 
-export const PALETTES = ["default", "aurora", "sorbet"] as const;
-export const CHROMES = ["calm", "glass", "bubblegum", "holoterminal"] as const;
+export const PALETTES = ["default", "aurora", "sorbet", "calm-storm", "cyberpunk", "cotton-candy", "caffeine", "singularity"] as const;
+export const CHROMES = ["calm", "glass", "bubblegum", "holoterminal", "expressive", "darkmatter"] as const;
 export const MODES = ["system", "light", "dark"] as const;
 
 export type Palette = (typeof PALETTES)[number];
@@ -84,7 +84,19 @@ export const CHROME_TOKENS = [
   "page-background",
 ] as const;
 
-type PaletteToken = (typeof PALETTE_TOKENS)[number];
+export type PaletteToken = (typeof PALETTE_TOKENS)[number];
+
+/** Status colors every palette inherits from foundations.css unless it overrides them: [light, dark]. */
+export const STATUS_DEFAULTS: Partial<Record<PaletteToken, [light: string, dark: string]>> = {
+  danger: ["oklch(0.53 0.2 27)", "oklch(0.72 0.17 25)"],
+  "danger-foreground": ["oklch(0.99 0 0)", "oklch(0.17 0.03 25)"],
+  success: ["oklch(0.52 0.13 150)", "oklch(0.76 0.15 150)"],
+  "success-foreground": ["oklch(0.99 0 0)", "oklch(0.18 0.04 150)"],
+  warning: ["oklch(0.8 0.15 80)", "oklch(0.82 0.15 80)"],
+  "warning-foreground": ["oklch(0.24 0.05 65)", "oklch(0.2 0.04 65)"],
+  info: ["oklch(0.52 0.14 245)", "oklch(0.76 0.12 240)"],
+  "info-foreground": ["oklch(0.99 0 0)", "oklch(0.18 0.03 240)"],
+};
 
 /**
  * WCAG 2.2 AA pairs every palette must pass in light and dark.
@@ -123,7 +135,18 @@ export const CONTRAST_PAIRS: ReadonlyArray<[fg: PaletteToken, bg: PaletteToken, 
 /** Soft tints, derived in foundations.css by washing a tone into --background. */
 export const TINTS = ["neutral", "primary", "success", "warning", "danger", "info"] as const;
 
-type TintToken = `tint-${(typeof TINTS)[number]}`;
+/** Which color each tint washes in, and how much (color-mix in oklab). The contract test checks foundations.css matches. */
+export const TINT_SOURCE: Record<(typeof TINTS)[number], PaletteToken> = {
+  neutral: "muted-foreground",
+  primary: "primary",
+  success: "success",
+  warning: "warning",
+  danger: "danger",
+  info: "info",
+};
+export const TINT_PERCENT = 14;
+
+export type TintToken = `tint-${(typeof TINTS)[number]}`;
 
 /**
  * Text on soft tints (badges, alerts, selected rows, avatar initials) is always --foreground,
