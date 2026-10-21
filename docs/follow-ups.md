@@ -5,7 +5,8 @@ Open items from the component build-out (porting uvs-decks-gg's coverage to nati
 ## Verification
 
 - **Firefox and Safari have never run the step 1 code.** Everything was proven in Chrome 155 only. Unrun: the `-moz-` rules for `ds-slider`, `ds-meter`, and `ds-progress`; the WebKit slider fill and the search clear-button restyle in Safari. The verify harness drives Chromium only, so this needs a manual pass or a second browser in `ctl.ts`. (step 1)
-- **No automated accessibility scan.** `.storybook/preview.ts` sets `a11y: { test: "error" }`, but nothing runs it. Add a Storybook test runner or an axe command to `ctl.ts` so every story gets checked. (step 1)
+- **The axe sweep isn't in CI.** `ctl.ts axe` runs on demand. Storybook's Vitest addon would run the same `parameters.a11y` checks in CI, but it only sees each story's final state, so open overlays would need `play` functions, and its support for the HTML framework is unconfirmed (storybookjs/storybook#34647). Deferred. (a11y pass)
+- **axe can't see contrast over gradients.** Every story on a gradient page reports a `REVIEW` item. The page-background test in `bun test` covers that math; a person still has to look at anything axe flags for another reason. (a11y pass)
 - **Anchoring outside Chromium.** Popovers rely on the invoker being the implicit anchor. That's unverified in Firefox (partial anchor positioning) and Safari 26/27. Without anchor positioning they center in the viewport, which is also unobserved. (step 2)
 - **Sheets under RTL and touch.** `data-side="start|end"` under `dir="rtl"` and `interestfor` on touch (long-press) are unverified. (step 2)
 - **Unobserved paths.** These are written but not proven: the slider without scroll-driven animations (fill should stay empty), the slider fill under `:dir(rtl)`, Enter submitting the `ds-search` form (the story prevents submit), and the restyled search clear button (it only shows while hovered or focused with a value). (step 1)
@@ -18,6 +19,9 @@ Open items from the component build-out (porting uvs-decks-gg's coverage to nati
 - **No submenus.** `enhanceMenu` handles one level. uvs-decks-gg's dropdown menu supports nested submenus. (step 3)
 
 ## Palettes and chromes (step 4)
+
+- **The a11y pass changed palettes and glass.** Glass's washes went from 28/26/20% to 12/11/8%. Every shipped palette got headroom so page text passes on every chrome's page background: light-mode links, danger, borders, and rings got darker (up to 0.11 lightness), dark-mode borders and danger lighter (up to 0.12), and a few chromas dropped where the new lightness is out of sRGB (calm-storm's dark danger, 0.24 to 0.16). default, aurora, and sorbet now override `--danger`. Review the look. (a11y pass)
+- **Under `prefers-contrast: more` and forced colors, the page background is flat.** That replaced the scanline switch-off, so those users also lose the subtle page gradients. (a11y pass)
 
 - **Review the ported palettes' repairs.** Contrast repair changed some looks from uvs-decks-gg. calm-storm's light primary went from L 0.746 to 0.536, and white text on danger in dark mode became dark text in all five (uvs-decks-gg kept `#fff` as an owner exception). The port script printed every change; the before values are in uvs-decks-gg's `src/styles/themes/`. (step 4)
 - **Bright brand colors lose their brightness in light mode.** `--primary` is both a fill and link text, so a pale yellow must darken to olive everywhere to pass as text. Splitting off a text-only role (say `--primary-text`) would let buttons keep the exact brand color. That's a contract change, so it needs a decision. (step 4)

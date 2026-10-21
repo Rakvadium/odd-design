@@ -43,7 +43,6 @@
   --ease: cubic-bezier(0.4, 0, 0.2, 1);
 
   --fx-glow: none;
-  --fx-scanlines: 0;
   --fx-backdrop: none;
   --page-background: var(--background);
 }

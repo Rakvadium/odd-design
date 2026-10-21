@@ -72,6 +72,7 @@ bun $S press Escape                          # also Enter Space Tab Backspace Ho
 bun $S emulate prefers-color-scheme=dark prefers-reduced-motion=reduce prefers-contrast=more forced-colors=active
 bun $S emulate                               # no args clears; each call replaces the previous set; persists until cleared or down
 bun $S eval 'getComputedStyle(document.querySelector(".ds-button")).borderRadius'   # read-only assertions
+bun $S axe                                   # accessibility sweep: every story, both modes, overlays opened (see features/accessibility.md)
 ```
 
 Rules for driving:

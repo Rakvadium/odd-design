@@ -1,7 +1,7 @@
 // Tiny CSS reader for the contract test. Only understands what our token files use:
 // flat `selector { --name: value; }` blocks, var() references, light-dark(), and color-mix(in oklch | oklab).
 import { readFileSync } from "node:fs";
-import { formatCss, interpolate } from "culori";
+import { converter, formatCss, interpolate, parse } from "culori";
 
 export type Decls = Map<string, string>;
 
@@ -49,7 +49,7 @@ export function resolve(decls: Decls, name: string, mode: "light" | "dark", seen
   return evaluate(decls, value, mode, new Set(seen).add(name));
 }
 
-function evaluate(decls: Decls, value: string, mode: "light" | "dark", seen: Set<string>): string {
+export function evaluate(decls: Decls, value: string, mode: "light" | "dark", seen = new Set<string>()): string {
   const ref = value.match(/^var\(--([\w-]+)\)$/);
   if (ref) return resolve(decls, ref[1]!, mode, seen);
   const ld = value.match(/^light-dark\(([\s\S]*)\)$/);
@@ -66,4 +66,71 @@ function evaluate(decls: Decls, value: string, mode: "light" | "dark", seen: Set
     return formatCss(mixed);
   }
   return value;
+}
+
+const toRgb = converter("rgb");
+
+/** The full text of each `fn(...)` call in a value, matching nested parentheses. */
+function calls(value: string, fn: string): string[] {
+  const out: string[] = [];
+  for (let i = value.indexOf(`${fn}(`); i !== -1; i = value.indexOf(`${fn}(`, i + 1)) {
+    let depth = 0;
+    for (let j = i + fn.length; j < value.length; j++) {
+      if (value[j] === "(") depth++;
+      else if (value[j] === ")" && --depth === 0) {
+        out.push(value.slice(i, j + 1));
+        i = j;
+        break;
+      }
+    }
+  }
+  return out;
+}
+
+/** Composites translucent colors over an opaque one in sRGB, as browsers paint layers. */
+function over(base: string, layers: { color: string; alpha: number }[]): string {
+  let out = toRgb(parse(base)!)!;
+  for (const { color, alpha } of layers) {
+    const top = toRgb(parse(color)!)!;
+    out = { mode: "rgb", r: top.r * alpha + out.r * (1 - alpha), g: top.g * alpha + out.g * (1 - alpha), b: top.b * alpha + out.b * (1 - alpha) };
+  }
+  return formatCss(out);
+}
+
+/**
+ * The layers of a --page-background value, as written: its solid color expressions, and its
+ * translucent washes (a color and a percentage, top layer first). Understands the forms our chromes
+ * use: var() stops, color-mix() stops, and color-mix(..., transparent) washes. Anything else throws.
+ */
+export function pageBackgroundLayers(value: string) {
+  const mixes = calls(value, "color-mix");
+  const isWash = (m: string) => /,\s*transparent\s*\)$/.test(m);
+  const washes = mixes.filter(isWash).map((m) => {
+    const w = m.match(/^color-mix\(in (?:oklch|oklab),\s*([\s\S]+?)\s+([\d.]+)%,\s*transparent\s*\)$/);
+    if (!w) throw new Error(`unsupported wash: ${m}`);
+    return { color: w[1]!, percent: Number(w[2]) };
+  });
+  let rest = value;
+  for (const m of mixes) rest = rest.replace(m, " ");
+  const solids = [...mixes.filter((m) => !isWash(m)), ...[...rest.matchAll(/var\(--[\w-]+\)/g)].map((m) => m[0])];
+  const unknown = rest.replace(/var\(--[\w-]+\)/g, "").match(/#[0-9a-f]{3,8}\b|\b(?:rgba?|hsla?|hwb|lab|lch|oklab|oklch|color)\(/i);
+  if (unknown) throw new Error(`unsupported color in --page-background: ${unknown[0]}`);
+  if (solids.length === 0) throw new Error("--page-background has no solid color");
+  return { solids, washes };
+}
+
+/**
+ * Every background that text on a chrome's --page-background can sit on, as opaque colors: each
+ * solid color in the stack, alone and under every combination of its washes at full strength.
+ * Full strength is a wash's worst point; anywhere it fades, the result lies between the solid
+ * color alone and the full wash.
+ */
+export function pageBackgrounds(decls: Decls, mode: "light" | "dark"): string[] {
+  const value = decls.get("page-background");
+  if (value === undefined) throw new Error("--page-background is not defined");
+  const layers = pageBackgroundLayers(value);
+  const washes = layers.washes.map((w) => ({ color: evaluate(decls, w.color, mode), alpha: w.percent / 100 }));
+  const subsets = washes.reduce<(typeof washes)[]>((acc, w) => [...acc, ...acc.map((s) => [...s, w])], [[]]);
+  // CSS lists background layers top first, so paint them bottom up.
+  return layers.solids.flatMap((solid) => subsets.map((s) => over(evaluate(decls, solid, mode), [...s].reverse())));
 }

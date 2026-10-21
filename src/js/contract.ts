@@ -79,7 +79,6 @@ export const CHROME_TOKENS = [
   "ease",
   // FX
   "fx-glow",
-  "fx-scanlines",
   "fx-backdrop",
   "page-background",
 ] as const;
@@ -131,6 +130,57 @@ export const CONTRAST_PAIRS: ReadonlyArray<[fg: PaletteToken, bg: PaletteToken, 
   ["ring", "background", 3],
   ["ring", "surface", 3],
 ];
+
+/**
+ * What sits directly on a chrome's --page-background: body and muted text, links, error text,
+ * and input borders and focus rings. Tested against the page background's worst points.
+ */
+export const PAGE_PAIRS: ReadonlyArray<[fg: PaletteToken, min: number]> = [
+  ["foreground", 4.5],
+  ["muted-foreground", 4.5],
+  ["primary", 4.5],
+  ["danger", 4.5],
+  ["control-border", 3],
+  ["ring", 3],
+];
+
+/** A solid color in a page background: a palette color, or two mixed in oklab. */
+export type PageSolid = PaletteToken | { mix: PaletteToken; percent: number; into: PaletteToken };
+
+/**
+ * What each chrome paints behind the page, as the palette generator needs it: the solid colors in
+ * the stack, and the translucent washes over them (top layer first, as CSS lists them). Text can sit
+ * on any solid under any combination of washes at full strength, so PAGE_PAIRS must pass on all of
+ * them. The contract test checks each chrome's --page-background matches this.
+ */
+export const PAGE_BACKGROUNDS: Record<Chrome, { solids: PageSolid[]; washes: { token: PaletteToken; percent: number }[] }> = {
+  calm: { solids: ["muted", "background"], washes: [] },
+  glass: {
+    solids: ["background"],
+    washes: [
+      { token: "primary", percent: 12 },
+      { token: "secondary", percent: 11 },
+      { token: "accent", percent: 8 },
+    ],
+  },
+  bubblegum: { solids: ["background"], washes: [{ token: "foreground", percent: 14 }] },
+  holoterminal: {
+    solids: ["background"],
+    washes: [
+      { token: "foreground", percent: 6 },
+      { token: "primary", percent: 7 },
+      { token: "primary", percent: 7 },
+    ],
+  },
+  expressive: {
+    solids: ["background", { mix: "muted", percent: 20, into: "background" }],
+    washes: [
+      { token: "primary", percent: 12 },
+      { token: "secondary", percent: 10 },
+    ],
+  },
+  darkmatter: { solids: ["background"], washes: [] },
+};
 
 /** Soft tints, derived in foundations.css by washing a tone into --background. */
 export const TINTS = ["neutral", "primary", "success", "warning", "danger", "info"] as const;

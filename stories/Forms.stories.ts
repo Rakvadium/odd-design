@@ -97,10 +97,10 @@ export const Slider: Story = {
     <div class="ds-field">
       <div class="ds-row" style="justify-content: space-between">
         <label class="ds-label" for="copies">Copies per card</label>
-        <output class="ds-stat-value" id="copies-value" for="copies">3</output>
+        <output class="ds-stat-value" id="copies-value" for="copies">3 of 4</output>
       </div>
       <input class="ds-slider" type="range" id="copies" min="1" max="4" value="3" aria-describedby="copies-hint"
-        oninput="document.getElementById('copies-value').value = this.value">
+        oninput="document.getElementById('copies-value').value = this.value + ' of ' + this.max">
       <p class="ds-hint" id="copies-hint">Most formats allow up to 4.</p>
     </div>
     <div class="ds-field">

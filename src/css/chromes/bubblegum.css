@@ -37,7 +37,6 @@
   --ease: cubic-bezier(0.5, 1.6, 0.4, 0.8);
 
   --fx-glow: none;
-  --fx-scanlines: 0;
   --fx-backdrop: none;
   --page-background:
     radial-gradient(color-mix(in oklch, var(--foreground) 14%, transparent) 1px, transparent 1.5px) 0 0 / 18px 18px,
