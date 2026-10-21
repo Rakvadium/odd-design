@@ -92,3 +92,8 @@ A subtree can have its own appearance: add `class="ds-scope"` and set all three 
 | `ds-table-wrap`, `ds-table`, `ds-table-sort` | `<table>` | The wrapper scrolls and is focusable. `data-numeric`, `aria-sort`, and a row checkbox tints the row. |
 | `ds-slider` | `<input type="range">` | The filled track follows the thumb with no JS where scroll-driven animations exist. |
 | `ds-search` | `<search>` with `<input type="search">` | Visually hidden label, leading icon. |
+| `ds-popover` | `<div popover>` | Open with `commandfor`/`command="toggle-popover"`. Anchors to the invoker and flips. |
+| `ds-tooltip` | `<div popover="hint" role="tooltip">` | Shown via `interestfor`. Wire `aria-labelledby` or `aria-describedby` yourself. |
+| `ds-hover-card` | `<div popover="hint">` | A preview via `interestfor`. Its content must also be reachable through the link. |
+| `ds-sheet` | `<dialog>` | Opens with `command="show-modal"`; `data-side="start|end|top|bottom"`. |
+| alert dialog | `<dialog class="ds-dialog" role="alertdialog">` | Leave out `closedby="any"` so only Escape or a button closes it. |

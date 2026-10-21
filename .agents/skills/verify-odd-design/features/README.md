@@ -14,7 +14,7 @@ This directory is the maintained source for verifying the user-facing behavior o
 
 - Every recipe starts with `goto <storyId> "<globals>"`. A `goto` re-renders the story and resets in-page state.
 - Globals are `chrome:<calm|glass|bubblegum|holoterminal>;palette:<default|aurora|sorbet>;mode:<system|light|dark>`. Leave out an axis to keep its default (`calm`, `default`, `system`).
-- Change state only through `click`, `press`, `type`, and `focus`. Use `eval` and `state` only for reading.
+- Change state only through `click`, `hover`, `press`, `type`, and `focus`. Use `wait <ms>` for browser delays such as `interestfor`. Use `eval` and `state` only for reading.
 - Select by ids, `commandfor`, `name`/`value`, `role`, `aria-*`, and `.ds-*` classes, or add `--text` with visible text. Do not use coordinates.
 - Commands in the recipes leave out `--run <id>` for brevity. Add it to every call, or export `VERIFY_RUN=<id>`.
 
@@ -39,4 +39,5 @@ Each feature file starts with an H1 and one paragraph on the user-visible behavi
 - [Surfaces](./surfaces.md) covers cards with a whole-card link, badges, the modal dialog via invoker commands, and the exclusive disclosure.
 - [Feedback](./feedback.md) covers alerts per tone, progress and meter bars (including range colors and forced colors), and skeletons with reduced motion.
 - [Data display](./data-display.md) covers the table (row selection, sort indicators, focusable scroll wrapper), avatars and groups, and separators.
+- [Overlays](./overlays.md) covers the anchored popover and its flip, tooltips and hover cards via `interestfor`, sheets from each side, and the alert dialog.
 - [Contrast and foundations](./foundations.md) covers live WCAG ratios per palette (including soft tints), swatches, the type scale, headings, and the `bun test` contract.

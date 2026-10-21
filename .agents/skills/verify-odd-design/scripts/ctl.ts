@@ -210,7 +210,8 @@ async function axTree(page: Page) {
         .filter((p: any) => p.value?.value !== false && p.value?.value !== "false")
         .map((p: any) => (p.value?.value === true || p.value?.value === 1 ? p.name : `${p.name}=${p.value?.value}`));
       const value = node.value?.value ? ` value=${JSON.stringify(node.value.value)}` : "";
-      lines.push(`${"  ".repeat(depth)}- ${role}${name ? ` ${JSON.stringify(name)}` : ""}${value}${props.length ? ` [${props.join(", ")}]` : ""}`);
+      const description = node.description?.value ? ` description=${JSON.stringify(node.description.value)}` : "";
+      lines.push(`${"  ".repeat(depth)}- ${role}${name ? ` ${JSON.stringify(name)}` : ""}${value}${description}${props.length ? ` [${props.join(", ")}]` : ""}`);
       next = depth + 1;
     }
     for (const c of node.childIds ?? []) if (byId.has(c)) walk(byId.get(c), next);
@@ -230,7 +231,9 @@ const commands: Record<string, (args: string[]) => Promise<void>> = {
   state                                print html[data-*] appearance + story-root summary
   eval <js>                            evaluate JS in the page (awaits promises), print JSON
   click <css> [--text T]               real mouse click on the first match (optionally whose text contains T)
+  hover <css> [--text T]               real mouse move onto the first match (leaves the pointer there)
   focus <css> [--text T]               focus the first match
+  wait <ms>                            pause, for delays like interestfor's show delay (max 5000)
   press <Key>                          real key press: ${Object.keys(KEYS).join(", ")}
   type <text>                          insert text at the focused element
   emulate <feature=value>...           media features, e.g. prefers-color-scheme=dark prefers-reduced-motion=reduce
@@ -345,6 +348,7 @@ const commands: Record<string, (args: string[]) => Promise<void>> = {
       html: {...document.documentElement.dataset},
       scopes: [...document.querySelectorAll(".ds-scope")].slice(0, 20).map((el) => ({...el.dataset})),
       openDialogs: [...document.querySelectorAll("dialog[open]")].map((d) => d.id),
+      openPopovers: [...document.querySelectorAll(":popover-open")].map((p) => p.id),
       activeElement: document.activeElement?.outerHTML.slice(0, 160),
     })`);
     page.close();
@@ -376,6 +380,31 @@ const commands: Record<string, (args: string[]) => Promise<void>> = {
     page.close();
     transcript(`click ${selector}${text ? ` text=${text}` : ""} at (${Math.round(box.x)},${Math.round(box.y)}) -> ${box.tag}`);
     console.log(`clicked ${box.tag}`);
+  },
+
+  async hover([selector]) {
+    const text = flag("text");
+    if (!selector) fail("usage: hover <css> [--text T]");
+    const page = await Page.connect(readState());
+    const box = await page.eval(`(() => {
+      const el = ${locate(selector, text)};
+      el.scrollIntoView({ block: "center" });
+      const r = el.getBoundingClientRect();
+      return { x: r.x + r.width / 2, y: r.y + r.height / 2, tag: el.outerHTML.slice(0, 120) };
+    })()`);
+    await page.send("Input.dispatchMouseEvent", { type: "mouseMoved", x: box.x, y: box.y });
+    await page.eval(`new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r)))`);
+    page.close();
+    transcript(`hover ${selector}${text ? ` text=${text}` : ""} at (${Math.round(box.x)},${Math.round(box.y)}) -> ${box.tag}`);
+    console.log(`hovering ${box.tag}`);
+  },
+
+  async wait([ms]) {
+    const n = Number(ms);
+    if (!Number.isFinite(n) || n < 0 || n > 5000) fail("usage: wait <ms> (0-5000)");
+    await Bun.sleep(n);
+    transcript(`wait ${n}ms`);
+    console.log(`waited ${n}ms`);
   },
 
   async focus([selector]) {

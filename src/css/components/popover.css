@@ -1,0 +1,105 @@
+/*
+ * Anchored overlays on the Popover API. No JS: the invoker opens them, and the browser handles
+ * top layer, light dismiss, Escape, and focus return.
+ *
+ * Popover (click):
+ *   <button class="ds-button" commandfor="filters" command="toggle-popover">Filters</button>
+ *   <div class="ds-popover" id="filters" popover aria-labelledby="filters-title">…</div>
+ *
+ * Tooltip (hover or keyboard focus, via interest invokers):
+ *   <button class="ds-button" data-icon-only aria-labelledby="tip-copy" interestfor="tip-copy">…</button>
+ *   <div class="ds-tooltip" id="tip-copy" popover="hint" role="tooltip">Duplicate deck</div>
+ *   Plain text only. Wire it up yourself; the browser doesn't: aria-labelledby when the tooltip is the
+ *   control's only name (that name holds even where interestfor is missing and the tooltip never
+ *   shows), aria-describedby when it adds to a visible label.
+ *
+ * Hover card (a richer preview on hover or focus):
+ *   <a href="/decks/midnight" interestfor="preview-midnight">Midnight Control</a>
+ *   <div class="ds-hover-card" id="preview-midnight" popover="hint">…</div>
+ *   Treat it as a bonus: everything in it must also be reachable by following the link.
+ *
+ * Positioning: the invoker is the implicit anchor. Popovers and hover cards open below the
+ * invoker, aligned to its start edge; tooltips open above it. Each flips when it runs out of room.
+ * Without anchor positioning they fall back to the browser's default: centered in the viewport.
+ */
+.ds-popover,
+.ds-hover-card {
+  max-block-size: calc(100dvh - 2rem);
+  overflow: auto;
+  padding: calc(var(--surface-padding) * 0.67);
+  border: var(--border-width) solid var(--edge-surface);
+  border-radius: var(--radius-surface);
+  background: var(--overlay-fill);
+  color: var(--overlay-foreground);
+  box-shadow: var(--shadow-overlay);
+  backdrop-filter: var(--fx-backdrop);
+  overscroll-behavior: contain;
+}
+
+.ds-popover { inline-size: min(18rem, 100vw - 2rem); }
+.ds-hover-card { inline-size: min(20rem, 100vw - 2rem); }
+
+/* Inverted: foreground on background, a pair the palette test holds to 4.5:1. */
+.ds-tooltip {
+  max-inline-size: min(18rem, 100vw - 2rem);
+  padding: var(--space-1) var(--space-2);
+  border: 0;
+  border-radius: var(--radius-control);
+  background: var(--foreground);
+  color: var(--background);
+  box-shadow: var(--shadow-control);
+  font-size: var(--text-xs);
+  font-weight: 500;
+  line-height: 1.4;
+}
+
+.ds-popover,
+.ds-hover-card,
+.ds-tooltip {
+  opacity: 0;
+  scale: 0.96;
+  transition-property: opacity, scale, display, overlay;
+  transition-duration: var(--duration-fast);
+  transition-timing-function: var(--ease);
+  transition-behavior: allow-discrete;
+}
+
+:is(.ds-popover, .ds-hover-card, .ds-tooltip):popover-open {
+  opacity: 1;
+  scale: 1;
+}
+
+@starting-style {
+  :is(.ds-popover, .ds-hover-card, .ds-tooltip):popover-open {
+    opacity: 0;
+    scale: 0.96;
+  }
+}
+
+@supports (position-area: block-end) {
+  .ds-popover,
+  .ds-hover-card,
+  .ds-tooltip {
+    inset: auto;
+    margin: var(--space-2) 0;
+  }
+
+  .ds-popover,
+  .ds-hover-card {
+    position-area: block-end span-inline-end;
+    position-try-fallbacks: flip-block, flip-inline, flip-block flip-inline;
+  }
+
+  /* Centered over the anchor, and shifted inward rather than cut off near a viewport edge. */
+  .ds-tooltip {
+    position-area: block-start;
+    position-try-fallbacks: flip-block;
+  }
+}
+
+/* Forced colors drop the tooltip's inverted background; outline it so it still reads as a box. */
+@media (forced-colors: active) {
+  .ds-tooltip {
+    border: 1px solid CanvasText;
+  }
+}

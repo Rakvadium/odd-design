@@ -54,6 +54,7 @@ Stories render in isolation at `iframe.html?id=<storyId>`, which skips the manag
 | Surfaces | `components-surfaces--card`, `--badge`, `--dialog`, `--disclosure` |
 | Feedback | `components-feedback--alert`, `--progress`, `--skeleton` |
 | Data Display | `components-data-display--table`, `--avatar`, `--separator` |
+| Overlays | `components-overlays--popover`, `--tooltip`, `--hover-card`, `--sheet`, `--alert-dialog` |
 | Docs | `introduction--docs` (MDX; `goto` targets stories, so open docs via the manager URL if needed) |
 
 The current list is always at `curl -s http://127.0.0.1:<port>/index.json`.
@@ -64,6 +65,7 @@ bun $S goto components-button--playground "" "variant:danger;size:lg;label:Delet
 bun $S state                                  # html data-*, every .ds-scope's data-*, open dialogs, focused element
 bun $S click 'button[commandfor="appearance"]'            # real mouse events at the element's center
 bun $S click '.ds-button' --text 'Done'                    # filter by visible text
+bun $S hover 'button[interestfor="tip-copy"]' ; bun $S wait 1200   # pointer stays put; wait covers interest delays
 bun $S focus '#name' ; bun $S type 'x' ; bun $S press Backspace ; bun $S press Tab
 bun $S press Escape                          # also Enter Space Tab Backspace Arrow{Left,Right,Up,Down}
 bun $S emulate prefers-color-scheme=dark prefers-reduced-motion=reduce prefers-contrast=more forced-colors=active
