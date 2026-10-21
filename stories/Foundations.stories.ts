@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/html-vite";
 import { parse, wcagContrast } from "culori";
-import { CONTRAST_PAIRS } from "../src/js/contract.ts";
+import { CONTRAST_PAIRS, TINT_PAIRS } from "../src/js/contract.ts";
 
 const meta = { title: "Foundations" } satisfies Meta;
 
@@ -36,7 +36,7 @@ const column = (mode: "light" | "dark", palette: string, chrome: string) => `
         <th scope="col" style="text-align:end">WCAG</th>
       </tr></thead>
       <tbody>
-        ${CONTRAST_PAIRS.map(
+        ${[...CONTRAST_PAIRS, ...TINT_PAIRS].map(
           ([fg, bg, min]) => `<tr data-pair data-min="${min}" style="border-block-start: 1px solid var(--border)">
             <td style="padding-block: var(--space-2)">
               <span class="pair-sample" style="display:inline-block; padding: 0.15em 0.6em; border-radius: 6px; color: var(--${fg}); background: var(--${bg}); box-shadow: inset 0 0 0 1px var(--border); font-weight: 600">Aa</span>
@@ -55,7 +55,7 @@ export const Contrast: Story = {
     docs: {
       description: {
         story:
-          "Live WCAG 2.2 contrast for the active palette, using the same pairs `bun test` enforces. Switch palettes in the toolbar.",
+          "Live WCAG 2.2 contrast for the active palette, using the same pairs `bun test` enforces, including text on the soft tints. Switch palettes in the toolbar.",
       },
     },
   },
@@ -102,5 +102,30 @@ export const Type: Story = {
     <p style="font-size: var(--text-lg)">Lead paragraph. Body text uses the chrome's body font; headings and labels follow its case and tracking.</p>
     <p>Body text with an <a href="#">inline link</a>. The link color is <code>--primary</code>, which the contract test holds to 4.5:1 against the page.</p>
     <p class="ds-muted">Muted text for secondary information.</p>
+  </div>`,
+};
+
+export const Headings: Story = {
+  parameters: {
+    docs: {
+      description: {
+        story:
+          "`.ds-heading` sets size apart from level, so the outline stays correct whatever the layout needs. Case, tracking, and weight come from the chrome.",
+      },
+    },
+  },
+  render: () => `<div class="ds-stack" style="--gap: var(--space-4); max-inline-size: 48rem">
+    <h1 class="ds-heading" data-size="hero">Hero · Build sharper decks</h1>
+    <h2 class="ds-heading" data-size="2xl">2xl · Season overview</h2>
+    <h2 class="ds-heading" data-size="xl">xl · Your collection</h2>
+    <h3 class="ds-heading" data-size="lg">lg · Recently edited</h3>
+    <h3 class="ds-heading">md · Deck notes (default)</h3>
+    <h4 class="ds-heading" data-size="sm">sm · Sideboard</h4>
+    <h4 class="ds-heading" data-size="xs">xs · Card details</h4>
+    <div class="ds-row" style="--gap: var(--space-5)">
+      <p class="ds-eyebrow">Muted eyebrow</p>
+      <p class="ds-eyebrow" data-tone="primary">Primary eyebrow</p>
+      <p class="ds-eyebrow" data-tone="foreground">Foreground eyebrow</p>
+    </div>
   </div>`,
 };

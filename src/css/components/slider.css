@@ -1,0 +1,121 @@
+/*
+ * <div class="ds-field">
+ *   <label class="ds-label" for="copies">Copies per card</label>
+ *   <input class="ds-slider" type="range" id="copies" min="1" max="4" value="3" aria-describedby="copies-hint">
+ *   <p class="ds-hint" id="copies-hint">1 to 4</p>
+ * </div>
+ * A native range input, so arrow keys, Page Up/Down, Home/End, and forms come from the browser.
+ * Show the value in text if it matters; updating that text on input is the page's one line of JS.
+ *
+ * The filled part of the track: Firefox draws it with ::-moz-range-progress. In Chromium and
+ * WebKit, a view timeline on the thumb drives --_progress where scroll-driven animations exist
+ * (no JS). Without them the track is plain and the thumb alone shows the value.
+ */
+@property --_progress {
+  syntax: "<number>";
+  inherits: true;
+  initial-value: 0;
+}
+
+.ds-slider {
+  --_thumb: calc(1.25rem * var(--density));
+  --_rail: calc(0.375rem * var(--density));
+  --_to: right;
+
+  appearance: none;
+  display: block;
+  inline-size: 100%;
+  block-size: max(24px, calc(var(--_thumb) + 0.5rem));
+  margin: 0;
+  border-radius: var(--radius-control);
+  background: transparent;
+  cursor: pointer;
+}
+.ds-slider:dir(rtl) { --_to: left; }
+
+.ds-slider:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+/* Rail and thumb, Chromium and WebKit. Each engine's pseudo-elements need their own rule. */
+.ds-slider::-webkit-slider-runnable-track {
+  block-size: var(--_rail);
+  border-radius: var(--radius-chip);
+  background:
+    linear-gradient(
+      to var(--_to),
+      var(--primary) calc(var(--_thumb) / 2 + (100% - var(--_thumb)) * var(--_progress)),
+      transparent 0
+    ),
+    var(--track);
+}
+.ds-slider::-webkit-slider-thumb {
+  appearance: none;
+  inline-size: var(--_thumb);
+  block-size: var(--_thumb);
+  margin-block-start: calc((var(--_rail) - var(--_thumb)) / 2);
+  border: 2px solid var(--primary);
+  border-radius: var(--radius-chip);
+  background: var(--background);
+  box-shadow: var(--shadow-control);
+  transition: box-shadow var(--duration-fast) var(--ease);
+}
+.ds-slider:is(:hover, :focus-visible):not(:disabled)::-webkit-slider-thumb {
+  box-shadow: var(--shadow-control), 0 0 0 4px color-mix(in oklch, var(--ring) 30%, transparent);
+}
+
+/* Rail, progress, and thumb, Firefox. */
+.ds-slider::-moz-range-track {
+  block-size: var(--_rail);
+  border-radius: var(--radius-chip);
+  background: var(--track);
+}
+.ds-slider::-moz-range-progress {
+  block-size: var(--_rail);
+  border-radius: var(--radius-chip);
+  background: var(--primary);
+}
+.ds-slider::-moz-range-thumb {
+  box-sizing: border-box;
+  inline-size: var(--_thumb);
+  block-size: var(--_thumb);
+  border: 2px solid var(--primary);
+  border-radius: var(--radius-chip);
+  background: var(--background);
+  box-shadow: var(--shadow-control);
+  transition: box-shadow var(--duration-fast) var(--ease);
+}
+.ds-slider:is(:hover, :focus-visible):not(:disabled)::-moz-range-thumb {
+  box-shadow: var(--shadow-control), 0 0 0 4px color-mix(in oklch, var(--ring) 30%, transparent);
+}
+
+/*
+ * The thumb's position in the input becomes --_progress: thumb at the end edge is 1, at the
+ * start edge 0. overflow: hidden makes the input the thumb's scroll container (clip would not), so the
+ * timeline measures the thumb against the input instead of the page.
+ */
+@supports (timeline-scope: --a) and (animation-range: entry 100% exit 0%) {
+  .ds-slider {
+    overflow: hidden;
+    timeline-scope: --ds-slider-thumb;
+    animation: ds-slider-progress linear both;
+    animation-timeline: --ds-slider-thumb;
+    animation-range: entry 100% exit 0%;
+  }
+  .ds-slider::-webkit-slider-thumb {
+    view-timeline: --ds-slider-thumb inline;
+  }
+}
+
+@keyframes ds-slider-progress {
+  from { --_progress: 1; }
+  to { --_progress: 0; }
+}
+
+@media (forced-colors: active) {
+  .ds-slider::-webkit-slider-runnable-track { border: 1px solid CanvasText; }
+  .ds-slider::-webkit-slider-thumb { border-color: ButtonText; background: ButtonFace; }
+  .ds-slider::-moz-range-track { border: 1px solid CanvasText; }
+  .ds-slider::-moz-range-thumb { border-color: ButtonText; background: ButtonFace; }
+}

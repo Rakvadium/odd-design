@@ -55,6 +55,20 @@
   --surface-fill: color-mix(in oklch, var(--surface) var(--surface-alpha), transparent);
   --overlay-fill: color-mix(in oklch, var(--overlay) var(--surface-alpha), transparent);
   --scrim: color-mix(in oklch, var(--background) 55%, transparent);
+
+  /* Rails behind a value: slider track, progress and meter bars, skeleton blocks. */
+  --track: color-mix(in oklch, var(--muted-foreground) 22%, var(--muted));
+
+  /*
+   * Soft tints: a tone washed into the page. Text on them is --foreground; TINT_PAIRS checks it.
+   * Mixed in oklab, not oklch: oklch walks the hue wheel, so blue into a warm page turns red.
+   */
+  --tint-neutral: color-mix(in oklab, var(--muted-foreground) 14%, var(--background));
+  --tint-primary: color-mix(in oklab, var(--primary) 14%, var(--background));
+  --tint-success: color-mix(in oklab, var(--success) 14%, var(--background));
+  --tint-warning: color-mix(in oklab, var(--warning) 14%, var(--background));
+  --tint-danger: color-mix(in oklab, var(--danger) 14%, var(--background));
+  --tint-info: color-mix(in oklab, var(--info) 14%, var(--background));
 }
 
 /* Status tones: shared defaults that a palette may override. */

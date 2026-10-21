@@ -1,0 +1,46 @@
+/*
+ * <search class="ds-search">
+ *   <label class="ds-visually-hidden" for="card-search">Search cards</label>
+ *   <svg aria-hidden="true">…magnifier…</svg>
+ *   <input class="ds-input" type="search" id="card-search" placeholder="Search cards">
+ * </search>
+ * <search> is the search landmark. To submit, nest <form class="ds-search"> inside <search> instead;
+ * Enter submits it. type="search" gives the browser's clear button, restyled below.
+ */
+.ds-search {
+  position: relative;
+  display: block;
+}
+
+.ds-search > svg {
+  position: absolute;
+  inset-block-start: 50%;
+  inset-inline-start: calc(var(--control-padding-inline) * 0.85);
+  inline-size: 1rem;
+  block-size: 1rem;
+  translate: 0 -50%;
+  color: var(--muted-foreground);
+  pointer-events: none;
+}
+
+.ds-search > .ds-input {
+  padding-inline-start: calc(var(--control-padding-inline) * 0.85 + 1.5rem);
+}
+
+.ds-search > .ds-input::-webkit-search-cancel-button {
+  appearance: none;
+  inline-size: 1rem;
+  block-size: 1rem;
+  background: var(--muted-foreground);
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.5' stroke-linecap='round'%3E%3Cpath d='M6 6l12 12M18 6 6 18'/%3E%3C/svg%3E") center / contain no-repeat;
+  cursor: pointer;
+}
+.ds-search > .ds-input::-webkit-search-cancel-button:hover {
+  background: var(--foreground);
+}
+
+@media (forced-colors: active) {
+  .ds-search > .ds-input::-webkit-search-cancel-button {
+    background: ButtonText;
+  }
+}

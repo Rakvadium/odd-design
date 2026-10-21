@@ -1,13 +1,15 @@
 import { describe, expect, test } from "bun:test";
 import { parse, wcagContrast } from "culori";
-import { CHROMES, CHROME_TOKENS, CONTRAST_PAIRS, PALETTES, PALETTE_TOKENS } from "../src/js/contract.ts";
+import { CHROMES, CHROME_TOKENS, CONTRAST_PAIRS, PALETTES, PALETTE_TOKENS, TINT_PAIRS } from "../src/js/contract.ts";
 import { block, read, resolve } from "./css.ts";
 
-const statusDefaults = block(read("foundations.css"), ":where(:root, [data-palette])");
+const foundations = read("foundations.css");
+const statusDefaults = block(foundations, ":where(:root, [data-palette])");
+const derived = block(foundations, ":where(:root, [data-palette], [data-chrome], [data-mode])");
 
 describe.each(PALETTES)("palette %s", (palette) => {
   const own = block(read(`palettes/${palette}.css`), `[data-palette="${palette}"]`);
-  const decls = new Map([...statusDefaults, ...own]);
+  const decls = new Map([...derived, ...statusDefaults, ...own]);
 
   test("defines every palette token", () => {
     expect(PALETTE_TOKENS.filter((t) => !decls.has(t))).toEqual([]);
@@ -17,13 +19,19 @@ describe.each(PALETTES)("palette %s", (palette) => {
     expect([...own.keys()].filter((t) => !(PALETTE_TOKENS as readonly string[]).includes(t))).toEqual([]);
   });
 
+  const failures = (pairs: ReadonlyArray<readonly [string, string, number]>, mode: "light" | "dark") =>
+    pairs.flatMap(([fg, bg, min]) => {
+      const ratio = wcagContrast(parse(resolve(decls, fg, mode))!, parse(resolve(decls, bg, mode))!);
+      return ratio < min ? [`${fg} on ${bg}: ${ratio.toFixed(2)} < ${min}`] : [];
+    });
+
   for (const mode of ["light", "dark"] as const) {
     test(`meets WCAG 2.2 AA contrast in ${mode}`, () => {
-      const failures = CONTRAST_PAIRS.flatMap(([fg, bg, min]) => {
-        const ratio = wcagContrast(parse(resolve(decls, fg, mode))!, parse(resolve(decls, bg, mode))!);
-        return ratio < min ? [`${fg} on ${bg}: ${ratio.toFixed(2)} < ${min}`] : [];
-      });
-      expect(failures).toEqual([]);
+      expect(failures(CONTRAST_PAIRS, mode)).toEqual([]);
+    });
+
+    test(`keeps text on soft tints at WCAG 2.2 AA in ${mode}`, () => {
+      expect(failures(TINT_PAIRS, mode)).toEqual([]);
     });
   }
 });

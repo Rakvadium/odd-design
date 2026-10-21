@@ -48,10 +48,12 @@ Stories render in isolation at `iframe.html?id=<storyId>`, which skips the manag
 | Area | IDs |
 | --- | --- |
 | Showcase | `showcase--sample-app`, `showcase--matrix` |
-| Foundations | `foundations--contrast`, `foundations--palette`, `foundations--type` |
+| Foundations | `foundations--contrast`, `foundations--palette`, `foundations--type`, `foundations--headings` |
 | Button | `components-button--playground` (args), `--variants`, `--sizes`, `--states` |
-| Forms | `components-forms--text-fields`, `--select`, `--choices`, `--switch`, `--segmented` |
+| Forms | `components-forms--text-fields`, `--select`, `--choices`, `--switch`, `--segmented`, `--slider`, `--search` |
 | Surfaces | `components-surfaces--card`, `--badge`, `--dialog`, `--disclosure` |
+| Feedback | `components-feedback--alert`, `--progress`, `--skeleton` |
+| Data Display | `components-data-display--table`, `--avatar`, `--separator` |
 | Docs | `introduction--docs` (MDX; `goto` targets stories, so open docs via the manager URL if needed) |
 
 The current list is always at `curl -s http://127.0.0.1:<port>/index.json`.

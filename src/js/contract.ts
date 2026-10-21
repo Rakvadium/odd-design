@@ -116,3 +116,18 @@ export const CONTRAST_PAIRS: ReadonlyArray<[fg: PaletteToken, bg: PaletteToken, 
   ["ring", "background", 3],
   ["ring", "surface", 3],
 ];
+
+/** Soft tints, derived in foundations.css by washing a tone into --background. */
+export const TINTS = ["neutral", "primary", "success", "warning", "danger", "info"] as const;
+
+type TintToken = `tint-${(typeof TINTS)[number]}`;
+
+/**
+ * Text on soft tints (badges, alerts, selected rows, avatar initials) is always --foreground,
+ * held to the same 4.5:1 as other text. Tone-colored text on a tint is not guaranteed, so don't.
+ */
+export const TINT_PAIRS: ReadonlyArray<[fg: PaletteToken, bg: TintToken, min: number]> = TINTS.map((t) => [
+  "foreground",
+  `tint-${t}`,
+  4.5,
+]);

@@ -4,7 +4,7 @@ This directory is the maintained source for verifying the user-facing behavior o
 
 ## Baseline preconditions
 
-- `bun install` has run, and `bun test` passes (25 tests at the time of writing).
+- `bun install` has run, and `bun test` passes (31 tests at the time of writing).
 - `S=.agents/skills/verify-odd-design/scripts/ctl.ts`, and every command runs from the repo root.
 - A run started by this verification: `bun $S up --run <id>` printed `READY`, and `bun $S doctor --run <id>` printed no `FAIL`.
 - Never drive a Storybook this run did not start. That includes the user's `bun run storybook` on port 6006.
@@ -37,4 +37,6 @@ Each feature file starts with an H1 and one paragraph on the user-visible behavi
 - [Buttons](./buttons.md) covers variants, sizes, icon-only, busy and disabled states, Playground args, and keyboard focus.
 - [Forms](./forms.md) covers text fields with `:user-invalid`, the select, checkboxes and radios, switches, and the segmented control.
 - [Surfaces](./surfaces.md) covers cards with a whole-card link, badges, the modal dialog via invoker commands, and the exclusive disclosure.
-- [Contrast and foundations](./foundations.md) covers live WCAG ratios per palette, swatches, the type scale, and the `bun test` contract.
+- [Feedback](./feedback.md) covers alerts per tone, progress and meter bars (including range colors and forced colors), and skeletons with reduced motion.
+- [Data display](./data-display.md) covers the table (row selection, sort indicators, focusable scroll wrapper), avatars and groups, and separators.
+- [Contrast and foundations](./foundations.md) covers live WCAG ratios per palette (including soft tints), swatches, the type scale, headings, and the `bun test` contract.

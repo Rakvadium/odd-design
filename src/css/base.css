@@ -78,15 +78,6 @@ a:hover {
   :root { scroll-behavior: smooth; }
 }
 
-.ds-eyebrow {
-  font-family: var(--font-label);
-  font-size: var(--text-xs);
-  font-weight: 600;
-  text-transform: var(--label-case);
-  letter-spacing: max(var(--label-tracking), 0.06em);
-  color: var(--muted-foreground);
-}
-
 .ds-muted {
   color: var(--muted-foreground);
 }

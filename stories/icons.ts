@@ -11,4 +11,9 @@ export const icons = {
   sparkles: icon(`<path d="M12 3l1.9 5.1L19 10l-5.1 1.9L12 17l-1.9-5.1L5 10l5.1-1.9z"/><path d="M19 17v4M17 19h4"/>`),
   arrowRight: icon(`<path d="M5 12h14M13 6l6 6-6 6"/>`),
   layers: icon(`<path d="M12 2 2 7l10 5 10-5-10-5z"/><path d="m2 17 10 5 10-5M2 12l10 5 10-5"/>`),
+  search: icon(`<circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/>`),
+  info: icon(`<circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/>`),
+  check: icon(`<circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/>`),
+  warning: icon(`<path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/><path d="M12 9v4M12 17h.01"/>`),
+  danger: icon(`<path d="M7.9 2h8.2L22 7.9v8.2L16.1 22H7.9L2 16.1V7.9z"/><path d="M12 8v4M12 16h.01"/>`),
 };

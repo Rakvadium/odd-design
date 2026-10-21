@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/html-vite";
+import { icons } from "./icons.ts";
 
 const meta = {
   title: "Components/Forms",
@@ -81,4 +82,54 @@ export const Segmented: Story = {
     <label><input type="radio" name="view"> List</label>
     <label><input type="radio" name="view"> Stats</label>
   </fieldset>`,
+};
+
+export const Slider: Story = {
+  parameters: {
+    docs: {
+      description: {
+        story:
+          "A native `<input type=\"range\">`: arrow keys, Page Up/Down, and Home/End work with no JS. The filled track follows the thumb through a scroll-driven animation where supported. The `<output>` beside the first slider is updated by one inline `oninput`.",
+      },
+    },
+  },
+  render: () => `<div class="ds-stack" style="--gap: var(--space-5); max-inline-size: 26rem">
+    <div class="ds-field">
+      <div class="ds-row" style="justify-content: space-between">
+        <label class="ds-label" for="copies">Copies per card</label>
+        <output class="ds-stat-value" id="copies-value" for="copies">3</output>
+      </div>
+      <input class="ds-slider" type="range" id="copies" min="1" max="4" value="3" aria-describedby="copies-hint"
+        oninput="document.getElementById('copies-value').value = this.value">
+      <p class="ds-hint" id="copies-hint">Most formats allow up to 4.</p>
+    </div>
+    <div class="ds-field">
+      <label class="ds-label" for="card-size">Card size</label>
+      <input class="ds-slider" type="range" id="card-size" min="0" max="100" value="65">
+    </div>
+    <div class="ds-field">
+      <label class="ds-label" for="locked">Hand size (locked by format)</label>
+      <input class="ds-slider" type="range" id="locked" min="5" max="9" value="7" disabled>
+    </div>
+  </div>`,
+};
+
+export const Search: Story = {
+  parameters: {
+    docs: {
+      description: {
+        story:
+          "`<search>` is the search landmark. The label is visually hidden but still names the field. With a `<form>` inside, Enter submits.",
+      },
+    },
+  },
+  render: () => `<div class="ds-stack" style="max-inline-size: 26rem">
+    <search>
+      <form class="ds-search" onsubmit="event.preventDefault()">
+        <label class="ds-visually-hidden" for="card-search">Search cards</label>
+        ${icons.search}
+        <input class="ds-input" type="search" id="card-search" name="q" placeholder="Search cards" value="Ember">
+      </form>
+    </search>
+  </div>`,
 };

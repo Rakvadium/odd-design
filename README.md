@@ -55,6 +55,7 @@ A subtree can have its own appearance: add `class="ds-scope"` and set all three 
 
 - Every palette defines all color roles and nothing else.
 - Every palette passes WCAG 2.2 AA in light and dark: 4.5:1 for text (including links and error text on surfaces), and 3:1 for input borders and focus rings.
+- Text on every soft tint (`--tint-*`, used by badges, alerts, avatars, and selected table rows) passes 4.5:1 in light and dark. The test evaluates the same `color-mix()` the browser does.
 - Every chrome defines all feel tokens, defines no color roles, and contains no chromatic color literal.
 - No component selector mentions `data-chrome` or `data-palette`.
 
@@ -82,3 +83,12 @@ A subtree can have its own appearance: add `class="ds-scope"` and set all three 
 | `ds-badge` | `<span>` | `data-tone`, `data-solid`. |
 | `ds-dialog` | `<dialog>` | Open with `commandfor`/`command="show-modal"`, no JS. |
 | `ds-disclosure` | `<details name>` | An exclusive accordion. |
+| `ds-heading`, `ds-eyebrow` | `<h1>`–`<h6>`, `<p>` | `data-size` (xs–2xl, hero) sets size apart from level. The eyebrow takes `data-tone`. |
+| `ds-alert`, `ds-alert-title` | `<div>` | `data-tone`. Static alerts need no role; insert later ones into an existing `role="status"` or `role="alert"` container. |
+| `ds-progress`, `ds-meter`, `ds-stat` | `<progress>`, `<meter>` | A meter with `low`/`high`/`optimum` colors itself by range. Always show the value as text too. |
+| `ds-skeleton` | `<div aria-hidden>` | Put `aria-busy` and "Loading" text on the region. `data-shape="avatar"`. |
+| `ds-separator` | `<hr>` | `aria-orientation="vertical"` inside a row. |
+| `ds-avatar`, `ds-avatar-group` | `<span>` with `<img alt>` or `role="img"` initials | `data-size`. |
+| `ds-table-wrap`, `ds-table`, `ds-table-sort` | `<table>` | The wrapper scrolls and is focusable. `data-numeric`, `aria-sort`, and a row checkbox tints the row. |
+| `ds-slider` | `<input type="range">` | The filled track follows the thumb with no JS where scroll-driven animations exist. |
+| `ds-search` | `<search>` with `<input type="search">` | Visually hidden label, leading icon. |
