@@ -1,6 +1,6 @@
 ---
 name: verify-odd-design
-description: Launch and drive the odd-design design system's Storybook (the only UI surface) in an isolated headless Chrome to prove a CSS/token/component change works across chromes, palettes, and modes, and capture screenshots, accessibility-tree snapshots, and a transcript as evidence. Use after changing anything in src/css, src/js, stories, or .storybook, or when asked to verify, screenshot, or check a component, chrome, palette, or appearance behavior in the real rendered UI rather than only in `bun test`.
+description: Launch and drive the odd-design design system's Storybook (the only UI surface) in an isolated headless Chrome to prove a CSS/token/component change works across chromes, palettes, and modes, and capture screenshots, accessibility-tree snapshots, and a transcript as evidence. Also runs Firefox/WebKit through Playwright and NVDA through sr.ts to check what a screen reader says. Use after changing anything in src/css, src/js, stories, or .storybook, or when asked to verify, screenshot, or check a component, chrome, palette, or appearance behavior in the real rendered UI rather than only in `bun test`.
 ---
 
 # Verify odd-design
@@ -114,6 +114,39 @@ bun run test:browsers                    # or: bunx playwright test e2e/behavior
 - Each behavior test records whether the engine used the native feature or the fallback (`interestfor`, `closedby`, anchor positioning, slider fill) as an annotation, and attaches screenshots. Read them in `.verify/playwright/report`.
 - These are Playwright's patched builds, not Firefox or Safari as shipped. Playwright's WebKit on Windows draws variable fonts at their thinnest weight, though layout uses the requested one, so thin text in a WebKit screenshot is not a bug in the CSS. `emulateMedia({ forcedColors })` in WebKit matches the media query but doesn't swap in system colors. Real Safari needs a Mac (see `docs/follow-ups.md`).
 
+## Screen reader (NVDA)
+
+`scripts/sr.ts` runs NVDA against a headed run and records what it says. Use it after changing names, roles, states, live regions, focus movement, or dialogs. axe checks the markup; this checks what a listener hears. Windows only.
+
+Prerequisites: NVDA installed (`winget install NVAccess.NVDA`, or set `NVDA_PATH`), and ffmpeg for recorded scenarios (`winget install Gyan.FFmpeg`, or set `FFMPEG_PATH`). If the user's own NVDA is running, `start` refuses rather than replace it.
+
+```sh
+SR=.agents/skills/verify-odd-design/scripts/sr.ts
+bun $S up --headed --run sr        # a visible app window at 0,0
+bun $SR start --run sr             # NVDA with scripts/nvda/nvda.ini, then relaunches Chrome (see below)
+bun $S goto components-forms--text-fields mode:light --run sr
+bun $S focus '#name' --run sr      # setup through CDP; NVDA announces the focus
+bun $SR press Tab shift+Tab nvda+Space ArrowDown --run sr
+bun $SR scenario toast-over-modal --run sr
+bun $S down --run sr               # also stops NVDA
+```
+
+- `press` sends real keys through `SendInput`, so NVDA's own commands work (browse-mode arrows, quick keys, `nvda+...`). CDP keys would skip NVDA entirely. After each chord it waits for NVDA to finish speaking and prints what it said.
+- Output lines: `"..."` is speech, `[focus: role, name, states]` is where NVDA's focus went, `[sound focusMode.wav]` and `[beep]` are earcons, and `(cut off)` marks speech NVDA cancelled before it finished. `(nothing spoken)` after a key is a finding, not noise.
+- `scenario <name>` runs `scripts/sr-scenarios/<name>.ts` and writes `.verify/evidence/<run>/sr/<name>/`: `transcript.md` (read this), `<name>.mp4` (NVDA's real audio, with captions built from NVDA's text, never from transcribing audio), `captions.vtt`, `events.json`, and `index.html` to watch it. Each scenario states why it exists and what each step should say.
+- `scripts/nvda/nvda.ini` pins the voice, rate, punctuation level, and say-all-on-load off. Each run copies it into a fresh config dir, so the user's NVDA settings are never read or changed. `scripts/nvda/globalPlugins/odd_verify.py` writes NVDA's speech, focus, keys, and sounds to `events.jsonl`.
+
+While it runs, NVDA speaks aloud and Chrome needs the foreground. `press` refuses to send a key unless the run's Chrome is in front, so keys never land in another window. Tell the user before a run.
+
+Things that look like bugs but aren't ours (all reproduced with DOM focus correct):
+
+- Chrome only sends accessibility events to a screen reader that was running when it launched. `start` relaunches the run's Chrome for that reason.
+- A tab with automatic activation is read twice, the first time cut off, even though it is selected before it takes focus. Most likely Chrome sends the selection change after the focus event.
+- After a modal closes, NVDA can read the page's first landmark, or "document", around the returned focus.
+- Opening a dialog reads its intro, cuts off, and reads it again.
+
+Turn what NVDA finds into a sharp test where the DOM can show it. For example, the toast announcement ran its title into its description and included the Dismiss button's name, so `e2e/behavior.spec.ts` now asserts the live region's exact text, with a comment quoting what NVDA said. Keep NVDA runs for what only a screen reader can show.
+
 ## Cleanup
 
 ```sh
@@ -125,4 +158,5 @@ This kills only the Storybook and Chrome PIDs recorded at `up`, including their 
 ## Helpers
 
 - `e2e/story.ts` has `openStory` and `storyIds` for new Playwright specs.
+- `scripts/sr.ts` drives NVDA (`sr.ts help`). It uses `scripts/win.ts` (window focus, keys, and clicks through user32) and `scripts/loopback.ts` (records the speakers through WASAPI loopback). New scenarios go in `scripts/sr-scenarios/`, typed with `Scenario` from `sr.ts`.
 - `scripts/ctl.ts` runs with `bun .agents/skills/verify-odd-design/scripts/ctl.ts help`. Each command is described above. It has no npm dependencies and needs only Bun plus a local Chromium-family browser.

@@ -7,8 +7,8 @@ Open items from the component build-out (porting uvs-decks-gg's coverage to nati
 Agreed order, from the screen-reader panel. Captions always come from the screen reader's own text, never from transcribing audio.
 
 1. **Playwright Firefox and WebKit suite.** Done: `bun run test:browsers`. Chrome stays on `ctl.ts`.
-2. **NVDA phase 1: recorded runs to review.** NVDA 2026.2 is installed (`C:\Program Files\NVDA`). Drive a visible Chrome through short scenarios with NVDA running: the sample app's appearance dialog by keyboard; a toast over a modal; the menu and tabs in both browse and focus mode; a form error. Each run produces a video with NVDA's real audio (pitch and beeps carry meaning) and WebVTT captions built from NVDA's spoken text, each labeled with the key that caused it. Pin and record NVDA's settings (voice, rate, punctuation, capitals). Watch for speech that was cut off: NVDA's log keeps text that was never fully spoken.
-3. **NVDA phase 2: automate the phrases that matter** with Guidepup. Diff the spoken-text transcripts and regenerate the captioned videos. Guidepup's documented NVDA support lists Windows Server, not Windows 11, so try it here first; the fallback is NVDA's log plus a screen recorder.
+2. **NVDA phase 1: recorded runs to review.** Done: `sr.ts` in the verify skill, with five scenarios in `scripts/sr-scenarios/` (appearance dialog, toast over a modal, menu, tabs in both modes, form errors). Each writes a transcript, and a video with NVDA's audio and captions from NVDA's text. Findings are under Screen reader below.
+3. **NVDA phase 2: automate the phrases that matter.** `sr.ts` already captures NVDA's speech as data, so this may not need Guidepup on Windows: add expected phrases to scenarios and fail on a mismatch. Only for what the DOM can't show; anything it can show belongs in Playwright (see the toast test). Guidepup is still the likely route for VoiceOver on the Mac.
 4. **JAWS, after the NVDA phases.** JAWS was the largest primary screen reader in WebAIM's 2026 survey (55%), and Guidepup can't drive it. Options: a 90-day testing license (listed at $319) with Speech History, JAWS Inspect for transcripts, or Assistiv Labs with your own license.
 5. **Mac Mini pass, once it arrives.** Real Safari through `safaridriver` (the Safari items in Verification and the `closedby` fallback), VoiceOver through Guidepup, and VoiceOver's Caption Panel for recordings.
 6. **One session with a screen-reader user** on the sample app. That's the only evidence of confusion and workarounds; automate whatever they hit.
@@ -29,9 +29,19 @@ Agreed order, from the screen-reader panel. Captions always come from the screen
 ## Behaviors (src/js)
 
 - **The closedby fallback has never run.** `closedByFallback` in `src/js/fallbacks.ts` only acts where the browser lacks `closedby`, and Chrome, Firefox, and Playwright's WebKit all have it. Real Safari may not. The `interestfor` fallback is proven: it runs in Firefox and WebKit, where the tooltip and hover-card tests pass. (step 3)
-- **Toast announcements are inferred, not heard.** The region is a polite live region present before each toast, and it is in the accessibility tree over modals. No screen reader has confirmed the announcement, including the first toast after the region moves into a dialog, which is inserted after a 150 ms delay. (step 3)
 - **Toasts already showing when a modal opens go inert.** The region moves into a dialog only when the next toast is shown. Moving it as soon as a dialog opens would need a hook on `showModal()`. (step 3)
 - **No submenus.** `enhanceMenu` handles one level. uvs-decks-gg's dropdown menu supports nested submenus. (step 3)
+
+## Screen reader (NVDA phase 1)
+
+Run with NVDA 2026.2, OneCore David, rate 50, in Chrome. The transcripts are in `.verify/evidence/<run>/sr/`.
+
+- **Fixed: toast announcements.** NVDA said "Deck savedMidnight Control, version 15. Dismiss: Deck saved": the title ran into the description and the Dismiss button's name was read. Toasts now announce one sentence from a hidden live line, and `e2e/behavior.spec.ts` asserts the text. Confirmed spoken on the page and over an open modal. (phase 1)
+- **Decide: the menu skips disabled items.** Arrow keys go from Share link straight to Show prices, but NVDA counts Merge in the positions ("4 of 9"). The APG says disabled menu items stay focusable by default, so people can find out they exist and why they're unavailable ("needs two decks"). That would mean `aria-disabled` instead of `disabled` and a change to `enhanceMenu`. (phase 1)
+- **Tabs are read twice on arrow keys.** "Stats tab selected 2 of 3" is read, cut off, and read again. It isn't our order: the tab is already selected, with its panel shown, when it takes focus, so the likely cause is Chrome sending the selection change after the focus event. Compare with JAWS. (phase 1)
+- **NVDA re-reads around dialogs.** Opening one reads its intro, cuts off, and reads it again. After one closes, focus returns correctly, but NVDA also reads the page's first landmark or "Storybook document". DOM focus is right in both. Compare with JAWS. (phase 1)
+- **Owner, a disabled field, isn't announced when tabbing.** That's expected for a disabled input, but it means a screen-reader user only finds it in browse mode. (phase 1)
+- **Limits of the recordings.** The audio is the whole system's output, so a notification sound during a run is in the video. Chrome must launch after NVDA to send it events; `sr.ts start` relaunches it. (phase 1)
 
 ## Palettes and chromes (step 4)
 

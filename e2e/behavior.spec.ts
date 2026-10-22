@@ -196,6 +196,20 @@ test.describe("keyboard widgets", () => {
     await expect.poll(() => page.locator(".ds-toaster").evaluate((el) => el.parentElement!.tagName)).toBe("BODY");
   });
 
+  // NVDA read the old markup as "Deck savedMidnight Control, version 15. Dismiss: Deck saved": the
+  // title ran into the description and the Dismiss button's name was part of the announcement.
+  test("a toast is announced as one sentence, without its buttons", async ({ page }) => {
+    await openStory(page, "components-interactive--toast", "mode:light");
+    await page.getByRole("button", { name: "Save deck" }).click();
+    await expect(page.locator(".ds-toast")).toHaveCount(1);
+    const live = page.locator('.ds-toaster [aria-live="polite"]');
+    await expect(live).toHaveCount(1);
+    await expect(live).toHaveText("Deck saved. Midnight Control, version 15.");
+    await expect(live.locator("button")).toHaveCount(0);
+    await page.locator('.ds-toast button[aria-label^="Dismiss"]').click();
+    await expect(live).toHaveText("");
+  });
+
   test("select-all checks every row, shows mixed, and clears", async ({ page }) => {
     await openStory(page, "components-data-display--table", "mode:light");
     const all = page.locator("[data-select-all]");

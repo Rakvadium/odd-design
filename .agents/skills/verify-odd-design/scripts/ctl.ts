@@ -26,7 +26,8 @@ type State = {
   run: string;
   head: string;
   storybook: { pid: number; port: number; url: string; log: string };
-  chrome: { pid: number; port: number; binary: string; profile: string };
+  /** headed: a visible window, for screen readers (sr.ts). Headless Chrome has no window for NVDA to read. */
+  chrome: { pid: number; port: number; binary: string; profile: string; headed?: boolean };
   /** CDP media emulation resets when a session closes, so it is stored here and re-applied on every connect. */
   emulate?: { name: string; value: string }[];
 };
@@ -305,12 +306,35 @@ async function axTree(page: Page) {
   return lines.join("\n");
 }
 
+function launchChrome(c: Omit<State["chrome"], "pid">, storybookUrl: string) {
+  const chrome = spawn(
+    c.binary,
+    [
+      `--remote-debugging-port=${c.port}`,
+      `--user-data-dir=${c.profile}`,
+      ...(c.headed ? ["--window-position=0,0", "--force-renderer-accessibility", "--disable-features=Translate"] : ["--headless=new", "--hide-scrollbars"]),
+      "--no-first-run",
+      "--no-default-browser-check",
+      "--window-size=1280,900",
+      // An app window has no toolbar, so Tab and NVDA stay in the page. Chrome ignores --app for
+      // about: URLs, so it opens on this run's Storybook (an error page until Storybook is up).
+      c.headed ? `--app=${storybookUrl}/` : "about:blank",
+    ],
+    { detached: true, stdio: "ignore", windowsHide: !c.headed },
+  );
+  chrome.unref();
+  return chrome;
+}
+
 // ---------- commands ----------
 
 const commands: Record<string, (args: string[]) => Promise<void>> = {
   async help() {
     console.log(`ctl.ts <command> [--run NAME]   (run defaults to $VERIFY_RUN or "default")
-  up                                   start Storybook + headless Chrome on free ports, wait until ready
+  up [--headed]                        start Storybook + headless Chrome on free ports, wait until ready.
+                                       --headed opens a visible window at 0,0 instead (needed by sr.ts)
+  restart-chrome                       relaunch this run's Chrome with the same profile and port. sr.ts start uses it:
+                                       Chrome only sends accessibility events to a screen reader running at launch
   doctor                               read-only health check of this run's instances
   goto <storyId> [globals] [args]      open a story iframe; globals like "chrome:glass;palette:aurora;mode:dark"
   state                                print html[data-*] appearance + story-root summary
@@ -333,6 +357,7 @@ const commands: Record<string, (args: string[]) => Promise<void>> = {
   },
 
   async up() {
+    const headed = argv.includes("--headed");
     if (existsSync(STATE_FILE)) {
       const s: State = JSON.parse(readFileSync(STATE_FILE, "utf8"));
       if (alive(s.storybook.pid) || alive(s.chrome.pid)) fail(`run "${RUN}" is already up. Use it, or 'ctl.ts down --run ${RUN}' first.`);
@@ -351,18 +376,13 @@ const commands: Record<string, (args: string[]) => Promise<void>> = {
     sb.unref();
     const binary = findChrome();
     const profile = join(RUN_DIR, "chrome-profile");
-    const chrome = spawn(
-      binary,
-      [`--remote-debugging-port=${cdpPort}`, `--user-data-dir=${profile}`, "--headless=new", "--no-first-run", "--no-default-browser-check", "--hide-scrollbars", "--window-size=1280,900", "about:blank"],
-      { detached: true, stdio: "ignore", windowsHide: true },
-    );
-    chrome.unref();
+    const chrome = launchChrome({ binary, profile, port: cdpPort, headed }, `http://127.0.0.1:${sbPort}`);
     const head = spawnSync("git", ["rev-parse", "--short", "HEAD"], { cwd: ROOT, encoding: "utf8" }).stdout.trim();
     const state: State = {
       run: RUN,
       head,
       storybook: { pid: sb.pid!, port: sbPort, url: `http://127.0.0.1:${sbPort}`, log },
-      chrome: { pid: chrome.pid!, port: cdpPort, binary, profile },
+      chrome: { pid: chrome.pid!, port: cdpPort, binary, profile, headed },
     };
     writeFileSync(STATE_FILE, JSON.stringify(state, null, 2));
     console.log(`starting run "${RUN}": storybook pid ${sb.pid} on ${state.storybook.url}, chrome pid ${chrome.pid} cdp ${cdpPort}`);
@@ -374,6 +394,18 @@ const commands: Record<string, (args: string[]) => Promise<void>> = {
     });
     transcript(`up: storybook ${state.storybook.url} (pid ${sb.pid}), chrome cdp ${cdpPort} (pid ${chrome.pid}), HEAD ${head}`);
     console.log(`READY run="${RUN}" storybook=${state.storybook.url} evidence=${EVIDENCE_DIR}`);
+  },
+
+  async "restart-chrome"() {
+    const s = readState();
+    killTree(s.chrome.pid);
+    await waitFor("old Chrome to exit", 10_000, async () => (alive(s.chrome.pid) ? undefined : true));
+    const chrome = launchChrome(s.chrome, s.storybook.url);
+    s.chrome.pid = chrome.pid!;
+    writeFileSync(STATE_FILE, JSON.stringify(s, null, 2));
+    await waitFor("Chrome CDP", 30_000, async () => ((await fetch(`http://127.0.0.1:${s.chrome.port}/json/version`).catch(() => null))?.ok ? true : undefined));
+    transcript(`restart-chrome: pid ${chrome.pid}`);
+    console.log(`chrome restarted: pid ${chrome.pid}`);
   },
 
   async doctor() {
@@ -664,6 +696,7 @@ html data: ${JSON.stringify(html)}`);
   async down() {
     if (!existsSync(STATE_FILE)) return console.log(`run "${RUN}" is not up; nothing to stop`);
     const s = readState();
+    if (existsSync(join(RUN_DIR, "sr.json"))) spawnSync("bun", [join(import.meta.dir, "sr.ts"), "stop", "--run", RUN], { stdio: "inherit" });
     killTree(s.chrome.pid);
     killTree(s.storybook.pid);
     await sleep(1000);
