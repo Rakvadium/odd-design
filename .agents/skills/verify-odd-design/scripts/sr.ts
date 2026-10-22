@@ -6,7 +6,7 @@ import { spawn, spawnSync } from "node:child_process";
 import { appendFileSync, copyFileSync, existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { join, resolve } from "node:path";
 import type { Pointer } from "bun:ffi";
-import { clickAt, findWindow, focusWindow, isForeground, KEY_NAMES, pressChord, windowRect } from "./win.ts";
+import { findWindow, focusWindow, isForeground, KEY_NAMES, pressChord, windowRect } from "./win.ts";
 
 const ROOT = resolve(import.meta.dir, "../../../..");
 const SCRIPTS = import.meta.dir;
@@ -89,16 +89,24 @@ const nvdaInChrome = (sr: Sr) => /chrome/i.test(events(sr).findLast((e) => e.kin
 async function chromeWindow(sr: Sr) {
   const hwnd = findWindow(ctlState().chrome.pid) ?? fail("can't find the run's Chrome window");
   if (!focusWindow(hwnd)) fail("couldn't bring Chrome to the front (another window is holding focus)");
-  // NVDA doesn't follow a foreground change made through the API, so activate the window the way a
-  // person would: a click on empty page near the bottom-right corner, clear of the scrollbar.
+  // NVDA doesn't follow a foreground change made through the API (a click doesn't help either, since
+  // focus doesn't change), but it does follow a focus change inside the page. Refocus what has focus,
+  // so open popovers and other state survive. If nothing has, focus a throwaway element and keep it
+  // until NVDA reports it: Chrome drops the focus event of an element removed in the same task.
   if (!nvdaInChrome(sr)) {
-    const r = windowRect(hwnd);
-    clickAt(r.x + r.width - 40, r.y + r.height - 20);
+    ctl("eval", `(() => {
+      const el = document.activeElement;
+      if (el && el !== document.body) { el.blur(); el.focus(); return; }
+      const tmp = Object.assign(document.createElement("div"), { id: "sr-sync", tabIndex: -1, ariaLabel: "sr.ts sync" });
+      document.body.append(tmp);
+      tmp.focus();
+    })()`);
     const deadline = Date.now() + 5000;
     while (!nvdaInChrome(sr)) {
       if (Date.now() > deadline) fail("NVDA didn't follow focus into Chrome");
       await sleep(100);
     }
+    ctl("eval", `document.getElementById("sr-sync")?.remove()`);
   }
   return hwnd;
 }
@@ -130,6 +138,7 @@ async function settle(sr: Sr, since: number, { min = 1500, quiet = 600, max = 20
 function phrases(evs: Ev[]) {
   const out: { t: number; text: string; cutOff: boolean }[] = [];
   evs.forEach((e, i) => {
+    if (e.kind === "window") out.push({ t: e.t, text: `[window: ${e.app}${e.name ? `, ${e.name}` : ""}]`, cutOff: false });
     if (e.kind === "focus") out.push({ t: e.t, text: `[focus: ${[e.role, e.name, ...(e.states ?? [])].filter(Boolean).join(", ")}]`, cutOff: false });
     if (audible(e)) {
       const next = evs.slice(i + 1).find((x) => x.kind === "done" || x.kind === "cancel");
@@ -315,7 +324,7 @@ const commands: Record<string, (args: string[]) => Promise<void>> = {
     // Only what was heard; focus moves stay in the transcript.
     const cues = marks.map((m, i) => {
       const said = phrases(m.evs)
-        .filter((p) => !p.text.startsWith("[focus:"))
+        .filter((p) => !p.text.startsWith("[focus:") && !p.text.startsWith("[window:"))
         .map((p) => `${p.text.replace(/\s*\n\s*/g, " ")}${p.cutOff ? " (cut off)" : ""}`);
       const until = i + 1 < marks.length ? marks[i + 1]!.t : end;
       return `${vttTime(m.t - videoStart)} --> ${vttTime(until - videoStart)}\n${vttEscape(`[${m.label}]`)}\n${vttEscape(said.join(" · ") || "(nothing spoken)")}`;

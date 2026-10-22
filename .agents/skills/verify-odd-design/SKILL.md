@@ -141,9 +141,12 @@ While it runs, NVDA speaks aloud and Chrome needs the foreground. `press` refuse
 Things that look like bugs but aren't ours (all reproduced with DOM focus correct):
 
 - Chrome only sends accessibility events to a screen reader that was running when it launched. `start` relaunches the run's Chrome for that reason.
+- NVDA doesn't follow Chrome to the front when the harness raises it, only when focus moves inside the page. `press` and `scenario` refocus the focused element (or a throwaway one) until NVDA reports focus in Chrome.
 - A tab with automatic activation is read twice, the first time cut off, even though it is selected before it takes focus. Most likely Chrome sends the selection change after the focus event.
 - After a modal closes, NVDA can read the page's first landmark, or "document", around the returned focus.
 - Opening a dialog reads its intro, cuts off, and reads it again.
+
+Before blaming NVDA or Chrome for something intermittent, compare the event logs of a passing and a failing run (`events.jsonl` has every key, focus move, and window change), and check that the page wasn't reloaded (`page reload` in the Storybook log). The one flaky step so far was our harness: Vite reloading the page because the scenario wrote into a watched folder.
 
 Turn what NVDA finds into a sharp test where the DOM can show it. For example, the toast announcement ran its title into its description and included the Dismiss button's name, so `e2e/behavior.spec.ts` now asserts the live region's exact text, with a comment quoting what NVDA said. Keep NVDA runs for what only a screen reader can show.
 

@@ -1,5 +1,6 @@
 # Records what NVDA does, for sr.ts. Loaded from the run's scratchpad dir, never installed.
 # Appends one JSON object per line to events.jsonl in the run's NVDA config dir:
+#   window  another top-level window came to the front: its app and title
 #   focus   NVDA's focus moved: role, name, states, and the app (sr.ts waits on these)
 #   key     a gesture NVDA received (before it decides whether to handle it or pass it on)
 #   speech  a sequence NVDA sent to the synth: the spoken text, with [beep] / [sound] markers
@@ -15,6 +16,7 @@ import time
 
 import buildVersion
 import config
+import core
 import globalPluginHandler
 import globalVars
 import inputCore
@@ -50,6 +52,12 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		self._register(inputCore.decide_executeGesture, self._onGesture)
 		self._register(tones.decide_beep, self._onBeep)
 		self._register(nvwave.decide_playWaveFile, self._onWave)
+		# Plugins load before NVDA finishes starting, including telling Windows a screen reader is running,
+		# which Chrome checks at launch. Report ready only once startup is done, since sr.ts launches Chrome then.
+		core.postNvdaStartup.register(self._onStarted)
+
+	def _onStarted(self):
+		core.postNvdaStartup.unregister(self._onStarted)
 		synth = synthDriverHandler.getSynth()
 		self._write(
 			"ready",
@@ -71,6 +79,10 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		with self._lock:
 			self._file.write(line + "\n")
 			self._file.flush()
+
+	def event_foreground(self, obj, nextHandler):
+		self._write("window", app=getattr(obj.appModule, "appName", ""), name=obj.name or "")
+		nextHandler()
 
 	def event_gainFocus(self, obj, nextHandler):
 		self._write(

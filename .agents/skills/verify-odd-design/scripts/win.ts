@@ -16,7 +16,6 @@ const user32 = dlopen("user32.dll", {
   ShowWindow: { args: [FFIType.ptr, FFIType.i32], returns: FFIType.i32 },
   AttachThreadInput: { args: [FFIType.u32, FFIType.u32, FFIType.i32], returns: FFIType.i32 },
   GetWindowRect: { args: [FFIType.ptr, FFIType.ptr], returns: FFIType.i32 },
-  SetCursorPos: { args: [FFIType.i32, FFIType.i32], returns: FFIType.i32 },
 });
 const kernel32 = dlopen("kernel32.dll", { GetCurrentThreadId: { args: [], returns: FFIType.u32 } });
 const dwmapi = dlopen("dwmapi.dll", { DwmGetWindowAttribute: { args: [FFIType.ptr, FFIType.u32, FFIType.ptr, FFIType.u32], returns: FFIType.i32 } });
@@ -65,18 +64,6 @@ export function pressChord(chord: string) {
     const sent = u.SendInput(vks.length, ptr(buf), INPUT_SIZE);
     if (sent !== vks.length) throw new Error(`SendInput sent ${sent} of ${vks.length} events (blocked by a higher-integrity window?)`);
   }
-}
-
-/** A real left click at a screen point, through SendInput like the keys. */
-export function clickAt(x: number, y: number) {
-  u.SetCursorPos(x, y);
-  const buf = new Uint8Array(INPUT_SIZE * 2);
-  const view = new DataView(buf.buffer);
-  for (const [i, flag] of [0x2, 0x4].entries()) { // MOUSEEVENTF_LEFTDOWN, MOUSEEVENTF_LEFTUP
-    view.setUint32(i * INPUT_SIZE, 0, true); // INPUT_MOUSE
-    view.setUint32(i * INPUT_SIZE + 20, flag, true); // MOUSEINPUT.dwFlags
-  }
-  if (u.SendInput(2, ptr(buf), INPUT_SIZE) !== 2) throw new Error("SendInput couldn't click");
 }
 
 /** The visible top-level Chrome window owned by a process, or null. */

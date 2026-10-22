@@ -6,8 +6,10 @@ import { openStory } from "./story.ts";
 // whether the browser used its native feature or our fallback, and attaches screenshots where only
 // pixels can show the result.
 
+/** The element's box once its transitions have finished: overlays scale in from 0.96, which shifts their edges. */
 const rect = (page: Page, selector: string) =>
-  page.locator(selector).evaluate((el) => {
+  page.locator(selector).evaluate(async (el) => {
+    await Promise.all(el.getAnimations().map((a) => a.finished));
     const r = el.getBoundingClientRect();
     return { left: r.left, right: r.right, top: r.top, bottom: r.bottom, cx: r.left + r.width / 2 };
   });
@@ -19,6 +21,45 @@ async function hoverFresh(page: Page, selector: string) {
 }
 
 const isOpen = (page: Page, selector: string) => page.locator(selector).evaluate((el) => el.matches(":popover-open, [open]"));
+
+/**
+ * Waits, inside the page, for a popover or dialog to open or close. Under load, Playwright's round
+ * trips into Firefox can lag by seconds, so expect.poll timed out on tooltips that had opened on time.
+ */
+const waitOpen = (page: Page, selector: string, open = true) =>
+  page.waitForFunction(
+    ([sel, want]) => document.querySelector(sel)?.matches(":popover-open, [open]") === want,
+    [selector, open] as const,
+    { timeout: 10_000 },
+  );
+
+/** Records, in page time, when the pointer enters and leaves `invoker` and when `target` opens and closes. */
+const watchHover = (page: Page, invoker: string, target: string) =>
+  page.evaluate(
+    ([inv, tgt]) => {
+      const log: Record<string, number[]> = ((window as any).__hover = { enter: [], leave: [], open: [], closed: [] });
+      const i = document.querySelector(inv)!;
+      i.addEventListener("pointerenter", () => log.enter!.push(performance.now()));
+      i.addEventListener("pointerleave", () => log.leave!.push(performance.now()));
+      document.querySelector(tgt)!.addEventListener("toggle", (e) => log[(e as ToggleEvent).newState]!.push(performance.now()));
+    },
+    [invoker, target] as const,
+  );
+
+/** Page-time ms from the last pointer `from` event to the target's last `to` toggle, once both have happened. */
+const hoverDelay = async (page: Page, from: "enter" | "leave", to: "open" | "closed") => {
+  const handle = await page.waitForFunction(
+    ([f, t]) => {
+      const log = (window as any).__hover as Record<string, number[]>;
+      const a = log[f]!.at(-1);
+      const b = log[t]!.at(-1);
+      return a !== undefined && b !== undefined && b >= a ? { ms: b - a } : null;
+    },
+    [from, to] as const,
+    { timeout: 10_000 },
+  );
+  return ((await handle.jsonValue()) as { ms: number }).ms;
+};
 
 async function note(page: Page, testInfo: TestInfo, feature: string, check: string) {
   const native = await page.evaluate(check);
@@ -34,30 +75,36 @@ test.describe("tooltips and hover cards (interestfor)", () => {
   test("a tooltip opens on hover, centered above its button, and closes when the pointer leaves", async ({ page }, testInfo) => {
     await openStory(page, "components-overlays--tooltip", "mode:light");
     await note(page, testInfo, "interestfor", `"interestForElement" in HTMLButtonElement.prototype`);
+    await watchHover(page, '[interestfor="tip-delete"]', "#tip-delete");
     await hoverFresh(page, '[interestfor="tip-delete"]');
-    await expect.poll(() => isOpen(page, "#tip-delete"), { timeout: 6000 }).toBe(true);
+    // Both engines here use the fallback: 500 ms to show, 250 ms to hide, timed in the page.
+    const shown = await hoverDelay(page, "enter", "open");
+    expect(shown, "opens after the show delay, not at once").toBeGreaterThanOrEqual(450);
+    expect(shown, "opens after the show delay, not much later").toBeLessThan(1000);
     const button = await rect(page, '[interestfor="tip-delete"]');
     const tip = await rect(page, "#tip-delete");
     expect(Math.abs(tip.cx - button.cx), "tooltip centered on its button").toBeLessThan(2);
     expect(Math.abs(button.top - tip.bottom - 8), "8px above the button").toBeLessThan(1.5);
     await shot(page, testInfo, "tooltip-hover.png");
     await page.mouse.move(0, 0);
-    await expect.poll(() => isOpen(page, "#tip-delete"), { timeout: 6000 }).toBe(false);
+    const hidden = await hoverDelay(page, "leave", "closed");
+    expect(hidden, "closes after the hide delay").toBeGreaterThanOrEqual(200);
+    expect(hidden, "closes after the hide delay, not much later").toBeLessThan(750);
   });
 
   test("a tooltip opens on keyboard focus and Escape closes it", async ({ page }) => {
     await openStory(page, "components-overlays--tooltip", "mode:light");
     for (let i = 0; i < 4; i++) await page.keyboard.press("Tab");
     await expect(page.locator('[interestfor="tip-publish"]')).toBeFocused();
-    await expect.poll(() => isOpen(page, "#tip-publish"), { timeout: 6000 }).toBe(true);
+    await waitOpen(page, "#tip-publish");
     await page.keyboard.press("Escape");
-    await expect.poll(() => isOpen(page, "#tip-publish"), { timeout: 6000 }).toBe(false);
+    await waitOpen(page, "#tip-publish", false);
   });
 
   test("a hover card opens under its link and stays open while the pointer is inside it", async ({ page }, testInfo) => {
     await openStory(page, "components-overlays--hover-card", "mode:light");
     await hoverFresh(page, 'a[interestfor="preview-midnight"]');
-    await expect.poll(() => isOpen(page, "#preview-midnight"), { timeout: 6000 }).toBe(true);
+    await waitOpen(page, "#preview-midnight");
     const link = await rect(page, 'a[interestfor="preview-midnight"]');
     const card = await rect(page, "#preview-midnight");
     expect(Math.abs(card.left - link.left), "aligned to the link's start edge").toBeLessThan(2);
@@ -78,7 +125,7 @@ test.describe("popovers and dialogs", () => {
     const opener = 'button[commandfor="filters"][command="toggle-popover"]';
     await page.locator(opener).focus();
     await page.keyboard.press("Enter");
-    await expect.poll(() => isOpen(page, "#filters")).toBe(true);
+    await waitOpen(page, "#filters");
     const button = await rect(page, opener);
     const pop = await rect(page, "#filters");
     expect(Math.abs(pop.left - button.left), "aligned to the button's start edge").toBeLessThan(2);
@@ -88,7 +135,7 @@ test.describe("popovers and dialogs", () => {
     await expect(page.locator(opener)).toBeFocused();
     const endOpener = 'button[commandfor="filters-end"][command="toggle-popover"]';
     await page.locator(endOpener).click();
-    await expect.poll(() => isOpen(page, "#filters-end")).toBe(true);
+    await waitOpen(page, "#filters-end");
     const end = await rect(page, endOpener);
     const flipped = await rect(page, "#filters-end");
     expect(Math.abs(flipped.right - end.right), "flipped to align with the button's end edge").toBeLessThan(2);
@@ -99,22 +146,22 @@ test.describe("popovers and dialogs", () => {
     await openStory(page, "components-surfaces--dialog", "mode:light");
     await note(page, testInfo, "closedby", `"closedBy" in HTMLDialogElement.prototype`);
     await page.locator('button[commandfor="confirm-delete"][command="show-modal"]').click();
-    await expect.poll(() => isOpen(page, "#confirm-delete")).toBe(true);
+    await waitOpen(page, "#confirm-delete");
     await expect(page.locator("#confirm-delete button", { hasText: "Close" })).toBeFocused();
     await page.mouse.click(10, 10);
-    await expect.poll(() => isOpen(page, "#confirm-delete")).toBe(false);
+    await waitOpen(page, "#confirm-delete", false);
   });
 
   test("an alert dialog ignores backdrop clicks but closes on Escape", async ({ page }) => {
     await openStory(page, "components-overlays--alert-dialog", "mode:light");
     await page.locator('button[commandfor="discard"][command="show-modal"]').focus();
     await page.keyboard.press("Enter");
-    await expect.poll(() => isOpen(page, "#discard")).toBe(true);
+    await waitOpen(page, "#discard");
     await page.mouse.click(10, 10);
     await page.waitForTimeout(400);
     expect(await isOpen(page, "#discard")).toBe(true);
     await page.keyboard.press("Escape");
-    await expect.poll(() => isOpen(page, "#discard")).toBe(false);
+    await waitOpen(page, "#discard", false);
     await expect(page.locator('button[commandfor="discard"][command="show-modal"]')).toBeFocused();
   });
 
