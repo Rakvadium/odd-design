@@ -1,5 +1,6 @@
 // The little color math the palette generator needs, with no dependencies: OKLCH <-> sRGB,
-// gamut clamping, an OKLab mix that matches CSS color-mix(in oklab), and WCAG 2 contrast.
+// gamut clamping, an OKLab mix that matches CSS color-mix(in oklab), compositing a translucent
+// layer over a solid one, and WCAG 2 contrast.
 // tests/color.test.ts checks every function against culori.
 
 export type Oklch = { l: number; c: number; h: number };
@@ -65,6 +66,17 @@ export function luminance(color: Oklch): number {
 export function contrast(a: Oklch, b: Oklch): number {
   const [hi, lo] = [luminance(a), luminance(b)].sort((x, y) => y - x) as [number, number];
   return (hi + 0.05) / (lo + 0.05);
+}
+
+const toGamma = (v: number) => (v <= 0.0031308 ? 12.92 * v : 1.055 * v ** (1 / 2.4) - 0.055);
+const clamp01 = (v: number) => Math.min(1, Math.max(0, v));
+
+/** `top` at `alpha` over an opaque `base`, composited in sRGB the way browsers paint layers. */
+export function compositeOver(top: Oklch, alpha: number, base: Oklch): Oklch {
+  const encode = (c: Oklch) => linearRgb(clampChroma(c)).map((v) => toGamma(clamp01(v)));
+  const t = encode(top);
+  const b = encode(base);
+  return fromLab(linearToOklab(t.map((v, i) => toLinear(v * alpha + b[i]! * (1 - alpha))) as Rgb));
 }
 
 /** CSS color-mix(in oklab, a amount, b): `amount` of a, the rest b. */

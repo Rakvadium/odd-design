@@ -1,10 +1,11 @@
 import { describe, expect, test } from "bun:test";
 import { converter, formatCss, interpolate, parse, wcagContrast } from "culori";
-import { clampChroma, contrast, formatOklch, inGamut, mixOklab, parseColor, type Oklch } from "../src/js/color.ts";
+import { clampChroma, compositeOver, contrast, formatOklch, inGamut, mixOklab, parseColor, type Oklch } from "../src/js/color.ts";
 
 // src/js/color.ts reimplements just enough color math to keep the runtime dependency-free.
 // These tests hold it to culori, which the rest of the test suite trusts.
 const toOklch = converter("oklch");
+const toRgb = converter("rgb");
 
 const samples: Oklch[] = [];
 for (const l of [0.15, 0.35, 0.55, 0.75, 0.95])
@@ -51,6 +52,15 @@ describe("color math matches culori", () => {
     const theirs = toOklch(interpolate([css(b), css(a)], "oklab")(0.14));
     expect(ours.l).toBeCloseTo(theirs.l, 4);
     expect(ours.c).toBeCloseTo(theirs.c ?? 0, 4);
+  });
+
+  test("compositeOver matches sRGB alpha compositing", () => {
+    const top = parseColor("oklch(0.6 0.2 300)");
+    const base = parseColor("oklch(0.97 0.01 80)");
+    const ours = toRgb(parse(formatOklch(compositeOver(top, 0.28, base)))!)!;
+    const t = toRgb(parse(css(top))!)!;
+    const b = toRgb(parse(css(base))!)!;
+    for (const ch of ["r", "g", "b"] as const) expect(ours[ch]).toBeCloseTo(t[ch] * 0.28 + b[ch] * 0.72, 3);
   });
 
   test("formatOklch round-trips through parseColor", () => {

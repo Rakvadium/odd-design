@@ -11,8 +11,9 @@ type Story = StoryObj;
 function measure(scope: HTMLElement) {
   for (const row of scope.querySelectorAll<HTMLElement>("[data-pair]")) {
     const sample = row.querySelector<HTMLElement>(".pair-sample")!;
-    const { color, backgroundColor } = getComputedStyle(sample);
-    const fg = parse(color);
+    // Non-text pairs are drawn as a border, so measure the border color for them.
+    const { color, borderTopColor, backgroundColor } = getComputedStyle(sample);
+    const fg = parse(sample.hasAttribute("data-nontext") ? borderTopColor : color);
     const bg = parse(backgroundColor);
     if (!fg || !bg) continue;
     const ratio = wcagContrast(fg, bg);
@@ -39,7 +40,12 @@ const column = (mode: "light" | "dark", palette: string, chrome: string) => `
         ${[...CONTRAST_PAIRS, ...TINT_PAIRS].map(
           ([fg, bg, min]) => `<tr data-pair data-min="${min}" style="border-block-start: 1px solid var(--border)">
             <td style="padding-block: var(--space-2)">
-              <span class="pair-sample" style="display:inline-block; padding: 0.15em 0.6em; border-radius: 6px; color: var(--${fg}); background: var(--${bg}); box-shadow: inset 0 0 0 1px var(--border); font-weight: 600">Aa</span>
+              ${
+                min < 4.5
+                  ? // Borders and focus rings are non-text UI, so show them as a border, not as text held to the text minimum.
+                    `<span class="pair-sample" data-nontext aria-hidden="true" style="display:inline-block; vertical-align: middle; inline-size: 2.4em; block-size: 1.5em; border-radius: 6px; border: 3px solid var(--${fg}); background: var(--${bg})"></span>`
+                  : `<span class="pair-sample" style="display:inline-block; padding: 0.15em 0.6em; border-radius: 6px; color: var(--${fg}); background: var(--${bg}); box-shadow: inset 0 0 0 1px var(--border); font-weight: 600">Aa</span>`
+              }
               <code style="margin-inline-start: var(--space-2)">${fg}</code> on <code>${bg}</code>
             </td>
             <td class="pair-ratio" style="text-align:end; font-variant-numeric: tabular-nums"></td>

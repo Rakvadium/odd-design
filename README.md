@@ -18,7 +18,10 @@ Any chrome pairs with any palette. Chromes: `calm`, `glass`, `bubblegum`, `holot
 bun install
 bun run storybook   # http://localhost:6006
 bun test            # token contract, WCAG contrast, palette generator, color math
+bun run test:browsers   # Playwright: the axe sweep and behavior checks in Firefox and WebKit
 ```
+
+`test:browsers` needs Playwright's own browsers once: `bunx playwright install firefox webkit`. It builds a static Storybook, runs it in both engines, and writes an HTML report with screenshots to `.verify/playwright/report`.
 
 ## Use it
 
@@ -60,7 +63,22 @@ A subtree can have its own appearance: add `class="ds-scope"` and set all three 
 - No component selector mentions `data-chrome` or `data-palette`.
 - The tint and status-color values in `foundations.css` match the contract, which the palette generator also reads.
 - The palette generator meets every contrast pair for 146 seed pairs across the hue wheel, checked both by its own math and through the CSS it emits.
-- `src/js/color.ts` agrees with culori on parsing, contrast, gamut clamping, and mixing.
+- Text on every chrome's page background passes AA at the background's worst points (each solid color under every combination of its washes), for every palette and mode. Each chrome's `--page-background` matches `PAGE_BACKGROUNDS` in the contract, which the palette generator also reads.
+- `src/js/color.ts` agrees with culori on parsing, contrast, gamut clamping, mixing, and compositing.
+
+## Accessibility checks
+
+One rule set, defined once in `.storybook/a11y.ts`: stock axe-core, WCAG 2.0, 2.1, and 2.2 at levels A and AA, with no custom rules. The Storybook a11y panel reads it through `parameters.a11y`, and the verify harness's sweep imports it, so both apply the same rules.
+
+```sh
+bun .agents/skills/verify-odd-design/scripts/ctl.ts up --run a11y
+bun .agents/skills/verify-odd-design/scripts/ctl.ts axe --run a11y    # every story, light and dark, overlays opened
+```
+
+- The sweep fails on any violation. Results axe couldn't decide are printed as `REVIEW` with axe's reason.
+- `.storybook/a11y-rules.txt` records the 63 rules the tags resolve to on the pinned axe-core. The sweep fails if the rules that ran differ, so an axe upgrade that adds or drops rules shows up as a diff to review. Accept it with `--update-rules`.
+- axe can't measure contrast over gradients, so text on page backgrounds is proven by `bun test` instead.
+- `bun run test:browsers` runs the same sweep, with the same rules and the same record, in Firefox and WebKit. Chrome stays on the harness.
 
 ## Add a palette
 
@@ -112,12 +130,12 @@ The five palettes ported from uvs-decks-gg went through the same repair. Their i
 | `ds-table-wrap`, `ds-table`, `ds-table-sort` | `<table>` | The wrapper scrolls and is focusable. `data-numeric`, `aria-sort`, and a row checkbox tints the row. |
 | `ds-slider` | `<input type="range">` | The filled track follows the thumb with no JS where scroll-driven animations exist. |
 | `ds-search` | `<search>` with `<input type="search">` | Visually hidden label, leading icon. |
-| `ds-popover` | `<div popover>` | Open with `commandfor`/`command="toggle-popover"`. Anchors to the invoker and flips. |
+| `ds-popover` | `<div popover role="dialog">` | Open with `commandfor`/`command="toggle-popover"`. Anchors to the invoker and flips. Use `role="dialog"` and a name when it holds controls. |
 | `ds-tooltip` | `<div popover="hint" role="tooltip">` | Shown via `interestfor`. Wire `aria-labelledby` or `aria-describedby` yourself. |
 | `ds-hover-card` | `<div popover="hint">` | A preview via `interestfor`. Its content must also be reachable through the link. |
 | `ds-sheet` | `<dialog>` | Opens with `command="show-modal"`; `data-side="start|end|top|bottom"`. |
 | alert dialog | `<dialog class="ds-dialog" role="alertdialog">` | Leave out `closedby="any"` so only Escape or a button closes it. |
-| `ds-menu`, `ds-menu-item` | `<div popover role="menu">` | Needs `enhanceMenu`. `menuitemcheckbox`/`menuitemradio` with `aria-checked`; `data-tone="danger"`. |
+| `ds-menu`, `ds-menu-item` | `<div popover role="menu">` | Needs `enhanceMenu`. `menuitemcheckbox`/`menuitemradio` with `aria-checked`; `data-tone="danger"`; disable items with `aria-disabled="true"`, which keeps them reachable. |
 | `ds-tabs` | `role="tablist"`, `tab`, `tabpanel` | Needs `enhanceTabs`. `data-activation="manual"`, `aria-orientation="vertical"`. |
 | `ds-toaster`, `ds-toast` | built by `createToaster()` | A polite live region in the corner; it moves into an open modal dialog so toasts stay live. |
 

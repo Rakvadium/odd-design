@@ -16,7 +16,7 @@ const meta = {
 export default meta;
 type Story = StoryObj;
 
-const filters = (id: string) => `<div class="ds-popover" id="${id}" popover aria-labelledby="${id}-title">
+const filters = (id: string) => `<div class="ds-popover" id="${id}" popover role="dialog" aria-labelledby="${id}-title">
       <div class="ds-stack" style="--gap: var(--space-3)">
         <p class="ds-eyebrow" id="${id}-title">Filter decks</p>
         <label class="ds-choice"><input type="checkbox" checked> Legal only</label>

@@ -40,17 +40,13 @@
   color: var(--muted-foreground);
 }
 
-.ds-menu-item:is(:hover, :focus-visible):not(:disabled) {
+.ds-menu-item:is(:hover, :focus-visible):not(:disabled, [aria-disabled="true"]) {
   background: var(--muted);
   color: var(--foreground);
 }
 .ds-menu-item:focus-visible {
   outline: var(--focus-width) solid var(--focus-color);
   outline-offset: calc(var(--focus-width) * -1);
-}
-
-.ds-menu-item:disabled {
-  opacity: 0.55;
 }
 
 /* Checkbox and radio items reserve the indicator's space whether checked or not, so labels align. */
@@ -70,12 +66,19 @@
 .ds-menu-item[data-tone="danger"] {
   color: var(--danger);
 }
-.ds-menu-item[data-tone="danger"]:is(:hover, :focus-visible):not(:disabled) {
+.ds-menu-item[data-tone="danger"]:is(:hover, :focus-visible):not(:disabled, [aria-disabled="true"]) {
   background: var(--danger);
   color: var(--danger-foreground);
 }
 .ds-menu-item[data-tone="danger"] svg {
   color: inherit;
+}
+
+/* aria-disabled items stay focusable, so they get no hover fill but keep the full-strength focus ring:
+   the label is dimmed by color, not opacity, which would fade the ring too. After the danger rules so a
+   disabled danger item is dimmed as well. */
+.ds-menu-item:is(:disabled, [aria-disabled="true"]) {
+  color: var(--muted-foreground);
 }
 
 .ds-menu-shortcut {
@@ -105,7 +108,7 @@
 }
 
 @media (forced-colors: active) {
-  .ds-menu-item:is(:hover, :focus-visible):not(:disabled) {
+  .ds-menu-item:is(:hover, :focus-visible):not(:disabled, [aria-disabled="true"]) {
     background: Highlight;
     color: HighlightText;
     forced-color-adjust: none;

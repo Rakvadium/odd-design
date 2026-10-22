@@ -4,9 +4,11 @@
  *   const toaster = createToaster();            // once per page; adds the region to <body>
  *   toaster.show({ title: "Deck saved", tone: "success", action: { label: "Undo", onClick: undo } });
  *
- * The region is a manual popover that stays open, so toasts sit in the top layer, and it is a polite
- * live region from the start, so each toast is announced as it's added. A modal dialog makes the rest
- * of the page inert, so while one is open the region moves inside it, and moves back when it closes. Toasts pause while the
+ * The region is a manual popover that stays open, so toasts sit in the top layer. It holds a hidden
+ * polite live region from the start, and each toast adds one line there: its title and description as
+ * a sentence. The visible toast isn't live, so its buttons ("Dismiss: Deck saved") aren't read out as
+ * part of the message. A modal dialog makes the rest of the page inert, so while one is open the
+ * region moves inside it, and moves back when it closes. Toasts pause while the
  * pointer or focus is in the region, each has a Dismiss button, and they leave after `duration`
  * (default 6 s; pass Infinity to keep one). Never make a toast the only place a piece of information
  * or an action lives: it can vanish before someone gets to it.
@@ -37,13 +39,15 @@ export function createToaster({ label = "Notifications", max = 3, parent = docum
   region.popover = "manual";
   region.setAttribute("aria-label", label);
   const list = document.createElement("ol");
-  list.setAttribute("aria-live", "polite");
-  list.setAttribute("aria-relevant", "additions text");
-  region.append(list);
+  const announcer = document.createElement("div");
+  announcer.className = "ds-visually-hidden";
+  announcer.setAttribute("aria-live", "polite");
+  announcer.setAttribute("aria-relevant", "additions");
+  region.append(list, announcer);
   parent.append(region);
   region.showPopover();
 
-  type Live = { el: HTMLLIElement; remaining: number; startedAt: number; timer?: ReturnType<typeof setTimeout> };
+  type Live = { el: HTMLLIElement; said: HTMLParagraphElement; remaining: number; startedAt: number; timer?: ReturnType<typeof setTimeout> };
   const live = new Set<Live>();
   let paused = false;
 
@@ -64,6 +68,7 @@ export function createToaster({ label = "Notifications", max = 3, parent = docum
     stop(t);
     const hadFocus = t.el.contains(document.activeElement);
     t.el.dataset.state = "closing";
+    t.said.remove();
     Promise.all(t.el.getAnimations().map((a) => a.finished)).finally(() => t.el.remove());
     // Focus was on the toast's button; hand it to the next toast or let the page take it back.
     if (hadFocus) [...live].at(-1)?.el.querySelector("button")?.focus();
@@ -118,7 +123,11 @@ export function createToaster({ label = "Notifications", max = 3, parent = docum
     }
     el.append(body);
 
-    const t: Live = { el, remaining: duration, startedAt: 0 };
+    // What's announced: one sentence, so the title and description don't run together.
+    const said = document.createElement("p");
+    said.textContent = [title, description].filter(Boolean).map((s) => (/[.!?…]$/.test(s!) ? s : `${s}.`)).join(" ");
+
+    const t: Live = { el, said, remaining: duration, startedAt: 0 };
 
     if (action) {
       const button = document.createElement("button");
@@ -152,6 +161,7 @@ export function createToaster({ label = "Notifications", max = 3, parent = docum
     const insert = () => {
       if (!live.has(t)) return;
       list.append(el);
+      announcer.append(said);
       start(t);
     };
     // A live region that just moved needs a moment before screen readers watch it again.

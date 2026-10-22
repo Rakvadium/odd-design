@@ -7,11 +7,17 @@
  * A native range input, so arrow keys, Page Up/Down, Home/End, and forms come from the browser.
  * Show the value in text if it matters; updating that text on input is the page's one line of JS.
  *
- * The filled part of the track: Firefox draws it with ::-moz-range-progress. In Chromium and
- * WebKit, a view timeline on the thumb drives --_progress where scroll-driven animations exist
- * (no JS). Without them the track is plain and the thumb alone shows the value.
+ * The filled part of the track: Firefox draws it with ::-moz-range-progress. In Chromium, a view
+ * timeline on the thumb drives --_progress (no JS). WebKit accepts that CSS but never runs the
+ * timeline for a slider thumb, so the animation also sets --_on: where it isn't running, --_on stays
+ * 0, nothing is filled, and the thumb alone shows the value.
  */
 @property --_progress {
+  syntax: "<number>";
+  inherits: true;
+  initial-value: 0;
+}
+@property --_on {
   syntax: "<number>";
   inherits: true;
   initial-value: 0;
@@ -45,7 +51,7 @@
   background:
     linear-gradient(
       to var(--_to),
-      var(--primary) calc(var(--_thumb) / 2 + (100% - var(--_thumb)) * var(--_progress)),
+      var(--primary) calc((var(--_thumb) / 2 + (100% - var(--_thumb)) * var(--_progress)) * var(--_on)),
       transparent 0
     ),
     var(--track);
@@ -109,8 +115,8 @@
 }
 
 @keyframes ds-slider-progress {
-  from { --_progress: 1; }
-  to { --_progress: 0; }
+  from { --_progress: 1; --_on: 1; }
+  to { --_progress: 0; --_on: 1; }
 }
 
 @media (forced-colors: active) {

@@ -40,7 +40,6 @@
   --ease: cubic-bezier(0.2, 0, 0, 1);
 
   --fx-glow: none;
-  --fx-scanlines: 0;
   --fx-backdrop: none;
   --page-background: linear-gradient(180deg, var(--muted) 0%, var(--background) 24rem);
 }

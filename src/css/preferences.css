@@ -7,9 +7,10 @@
     --edge-surface: var(--control-border);
     --surface-alpha: 100%;
     --fx-glow: none;
-    --fx-scanlines: 0;
     --fx-backdrop: none;
     --focus-width: 3px;
+    /* A flat page: no washes, grids, or scanlines behind the text. */
+    --page-background: var(--background);
   }
 }
 
@@ -35,6 +36,6 @@
     --focus-color: Highlight;
     --focus-glow: 0 0 0 0 transparent;
     --fx-glow: none;
-    --fx-scanlines: 0;
+    --page-background: var(--background);
   }
 }

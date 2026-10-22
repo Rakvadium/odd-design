@@ -16,13 +16,18 @@ import { roving } from "./roving.ts";
  * enhanceMenu adds the menu keyboard: focus lands on the first item, arrows, Home, End, and typing
  * move between items, and Tab closes. ArrowDown or ArrowUp on the trigger opens it at the first or
  * last item. A menuitem closes the menu when chosen; checkbox and radio items toggle and stay open.
- * Listen for click on the items to act on them. Use the disabled attribute to disable an item.
+ * Listen for click on the items to act on them.
+ *
+ * Disable an item with aria-disabled="true", not the disabled attribute. It stays reachable with the
+ * arrows, so a screen-reader user hears that it exists and that it's unavailable (the APG's default
+ * for menus), and it does nothing when chosen: enhanceMenu stops the click before your listeners see it.
  */
 const ITEM = '[role="menuitem"], [role="menuitemcheckbox"], [role="menuitemradio"]';
 
 export function enhanceMenu(menu: HTMLElement): () => void {
   const items = () => [...menu.querySelectorAll<HTMLElement>(ITEM)];
-  const enabled = () => items().filter((el) => !el.matches(":disabled"));
+  const unavailable = (el: Element) => el.matches(':disabled, [aria-disabled="true"]');
+  const enabled = () => items().filter((el) => !unavailable(el));
   const triggers = () => [
     ...document.querySelectorAll<HTMLElement>(`[commandfor="${CSS.escape(menu.id)}"], [popovertarget="${CSS.escape(menu.id)}"]`),
   ];
@@ -38,9 +43,18 @@ export function enhanceMenu(menu: HTMLElement): () => void {
     openAt = "first";
   };
 
+  // Capture phase, so a disabled item's click never reaches the item's or the menu's own listeners.
+  const onDisabledClick = (event: MouseEvent) => {
+    const item = (event.target as Element).closest<HTMLElement>(ITEM);
+    if (item && menu.contains(item) && unavailable(item)) {
+      event.preventDefault();
+      event.stopPropagation();
+    }
+  };
+
   const onClick = (event: MouseEvent) => {
     const item = (event.target as Element).closest<HTMLElement>(ITEM);
-    if (!item || !menu.contains(item) || item.matches(":disabled")) return;
+    if (!item || !menu.contains(item) || unavailable(item)) return;
     const role = item.getAttribute("role");
     if (role === "menuitemcheckbox") {
       item.setAttribute("aria-checked", String(item.getAttribute("aria-checked") !== "true"));
@@ -74,6 +88,7 @@ export function enhanceMenu(menu: HTMLElement): () => void {
 
   const bound = triggers();
   menu.addEventListener("toggle", onToggle);
+  menu.addEventListener("click", onDisabledClick, true);
   menu.addEventListener("click", onClick);
   menu.addEventListener("keydown", onMenuKeyDown);
   for (const t of bound) {
@@ -84,6 +99,7 @@ export function enhanceMenu(menu: HTMLElement): () => void {
   return () => {
     stopRoving();
     menu.removeEventListener("toggle", onToggle);
+    menu.removeEventListener("click", onDisabledClick, true);
     menu.removeEventListener("click", onClick);
     menu.removeEventListener("keydown", onMenuKeyDown);
     for (const t of bound) {

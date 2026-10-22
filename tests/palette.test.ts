@@ -1,9 +1,9 @@
 import { describe, expect, test } from "bun:test";
 import { parse, wcagContrast } from "culori";
 import { formatOklch } from "../src/js/color.ts";
-import { CONTRAST_PAIRS, PALETTE_TOKENS, TINT_PAIRS } from "../src/js/contract.ts";
+import { CHROMES, CONTRAST_PAIRS, PAGE_PAIRS, PALETTE_TOKENS, TINT_PAIRS } from "../src/js/contract.ts";
 import { generatePalette, paletteCss, paletteFailures } from "../src/js/palette.ts";
-import { block, read, resolve } from "./css.ts";
+import { block, pageBackgrounds, read, resolve } from "./css.ts";
 
 // Seeds across the hue wheel, from dark to pale and muted to vivid, including ones that start out
 // failing (pale yellow primaries, near-greys). Every generated palette must meet the contract.
@@ -38,6 +38,26 @@ describe("generatePalette", () => {
       );
     });
     expect(failures).toEqual([]);
+  });
+
+  // And against every chrome's real --page-background, read from the chrome CSS.
+  test("emitted CSS keeps page text at AA on every chrome's page background", () => {
+    const chromes = CHROMES.map((c) => block(read(`chromes/${c}.css`), `[data-chrome="${c}"]`));
+    const failures = seeds.flatMap((s) => {
+      const own = block(paletteCss("custom", generatePalette(s)), '[data-palette="custom"]');
+      return chromes.flatMap((chrome, i) => {
+        const decls = new Map([...derived, ...own, ...chrome]);
+        return (["light", "dark"] as const).flatMap((mode) =>
+          pageBackgrounds(decls, mode).flatMap((bg) =>
+            PAGE_PAIRS.flatMap(([fg, min]) => {
+              const ratio = wcagContrast(parse(resolve(decls, fg, mode))!, parse(bg)!);
+              return ratio < min ? [`${s.primary} ${CHROMES[i]} ${mode}: ${fg} ${ratio.toFixed(3)}`] : [];
+            }),
+          ),
+        );
+      });
+    });
+    expect([...new Set(failures)]).toEqual([]);
   });
 
   test("defines every palette token and nothing else", () => {

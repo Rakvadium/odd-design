@@ -4,7 +4,10 @@
  *
  * Popover (click):
  *   <button class="ds-button" commandfor="filters" command="toggle-popover">Filters</button>
- *   <div class="ds-popover" id="filters" popover aria-labelledby="filters-title">…</div>
+ *   <div class="ds-popover" id="filters" popover role="dialog" aria-labelledby="filters-title">…</div>
+ *   A popover with controls in it is a non-modal dialog, which is also what makes its name valid:
+ *   a plain <div> has the generic role, and ARIA doesn't allow naming generic elements. A popover
+ *   that only shows text needs neither the role nor the name.
  *
  * Tooltip (hover or keyboard focus, via interest invokers):
  *   <button class="ds-button" data-icon-only aria-labelledby="tip-copy" interestfor="tip-copy">…</button>

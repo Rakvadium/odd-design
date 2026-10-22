@@ -41,9 +41,10 @@
   --ease: steps(4, end);
 
   --fx-glow: 0 0 18px color-mix(in oklch, var(--primary) 55%, transparent);
-  --fx-scanlines: 0.06;
   --fx-backdrop: none;
+  /* Scanlines sit in the page background, behind the content, so they never cover text. */
   --page-background:
+    repeating-linear-gradient(0deg, color-mix(in oklch, var(--foreground) 6%, transparent) 0 1px, transparent 1px 3px),
     linear-gradient(color-mix(in oklch, var(--primary) 7%, transparent) 1px, transparent 1px) 0 0 / 32px 32px,
     linear-gradient(90deg, color-mix(in oklch, var(--primary) 7%, transparent) 1px, transparent 1px) 0 0 / 32px 32px,
     var(--background);
