@@ -43,7 +43,7 @@ export const Menu: Story = {
       <div class="ds-menu" id="deck-actions" popover role="menu" aria-label="Deck actions">
         <button class="ds-menu-item" role="menuitem" aria-keyshortcuts="Control+D">${icons.copy} Duplicate <kbd class="ds-menu-shortcut" aria-hidden="true">Ctrl D</kbd></button>
         <button class="ds-menu-item" role="menuitem">${icons.share} Share link</button>
-        <button class="ds-menu-item" role="menuitem" disabled>${icons.layers} Merge (needs two decks)</button>
+        <button class="ds-menu-item" role="menuitem" aria-disabled="true">${icons.layers} Merge (needs two decks)</button>
         <hr class="ds-separator">
         <button class="ds-menu-item" role="menuitemcheckbox" aria-checked="true">Show prices</button>
         <button class="ds-menu-item" role="menuitemcheckbox" aria-checked="false">Compact grid</button>

@@ -135,7 +135,7 @@ The five palettes ported from uvs-decks-gg went through the same repair. Their i
 | `ds-hover-card` | `<div popover="hint">` | A preview via `interestfor`. Its content must also be reachable through the link. |
 | `ds-sheet` | `<dialog>` | Opens with `command="show-modal"`; `data-side="start|end|top|bottom"`. |
 | alert dialog | `<dialog class="ds-dialog" role="alertdialog">` | Leave out `closedby="any"` so only Escape or a button closes it. |
-| `ds-menu`, `ds-menu-item` | `<div popover role="menu">` | Needs `enhanceMenu`. `menuitemcheckbox`/`menuitemradio` with `aria-checked`; `data-tone="danger"`. |
+| `ds-menu`, `ds-menu-item` | `<div popover role="menu">` | Needs `enhanceMenu`. `menuitemcheckbox`/`menuitemradio` with `aria-checked`; `data-tone="danger"`; disable items with `aria-disabled="true"`, which keeps them reachable. |
 | `ds-tabs` | `role="tablist"`, `tab`, `tabpanel` | Needs `enhanceTabs`. `data-activation="manual"`, `aria-orientation="vertical"`. |
 | `ds-toaster`, `ds-toast` | built by `createToaster()` | A polite live region in the corner; it moves into an open modal dialog so toasts stay live. |
 

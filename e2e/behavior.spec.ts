@@ -137,7 +137,7 @@ test.describe("popovers and dialogs", () => {
 });
 
 test.describe("keyboard widgets", () => {
-  test("the menu opens on ArrowDown, skips disabled items, wraps, and Tab moves past the trigger", async ({ page }) => {
+  test("the menu opens on ArrowDown, stops on disabled items, wraps, and Tab moves past the trigger", async ({ page }) => {
     await openStory(page, "components-interactive--menu", "mode:light");
     const trigger = page.locator('button[commandfor="deck-actions"]');
     await trigger.focus();
@@ -145,10 +145,16 @@ test.describe("keyboard widgets", () => {
     await expect(page.locator(".ds-menu-item", { hasText: "Duplicate" })).toBeFocused();
     await page.keyboard.press("ArrowDown");
     await page.keyboard.press("ArrowDown");
+    // NVDA heard the old menu skip Merge while still counting it ("Show prices 4 of 9"). A disabled
+    // item stays reachable, so it can be announced as unavailable, and choosing it does nothing.
+    const merge = page.locator(".ds-menu-item", { hasText: "Merge" });
+    await expect(merge).toBeFocused();
+    await page.keyboard.press("Enter");
+    await expect(merge, "Enter on a disabled item keeps the menu open").toBeFocused();
+    await expect(page.locator("#menu-log")).toHaveText("");
+    await page.keyboard.press("ArrowDown");
     await expect(page.locator(".ds-menu-item", { hasText: "Show prices" })).toBeFocused();
-    await page.keyboard.press("ArrowUp");
-    await page.keyboard.press("ArrowUp");
-    await page.keyboard.press("ArrowUp");
+    for (let i = 0; i < 4; i++) await page.keyboard.press("ArrowUp");
     await expect(page.locator(".ds-menu-item", { hasText: "Delete deck" })).toBeFocused();
     await page.keyboard.press("c");
     await expect(page.locator(".ds-menu-item", { hasText: "Compact grid" })).toBeFocused();

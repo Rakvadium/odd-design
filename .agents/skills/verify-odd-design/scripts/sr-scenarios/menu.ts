@@ -10,6 +10,7 @@ export default {
     { keys: "Enter", note: "Opens the menu on its first item. Expect the menu, then Duplicate with its shortcut." },
     { keys: "ArrowDown", note: "Share link." },
     { keys: "ArrowDown", note: "Merge. Expect it to be read as unavailable." },
+    { keys: "Enter", note: "Choosing it does nothing: the menu stays open on Merge." },
     { keys: "ArrowDown", note: "Show prices, a checked checkbox item." },
     { keys: "Space", note: "Toggles it. Expect not checked, and the menu stays open." },
     { keys: "End", note: "Delete deck, the last item." },
