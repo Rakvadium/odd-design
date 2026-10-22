@@ -1,19 +1,19 @@
 /*
- * <div class="ds-field">
- *   <label class="ds-label" for="email">Email</label>
- *   <input class="ds-input" id="email" aria-describedby="email-hint">
- *   <p class="ds-hint" id="email-hint">We never share it.</p>
+ * <div class="odd-field">
+ *   <label class="odd-label" for="email">Email</label>
+ *   <input class="odd-input" id="email" aria-describedby="email-hint">
+ *   <p class="odd-hint" id="email-hint">We never share it.</p>
  * </div>
- * When invalid: render <p class="ds-error" id="email-error">, set aria-invalid="true",
+ * When invalid: render <p class="odd-error" id="email-error">, set aria-invalid="true",
  * and add the error id to aria-describedby. Don't keep a hidden error in the DOM;
  * hidden elements referenced by aria-describedby are still announced.
  */
-.ds-field {
+.odd-field {
   display: grid;
   gap: var(--space-2);
 }
 
-.ds-label {
+.odd-label {
   font-family: var(--font-label);
   font-size: var(--text-sm);
   font-weight: 600;
@@ -22,17 +22,17 @@
 }
 
 /* The asterisk is decorative; `required` is what screen readers announce. */
-.ds-field:has(:required) > .ds-label::after {
+.odd-field:has(:required) > .odd-label::after {
   content: " *" / "";
   color: var(--danger);
 }
 
-.ds-hint {
+.odd-hint {
   font-size: var(--text-sm);
   color: var(--muted-foreground);
 }
 
-.ds-error {
+.odd-error {
   display: flex;
   gap: var(--space-2);
   align-items: baseline;
@@ -40,7 +40,7 @@
   font-weight: 500;
   color: var(--danger);
 }
-.ds-error::before {
+.odd-error::before {
   content: "!" / "";
   display: inline-grid;
   place-items: center;
@@ -54,9 +54,9 @@
   font-weight: 800;
 }
 
-.ds-input,
-.ds-select,
-.ds-textarea {
+.odd-input,
+.odd-select,
+.odd-textarea {
   inline-size: 100%;
   min-block-size: var(--control-height);
   padding: 0 calc(var(--control-padding-inline) * 0.85);
@@ -71,50 +71,50 @@
   transition-timing-function: var(--ease);
 }
 
-.ds-textarea {
+.odd-textarea {
   padding-block: var(--space-3);
   min-block-size: calc(var(--control-height) * 2.5);
   field-sizing: content;
   resize: vertical;
 }
 
-.ds-input::placeholder,
-.ds-textarea::placeholder {
+.odd-input::placeholder,
+.odd-textarea::placeholder {
   color: var(--muted-foreground);
   opacity: 1;
 }
 
-.ds-input:hover,
-.ds-select:hover,
-.ds-textarea:hover {
+.odd-input:hover,
+.odd-select:hover,
+.odd-textarea:hover {
   border-color: color-mix(in oklch, var(--edge-control) 50%, var(--foreground));
 }
 
-.ds-input:focus-visible,
-.ds-select:focus-visible,
-.ds-textarea:focus-visible {
+.odd-input:focus-visible,
+.odd-select:focus-visible,
+.odd-textarea:focus-visible {
   outline-offset: 0;
   border-color: var(--focus-color);
   box-shadow: var(--focus-glow);
 }
 
 /* :user-invalid only matches after the user has interacted, so pristine forms are never red. */
-.ds-input:is(:user-invalid, [aria-invalid="true"]),
-.ds-select:is(:user-invalid, [aria-invalid="true"]),
-.ds-textarea:is(:user-invalid, [aria-invalid="true"]) {
+.odd-input:is(:user-invalid, [aria-invalid="true"]),
+.odd-select:is(:user-invalid, [aria-invalid="true"]),
+.odd-textarea:is(:user-invalid, [aria-invalid="true"]) {
   border-color: var(--danger);
 }
 
-.ds-input:disabled,
-.ds-select:disabled,
-.ds-textarea:disabled {
+.odd-input:disabled,
+.odd-select:disabled,
+.odd-textarea:disabled {
   cursor: not-allowed;
   background-color: var(--muted);
   opacity: 0.7;
 }
 
 /* Native select with a drawn chevron. Upgraded below where customizable <select> exists. */
-.ds-select {
+.odd-select {
   appearance: none;
   padding-inline-end: 2.5rem;
   /* Two stroked diagonals that meet at the bottom: a line chevron, like the native picker icon. */
@@ -126,24 +126,24 @@
 }
 
 @supports (appearance: base-select) {
-  .ds-select,
-  .ds-select::picker(select) {
+  .odd-select,
+  .odd-select::picker(select) {
     appearance: base-select;
   }
-  .ds-select {
+  .odd-select {
     display: flex;
     align-items: center;
     background-image: none;
     padding-inline-end: calc(var(--control-padding-inline) * 0.85);
   }
-  .ds-select::picker-icon {
+  .odd-select::picker-icon {
     color: var(--muted-foreground);
     transition: rotate var(--duration-base) var(--ease);
   }
-  .ds-select:open::picker-icon {
+  .odd-select:open::picker-icon {
     rotate: 180deg;
   }
-  .ds-select::picker(select) {
+  .odd-select::picker(select) {
     margin-block: var(--space-1);
     padding: var(--space-1);
     border: var(--border-width) solid var(--edge-surface);
@@ -153,24 +153,24 @@
     box-shadow: var(--shadow-overlay);
     backdrop-filter: var(--fx-backdrop);
   }
-  .ds-select option {
+  .odd-select option {
     padding: var(--space-2) var(--space-3);
     border-radius: var(--radius-control);
   }
-  .ds-select option:is(:hover, :focus-visible) {
+  .odd-select option:is(:hover, :focus-visible) {
     background: var(--muted);
     outline: none;
   }
-  .ds-select option:checked {
+  .odd-select option:checked {
     font-weight: 600;
   }
-  .ds-select option::checkmark {
+  .odd-select option::checkmark {
     color: var(--primary);
   }
 }
 
 @media (forced-colors: active) {
-  .ds-select {
+  .odd-select {
     appearance: auto;
     background-image: none;
   }

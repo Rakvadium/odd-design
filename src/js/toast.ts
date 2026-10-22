@@ -35,12 +35,12 @@ const CLOSE_ICON =
 
 export function createToaster({ label = "Notifications", max = 3, parent = document.body } = {}): Toaster {
   const region = document.createElement("section");
-  region.className = "ds-toaster";
+  region.className = "odd-toaster";
   region.popover = "manual";
   region.setAttribute("aria-label", label);
   const list = document.createElement("ol");
   const announcer = document.createElement("div");
-  announcer.className = "ds-visually-hidden";
+  announcer.className = "odd-visually-hidden";
   announcer.setAttribute("aria-live", "polite");
   announcer.setAttribute("aria-relevant", "additions");
   region.append(list, announcer);
@@ -106,18 +106,18 @@ export function createToaster({ label = "Notifications", max = 3, parent = docum
 
   const show = ({ title, description, tone = "neutral", duration = 6000, action }: ToastOptions) => {
     const el = document.createElement("li");
-    el.className = "ds-toast";
+    el.className = "odd-toast";
     el.dataset.tone = tone;
 
     const body = document.createElement("div");
-    body.className = "ds-toast-body";
+    body.className = "odd-toast-body";
     const heading = document.createElement("p");
-    heading.className = "ds-toast-title";
+    heading.className = "odd-toast-title";
     heading.textContent = title;
     body.append(heading);
     if (description) {
       const text = document.createElement("p");
-      text.className = "ds-toast-description";
+      text.className = "odd-toast-description";
       text.textContent = description;
       body.append(text);
     }
@@ -131,7 +131,7 @@ export function createToaster({ label = "Notifications", max = 3, parent = docum
 
     if (action) {
       const button = document.createElement("button");
-      button.className = "ds-button";
+      button.className = "odd-button";
       button.dataset.size = "sm";
       button.textContent = action.label;
       button.addEventListener("click", () => {
@@ -142,7 +142,7 @@ export function createToaster({ label = "Notifications", max = 3, parent = docum
     }
 
     const close = document.createElement("button");
-    close.className = "ds-button";
+    close.className = "odd-button";
     close.dataset.variant = "ghost";
     close.dataset.size = "sm";
     close.dataset.iconOnly = "";

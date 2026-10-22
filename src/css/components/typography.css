@@ -1,11 +1,11 @@
 /*
- * <h2 class="ds-heading" data-size="xs|sm|md|lg|xl|2xl|hero">
+ * <h2 class="odd-heading" data-size="xs|sm|md|lg|xl|2xl|hero">
  * Size is independent of level: pick the level for the document outline, the size for the layout.
- * Without data-size a .ds-heading is md. Bare h1–h4 keep their base sizes.
+ * Without data-size a .odd-heading is md. Bare h1–h4 keep their base sizes.
  *
- * <p class="ds-eyebrow" data-tone="primary|foreground">  A short label above a heading. Muted by default.
+ * <p class="odd-eyebrow" data-tone="primary|foreground">  A short label above a heading. Muted by default.
  */
-.ds-heading {
+.odd-heading {
   --_size: var(--text-lg);
 
   margin: 0;
@@ -19,17 +19,17 @@
   text-wrap: balance;
 }
 
-.ds-heading[data-size="xs"] { --_size: var(--text-sm); }
-.ds-heading[data-size="sm"] { --_size: var(--text-md); }
-.ds-heading[data-size="lg"] { --_size: var(--text-xl); }
-.ds-heading[data-size="xl"] { --_size: var(--text-2xl); }
-.ds-heading[data-size="2xl"] { --_size: var(--text-3xl); }
-.ds-heading[data-size="hero"] {
+.odd-heading[data-size="xs"] { --_size: var(--text-sm); }
+.odd-heading[data-size="sm"] { --_size: var(--text-md); }
+.odd-heading[data-size="lg"] { --_size: var(--text-xl); }
+.odd-heading[data-size="xl"] { --_size: var(--text-2xl); }
+.odd-heading[data-size="2xl"] { --_size: var(--text-3xl); }
+.odd-heading[data-size="hero"] {
   --_size: var(--text-4xl);
   text-shadow: var(--fx-glow);
 }
 
-.ds-eyebrow {
+.odd-eyebrow {
   font-family: var(--font-label);
   font-size: var(--text-xs);
   font-weight: 600;
@@ -39,5 +39,5 @@
 }
 
 /* --primary is held to 4.5:1 on background and surface, so a primary eyebrow stays legible. */
-.ds-eyebrow[data-tone="primary"] { color: var(--primary); }
-.ds-eyebrow[data-tone="foreground"] { color: var(--foreground); }
+.odd-eyebrow[data-tone="primary"] { color: var(--primary); }
+.odd-eyebrow[data-tone="foreground"] { color: var(--foreground); }

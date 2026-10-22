@@ -1,6 +1,6 @@
 # Feedback
 
-Feedback components tell the user about state: `.ds-alert` messages in a neutral tone or `data-tone` info, success, warning, or danger; `.ds-progress` and `.ds-meter` bars inside a `.ds-stat` label-and-value row; and `.ds-skeleton` placeholders inside an `aria-busy` region. Alert text stays `--foreground` on a soft tint in every tone. Progress and meter bars stay visible in forced-colors mode, and the skeleton pulse and indeterminate sweep stop under reduced motion.
+Feedback components tell the user about state: `.odd-alert` messages in a neutral tone or `data-tone` info, success, warning, or danger; `.odd-progress` and `.odd-meter` bars inside a `.odd-stat` label-and-value row; and `.odd-skeleton` placeholders inside an `aria-busy` region. Alert text stays `--foreground` on a soft tint in every tone. Progress and meter bars stay visible in forced-colors mode, and the skeleton pulse and indeterminate sweep stop under reduced motion.
 
 ## Sub-features
 
@@ -20,10 +20,10 @@ Preconditions:
 
 - The baseline from the README.
 
-- **Alert tones.** Run `bun $S goto components-feedback--alert "mode:light"` and `bun $S goto components-feedback--alert "mode:dark"`, capturing `feedback/alert-light.png` and `feedback/alert-dark.png`. Read both: the info alert's tint is blue in each. `bun $S eval 'getComputedStyle(document.querySelector(".ds-alert[data-tone=info]")).backgroundColor'` returns an `oklab(...)` color with a negative last channel (blue).
+- **Alert tones.** Run `bun $S goto components-feedback--alert "mode:light"` and `bun $S goto components-feedback--alert "mode:dark"`, capturing `feedback/alert-light.png` and `feedback/alert-dark.png`. Read both: the info alert's tint is blue in each. `bun $S eval 'getComputedStyle(document.querySelector(".odd-alert[data-tone=info]")).backgroundColor'` returns an `oklab(...)` color with a negative last channel (blue).
 - **Progress and meter.** Run `bun $S goto components-feedback--progress "mode:light"` and `bun $S aria feedback/progress.aria.txt`. It shows `progressbar "Importing decks" value=40` and `meter "Units" value=24`. Capture `feedback/progress-light.png`. The Storage meters read green, amber, and red, and every bar is as tall as its rail.
 - **Forced colors.** Run `bun $S emulate forced-colors=active`, then `bun $S goto components-feedback--progress`, and capture `feedback/progress-forced.png`. All seven bars are visible, including both `<progress>` bars. Then run `bun $S emulate` to clear.
-- **Reduced motion.** Run `bun $S emulate prefers-reduced-motion=reduce`, `bun $S goto components-feedback--skeleton`, and `bun $S eval 'getComputedStyle(document.querySelector(".ds-skeleton")).animationDuration'`, which returns `"0s"`. On `components-feedback--progress`, the same read on `#sync` returns `"0s"`. Clear with `bun $S emulate`. Without emulation the skeleton reads `"1.6s"`.
+- **Reduced motion.** Run `bun $S emulate prefers-reduced-motion=reduce`, `bun $S goto components-feedback--skeleton`, and `bun $S eval 'getComputedStyle(document.querySelector(".odd-skeleton")).animationDuration'`, which returns `"0s"`. On `components-feedback--progress`, the same read on `#sync` returns `"0s"`. Clear with `bun $S emulate`. Without emulation the skeleton reads `"1.6s"`.
 - **Skeleton semantics.** Run `bun $S goto components-feedback--skeleton` and `bun $S aria feedback/skeleton.aria.txt`. The tree has the text `Loading decks…` and nothing from the skeleton cards.
 
 ## Gotchas

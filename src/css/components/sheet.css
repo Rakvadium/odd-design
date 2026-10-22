@@ -2,22 +2,22 @@
  * A modal panel that slides in from an edge. It's a native <dialog>, so focus trapping, Escape,
  * the inert page, and focus return come from showModal(), opened with no JS:
  *
- *   <button class="ds-button" commandfor="filters" command="show-modal">Filters</button>
- *   <dialog class="ds-sheet" id="filters" data-side="end" aria-labelledby="filters-title" closedby="any">
- *     <div class="ds-sheet-header">
- *       <h2 class="ds-dialog-title" id="filters-title">Filters</h2>
- *       <button class="ds-button" data-variant="ghost" data-icon-only aria-label="Close"
+ *   <button class="odd-button" commandfor="filters" command="show-modal">Filters</button>
+ *   <dialog class="odd-sheet" id="filters" data-side="end" aria-labelledby="filters-title" closedby="any">
+ *     <div class="odd-sheet-header">
+ *       <h2 class="odd-dialog-title" id="filters-title">Filters</h2>
+ *       <button class="odd-button" data-variant="ghost" data-icon-only aria-label="Close"
  *         commandfor="filters" command="close">…</button>
  *     </div>
- *     <div class="ds-sheet-body">…</div>
- *     <div class="ds-sheet-footer">…</div>
+ *     <div class="odd-sheet-body">…</div>
+ *     <div class="odd-sheet-footer">…</div>
  *   </dialog>
  *
  * data-side="start|end|top|bottom". start and end follow the writing direction; end is the default.
  * The header and footer are plain divs: <header> and <footer> inside a dialog are exposed as the page's
  * banner and contentinfo landmarks.
  */
-.ds-sheet {
+.odd-sheet {
   --_hide: 100% 0;
 
   position: fixed;
@@ -45,9 +45,9 @@
   transition-timing-function: var(--ease);
   transition-behavior: allow-discrete;
 }
-.ds-sheet:dir(rtl) { --_hide: -100% 0; }
+.odd-sheet:dir(rtl) { --_hide: -100% 0; }
 
-.ds-sheet[data-side="start"] {
+.odd-sheet[data-side="start"] {
   --_hide: -100% 0;
 
   inset-inline: 0 auto;
@@ -57,9 +57,9 @@
   border-start-end-radius: var(--radius-overlay);
   border-end-end-radius: var(--radius-overlay);
 }
-.ds-sheet[data-side="start"]:dir(rtl) { --_hide: 100% 0; }
+.odd-sheet[data-side="start"]:dir(rtl) { --_hide: 100% 0; }
 
-.ds-sheet:is([data-side="top"], [data-side="bottom"]) {
+.odd-sheet:is([data-side="top"], [data-side="bottom"]) {
   inset-inline: 0;
   inline-size: 100%;
   block-size: auto;
@@ -68,7 +68,7 @@
   border-radius: 0;
 }
 
-.ds-sheet[data-side="bottom"] {
+.odd-sheet[data-side="bottom"] {
   --_hide: 0 100%;
 
   inset-block: auto 0;
@@ -77,7 +77,7 @@
   border-start-end-radius: var(--radius-overlay);
 }
 
-.ds-sheet[data-side="top"] {
+.odd-sheet[data-side="top"] {
   --_hide: 0 -100%;
 
   inset-block: 0 auto;
@@ -86,35 +86,35 @@
   border-end-end-radius: var(--radius-overlay);
 }
 
-.ds-sheet[open] {
+.odd-sheet[open] {
   display: grid;
   grid-template-rows: auto 1fr auto;
   translate: 0 0;
 }
 
 @starting-style {
-  .ds-sheet[open] {
+  .odd-sheet[open] {
     translate: var(--_hide);
   }
 }
 
-.ds-sheet::backdrop {
+.odd-sheet::backdrop {
   background: var(--scrim);
   opacity: 0;
   transition-property: opacity, display, overlay;
   transition-duration: var(--duration-slow);
   transition-behavior: allow-discrete;
 }
-.ds-sheet[open]::backdrop {
+.odd-sheet[open]::backdrop {
   opacity: 1;
 }
 @starting-style {
-  .ds-sheet[open]::backdrop {
+  .odd-sheet[open]::backdrop {
     opacity: 0;
   }
 }
 
-.ds-sheet-header {
+.odd-sheet-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -122,7 +122,7 @@
   padding: var(--surface-padding) var(--surface-padding) var(--space-4);
 }
 
-.ds-sheet-body {
+.odd-sheet-body {
   display: grid;
   align-content: start;
   gap: var(--space-4);
@@ -131,7 +131,7 @@
   padding: 0 var(--surface-padding) var(--surface-padding);
 }
 
-.ds-sheet-footer {
+.odd-sheet-footer {
   display: flex;
   flex-wrap: wrap;
   justify-content: flex-end;

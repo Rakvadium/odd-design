@@ -1,7 +1,7 @@
 import { roving } from "./roving.ts";
 
 /*
- * <div class="ds-tabs">
+ * <div class="odd-tabs">
  *   <div role="tablist" aria-label="Deck view">
  *     <button role="tab" id="tab-cards" aria-controls="panel-cards" aria-selected="true">Cards</button>
  *     <button role="tab" id="tab-stats" aria-controls="panel-stats" aria-selected="false">Stats</button>
@@ -14,7 +14,7 @@ import { roving } from "./roving.ts";
  * and shows the chosen tab's panel. By default a tab is chosen as focus reaches it. For panels that
  * are slow to fill, set data-activation="manual" on the tablist so Enter or Space chooses instead.
  * aria-orientation="vertical" on the tablist switches to Up and Down.
- * Fires a bubbling "ds-tab-change" event with { tab, panel } in its detail.
+ * Fires a bubbling "odd-tab-change" event with { tab, panel } in its detail.
  */
 export function enhanceTabs(root: HTMLElement): () => void {
   const tablist = root.querySelector<HTMLElement>('[role="tablist"]');
@@ -35,7 +35,7 @@ export function enhanceTabs(root: HTMLElement): () => void {
   const select = (tab: HTMLElement) => {
     if (tab.getAttribute("aria-selected") === "true") return;
     show(tab);
-    root.dispatchEvent(new CustomEvent("ds-tab-change", { bubbles: true, detail: { tab, panel: panelOf(tab) } }));
+    root.dispatchEvent(new CustomEvent("odd-tab-change", { bubbles: true, detail: { tab, panel: panelOf(tab) } }));
   };
 
   // A panel with nothing focusable inside takes focus itself, so Tab from the tab list reaches its content.

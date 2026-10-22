@@ -1,13 +1,13 @@
 # Contrast and foundations
 
-Foundations stories show the active palette's WCAG 2.2 contrast measured from the browser's computed colors (including text on the soft tints), the palette's color roles as swatches, the chrome's type scale, and the `.ds-heading` sizes. `bun test` enforces the same contrast pairs plus the token contract for every palette and chrome without a browser.
+Foundations stories show the active palette's WCAG 2.2 contrast measured from the browser's computed colors (including text on the soft tints), the palette's color roles as swatches, the chrome's type scale, and the `.odd-heading` sizes. `bun test` enforces the same contrast pairs plus the token contract for every palette and chrome without a browser.
 
 ## Sub-features
 
 - `contrast-live`: `foundations--contrast` shows a light and a dark column for the active palette. Each pair has a ratio and a `Pass`/`Fail` badge.
 - `palette-swatches`: `foundations--palette` shows every background and foreground role pair.
 - `type-scale`: `foundations--type` shows the eyebrow, headings, body, and mono text in the active chrome's fonts and case.
-- `headings`: `foundations--headings` shows every `.ds-heading` `data-size` and the three eyebrow tones.
+- `headings`: `foundations--headings` shows every `.odd-heading` `data-size` and the three eyebrow tones.
 - `custom-palette`: `foundations-custom-palette--generator` builds a palette from the `primary` and `secondary` args, previews it in light and dark, reports whether it meets the contract, and shows its CSS.
 - `contract-tests`: `bun test` fails when a palette misses a role, falls below AA, or a chrome contains a hue.
 

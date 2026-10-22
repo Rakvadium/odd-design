@@ -564,7 +564,7 @@ html data: ${JSON.stringify(html)}`);
     const out = await page.eval(`({
       url: location.href,
       html: {...document.documentElement.dataset},
-      scopes: [...document.querySelectorAll(".ds-scope")].slice(0, 20).map((el) => ({...el.dataset})),
+      scopes: [...document.querySelectorAll(".odd-scope")].slice(0, 20).map((el) => ({...el.dataset})),
       openDialogs: [...document.querySelectorAll("dialog[open]")].map((d) => d.id),
       openPopovers: [...document.querySelectorAll(":popover-open")].map((p) => p.id),
       activeElement: document.activeElement?.outerHTML.slice(0, 160),

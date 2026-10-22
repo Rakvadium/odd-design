@@ -1,10 +1,10 @@
 /*
- * <article class="ds-card"> ... </article>
+ * <article class="odd-card"> ... </article>
  * Clickable card: put a real link or button inside and give the card data-interactive.
  * The link's ::after stretches over the card, so the whole card is clickable while
  * screen readers hear one link instead of the card's entire contents.
  */
-.ds-card {
+.odd-card {
   position: relative;
   display: grid;
   align-content: start;
@@ -21,32 +21,32 @@
   transition-timing-function: var(--ease);
 }
 
-.ds-card[data-interactive]:has(a, button):hover {
+.odd-card[data-interactive]:has(a, button):hover {
   box-shadow: var(--shadow-surface-hover);
 }
 
-.ds-card[data-interactive] :is(a, button).ds-card-link::after {
+.odd-card[data-interactive] :is(a, button).odd-card-link::after {
   content: "";
   position: absolute;
   inset: 0;
   border-radius: inherit;
 }
 
-.ds-card[data-interactive]:has(.ds-card-link:focus-visible) {
+.odd-card[data-interactive]:has(.odd-card-link:focus-visible) {
   outline: var(--focus-width) solid var(--focus-color);
   outline-offset: var(--focus-offset);
   box-shadow: var(--shadow-surface-hover), var(--focus-glow);
 }
 
-.ds-card-link {
+.odd-card-link {
   color: inherit;
   text-decoration: none;
 }
-.ds-card-link:focus-visible {
+.odd-card-link:focus-visible {
   outline: none;
 }
 
-.ds-card-title {
+.odd-card-title {
   font-family: var(--font-heading);
   font-size: var(--text-lg);
   font-weight: var(--heading-weight);
@@ -55,7 +55,7 @@
   line-height: var(--leading-tight);
 }
 
-.ds-card-footer {
+.odd-card-footer {
   display: flex;
   flex-wrap: wrap;
   gap: var(--space-2);

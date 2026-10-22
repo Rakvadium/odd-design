@@ -1,6 +1,6 @@
 # Surfaces
 
-The surface components are cards (`.ds-card`, where `data-interactive` plus `.ds-card-link` makes the whole card one link), badges (`.ds-badge` with `data-tone` and `data-solid`), a modal `.ds-dialog` that opens and closes through invoker commands with no JS, and the exclusive `.ds-disclosure` accordion built from `<details name>`.
+The surface components are cards (`.odd-card`, where `data-interactive` plus `.odd-card-link` makes the whole card one link), badges (`.odd-badge` with `data-tone` and `data-solid`), a modal `.odd-dialog` that opens and closes through invoker commands with no JS, and the exclusive `.odd-disclosure` accordion built from `<details name>`.
 
 ## Sub-features
 
@@ -20,9 +20,9 @@ Preconditions:
 - The baseline from the README.
 
 - **Dialog open.** Run `bun $S goto components-surfaces--dialog` and then `bun $S click 'button[commandfor="confirm-delete"][command="show-modal"]'`. `bun $S state` shows `openDialogs: ["confirm-delete"]`, and `activeElement` is the `Close` button (it has `autofocus`). `bun $S aria surfaces/dialog.aria.txt` shows `dialog "Delete “Midnight Control”?" [modal]`. Capture `surfaces/dialog-open.png`.
-- **Dialog close.** Run `bun $S press Escape`. Focus returns to the `Delete deck…` button, and `openDialogs` is `[]`. Reopen it and run `bun $S click '#confirm-delete .ds-button' --text 'Delete'`, which also closes it.
+- **Dialog close.** Run `bun $S press Escape`. Focus returns to the `Delete deck…` button, and `openDialogs` is `[]`. Reopen it and run `bun $S click '#confirm-delete .odd-button' --text 'Delete'`, which also closes it.
 - **Disclosure exclusive.** Run `bun $S goto components-surfaces--disclosure` and then `bun $S click 'summary' --text 'Does it need JavaScript?'`. `bun $S eval '[...document.querySelectorAll("details")].map(d => d.open)'` returns `[false, true, false]`.
-- **Card link.** Run `bun $S goto components-surfaces--card`. The aria tree shows one `link "Ember Aggro"` inside the interactive card. `bun $S eval 'location.href.endsWith("#")'` returns `false`. Then `bun $S click 'article[data-interactive] .ds-muted'` clicks the body text, not the title, and the same eval returns `true`, which proves the whole card is the link's hit area. For a negative control, `goto` again and click `article:not([data-interactive]) .ds-muted`. The eval stays `false`.
+- **Card link.** Run `bun $S goto components-surfaces--card`. The aria tree shows one `link "Ember Aggro"` inside the interactive card. `bun $S eval 'location.href.endsWith("#")'` returns `false`. Then `bun $S click 'article[data-interactive] .odd-muted'` clicks the body text, not the title, and the same eval returns `true`, which proves the whole card is the link's hit area. For a negative control, `goto` again and click `article:not([data-interactive]) .odd-muted`. The eval stays `false`.
 - **Badges.** Run `bun $S goto components-surfaces--badge "palette:sorbet;mode:dark"` and capture `surfaces/badges-sorbet-dark.png`. Read the screenshot. Every badge's text is legible.
 
 ## Gotchas

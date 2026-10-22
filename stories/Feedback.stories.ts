@@ -15,26 +15,26 @@ export const Alert: Story = {
       },
     },
   },
-  render: () => `<div class="ds-stack" style="max-inline-size: 40rem">
-    <div class="ds-alert">
+  render: () => `<div class="odd-stack" style="max-inline-size: 40rem">
+    <div class="odd-alert">
       ${icons.info}
-      <div><p class="ds-alert-title">Drafts are private</p><p>Only you can see a deck until you publish it.</p></div>
+      <div><p class="odd-alert-title">Drafts are private</p><p>Only you can see a deck until you publish it.</p></div>
     </div>
-    <div class="ds-alert" data-tone="info">
+    <div class="odd-alert" data-tone="info">
       ${icons.info}
-      <div><p class="ds-alert-title">New set available</p><p>“Ember Tide” cards are now in the gallery.</p></div>
+      <div><p class="odd-alert-title">New set available</p><p>“Ember Tide” cards are now in the gallery.</p></div>
     </div>
-    <div class="ds-alert" data-tone="success">
+    <div class="odd-alert" data-tone="success">
       ${icons.check}
-      <div><p class="ds-alert-title">Deck published</p><p>Midnight Control is live on your profile.</p></div>
+      <div><p class="odd-alert-title">Deck published</p><p>Midnight Control is live on your profile.</p></div>
     </div>
-    <div class="ds-alert" data-tone="warning">
+    <div class="odd-alert" data-tone="warning">
       ${icons.warning}
-      <div><p class="ds-alert-title">Rotation is coming</p><p>Three of your decks lose legality on May 1. <a href="#">Review them</a>.</p></div>
+      <div><p class="odd-alert-title">Rotation is coming</p><p>Three of your decks lose legality on May 1. <a href="#">Review them</a>.</p></div>
     </div>
-    <div class="ds-alert" data-tone="danger">
+    <div class="odd-alert" data-tone="danger">
       ${icons.danger}
-      <div><p class="ds-alert-title">Couldn’t save</p><p>You’re offline. Your changes are kept on this device.</p></div>
+      <div><p class="odd-alert-title">Couldn’t save</p><p>You’re offline. Your changes are kept on this device.</p></div>
     </div>
   </div>`,
 };
@@ -48,45 +48,45 @@ export const Progress: Story = {
       },
     },
   },
-  render: () => `<div class="ds-stack" style="--gap: var(--space-6); max-inline-size: 28rem">
-    <div class="ds-stack" style="--gap: var(--space-3)">
-      <div class="ds-stat">
-        <label for="import">Importing decks</label><span class="ds-stat-value">40%</span>
-        <progress class="ds-progress" id="import" value="40" max="100"></progress>
+  render: () => `<div class="odd-stack" style="--gap: var(--space-6); max-inline-size: 28rem">
+    <div class="odd-stack" style="--gap: var(--space-3)">
+      <div class="odd-stat">
+        <label for="import">Importing decks</label><span class="odd-stat-value">40%</span>
+        <progress class="odd-progress" id="import" value="40" max="100"></progress>
       </div>
-      <div class="ds-stat">
-        <label for="sync">Syncing collection</label><span class="ds-stat-value ds-muted">Waiting…</span>
-        <progress class="ds-progress" id="sync"></progress>
-      </div>
-    </div>
-
-    <div class="ds-stack" style="--gap: var(--space-3)" role="group" aria-labelledby="mix-title">
-      <p class="ds-eyebrow" id="mix-title">Deck mix · 60 cards</p>
-      <div class="ds-stat">
-        <label for="units">Units</label><span class="ds-stat-value">24 <span class="ds-muted">(40%)</span></span>
-        <meter class="ds-meter" id="units" min="0" max="60" value="24"></meter>
-      </div>
-      <div class="ds-stat">
-        <label for="actions">Actions</label><span class="ds-stat-value">22 <span class="ds-muted">(37%)</span></span>
-        <meter class="ds-meter" id="actions" min="0" max="60" value="22" data-tone="info"></meter>
-      </div>
-      <div class="ds-stat">
-        <label for="assets">Assets</label><span class="ds-stat-value">14 <span class="ds-muted">(23%)</span></span>
-        <meter class="ds-meter" id="assets" min="0" max="60" value="14" data-tone="success"></meter>
+      <div class="odd-stat">
+        <label for="sync">Syncing collection</label><span class="odd-stat-value odd-muted">Waiting…</span>
+        <progress class="odd-progress" id="sync"></progress>
       </div>
     </div>
 
-    <div class="ds-stack" style="--gap: var(--space-3)" role="group" aria-labelledby="storage-title">
-      <p class="ds-eyebrow" id="storage-title">Storage, colored by range</p>
+    <div class="odd-stack" style="--gap: var(--space-3)" role="group" aria-labelledby="mix-title">
+      <p class="odd-eyebrow" id="mix-title">Deck mix · 60 cards</p>
+      <div class="odd-stat">
+        <label for="units">Units</label><span class="odd-stat-value">24 <span class="odd-muted">(40%)</span></span>
+        <meter class="odd-meter" id="units" min="0" max="60" value="24"></meter>
+      </div>
+      <div class="odd-stat">
+        <label for="actions">Actions</label><span class="odd-stat-value">22 <span class="odd-muted">(37%)</span></span>
+        <meter class="odd-meter" id="actions" min="0" max="60" value="22" data-tone="info"></meter>
+      </div>
+      <div class="odd-stat">
+        <label for="assets">Assets</label><span class="odd-stat-value">14 <span class="odd-muted">(23%)</span></span>
+        <meter class="odd-meter" id="assets" min="0" max="60" value="14" data-tone="success"></meter>
+      </div>
+    </div>
+
+    <div class="odd-stack" style="--gap: var(--space-3)" role="group" aria-labelledby="storage-title">
+      <p class="odd-eyebrow" id="storage-title">Storage, colored by range</p>
       ${[
         ["store-low", "Images", 0.32],
         ["store-mid", "Backups", 0.71],
         ["store-high", "Exports", 0.93],
       ]
         .map(
-          ([id, label, v]) => `<div class="ds-stat">
-        <label for="${id}">${label}</label><span class="ds-stat-value">${Math.round(Number(v) * 100)}% used</span>
-        <meter class="ds-meter" id="${id}" value="${v}" low="0.6" high="0.85" optimum="0"></meter>
+          ([id, label, v]) => `<div class="odd-stat">
+        <label for="${id}">${label}</label><span class="odd-stat-value">${Math.round(Number(v) * 100)}% used</span>
+        <meter class="odd-meter" id="${id}" value="${v}" low="0.6" high="0.85" optimum="0"></meter>
       </div>`,
         )
         .join("")}
@@ -104,18 +104,18 @@ export const Skeleton: Story = {
     },
   },
   render: () => `<div style="display:grid; gap: var(--space-5); grid-template-columns: repeat(auto-fill, minmax(17rem, 1fr))" aria-busy="true">
-    <span class="ds-visually-hidden">Loading decks…</span>
-    ${`<article class="ds-card" aria-hidden="true">
-      <div class="ds-row">
-        <div class="ds-skeleton" data-shape="avatar"></div>
-        <div class="ds-stack" style="--gap: var(--space-2); flex: 1">
-          <div class="ds-skeleton" style="inline-size: 70%"></div>
-          <div class="ds-skeleton" style="inline-size: 40%; block-size: 0.75em"></div>
+    <span class="odd-visually-hidden">Loading decks…</span>
+    ${`<article class="odd-card" aria-hidden="true">
+      <div class="odd-row">
+        <div class="odd-skeleton" data-shape="avatar"></div>
+        <div class="odd-stack" style="--gap: var(--space-2); flex: 1">
+          <div class="odd-skeleton" style="inline-size: 70%"></div>
+          <div class="odd-skeleton" style="inline-size: 40%; block-size: 0.75em"></div>
         </div>
       </div>
-      <div class="ds-skeleton" style="block-size: 5rem; border-radius: var(--radius-surface)"></div>
-      <div class="ds-skeleton" style="inline-size: 90%"></div>
-      <div class="ds-skeleton" style="inline-size: 60%"></div>
+      <div class="odd-skeleton" style="block-size: 5rem; border-radius: var(--radius-surface)"></div>
+      <div class="odd-skeleton" style="inline-size: 90%"></div>
+      <div class="odd-skeleton" style="inline-size: 60%"></div>
     </article>`.repeat(2)}
   </div>`,
 };

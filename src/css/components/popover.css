@@ -3,33 +3,33 @@
  * top layer, light dismiss, Escape, and focus return.
  *
  * Popover (click):
- *   <button class="ds-button" commandfor="filters" command="toggle-popover">Filters</button>
- *   <div class="ds-popover" id="filters" popover role="dialog" aria-labelledby="filters-title">…</div>
+ *   <button class="odd-button" commandfor="filters" command="toggle-popover">Filters</button>
+ *   <div class="odd-popover" id="filters" popover role="dialog" aria-labelledby="filters-title">…</div>
  *   A popover with controls in it is a non-modal dialog, which is also what makes its name valid:
  *   a plain <div> has the generic role, and ARIA doesn't allow naming generic elements. A popover
  *   that only shows text needs neither the role nor the name.
  *
  * Tooltip (hover or keyboard focus, via interest invokers):
- *   <button class="ds-button" data-icon-only aria-labelledby="tip-copy" interestfor="tip-copy">…</button>
- *   <div class="ds-tooltip" id="tip-copy" popover="hint" role="tooltip">Duplicate deck</div>
+ *   <button class="odd-button" data-icon-only aria-labelledby="tip-copy" interestfor="tip-copy">…</button>
+ *   <div class="odd-tooltip" id="tip-copy" popover="hint" role="tooltip">Duplicate deck</div>
  *   Plain text only. Wire it up yourself; the browser doesn't: aria-labelledby when the tooltip is the
  *   control's only name (that name holds even where interestfor is missing and the tooltip never
  *   shows), aria-describedby when it adds to a visible label.
  *
  * Hover card (a richer preview on hover or focus):
  *   <a href="/decks/midnight" interestfor="preview-midnight">Midnight Control</a>
- *   <div class="ds-hover-card" id="preview-midnight" popover="hint">…</div>
+ *   <div class="odd-hover-card" id="preview-midnight" popover="hint">…</div>
  *   Treat it as a bonus: everything in it must also be reachable by following the link.
  *
- * Menus (.ds-menu, see src/js/menu.ts) share the surface, motion, and anchoring below.
+ * Menus (.odd-menu, see src/js/menu.ts) share the surface, motion, and anchoring below.
  *
  * Positioning: the invoker is the implicit anchor. Popovers and hover cards open below the
  * invoker, aligned to its start edge; tooltips open above it. Each flips when it runs out of room.
  * Without anchor positioning they fall back to the browser's default: centered in the viewport.
  */
-.ds-popover,
-.ds-menu,
-.ds-hover-card {
+.odd-popover,
+.odd-menu,
+.odd-hover-card {
   max-block-size: calc(100dvh - 2rem);
   overflow: auto;
   padding: calc(var(--surface-padding) * 0.67);
@@ -42,11 +42,11 @@
   overscroll-behavior: contain;
 }
 
-.ds-popover { inline-size: min(18rem, 100vw - 2rem); }
-.ds-hover-card { inline-size: min(20rem, 100vw - 2rem); }
+.odd-popover { inline-size: min(18rem, 100vw - 2rem); }
+.odd-hover-card { inline-size: min(20rem, 100vw - 2rem); }
 
 /* Inverted: foreground on background, a pair the palette test holds to 4.5:1. */
-.ds-tooltip {
+.odd-tooltip {
   max-inline-size: min(18rem, 100vw - 2rem);
   padding: var(--space-1) var(--space-2);
   border: 0;
@@ -59,10 +59,10 @@
   line-height: 1.4;
 }
 
-.ds-popover,
-.ds-menu,
-.ds-hover-card,
-.ds-tooltip {
+.odd-popover,
+.odd-menu,
+.odd-hover-card,
+.odd-tooltip {
   opacity: 0;
   scale: 0.96;
   transition-property: opacity, scale, display, overlay;
@@ -71,36 +71,36 @@
   transition-behavior: allow-discrete;
 }
 
-:is(.ds-popover, .ds-menu, .ds-hover-card, .ds-tooltip):popover-open {
+:is(.odd-popover, .odd-menu, .odd-hover-card, .odd-tooltip):popover-open {
   opacity: 1;
   scale: 1;
 }
 
 @starting-style {
-  :is(.ds-popover, .ds-menu, .ds-hover-card, .ds-tooltip):popover-open {
+  :is(.odd-popover, .odd-menu, .odd-hover-card, .odd-tooltip):popover-open {
     opacity: 0;
     scale: 0.96;
   }
 }
 
 @supports (position-area: block-end) {
-  .ds-popover,
-  .ds-menu,
-  .ds-hover-card,
-  .ds-tooltip {
+  .odd-popover,
+  .odd-menu,
+  .odd-hover-card,
+  .odd-tooltip {
     inset: auto;
     margin: var(--space-2) 0;
   }
 
-  .ds-popover,
-  .ds-menu,
-  .ds-hover-card {
+  .odd-popover,
+  .odd-menu,
+  .odd-hover-card {
     position-area: block-end span-inline-end;
     position-try-fallbacks: flip-block, flip-inline, flip-block flip-inline;
   }
 
   /* Centered over the anchor, and shifted inward rather than cut off near a viewport edge. */
-  .ds-tooltip {
+  .odd-tooltip {
     position-area: block-start;
     position-try-fallbacks: flip-block;
   }
@@ -108,7 +108,7 @@
 
 /* Forced colors drop the tooltip's inverted background; outline it so it still reads as a box. */
 @media (forced-colors: active) {
-  .ds-tooltip {
+  .odd-tooltip {
     border: 1px solid CanvasText;
   }
 }

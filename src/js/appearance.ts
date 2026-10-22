@@ -6,7 +6,7 @@ export type Appearance = { mode: Mode; palette: Palette; chrome: Chrome };
 
 export const DEFAULT_APPEARANCE: Appearance = { mode: "system", palette: "default", chrome: "calm" };
 
-const STORAGE_KEY = "ds-appearance";
+const STORAGE_KEY = "odd-appearance";
 
 /** Writes the three axes onto an element. Mode is pure CSS (`color-scheme`), so "system" needs no listener. */
 export function applyAppearance(appearance: Appearance, root: HTMLElement = document.documentElement) {

@@ -17,32 +17,32 @@ export default meta;
 type Story = StoryObj;
 
 export const TextFields: Story = {
-  render: () => `<form class="ds-stack" style="max-inline-size: 26rem" onsubmit="event.preventDefault()">
-    <div class="ds-field">
-      <label class="ds-label" for="name">Deck name</label>
-      <input class="ds-input" id="name" required placeholder="Midnight Control" aria-describedby="name-hint">
-      <p class="ds-hint" id="name-hint">Shown on your public profile.</p>
+  render: () => `<form class="odd-stack" style="max-inline-size: 26rem" onsubmit="event.preventDefault()">
+    <div class="odd-field">
+      <label class="odd-label" for="name">Deck name</label>
+      <input class="odd-input" id="name" required placeholder="Midnight Control" aria-describedby="name-hint">
+      <p class="odd-hint" id="name-hint">Shown on your public profile.</p>
     </div>
-    <div class="ds-field">
-      <label class="ds-label" for="email">Email</label>
-      <input class="ds-input" id="email" type="email" value="not-an-email" aria-invalid="true" aria-describedby="email-error">
-      <p class="ds-error" id="email-error">Enter an email address like name@example.com.</p>
+    <div class="odd-field">
+      <label class="odd-label" for="email">Email</label>
+      <input class="odd-input" id="email" type="email" value="not-an-email" aria-invalid="true" aria-describedby="email-error">
+      <p class="odd-error" id="email-error">Enter an email address like name@example.com.</p>
     </div>
-    <div class="ds-field">
-      <label class="ds-label" for="notes">Notes</label>
-      <textarea class="ds-textarea" id="notes" placeholder="The textarea grows with its content."></textarea>
+    <div class="odd-field">
+      <label class="odd-label" for="notes">Notes</label>
+      <textarea class="odd-textarea" id="notes" placeholder="The textarea grows with its content."></textarea>
     </div>
-    <div class="ds-field">
-      <label class="ds-label" for="disabled">Owner</label>
-      <input class="ds-input" id="disabled" value="you" disabled>
+    <div class="odd-field">
+      <label class="odd-label" for="disabled">Owner</label>
+      <input class="odd-input" id="disabled" value="you" disabled>
     </div>
   </form>`,
 };
 
 export const Select: Story = {
-  render: () => `<div class="ds-field" style="max-inline-size: 26rem">
-    <label class="ds-label" for="format">Format</label>
-    <select class="ds-select" id="format">
+  render: () => `<div class="odd-field" style="max-inline-size: 26rem">
+    <label class="odd-label" for="format">Format</label>
+    <select class="odd-select" id="format">
       <option>Standard</option>
       <option selected>Extended</option>
       <option>Retro</option>
@@ -52,31 +52,31 @@ export const Select: Story = {
 };
 
 export const Choices: Story = {
-  render: () => `<div class="ds-stack">
-    <fieldset class="ds-stack" style="--gap: var(--space-2); border: 0; padding: 0; margin: 0">
-      <legend class="ds-label" style="margin-block-end: var(--space-2)">Notifications</legend>
-      <label class="ds-choice"><input type="checkbox" checked> Deck comments</label>
-      <label class="ds-choice"><input type="checkbox"> Weekly digest</label>
-      <label class="ds-choice"><input type="checkbox" disabled> Partner offers (unavailable)</label>
+  render: () => `<div class="odd-stack">
+    <fieldset class="odd-stack" style="--gap: var(--space-2); border: 0; padding: 0; margin: 0">
+      <legend class="odd-label" style="margin-block-end: var(--space-2)">Notifications</legend>
+      <label class="odd-choice"><input type="checkbox" checked> Deck comments</label>
+      <label class="odd-choice"><input type="checkbox"> Weekly digest</label>
+      <label class="odd-choice"><input type="checkbox" disabled> Partner offers (unavailable)</label>
     </fieldset>
-    <fieldset class="ds-stack" style="--gap: var(--space-2); border: 0; padding: 0; margin: 0">
-      <legend class="ds-label" style="margin-block-end: var(--space-2)">Visibility</legend>
-      <label class="ds-choice"><input type="radio" name="vis" checked> Public</label>
-      <label class="ds-choice"><input type="radio" name="vis"> Unlisted</label>
-      <label class="ds-choice"><input type="radio" name="vis"> Private</label>
+    <fieldset class="odd-stack" style="--gap: var(--space-2); border: 0; padding: 0; margin: 0">
+      <legend class="odd-label" style="margin-block-end: var(--space-2)">Visibility</legend>
+      <label class="odd-choice"><input type="radio" name="vis" checked> Public</label>
+      <label class="odd-choice"><input type="radio" name="vis"> Unlisted</label>
+      <label class="odd-choice"><input type="radio" name="vis"> Private</label>
     </fieldset>
   </div>`,
 };
 
 export const Switch: Story = {
-  render: () => `<div class="ds-stack" style="--gap: var(--space-3)">
-    <label class="ds-choice"><input type="checkbox" role="switch" class="ds-switch" checked> Show card prices</label>
-    <label class="ds-choice"><input type="checkbox" role="switch" class="ds-switch"> Compact grid</label>
+  render: () => `<div class="odd-stack" style="--gap: var(--space-3)">
+    <label class="odd-choice"><input type="checkbox" role="switch" class="odd-switch" checked> Show card prices</label>
+    <label class="odd-choice"><input type="checkbox" role="switch" class="odd-switch"> Compact grid</label>
   </div>`,
 };
 
 export const Segmented: Story = {
-  render: () => `<fieldset class="ds-segmented">
+  render: () => `<fieldset class="odd-segmented">
     <legend>View</legend>
     <label><input type="radio" name="view" checked> Grid</label>
     <label><input type="radio" name="view"> List</label>
@@ -93,23 +93,23 @@ export const Slider: Story = {
       },
     },
   },
-  render: () => `<div class="ds-stack" style="--gap: var(--space-5); max-inline-size: 26rem">
-    <div class="ds-field">
-      <div class="ds-row" style="justify-content: space-between">
-        <label class="ds-label" for="copies">Copies per card</label>
-        <output class="ds-stat-value" id="copies-value" for="copies">3 of 4</output>
+  render: () => `<div class="odd-stack" style="--gap: var(--space-5); max-inline-size: 26rem">
+    <div class="odd-field">
+      <div class="odd-row" style="justify-content: space-between">
+        <label class="odd-label" for="copies">Copies per card</label>
+        <output class="odd-stat-value" id="copies-value" for="copies">3 of 4</output>
       </div>
-      <input class="ds-slider" type="range" id="copies" min="1" max="4" value="3" aria-describedby="copies-hint"
+      <input class="odd-slider" type="range" id="copies" min="1" max="4" value="3" aria-describedby="copies-hint"
         oninput="document.getElementById('copies-value').value = this.value + ' of ' + this.max">
-      <p class="ds-hint" id="copies-hint">Most formats allow up to 4.</p>
+      <p class="odd-hint" id="copies-hint">Most formats allow up to 4.</p>
     </div>
-    <div class="ds-field">
-      <label class="ds-label" for="card-size">Card size</label>
-      <input class="ds-slider" type="range" id="card-size" min="0" max="100" value="65">
+    <div class="odd-field">
+      <label class="odd-label" for="card-size">Card size</label>
+      <input class="odd-slider" type="range" id="card-size" min="0" max="100" value="65">
     </div>
-    <div class="ds-field">
-      <label class="ds-label" for="locked">Hand size (locked by format)</label>
-      <input class="ds-slider" type="range" id="locked" min="5" max="9" value="7" disabled>
+    <div class="odd-field">
+      <label class="odd-label" for="locked">Hand size (locked by format)</label>
+      <input class="odd-slider" type="range" id="locked" min="5" max="9" value="7" disabled>
     </div>
   </div>`,
 };
@@ -123,12 +123,12 @@ export const Search: Story = {
       },
     },
   },
-  render: () => `<div class="ds-stack" style="max-inline-size: 26rem">
+  render: () => `<div class="odd-stack" style="max-inline-size: 26rem">
     <search>
-      <form class="ds-search" onsubmit="event.preventDefault()">
-        <label class="ds-visually-hidden" for="card-search">Search cards</label>
+      <form class="odd-search" onsubmit="event.preventDefault()">
+        <label class="odd-visually-hidden" for="card-search">Search cards</label>
         ${icons.search}
-        <input class="ds-input" type="search" id="card-search" name="q" placeholder="Search cards" value="Ember">
+        <input class="odd-input" type="search" id="card-search" name="q" placeholder="Search cards" value="Ember">
       </form>
     </search>
   </div>`,

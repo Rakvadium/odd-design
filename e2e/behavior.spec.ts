@@ -109,7 +109,7 @@ test.describe("tooltips and hover cards (interestfor)", () => {
     const card = await rect(page, "#preview-midnight");
     expect(Math.abs(card.left - link.left), "aligned to the link's start edge").toBeLessThan(2);
     expect(Math.abs(card.top - link.bottom - 8), "8px below the link").toBeLessThan(1.5);
-    await page.locator("#preview-midnight .ds-badge").first().hover();
+    await page.locator("#preview-midnight .odd-badge").first().hover();
     await page.waitForTimeout(800);
     expect(await isOpen(page, "#preview-midnight"), "still open with the pointer inside").toBe(true);
     await shot(page, testInfo, "hover-card.png");
@@ -189,29 +189,29 @@ test.describe("keyboard widgets", () => {
     const trigger = page.locator('button[commandfor="deck-actions"]');
     await trigger.focus();
     await page.keyboard.press("ArrowDown");
-    await expect(page.locator(".ds-menu-item", { hasText: "Duplicate" })).toBeFocused();
+    await expect(page.locator(".odd-menu-item", { hasText: "Duplicate" })).toBeFocused();
     await page.keyboard.press("ArrowDown");
     await page.keyboard.press("ArrowDown");
     // NVDA heard the old menu skip Merge while still counting it ("Show prices 4 of 9"). A disabled
     // item stays reachable, so it can be announced as unavailable, and choosing it does nothing.
-    const merge = page.locator(".ds-menu-item", { hasText: "Merge" });
+    const merge = page.locator(".odd-menu-item", { hasText: "Merge" });
     await expect(merge).toBeFocused();
     await page.keyboard.press("Enter");
     await expect(merge, "Enter on a disabled item keeps the menu open").toBeFocused();
     await expect(page.locator("#menu-log")).toHaveText("");
     await page.keyboard.press("ArrowDown");
-    await expect(page.locator(".ds-menu-item", { hasText: "Show prices" })).toBeFocused();
+    await expect(page.locator(".odd-menu-item", { hasText: "Show prices" })).toBeFocused();
     for (let i = 0; i < 4; i++) await page.keyboard.press("ArrowUp");
-    await expect(page.locator(".ds-menu-item", { hasText: "Delete deck" })).toBeFocused();
+    await expect(page.locator(".odd-menu-item", { hasText: "Delete deck" })).toBeFocused();
     await page.keyboard.press("c");
-    await expect(page.locator(".ds-menu-item", { hasText: "Compact grid" })).toBeFocused();
+    await expect(page.locator(".odd-menu-item", { hasText: "Compact grid" })).toBeFocused();
     await page.keyboard.press("Home");
     await page.keyboard.press("Enter");
     await expect(page.locator("#menu-log")).toHaveText("Chose “Duplicate”");
     await expect(trigger).toBeFocused();
     await page.keyboard.press("ArrowDown");
     // The menu focuses its first item once it has opened; Tab from there.
-    await expect(page.locator(".ds-menu-item", { hasText: "Duplicate" })).toBeFocused();
+    await expect(page.locator(".odd-menu-item", { hasText: "Duplicate" })).toBeFocused();
     await page.keyboard.press("Tab");
     await expect(page.locator("#after-menu")).toBeFocused();
     expect(await isOpen(page, "#deck-actions")).toBe(false);
@@ -240,13 +240,13 @@ test.describe("keyboard widgets", () => {
     await page.locator('button[commandfor="toast-settings"][command="show-modal"]').click();
     await page.waitForTimeout(300);
     await page.locator("#toast-settings [data-toast=saved]").click();
-    const dismiss = page.locator('.ds-toast button[aria-label^="Dismiss"]');
+    const dismiss = page.locator('.odd-toast button[aria-label^="Dismiss"]');
     await expect(dismiss).toBeVisible();
     await dismiss.click();
-    await expect(page.locator(".ds-toast")).toHaveCount(0);
+    await expect(page.locator(".odd-toast")).toHaveCount(0);
     expect(await isOpen(page, "#toast-settings"), "the dialog stays open").toBe(true);
     await page.keyboard.press("Escape");
-    await expect.poll(() => page.locator(".ds-toaster").evaluate((el) => el.parentElement!.tagName)).toBe("BODY");
+    await expect.poll(() => page.locator(".odd-toaster").evaluate((el) => el.parentElement!.tagName)).toBe("BODY");
   });
 
   // NVDA read the old markup as "Deck savedMidnight Control, version 15. Dismiss: Deck saved": the
@@ -254,12 +254,12 @@ test.describe("keyboard widgets", () => {
   test("a toast is announced as one sentence, without its buttons", async ({ page }) => {
     await openStory(page, "components-interactive--toast", "mode:light");
     await page.getByRole("button", { name: "Save deck" }).click();
-    await expect(page.locator(".ds-toast")).toHaveCount(1);
-    const live = page.locator('.ds-toaster [aria-live="polite"]');
+    await expect(page.locator(".odd-toast")).toHaveCount(1);
+    const live = page.locator('.odd-toaster [aria-live="polite"]');
     await expect(live).toHaveCount(1);
     await expect(live).toHaveText("Deck saved. Midnight Control, version 15.");
     await expect(live.locator("button")).toHaveCount(0);
-    await page.locator('.ds-toast button[aria-label^="Dismiss"]').click();
+    await page.locator('.odd-toast button[aria-label^="Dismiss"]').click();
     await expect(live).toHaveText("");
   });
 
@@ -293,7 +293,7 @@ test.describe("keyboard widgets", () => {
 test.describe("engine-specific CSS", () => {
   test("the slider moves by keyboard and its fill follows the thumb", async ({ page }, testInfo) => {
     await openStory(page, "components-forms--slider", "mode:light");
-    await shot(page, testInfo, "slider-before.png", ".ds-stack");
+    await shot(page, testInfo, "slider-before.png", ".odd-stack");
     await page.locator("#copies").focus();
     await page.keyboard.press("ArrowLeft");
     await page.keyboard.press("ArrowLeft");
@@ -306,7 +306,7 @@ test.describe("engine-specific CSS", () => {
       .evaluate((el) => ({ on: Number(getComputedStyle(el).getPropertyValue("--_on")), progress: Number(getComputedStyle(el).getPropertyValue("--_progress")) }));
     testInfo.annotations.push({ type: "path", description: `slider fill: ${fill.on ? "scroll timeline" : testInfo.project.name === "firefox" ? "::-moz-range-progress" : "plain track"}` });
     if (fill.on) expect(fill.progress).toBeCloseTo(0.65, 2);
-    await shot(page, testInfo, "slider-after.png", ".ds-stack");
+    await shot(page, testInfo, "slider-after.png", ".odd-stack");
   });
 
   test("progress and meter bars render, including in forced colors", async ({ page }, testInfo) => {
@@ -326,7 +326,7 @@ test.describe("engine-specific CSS", () => {
   test("reduced motion stops the skeleton pulse and the progress sweep", async ({ page }) => {
     await page.emulateMedia({ reducedMotion: "reduce" });
     await openStory(page, "components-feedback--skeleton");
-    expect(await page.locator(".ds-skeleton").first().evaluate((el) => getComputedStyle(el).animationDuration)).toBe("0s");
+    expect(await page.locator(".odd-skeleton").first().evaluate((el) => getComputedStyle(el).animationDuration)).toBe("0s");
     await openStory(page, "components-feedback--progress");
     expect(await page.locator("#sync").evaluate((el) => getComputedStyle(el).animationDuration)).toBe("0s");
   });

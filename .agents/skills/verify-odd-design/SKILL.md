@@ -7,7 +7,7 @@ description: Launch and drive the odd-design design system's Storybook (the only
 
 odd-design is a framework-free CSS design system. Users touch it in two places:
 
-- **Storybook** (primary): stories under `stories/` render real `.ds-*` markup. The `Chrome`, `Palette`, and `Mode` toolbar globals set `html[data-chrome|data-palette|data-mode]`.
+- **Storybook** (primary): stories under `stories/` render real `.odd-*` markup. The `Chrome`, `Palette`, and `Mode` toolbar globals set `html[data-chrome|data-palette|data-mode]`.
 - **`bun test`** (secondary, no UI): enforces the token contract and WCAG contrast. Run it alongside any visual proof. It is not a replacement for one.
 
 The harness is `scripts/ctl.ts`, a zero-dependency Bun script. It starts Storybook on a free port and a headless Chrome/Edge with its own profile, then drives that Chrome over CDP. Each command connects, does one thing, appends a line to the transcript, and exits. Browser state (open dialogs, focus, typed values) persists between commands until the next `goto`.
@@ -63,22 +63,22 @@ The current list is always at `curl -s http://127.0.0.1:<port>/index.json`.
 ```sh
 bun $S goto showcase--sample-app "chrome:glass;palette:aurora;mode:dark"   # globals = the toolbar
 bun $S goto components-button--playground "" "variant:danger;size:lg;label:Delete+deck"   # args = Controls panel
-bun $S state                                  # html data-*, every .ds-scope's data-*, open dialogs, focused element
+bun $S state                                  # html data-*, every .odd-scope's data-*, open dialogs, focused element
 bun $S click 'button[commandfor="appearance"]'            # real mouse events at the element's center
-bun $S click '.ds-button' --text 'Done'                    # filter by visible text
+bun $S click '.odd-button' --text 'Done'                    # filter by visible text
 bun $S hover 'button[interestfor="tip-copy"]' ; bun $S wait 1200   # pointer stays put; wait covers interest delays
 bun $S focus '#name' ; bun $S type 'x' ; bun $S press Backspace ; bun $S press Tab
 bun $S press Escape                          # also Enter Space Tab Backspace Home End Arrow{Left,Right,Up,Down}, or one letter
 bun $S emulate prefers-color-scheme=dark prefers-reduced-motion=reduce prefers-contrast=more forced-colors=active
 bun $S emulate                               # no args clears; each call replaces the previous set; persists until cleared or down
-bun $S eval 'getComputedStyle(document.querySelector(".ds-button")).borderRadius'   # read-only assertions
+bun $S eval 'getComputedStyle(document.querySelector(".odd-button")).borderRadius'   # read-only assertions
 bun $S axe                                   # accessibility sweep: every story, both modes, overlays opened (see features/accessibility.md)
 ```
 
 Rules for driving:
 
 - Valid globals are `chrome` ∈ `calm glass bubblegum holoterminal expressive darkmatter`, `palette` ∈ `default aurora sorbet calm-storm cyberpunk cotton-candy caffeine singularity`, and `mode` ∈ `system light dark`. The toolbar defaults are `calm`, `default`, and `system`.
-- Prefer stable handles: ids and `commandfor`/`command` attributes in the stories, `input[name=…][value=…]`, `[role=switch]`, `aria-*`, and `.ds-*` classes. Do not use coordinates or nth-child.
+- Prefer stable handles: ids and `commandfor`/`command` attributes in the stories, `input[name=…][value=…]`, `[role=switch]`, `aria-*`, and `.odd-*` classes. Do not use coordinates or nth-child.
 - Change state with `click`, `press`, and `type`, which send real input events. Use `eval` only to read state, never to set it. Setting `.value`, calling `.showModal()`, or toggling attributes bypasses exactly what you are trying to prove: `:user-invalid`, invoker commands, `closedby`, and the native radio behavior.
 - `mode:system` follows the browser's `prefers-color-scheme`, so pair it with `emulate`. `emulate` lasts until it is cleared or the run goes `down`.
 - Real feature recipes are in [`features/`](features/README.md). Read the matching file before driving.
@@ -95,7 +95,7 @@ Evidence goes to `.verify/evidence/<run>/`, which is gitignored and survives `do
 Proof standards:
 
 - Drive the user path: open a story with the globals a user would pick, then click, type, and press like a user. Capture the before state, the action, and the after state. A single final screenshot is not proof.
-- Back each visible claim with a read-only assertion. For example, `state` shows the `.ds-scope` data changed, `eval` shows `dialog.open` or the computed style, and `aria` shows `checked`/`modal`/`focused`.
+- Back each visible claim with a read-only assertion. For example, `state` shows the `.odd-scope` data changed, `eval` shows `dialog.open` or the computed style, and `aria` shows `checked`/`modal`/`focused`.
 - For appearance changes, prove every axis that the change touches. A chrome change needs at least one light and one dark capture, or `showcase--matrix`. A palette change needs `foundations--contrast` plus `bun test`.
 - Read every screenshot you cite. Name the run ID, story ID, and globals with each artifact.
 - There are no mocks and no backend. If something cannot be driven (for example, the a11y addon panel lives in the manager UI, not the iframe), say so rather than substituting a different path.

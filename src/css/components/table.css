@@ -1,6 +1,6 @@
 /*
- * <div class="ds-table-wrap" tabindex="0" role="region" aria-labelledby="decks-caption">
- *   <table class="ds-table">
+ * <div class="odd-table-wrap" tabindex="0" role="region" aria-labelledby="decks-caption">
+ *   <table class="odd-table">
  *     <caption id="decks-caption">Your decks</caption>
  *     <thead><tr><th scope="col">Deck</th><th scope="col" data-numeric>Cards</th></tr></thead>
  *     <tbody>…</tbody>
@@ -9,10 +9,10 @@
  * The wrapper scrolls sideways on narrow screens. tabindex and a name let keyboard users reach and
  * scroll it; drop both if the table can never overflow.
  * Numbers: data-numeric on the th and its tds. Selectable rows: a checkbox in the row, which tints it.
- * Sortable: <th aria-sort="ascending"><button class="ds-table-sort">Deck</button></th>. Put aria-sort
+ * Sortable: <th aria-sort="ascending"><button class="odd-table-sort">Deck</button></th>. Put aria-sort
  * on the sorted column only; the page does the sorting and updates aria-sort.
  */
-.ds-table-wrap {
+.odd-table-wrap {
   overflow-x: auto;
   border: var(--border-width) solid var(--edge-surface);
   border-radius: var(--radius-surface);
@@ -21,13 +21,13 @@
   backdrop-filter: var(--fx-backdrop);
 }
 
-.ds-table {
+.odd-table {
   inline-size: 100%;
   border-collapse: collapse;
   font-size: var(--text-sm);
 }
 
-.ds-table caption {
+.odd-table caption {
   caption-side: bottom;
   padding: var(--space-3) var(--space-4);
   color: var(--muted-foreground);
@@ -35,14 +35,14 @@
   text-align: start;
 }
 
-.ds-table :is(th, td) {
+.odd-table :is(th, td) {
   padding: calc(var(--space-3) * var(--density)) var(--space-4);
   border-block-end: var(--border-width) solid var(--border);
   text-align: start;
   vertical-align: middle;
 }
 
-.ds-table thead th {
+.odd-table thead th {
   color: var(--muted-foreground);
   font-family: var(--font-label);
   font-size: var(--text-xs);
@@ -52,38 +52,38 @@
   white-space: nowrap;
 }
 
-.ds-table tbody tr:last-child > * {
+.odd-table tbody tr:last-child > * {
   border-block-end: 0;
 }
 
-.ds-table tbody tr {
+.odd-table tbody tr {
   transition: background-color var(--duration-fast) var(--ease);
 }
-.ds-table tbody tr:hover {
+.odd-table tbody tr:hover {
   background: color-mix(in oklch, var(--muted) 55%, transparent);
 }
-.ds-table tbody tr:has(input:checked) {
+.odd-table tbody tr:has(input:checked) {
   background: var(--tint-primary);
   color: var(--foreground);
 }
 
-.ds-table tfoot :is(th, td) {
+.odd-table tfoot :is(th, td) {
   border-block-start: var(--border-width) solid var(--border);
   border-block-end: 0;
   font-weight: 600;
 }
 
-.ds-table [data-numeric] {
+.odd-table [data-numeric] {
   text-align: end;
   font-variant-numeric: tabular-nums;
 }
 
 /* Fits the checkbox column to its control. */
-.ds-table :is(th, td):has(> input[type="checkbox"]:only-child) {
+.odd-table :is(th, td):has(> input[type="checkbox"]:only-child) {
   inline-size: 1px;
   padding-inline-end: 0;
 }
-.ds-table input[type="checkbox"] {
+.odd-table input[type="checkbox"] {
   inline-size: 1.125rem;
   block-size: 1.125rem;
   margin: 0;
@@ -91,7 +91,7 @@
   accent-color: var(--primary);
 }
 
-.ds-table-sort {
+.odd-table-sort {
   display: inline-flex;
   align-items: center;
   gap: 0.35em;
@@ -106,17 +106,17 @@
   text-transform: inherit;
   cursor: pointer;
 }
-.ds-table-sort:hover {
+.odd-table-sort:hover {
   color: var(--foreground);
 }
-.ds-table-sort::after {
+.odd-table-sort::after {
   content: "↕" / "";
   opacity: 0.5;
 }
-[aria-sort="ascending"] > .ds-table-sort::after { content: "↑" / ""; opacity: 1; }
-[aria-sort="descending"] > .ds-table-sort::after { content: "↓" / ""; opacity: 1; }
-[aria-sort]:not([aria-sort="none"]) > .ds-table-sort { color: var(--foreground); }
+[aria-sort="ascending"] > .odd-table-sort::after { content: "↑" / ""; opacity: 1; }
+[aria-sort="descending"] > .odd-table-sort::after { content: "↓" / ""; opacity: 1; }
+[aria-sort]:not([aria-sort="none"]) > .odd-table-sort { color: var(--foreground); }
 
-.ds-table [data-numeric] > .ds-table-sort {
+.odd-table [data-numeric] > .odd-table-sort {
   flex-direction: row-reverse;
 }

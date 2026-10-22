@@ -24,15 +24,15 @@ export const Table: Story = {
   },
   render: () => {
     const root = document.createElement("div");
-    root.innerHTML = `<div class="ds-table-wrap" tabindex="0" role="region" aria-labelledby="decks-caption" style="max-inline-size: 48rem">
-    <table class="ds-table">
+    root.innerHTML = `<div class="odd-table-wrap" tabindex="0" role="region" aria-labelledby="decks-caption" style="max-inline-size: 48rem">
+    <table class="odd-table">
       <caption id="decks-caption">Your decks, sorted by name</caption>
       <thead>
         <tr>
           <th scope="col"><input type="checkbox" data-select-all aria-label="Select all decks"></th>
-          <th scope="col" aria-sort="ascending"><button class="ds-table-sort">Deck</button></th>
-          <th scope="col"><button class="ds-table-sort">Format</button></th>
-          <th scope="col" data-numeric><button class="ds-table-sort">Cards</button></th>
+          <th scope="col" aria-sort="ascending"><button class="odd-table-sort">Deck</button></th>
+          <th scope="col"><button class="odd-table-sort">Format</button></th>
+          <th scope="col" data-numeric><button class="odd-table-sort">Cards</button></th>
           <th scope="col" data-numeric>Versions</th>
           <th scope="col">Status</th>
         </tr>
@@ -46,7 +46,7 @@ export const Table: Story = {
           <td>${format}</td>
           <td data-numeric>${cards}</td>
           <td data-numeric>${versions}</td>
-          <td><span class="ds-badge" data-tone="${tone}">${status}</span></td>
+          <td><span class="odd-badge" data-tone="${tone}">${status}</span></td>
         </tr>`,
           )
           .join("")}
@@ -83,47 +83,47 @@ export const Avatar: Story = {
       },
     },
   },
-  render: () => `<div class="ds-stack" style="--gap: var(--space-5)">
-    <div class="ds-row">
-      <span class="ds-avatar" data-size="sm" role="img" aria-label="Ana Rojas">AR</span>
-      <span class="ds-avatar" role="img" aria-label="Ana Rojas">AR</span>
-      <span class="ds-avatar" data-size="lg" role="img" aria-label="Ana Rojas">AR</span>
-      <span class="ds-avatar" data-size="lg"><img src="${photo("#8a5cf6", "#f472b6")}" alt="Kai Nakamura"></span>
-      <span class="ds-avatar" data-size="lg" data-initials="JP" id="broken-avatar"><img src="/missing-avatar.png" alt="Jo Park"></span>
+  render: () => `<div class="odd-stack" style="--gap: var(--space-5)">
+    <div class="odd-row">
+      <span class="odd-avatar" data-size="sm" role="img" aria-label="Ana Rojas">AR</span>
+      <span class="odd-avatar" role="img" aria-label="Ana Rojas">AR</span>
+      <span class="odd-avatar" data-size="lg" role="img" aria-label="Ana Rojas">AR</span>
+      <span class="odd-avatar" data-size="lg"><img src="${photo("#8a5cf6", "#f472b6")}" alt="Kai Nakamura"></span>
+      <span class="odd-avatar" data-size="lg" data-initials="JP" id="broken-avatar"><img src="/missing-avatar.png" alt="Jo Park"></span>
     </div>
-    <div class="ds-avatar-group" role="group" aria-label="Collaborators">
-      <span class="ds-avatar"><img src="${photo("#0ea5e9", "#22c55e")}" alt="Mira Okafor"></span>
-      <span class="ds-avatar" role="img" aria-label="Ana Rojas">AR</span>
-      <span class="ds-avatar"><img src="${photo("#f59e0b", "#ef4444")}" alt="Theo Laurent"></span>
-      <span class="ds-avatar" role="img" aria-label="and 3 more">+3</span>
+    <div class="odd-avatar-group" role="group" aria-label="Collaborators">
+      <span class="odd-avatar"><img src="${photo("#0ea5e9", "#22c55e")}" alt="Mira Okafor"></span>
+      <span class="odd-avatar" role="img" aria-label="Ana Rojas">AR</span>
+      <span class="odd-avatar"><img src="${photo("#f59e0b", "#ef4444")}" alt="Theo Laurent"></span>
+      <span class="odd-avatar" role="img" aria-label="and 3 more">+3</span>
     </div>
-    <div class="ds-row" style="--gap: var(--space-3)">
-      <span class="ds-avatar" aria-hidden="true">MO</span>
+    <div class="odd-row" style="--gap: var(--space-3)">
+      <span class="odd-avatar" aria-hidden="true">MO</span>
       <div>
         <p style="font-weight: 600">Mira Okafor</p>
-        <p class="ds-muted" style="font-size: var(--text-sm)">Edited Midnight Control · 2 hours ago</p>
+        <p class="odd-muted" style="font-size: var(--text-sm)">Edited Midnight Control · 2 hours ago</p>
       </div>
     </div>
   </div>`,
 };
 
 export const Separator: Story = {
-  render: () => `<div class="ds-stack" style="max-inline-size: 32rem">
-    <div class="ds-stack" style="--gap: var(--space-2)">
-      <h3 class="ds-heading">Deck notes</h3>
-      <p class="ds-muted">Mulligan aggressively for an early unit.</p>
+  render: () => `<div class="odd-stack" style="max-inline-size: 32rem">
+    <div class="odd-stack" style="--gap: var(--space-2)">
+      <h3 class="odd-heading">Deck notes</h3>
+      <p class="odd-muted">Mulligan aggressively for an early unit.</p>
     </div>
-    <hr class="ds-separator">
-    <div class="ds-stack" style="--gap: var(--space-2)">
-      <h3 class="ds-heading">Sideboard</h3>
-      <p class="ds-muted">Bring in the control package against tempo decks.</p>
+    <hr class="odd-separator">
+    <div class="odd-stack" style="--gap: var(--space-2)">
+      <h3 class="odd-heading">Sideboard</h3>
+      <p class="odd-muted">Bring in the control package against tempo decks.</p>
     </div>
-    <hr class="ds-separator">
-    <div class="ds-row" style="--gap: var(--space-3); font-size: var(--text-sm)">
+    <hr class="odd-separator">
+    <div class="odd-row" style="--gap: var(--space-3); font-size: var(--text-sm)">
       <a href="#">Edit</a>
-      <hr class="ds-separator" aria-orientation="vertical">
+      <hr class="odd-separator" aria-orientation="vertical">
       <a href="#">Duplicate</a>
-      <hr class="ds-separator" aria-orientation="vertical">
+      <hr class="odd-separator" aria-orientation="vertical">
       <a href="#">Export</a>
     </div>
   </div>`,

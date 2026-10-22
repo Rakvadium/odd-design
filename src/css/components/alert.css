@@ -1,14 +1,14 @@
 /*
- * <div class="ds-alert" data-tone="info|success|warning|danger">
+ * <div class="odd-alert" data-tone="info|success|warning|danger">
  *   <svg aria-hidden="true">…</svg>
- *   <div><p class="ds-alert-title">Rotation is coming</p><p>Three of your decks lose legality on May 1.</p></div>
+ *   <div><p class="odd-alert-title">Rotation is coming</p><p>Three of your decks lose legality on May 1.</p></div>
  * </div>
  * A message that's on the page from the start needs no role. For one that appears later, keep an
  * empty role="status" (or role="alert" for errors) container on the page and insert the alert into it,
  * so screen readers announce it. Text stays --foreground on a soft tint (TINT_PAIRS checks it);
  * the tone shows in the tint, border, and icon, and the title says what kind of message it is.
  */
-.ds-alert {
+.odd-alert {
   --_tone: var(--muted-foreground);
   --_tint: var(--tint-neutral);
 
@@ -23,13 +23,13 @@
   font-size: var(--text-sm);
 }
 
-.ds-alert[data-tone="info"] { --_tone: var(--info); --_tint: var(--tint-info); }
-.ds-alert[data-tone="success"] { --_tone: var(--success); --_tint: var(--tint-success); }
-.ds-alert[data-tone="warning"] { --_tone: var(--warning); --_tint: var(--tint-warning); }
-.ds-alert[data-tone="danger"] { --_tone: var(--danger); --_tint: var(--tint-danger); }
+.odd-alert[data-tone="info"] { --_tone: var(--info); --_tint: var(--tint-info); }
+.odd-alert[data-tone="success"] { --_tone: var(--success); --_tint: var(--tint-success); }
+.odd-alert[data-tone="warning"] { --_tone: var(--warning); --_tint: var(--tint-warning); }
+.odd-alert[data-tone="danger"] { --_tone: var(--danger); --_tint: var(--tint-danger); }
 
 /* Pulled toward the text color so a pale tone (warning in light mode) still reads as an icon. */
-.ds-alert > svg {
+.odd-alert > svg {
   flex-shrink: 0;
   inline-size: 1.25rem;
   block-size: 1.25rem;
@@ -37,14 +37,14 @@
   color: color-mix(in oklab, var(--_tone) 70%, var(--foreground));
 }
 
-.ds-alert > :not(svg) {
+.odd-alert > :not(svg) {
   display: grid;
   flex: 1;
   gap: var(--space-1);
   min-inline-size: 0;
 }
 
-.ds-alert-title {
+.odd-alert-title {
   font-family: var(--font-label);
   font-weight: 650;
   text-transform: var(--label-case);

@@ -32,14 +32,14 @@ bun run test:browsers   # Playwright: the axe sweep and behavior checks in Firef
     <link rel="stylesheet" href="design-system/src/css/index.css">
   </head>
   <body>
-    <button class="ds-button" data-variant="primary">Save</button>
+    <button class="odd-button" data-variant="primary">Save</button>
   </body>
 </html>
 ```
 
 Fonts are not bundled. Load Outfit, Bricolage Grotesque, and JetBrains Mono (for example with `@fontsource-variable/*`), or the stacks fall back to system fonts.
 
-A subtree can have its own appearance: add `class="ds-scope"` and set all three attributes on it.
+A subtree can have its own appearance: add `class="odd-scope"` and set all three attributes on it.
 
 ## How it fits together
 
@@ -50,7 +50,7 @@ A subtree can have its own appearance: add `class="ds-scope"` and set all three 
 3. `chrome`: `chromes/*.css`. Feel tokens only. A chrome can reference palette colors, such as a primary-tinted glow, but never contains a hue of its own.
 4. `preferences`: `prefers-contrast`, `prefers-reduced-motion`, `prefers-reduced-transparency`, and `forced-colors`. This layer beats palette and chrome.
 5. `base`: element defaults.
-6. `components`: `.ds-*` classes. These read tokens and never check which chrome or palette is active.
+6. `components`: `.odd-*` classes. These read tokens and never check which chrome or palette is active.
 
 `src/js/contract.ts` lists every palette token, every chrome token, and the WCAG pairs. The tests read it, so adding a token to the contract fails `bun test` until every palette or chrome defines it.
 
@@ -113,31 +113,31 @@ The five palettes ported from uvs-decks-gg went through the same repair. Their i
 
 | Class | Element | Notes |
 | --- | --- | --- |
-| `ds-button` | `<button>`, `<a>` | `data-variant`, `data-size`, `data-icon-only`. Use `aria-disabled` and `aria-busy`. |
-| `ds-field`, `ds-label`, `ds-input`, `ds-textarea`, `ds-select`, `ds-hint`, `ds-error` | native form controls | Errors style on `:user-invalid`. The select upgrades through `appearance: base-select`. |
-| `ds-choice`, `ds-switch` | checkbox, radio, `role="switch"` | |
-| `ds-segmented` | radio `<fieldset>` | Arrow keys come from the browser. |
-| `ds-card` | `<article>` | `data-interactive` plus `.ds-card-link` makes the whole card clickable through a single link. |
-| `ds-badge` | `<span>` | `data-tone`, `data-solid`. |
-| `ds-dialog` | `<dialog>` | Open with `commandfor`/`command="show-modal"`, no JS. |
-| `ds-disclosure` | `<details name>` | An exclusive accordion. |
-| `ds-heading`, `ds-eyebrow` | `<h1>`–`<h6>`, `<p>` | `data-size` (xs–2xl, hero) sets size apart from level. The eyebrow takes `data-tone`. |
-| `ds-alert`, `ds-alert-title` | `<div>` | `data-tone`. Static alerts need no role; insert later ones into an existing `role="status"` or `role="alert"` container. |
-| `ds-progress`, `ds-meter`, `ds-stat` | `<progress>`, `<meter>` | A meter with `low`/`high`/`optimum` colors itself by range. Always show the value as text too. |
-| `ds-skeleton` | `<div aria-hidden>` | Put `aria-busy` and "Loading" text on the region. `data-shape="avatar"`. |
-| `ds-separator` | `<hr>` | `aria-orientation="vertical"` inside a row. |
-| `ds-avatar`, `ds-avatar-group` | `<span>` with `<img alt>` or `role="img"` initials | `data-size`. |
-| `ds-table-wrap`, `ds-table`, `ds-table-sort` | `<table>` | The wrapper scrolls and is focusable. `data-numeric`, `aria-sort`, and a row checkbox tints the row. |
-| `ds-slider` | `<input type="range">` | The filled track follows the thumb with no JS where scroll-driven animations exist. |
-| `ds-search` | `<search>` with `<input type="search">` | Visually hidden label, leading icon. |
-| `ds-popover` | `<div popover role="dialog">` | Open with `commandfor`/`command="toggle-popover"`. Anchors to the invoker and flips. Use `role="dialog"` and a name when it holds controls. |
-| `ds-tooltip` | `<div popover="hint" role="tooltip">` | Shown via `interestfor`. Wire `aria-labelledby` or `aria-describedby` yourself. |
-| `ds-hover-card` | `<div popover="hint">` | A preview via `interestfor`. Its content must also be reachable through the link. |
-| `ds-sheet` | `<dialog>` | Opens with `command="show-modal"`; `data-side="start|end|top|bottom"`. |
-| alert dialog | `<dialog class="ds-dialog" role="alertdialog">` | Leave out `closedby="any"` so only Escape or a button closes it. |
-| `ds-menu`, `ds-menu-item` | `<div popover role="menu">` | Needs `enhanceMenu`. `menuitemcheckbox`/`menuitemradio` with `aria-checked`; `data-tone="danger"`; disable items with `aria-disabled="true"`, which keeps them reachable. |
-| `ds-tabs` | `role="tablist"`, `tab`, `tabpanel` | Needs `enhanceTabs`. `data-activation="manual"`, `aria-orientation="vertical"`. |
-| `ds-toaster`, `ds-toast` | built by `createToaster()` | A polite live region in the corner; it moves into an open modal dialog so toasts stay live. |
+| `odd-button` | `<button>`, `<a>` | `data-variant`, `data-size`, `data-icon-only`. Use `aria-disabled` and `aria-busy`. |
+| `odd-field`, `odd-label`, `odd-input`, `odd-textarea`, `odd-select`, `odd-hint`, `odd-error` | native form controls | Errors style on `:user-invalid`. The select upgrades through `appearance: base-select`. |
+| `odd-choice`, `odd-switch` | checkbox, radio, `role="switch"` | |
+| `odd-segmented` | radio `<fieldset>` | Arrow keys come from the browser. |
+| `odd-card` | `<article>` | `data-interactive` plus `.odd-card-link` makes the whole card clickable through a single link. |
+| `odd-badge` | `<span>` | `data-tone`, `data-solid`. |
+| `odd-dialog` | `<dialog>` | Open with `commandfor`/`command="show-modal"`, no JS. |
+| `odd-disclosure` | `<details name>` | An exclusive accordion. |
+| `odd-heading`, `odd-eyebrow` | `<h1>`–`<h6>`, `<p>` | `data-size` (xs–2xl, hero) sets size apart from level. The eyebrow takes `data-tone`. |
+| `odd-alert`, `odd-alert-title` | `<div>` | `data-tone`. Static alerts need no role; insert later ones into an existing `role="status"` or `role="alert"` container. |
+| `odd-progress`, `odd-meter`, `odd-stat` | `<progress>`, `<meter>` | A meter with `low`/`high`/`optimum` colors itself by range. Always show the value as text too. |
+| `odd-skeleton` | `<div aria-hidden>` | Put `aria-busy` and "Loading" text on the region. `data-shape="avatar"`. |
+| `odd-separator` | `<hr>` | `aria-orientation="vertical"` inside a row. |
+| `odd-avatar`, `odd-avatar-group` | `<span>` with `<img alt>` or `role="img"` initials | `data-size`. |
+| `odd-table-wrap`, `odd-table`, `odd-table-sort` | `<table>` | The wrapper scrolls and is focusable. `data-numeric`, `aria-sort`, and a row checkbox tints the row. |
+| `odd-slider` | `<input type="range">` | The filled track follows the thumb with no JS where scroll-driven animations exist. |
+| `odd-search` | `<search>` with `<input type="search">` | Visually hidden label, leading icon. |
+| `odd-popover` | `<div popover role="dialog">` | Open with `commandfor`/`command="toggle-popover"`. Anchors to the invoker and flips. Use `role="dialog"` and a name when it holds controls. |
+| `odd-tooltip` | `<div popover="hint" role="tooltip">` | Shown via `interestfor`. Wire `aria-labelledby` or `aria-describedby` yourself. |
+| `odd-hover-card` | `<div popover="hint">` | A preview via `interestfor`. Its content must also be reachable through the link. |
+| `odd-sheet` | `<dialog>` | Opens with `command="show-modal"`; `data-side="start|end|top|bottom"`. |
+| alert dialog | `<dialog class="odd-dialog" role="alertdialog">` | Leave out `closedby="any"` so only Escape or a button closes it. |
+| `odd-menu`, `odd-menu-item` | `<div popover role="menu">` | Needs `enhanceMenu`. `menuitemcheckbox`/`menuitemradio` with `aria-checked`; `data-tone="danger"`; disable items with `aria-disabled="true"`, which keeps them reachable. |
+| `odd-tabs` | `role="tablist"`, `tab`, `tabpanel` | Needs `enhanceTabs`. `data-activation="manual"`, `aria-orientation="vertical"`. |
+| `odd-toaster`, `odd-toast` | built by `createToaster()` | A polite live region in the corner; it moves into an open modal dialog so toasts stay live. |
 
 ## Behaviors
 
@@ -153,6 +153,6 @@ toaster.show({ title: "Deck saved", tone: "success" });
 
 - `enhanceMenu(menu)`, `enhanceTabs(root)`, `enhanceSelectAll(table)`: one widget each. Call them for elements added after `enhance()`.
 - `createToaster({ label, max, parent })`: `show({ title, description, tone, duration, action })` returns `{ dismiss }`.
-- `avatarFallback()`: an `.ds-avatar[data-initials]` whose image fails to load shows its initials.
+- `avatarFallback()`: an `.odd-avatar[data-initials]` whose image fails to load shows its initials.
 - `interestForFallback()` and `closedByFallback()`: tooltips and hover cards, and `closedby="any"`, in browsers without them. They do nothing where the browser has the feature.
 - `roving(container, options)`: the shared arrow-key, Home/End, and typeahead helper the widgets use.

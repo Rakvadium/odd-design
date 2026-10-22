@@ -1,12 +1,12 @@
 /*
- * Image:     <span class="ds-avatar"><img src="…" alt="Ana Rojas"></span>
- * Initials:  <span class="ds-avatar" role="img" aria-label="Ana Rojas">AR</span>
+ * Image:     <span class="odd-avatar"><img src="…" alt="Ana Rojas"></span>
+ * Initials:  <span class="odd-avatar" role="img" aria-label="Ana Rojas">AR</span>
  * Next to a visible name the avatar repeats it, so hide it: alt="" on the img, or aria-hidden="true".
  * data-size="sm|lg". The shape follows the chrome's chip radius.
  *
- * Group:     <div class="ds-avatar-group" role="group" aria-label="Collaborators"> …avatars… </div>
+ * Group:     <div class="odd-avatar-group" role="group" aria-label="Collaborators"> …avatars… </div>
  */
-.ds-avatar {
+.odd-avatar {
   --_size: calc(2.5rem * var(--density));
 
   display: inline-grid;
@@ -29,24 +29,24 @@
   user-select: none;
 }
 
-.ds-avatar[data-size="sm"] { --_size: calc(2rem * var(--density)); }
-.ds-avatar[data-size="lg"] { --_size: calc(3.5rem * var(--density)); }
+.odd-avatar[data-size="sm"] { --_size: calc(2rem * var(--density)); }
+.odd-avatar[data-size="lg"] { --_size: calc(3.5rem * var(--density)); }
 
-.ds-avatar > img {
+.odd-avatar > img {
   inline-size: 100%;
   block-size: 100%;
   object-fit: cover;
 }
 
-.ds-avatar-group {
+.odd-avatar-group {
   display: inline-flex;
   align-items: center;
 }
 
 /* A ring in the page color separates overlapping avatars. */
-.ds-avatar-group > .ds-avatar {
+.odd-avatar-group > .odd-avatar {
   box-shadow: 0 0 0 2px var(--background);
 }
-.ds-avatar-group > .ds-avatar + .ds-avatar {
+.odd-avatar-group > .odd-avatar + .odd-avatar {
   margin-inline-start: calc(var(--_size) * -0.2);
 }

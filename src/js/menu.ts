@@ -1,15 +1,15 @@
 import { roving } from "./roving.ts";
 
 /*
- * <button class="ds-button" commandfor="deck-actions" command="toggle-popover" aria-haspopup="menu">Actions</button>
- * <div class="ds-menu" id="deck-actions" popover role="menu" aria-label="Deck actions">
- *   <button class="ds-menu-item" role="menuitem">Rename</button>
- *   <button class="ds-menu-item" role="menuitemcheckbox" aria-checked="true">Show prices</button>
+ * <button class="odd-button" commandfor="deck-actions" command="toggle-popover" aria-haspopup="menu">Actions</button>
+ * <div class="odd-menu" id="deck-actions" popover role="menu" aria-label="Deck actions">
+ *   <button class="odd-menu-item" role="menuitem">Rename</button>
+ *   <button class="odd-menu-item" role="menuitemcheckbox" aria-checked="true">Show prices</button>
  *   <div role="group" aria-label="Sort by">
- *     <button class="ds-menu-item" role="menuitemradio" aria-checked="true">Name</button> …
+ *     <button class="odd-menu-item" role="menuitemradio" aria-checked="true">Name</button> …
  *   </div>
- *   <hr class="ds-separator">
- *   <button class="ds-menu-item" role="menuitem" data-tone="danger">Delete</button>
+ *   <hr class="odd-separator">
+ *   <button class="odd-menu-item" role="menuitem" data-tone="danger">Delete</button>
  * </div>
  *
  * The popover already opens from its invoker, closes on Escape or an outside click, and returns focus.

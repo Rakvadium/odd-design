@@ -3,7 +3,7 @@
  * the bottom inline-end corner. It lets clicks through between toasts and stacks the newest last.
  * Tone shows as a dot beside the title; the text is always --overlay-foreground.
  */
-.ds-toaster {
+.odd-toaster {
   inset: auto;
   inset-block-end: var(--space-4);
   inset-inline-end: var(--space-4);
@@ -16,7 +16,7 @@
   pointer-events: none;
 }
 
-.ds-toaster > ol {
+.odd-toaster > ol {
   display: flex;
   flex-direction: column;
   gap: var(--space-2);
@@ -25,7 +25,7 @@
   list-style: none;
 }
 
-.ds-toast {
+.odd-toast {
   --_tone: var(--muted-foreground);
 
   display: grid;
@@ -48,37 +48,37 @@
 }
 
 @starting-style {
-  .ds-toast {
+  .odd-toast {
     opacity: 0;
     translate: 0 0.75rem;
   }
 }
 
-.ds-toast[data-state="closing"] {
+.odd-toast[data-state="closing"] {
   opacity: 0;
   translate: 1rem 0;
 }
 
-.ds-toast[data-tone="info"] { --_tone: var(--info); }
-.ds-toast[data-tone="success"] { --_tone: var(--success); }
-.ds-toast[data-tone="warning"] { --_tone: var(--warning); }
-.ds-toast[data-tone="danger"] { --_tone: var(--danger); }
+.odd-toast[data-tone="info"] { --_tone: var(--info); }
+.odd-toast[data-tone="success"] { --_tone: var(--success); }
+.odd-toast[data-tone="warning"] { --_tone: var(--warning); }
+.odd-toast[data-tone="danger"] { --_tone: var(--danger); }
 
-.ds-toast-body {
+.odd-toast-body {
   display: grid;
   gap: var(--space-1);
   align-self: center;
   min-inline-size: 0;
 }
 
-.ds-toast-title {
+.odd-toast-title {
   display: flex;
   align-items: center;
   gap: var(--space-2);
   font-weight: 600;
 }
 
-.ds-toast-title::before {
+.odd-toast-title::before {
   content: "";
   flex-shrink: 0;
   inline-size: 0.5rem;
@@ -87,6 +87,6 @@
   background: var(--_tone);
 }
 
-.ds-toast-description {
+.odd-toast-description {
   color: var(--muted-foreground);
 }

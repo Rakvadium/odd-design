@@ -1,10 +1,10 @@
 /*
- * <hr class="ds-separator">  A break between sections; screen readers announce a separator.
- * Between inline items: <hr class="ds-separator" aria-orientation="vertical"> inside a .ds-row.
+ * <hr class="odd-separator">  A break between sections; screen readers announce a separator.
+ * Between inline items: <hr class="odd-separator" aria-orientation="vertical"> inside a .odd-row.
  * For a line that means nothing, use a border on the container instead of an element.
  * Drawn with a border, not a background, so forced-colors mode keeps it visible.
  */
-.ds-separator {
+.odd-separator {
   flex-shrink: 0;
   align-self: stretch;
   block-size: 0;
@@ -13,7 +13,7 @@
   border-block-start: var(--border-width) solid var(--border);
 }
 
-.ds-separator[aria-orientation="vertical"] {
+.odd-separator[aria-orientation="vertical"] {
   inline-size: 0;
   block-size: auto;
   min-block-size: 1em;

@@ -3,17 +3,17 @@
  * control's look, so a view switcher reads the same whether it's tabs or radios.
  * aria-orientation="vertical" on the tablist puts the tabs in a column beside the panels.
  */
-.ds-tabs {
+.odd-tabs {
   display: grid;
   gap: var(--space-4);
 }
 
-.ds-tabs:has(> [role="tablist"][aria-orientation="vertical"]) {
+.odd-tabs:has(> [role="tablist"][aria-orientation="vertical"]) {
   grid-template-columns: auto 1fr;
   align-items: start;
 }
 
-.ds-tabs > [role="tablist"] {
+.odd-tabs > [role="tablist"] {
   display: inline-flex;
   justify-self: start;
   gap: 2px;
@@ -23,12 +23,12 @@
   background: var(--muted);
 }
 
-.ds-tabs > [role="tablist"][aria-orientation="vertical"] {
+.odd-tabs > [role="tablist"][aria-orientation="vertical"] {
   flex-direction: column;
   align-items: stretch;
 }
 
-.ds-tabs [role="tab"] {
+.odd-tabs [role="tab"] {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -57,37 +57,37 @@
   justify-content: flex-start;
 }
 
-.ds-tabs [role="tab"] svg {
+.odd-tabs [role="tab"] svg {
   inline-size: 1rem;
   block-size: 1rem;
   flex-shrink: 0;
 }
 
-.ds-tabs [role="tab"]:hover {
+.odd-tabs [role="tab"]:hover {
   color: var(--foreground);
 }
 
-.ds-tabs [role="tab"][aria-selected="true"] {
+.odd-tabs [role="tab"][aria-selected="true"] {
   background: var(--surface);
   color: var(--foreground);
   box-shadow: var(--shadow-control);
 }
 
-.ds-tabs [role="tab"]:focus-visible {
+.odd-tabs [role="tab"]:focus-visible {
   outline-offset: 1px;
 }
 
-.ds-tabs [role="tab"]:disabled {
+.odd-tabs [role="tab"]:disabled {
   cursor: not-allowed;
   opacity: 0.55;
 }
 
-.ds-tabs [role="tabpanel"]:focus-visible {
+.odd-tabs [role="tabpanel"]:focus-visible {
   border-radius: var(--radius-surface);
 }
 
 @media (forced-colors: active) {
-  .ds-tabs [role="tab"][aria-selected="true"] {
+  .odd-tabs [role="tab"][aria-selected="true"] {
     outline: 2px solid Highlight;
   }
 }

@@ -196,7 +196,7 @@ export function paletteCss(name: string, palette: Palette, tokens: readonly Pale
  * still win. Calling it again with the same name replaces the palette. Returns a function that removes it.
  */
 export function applyPalette(palette: Palette, name = "custom", doc: Document = document): () => void {
-  const id = `ds-palette-${name}`;
+  const id = `odd-palette-${name}`;
   const style = doc.getElementById(id) ?? doc.head.appendChild(Object.assign(doc.createElement("style"), { id }));
   style.textContent = `@layer palette {\n${paletteCss(name, palette)}\n}`;
   return () => style.remove();

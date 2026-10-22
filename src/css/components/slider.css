@@ -1,8 +1,8 @@
 /*
- * <div class="ds-field">
- *   <label class="ds-label" for="copies">Copies per card</label>
- *   <input class="ds-slider" type="range" id="copies" min="1" max="4" value="3" aria-describedby="copies-hint">
- *   <p class="ds-hint" id="copies-hint">1 to 4</p>
+ * <div class="odd-field">
+ *   <label class="odd-label" for="copies">Copies per card</label>
+ *   <input class="odd-slider" type="range" id="copies" min="1" max="4" value="3" aria-describedby="copies-hint">
+ *   <p class="odd-hint" id="copies-hint">1 to 4</p>
  * </div>
  * A native range input, so arrow keys, Page Up/Down, Home/End, and forms come from the browser.
  * Show the value in text if it matters; updating that text on input is the page's one line of JS.
@@ -23,7 +23,7 @@
   initial-value: 0;
 }
 
-.ds-slider {
+.odd-slider {
   --_thumb: calc(1.25rem * var(--density));
   --_rail: calc(0.375rem * var(--density));
   --_to: right;
@@ -37,15 +37,15 @@
   background: transparent;
   cursor: pointer;
 }
-.ds-slider:dir(rtl) { --_to: left; }
+.odd-slider:dir(rtl) { --_to: left; }
 
-.ds-slider:disabled {
+.odd-slider:disabled {
   cursor: not-allowed;
   opacity: 0.55;
 }
 
 /* Rail and thumb, Chromium and WebKit. Each engine's pseudo-elements need their own rule. */
-.ds-slider::-webkit-slider-runnable-track {
+.odd-slider::-webkit-slider-runnable-track {
   block-size: var(--_rail);
   border-radius: var(--radius-chip);
   background:
@@ -56,7 +56,7 @@
     ),
     var(--track);
 }
-.ds-slider::-webkit-slider-thumb {
+.odd-slider::-webkit-slider-thumb {
   appearance: none;
   inline-size: var(--_thumb);
   block-size: var(--_thumb);
@@ -67,22 +67,22 @@
   box-shadow: var(--shadow-control);
   transition: box-shadow var(--duration-fast) var(--ease);
 }
-.ds-slider:is(:hover, :focus-visible):not(:disabled)::-webkit-slider-thumb {
+.odd-slider:is(:hover, :focus-visible):not(:disabled)::-webkit-slider-thumb {
   box-shadow: var(--shadow-control), 0 0 0 4px color-mix(in oklch, var(--ring) 30%, transparent);
 }
 
 /* Rail, progress, and thumb, Firefox. */
-.ds-slider::-moz-range-track {
+.odd-slider::-moz-range-track {
   block-size: var(--_rail);
   border-radius: var(--radius-chip);
   background: var(--track);
 }
-.ds-slider::-moz-range-progress {
+.odd-slider::-moz-range-progress {
   block-size: var(--_rail);
   border-radius: var(--radius-chip);
   background: var(--primary);
 }
-.ds-slider::-moz-range-thumb {
+.odd-slider::-moz-range-thumb {
   box-sizing: border-box;
   inline-size: var(--_thumb);
   block-size: var(--_thumb);
@@ -92,7 +92,7 @@
   box-shadow: var(--shadow-control);
   transition: box-shadow var(--duration-fast) var(--ease);
 }
-.ds-slider:is(:hover, :focus-visible):not(:disabled)::-moz-range-thumb {
+.odd-slider:is(:hover, :focus-visible):not(:disabled)::-moz-range-thumb {
   box-shadow: var(--shadow-control), 0 0 0 4px color-mix(in oklch, var(--ring) 30%, transparent);
 }
 
@@ -102,26 +102,26 @@
  * timeline measures the thumb against the input instead of the page.
  */
 @supports (timeline-scope: --a) and (animation-range: entry 100% exit 0%) {
-  .ds-slider {
+  .odd-slider {
     overflow: hidden;
-    timeline-scope: --ds-slider-thumb;
-    animation: ds-slider-progress linear both;
-    animation-timeline: --ds-slider-thumb;
+    timeline-scope: --odd-slider-thumb;
+    animation: odd-slider-progress linear both;
+    animation-timeline: --odd-slider-thumb;
     animation-range: entry 100% exit 0%;
   }
-  .ds-slider::-webkit-slider-thumb {
-    view-timeline: --ds-slider-thumb inline;
+  .odd-slider::-webkit-slider-thumb {
+    view-timeline: --odd-slider-thumb inline;
   }
 }
 
-@keyframes ds-slider-progress {
+@keyframes odd-slider-progress {
   from { --_progress: 1; --_on: 1; }
   to { --_progress: 0; --_on: 1; }
 }
 
 @media (forced-colors: active) {
-  .ds-slider::-webkit-slider-runnable-track { border: 1px solid CanvasText; }
-  .ds-slider::-webkit-slider-thumb { border-color: ButtonText; background: ButtonFace; }
-  .ds-slider::-moz-range-track { border: 1px solid CanvasText; }
-  .ds-slider::-moz-range-thumb { border-color: ButtonText; background: ButtonFace; }
+  .odd-slider::-webkit-slider-runnable-track { border: 1px solid CanvasText; }
+  .odd-slider::-webkit-slider-thumb { border-color: ButtonText; background: ButtonFace; }
+  .odd-slider::-moz-range-track { border: 1px solid CanvasText; }
+  .odd-slider::-moz-range-thumb { border-color: ButtonText; background: ButtonFace; }
 }

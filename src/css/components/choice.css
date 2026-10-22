@@ -1,11 +1,11 @@
 /*
- * Checkbox / radio:  <label class="ds-choice"><input type="checkbox"> Label</label>
- * Switch:            <label class="ds-choice"><input type="checkbox" role="switch" class="ds-switch"> Label</label>
- * Segmented:         <fieldset class="ds-segmented"><legend>View</legend>
+ * Checkbox / radio:  <label class="odd-choice"><input type="checkbox"> Label</label>
+ * Switch:            <label class="odd-choice"><input type="checkbox" role="switch" class="odd-switch"> Label</label>
+ * Segmented:         <fieldset class="odd-segmented"><legend>View</legend>
  *                      <label><input type="radio" name="view" checked> Grid</label> ...</fieldset>
  * All native inputs, so keyboard (Space, arrow keys between radios) and forms work with no JS.
  */
-.ds-choice {
+.odd-choice {
   display: inline-flex;
   align-items: center;
   gap: var(--space-3);
@@ -13,7 +13,7 @@
   cursor: pointer;
 }
 
-.ds-choice input:is([type="checkbox"], [type="radio"]):not(.ds-switch) {
+.odd-choice input:is([type="checkbox"], [type="radio"]):not(.odd-switch) {
   inline-size: 1.125rem;
   block-size: 1.125rem;
   margin: 0;
@@ -21,13 +21,13 @@
   cursor: pointer;
 }
 
-.ds-choice:has(:disabled) {
+.odd-choice:has(:disabled) {
   cursor: not-allowed;
   opacity: 0.55;
 }
 
 /* Switch: track is the background color, thumb is a radial gradient that slides. */
-.ds-switch {
+.odd-switch {
   --_track: color-mix(in oklch, var(--muted-foreground) 45%, var(--muted));
   --_size: calc(1.5rem * var(--density));
 
@@ -46,7 +46,7 @@
   transition: background-position var(--duration-base) var(--ease), background-color var(--duration-base) var(--ease);
 }
 
-.ds-switch:checked {
+.odd-switch:checked {
   --_track: var(--primary);
   background:
     radial-gradient(circle closest-side, var(--primary-foreground) 92%, transparent 100%)
@@ -56,7 +56,7 @@
 
 /* Native checkbox in forced colors: the browser renders it with system colors. */
 @media (forced-colors: active) {
-  .ds-switch {
+  .odd-switch {
     appearance: auto;
     inline-size: 1.125rem;
     block-size: 1.125rem;
@@ -64,7 +64,7 @@
 }
 
 /* Segmented control: a radio group dressed as one control. It wraps when the options outgrow the row. */
-.ds-segmented {
+.odd-segmented {
   display: inline-flex;
   flex-wrap: wrap;
   gap: 2px;
@@ -75,7 +75,7 @@
   background: var(--muted);
 }
 
-.ds-segmented > legend {
+.odd-segmented > legend {
   position: absolute;
   inline-size: 1px;
   block-size: 1px;
@@ -84,7 +84,7 @@
   white-space: nowrap;
 }
 
-.ds-segmented > label {
+.odd-segmented > label {
   position: relative;
   display: inline-grid;
   place-items: center;
@@ -104,7 +104,7 @@
   transition-timing-function: var(--ease);
 }
 
-.ds-segmented > label > input {
+.odd-segmented > label > input {
   position: absolute;
   inset: 0;
   margin: 0;
@@ -112,23 +112,23 @@
   cursor: pointer;
 }
 
-.ds-segmented > label:hover {
+.odd-segmented > label:hover {
   color: var(--foreground);
 }
 
-.ds-segmented > label:has(:checked) {
+.odd-segmented > label:has(:checked) {
   background: var(--surface);
   color: var(--foreground);
   box-shadow: var(--shadow-control);
 }
 
-.ds-segmented > label:has(:focus-visible) {
+.odd-segmented > label:has(:focus-visible) {
   outline: var(--focus-width) solid var(--focus-color);
   outline-offset: 1px;
 }
 
 @media (forced-colors: active) {
-  .ds-segmented > label:has(:checked) {
+  .odd-segmented > label:has(:checked) {
     outline: 2px solid Highlight;
   }
 }

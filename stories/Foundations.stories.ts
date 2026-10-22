@@ -22,13 +22,13 @@ function measure(scope: HTMLElement) {
     out.textContent = `${ratio.toFixed(2)}:1`;
     out.closest("tr")!.querySelector<HTMLElement>(".pair-result")!.innerHTML =
       ratio >= min
-        ? `<span class="ds-badge" data-tone="success">Pass ${min}:1</span>`
-        : `<span class="ds-badge" data-solid data-tone="danger">Fail ${min}:1</span>`;
+        ? `<span class="odd-badge" data-tone="success">Pass ${min}:1</span>`
+        : `<span class="odd-badge" data-solid data-tone="danger">Fail ${min}:1</span>`;
   }
 }
 
 const column = (mode: "light" | "dark", palette: string, chrome: string) => `
-  <div class="ds-scope" data-mode="${mode}" data-palette="${palette}" data-chrome="${chrome}" style="padding: var(--space-5); border-radius: var(--radius-surface)">
+  <div class="odd-scope" data-mode="${mode}" data-palette="${palette}" data-chrome="${chrome}" style="padding: var(--space-5); border-radius: var(--radius-surface)">
     <h3 style="margin-block-end: var(--space-4)">${mode}</h3>
     <table style="border-collapse: collapse; inline-size: 100%; font-size: var(--text-sm)">
       <thead><tr>
@@ -99,15 +99,15 @@ export const Palette: Story = {
 };
 
 export const Type: Story = {
-  render: () => `<div class="ds-stack" style="--gap: var(--space-5); max-inline-size: 48rem">
-    <p class="ds-eyebrow">Eyebrow label</p>
+  render: () => `<div class="odd-stack" style="--gap: var(--space-5); max-inline-size: 48rem">
+    <p class="odd-eyebrow">Eyebrow label</p>
     <h1>Display heading</h1>
     <h2>Section heading</h2>
     <h3>Card heading</h3>
     <h4>Small heading</h4>
     <p style="font-size: var(--text-lg)">Lead paragraph. Body text uses the chrome's body font; headings and labels follow its case and tracking.</p>
     <p>Body text with an <a href="#">inline link</a>. The link color is <code>--primary</code>, which the contract test holds to 4.5:1 against the page.</p>
-    <p class="ds-muted">Muted text for secondary information.</p>
+    <p class="odd-muted">Muted text for secondary information.</p>
   </div>`,
 };
 
@@ -116,22 +116,22 @@ export const Headings: Story = {
     docs: {
       description: {
         story:
-          "`.ds-heading` sets size apart from level, so the outline stays correct whatever the layout needs. Case, tracking, and weight come from the chrome.",
+          "`.odd-heading` sets size apart from level, so the outline stays correct whatever the layout needs. Case, tracking, and weight come from the chrome.",
       },
     },
   },
-  render: () => `<div class="ds-stack" style="--gap: var(--space-4); max-inline-size: 48rem">
-    <h1 class="ds-heading" data-size="hero">Hero · Build sharper decks</h1>
-    <h2 class="ds-heading" data-size="2xl">2xl · Season overview</h2>
-    <h2 class="ds-heading" data-size="xl">xl · Your collection</h2>
-    <h3 class="ds-heading" data-size="lg">lg · Recently edited</h3>
-    <h3 class="ds-heading">md · Deck notes (default)</h3>
-    <h4 class="ds-heading" data-size="sm">sm · Sideboard</h4>
-    <h4 class="ds-heading" data-size="xs">xs · Card details</h4>
-    <div class="ds-row" style="--gap: var(--space-5)">
-      <p class="ds-eyebrow">Muted eyebrow</p>
-      <p class="ds-eyebrow" data-tone="primary">Primary eyebrow</p>
-      <p class="ds-eyebrow" data-tone="foreground">Foreground eyebrow</p>
+  render: () => `<div class="odd-stack" style="--gap: var(--space-4); max-inline-size: 48rem">
+    <h1 class="odd-heading" data-size="hero">Hero · Build sharper decks</h1>
+    <h2 class="odd-heading" data-size="2xl">2xl · Season overview</h2>
+    <h2 class="odd-heading" data-size="xl">xl · Your collection</h2>
+    <h3 class="odd-heading" data-size="lg">lg · Recently edited</h3>
+    <h3 class="odd-heading">md · Deck notes (default)</h3>
+    <h4 class="odd-heading" data-size="sm">sm · Sideboard</h4>
+    <h4 class="odd-heading" data-size="xs">xs · Card details</h4>
+    <div class="odd-row" style="--gap: var(--space-5)">
+      <p class="odd-eyebrow">Muted eyebrow</p>
+      <p class="odd-eyebrow" data-tone="primary">Primary eyebrow</p>
+      <p class="odd-eyebrow" data-tone="foreground">Foreground eyebrow</p>
     </div>
   </div>`,
 };

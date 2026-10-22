@@ -1,9 +1,9 @@
 /*
- * <button class="ds-button" data-variant="primary|secondary|outline|ghost|danger" data-size="sm|lg">
+ * <button class="odd-button" data-variant="primary|secondary|outline|ghost|danger" data-size="sm|lg">
  * Disable with aria-disabled="true" (stays focusable and announced) instead of `disabled`.
  * Loading: aria-busy="true". Icon-only: data-icon-only plus an aria-label.
  */
-.ds-button {
+.odd-button {
   --_bg: var(--surface);
   --_fg: var(--foreground);
   --_edge: var(--edge-control);
@@ -37,86 +37,86 @@
   transition-timing-function: var(--ease);
 }
 
-.ds-button[data-variant="primary"] { --_bg: var(--primary); --_fg: var(--primary-foreground); }
-.ds-button[data-variant="secondary"] { --_bg: var(--secondary); --_fg: var(--secondary-foreground); }
-.ds-button[data-variant="danger"] { --_bg: var(--danger); --_fg: var(--danger-foreground); }
-.ds-button[data-variant="ghost"] { --_bg: transparent; --_edge: transparent; box-shadow: none; }
+.odd-button[data-variant="primary"] { --_bg: var(--primary); --_fg: var(--primary-foreground); }
+.odd-button[data-variant="secondary"] { --_bg: var(--secondary); --_fg: var(--secondary-foreground); }
+.odd-button[data-variant="danger"] { --_bg: var(--danger); --_fg: var(--danger-foreground); }
+.odd-button[data-variant="ghost"] { --_bg: transparent; --_edge: transparent; box-shadow: none; }
 
 /* Filled variants default to a transparent edge, which forced-colors mode still draws as a border. */
-.ds-button:is([data-variant="primary"], [data-variant="secondary"], [data-variant="danger"]) {
+.odd-button:is([data-variant="primary"], [data-variant="secondary"], [data-variant="danger"]) {
   --_edge: var(--edge-control-filled);
 }
 
-.ds-button[data-size="sm"] {
+.odd-button[data-size="sm"] {
   --_height: var(--control-height-sm);
   padding-inline: calc(var(--control-padding-inline) * 0.75);
   font-size: var(--text-xs);
 }
-.ds-button[data-size="lg"] {
+.odd-button[data-size="lg"] {
   --_height: var(--control-height-lg);
   padding-inline: calc(var(--control-padding-inline) * 1.4);
   font-size: var(--text-md);
 }
-.ds-button[data-icon-only] {
+.odd-button[data-icon-only] {
   inline-size: var(--_height);
   padding-inline: 0;
 }
 
-.ds-button:hover:not([aria-disabled="true"], :disabled) {
+.odd-button:hover:not([aria-disabled="true"], :disabled) {
   background-color: color-mix(in oklch, var(--_bg) 88%, var(--_fg));
   box-shadow: var(--shadow-control-hover);
 }
-.ds-button[data-variant="ghost"]:hover:not([aria-disabled="true"], :disabled) {
+.odd-button[data-variant="ghost"]:hover:not([aria-disabled="true"], :disabled) {
   background-color: color-mix(in oklch, var(--_fg) 8%, transparent);
   box-shadow: none;
 }
 
-.ds-button:active:not([aria-disabled="true"], :disabled) {
+.odd-button:active:not([aria-disabled="true"], :disabled) {
   transform: var(--press-transform);
   box-shadow: var(--shadow-control-active);
 }
 
-.ds-button:focus-visible {
+.odd-button:focus-visible {
   box-shadow: var(--shadow-control), var(--focus-glow);
 }
 
-.ds-button:is([aria-disabled="true"], :disabled) {
+.odd-button:is([aria-disabled="true"], :disabled) {
   cursor: not-allowed;
   opacity: 0.55;
   box-shadow: none;
 }
 
-.ds-button svg {
+.odd-button svg {
   inline-size: 1.15em;
   block-size: 1.15em;
   flex-shrink: 0;
 }
 
-.ds-button[aria-busy="true"] {
+.odd-button[aria-busy="true"] {
   cursor: progress;
 }
-.ds-button[aria-busy="true"]::before {
+.odd-button[aria-busy="true"]::before {
   content: "";
   inline-size: 1em;
   block-size: 1em;
   border: 2px solid currentColor;
   border-inline-end-color: transparent;
   border-radius: 50%;
-  animation: ds-spin 700ms linear infinite;
+  animation: odd-spin 700ms linear infinite;
 }
 
-@keyframes ds-spin {
+@keyframes odd-spin {
   to { rotate: 1turn; }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .ds-button[aria-busy="true"]::before {
+  .odd-button[aria-busy="true"]::before {
     animation-duration: 2.4s;
   }
 }
 
 /* Navigation links styled as buttons mark the current page by weight and tint, not color alone. */
-.ds-button[aria-current="page"] {
+.odd-button[aria-current="page"] {
   background-color: color-mix(in oklch, var(--_fg) 10%, transparent);
   text-decoration: underline 2px;
   text-underline-offset: 0.4em;

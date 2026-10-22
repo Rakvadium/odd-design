@@ -36,34 +36,34 @@ export const Menu: Story = {
   },
   render: () =>
     mount(
-      `<div class="ds-row">
-        <button class="ds-button" commandfor="deck-actions" command="toggle-popover" aria-haspopup="menu">Deck actions</button>
-        <button class="ds-button" data-variant="primary" id="after-menu">Publish</button>
+      `<div class="odd-row">
+        <button class="odd-button" commandfor="deck-actions" command="toggle-popover" aria-haspopup="menu">Deck actions</button>
+        <button class="odd-button" data-variant="primary" id="after-menu">Publish</button>
       </div>
-      <div class="ds-menu" id="deck-actions" popover role="menu" aria-label="Deck actions">
-        <button class="ds-menu-item" role="menuitem" aria-keyshortcuts="Control+D">${icons.copy} Duplicate <kbd class="ds-menu-shortcut" aria-hidden="true">Ctrl D</kbd></button>
-        <button class="ds-menu-item" role="menuitem">${icons.share} Share link</button>
-        <button class="ds-menu-item" role="menuitem" aria-disabled="true">${icons.layers} Merge (needs two decks)</button>
-        <hr class="ds-separator">
-        <button class="ds-menu-item" role="menuitemcheckbox" aria-checked="true">Show prices</button>
-        <button class="ds-menu-item" role="menuitemcheckbox" aria-checked="false">Compact grid</button>
-        <hr class="ds-separator">
-        <p class="ds-menu-label" aria-hidden="true">Sort by</p>
+      <div class="odd-menu" id="deck-actions" popover role="menu" aria-label="Deck actions">
+        <button class="odd-menu-item" role="menuitem" aria-keyshortcuts="Control+D">${icons.copy} Duplicate <kbd class="odd-menu-shortcut" aria-hidden="true">Ctrl D</kbd></button>
+        <button class="odd-menu-item" role="menuitem">${icons.share} Share link</button>
+        <button class="odd-menu-item" role="menuitem" aria-disabled="true">${icons.layers} Merge (needs two decks)</button>
+        <hr class="odd-separator">
+        <button class="odd-menu-item" role="menuitemcheckbox" aria-checked="true">Show prices</button>
+        <button class="odd-menu-item" role="menuitemcheckbox" aria-checked="false">Compact grid</button>
+        <hr class="odd-separator">
+        <p class="odd-menu-label" aria-hidden="true">Sort by</p>
         <div role="group" aria-label="Sort by">
-          <button class="ds-menu-item" role="menuitemradio" aria-checked="true">Name</button>
-          <button class="ds-menu-item" role="menuitemradio" aria-checked="false">Last edited</button>
-          <button class="ds-menu-item" role="menuitemradio" aria-checked="false">Card count</button>
+          <button class="odd-menu-item" role="menuitemradio" aria-checked="true">Name</button>
+          <button class="odd-menu-item" role="menuitemradio" aria-checked="false">Last edited</button>
+          <button class="odd-menu-item" role="menuitemradio" aria-checked="false">Card count</button>
         </div>
-        <hr class="ds-separator">
-        <button class="ds-menu-item" role="menuitem" data-tone="danger">${icons.trash} Delete deck</button>
+        <hr class="odd-separator">
+        <button class="odd-menu-item" role="menuitem" data-tone="danger">${icons.trash} Delete deck</button>
       </div>
-      <p class="ds-muted" style="margin-block-start: var(--space-4)" aria-live="polite" id="menu-log"></p>`,
+      <p class="odd-muted" style="margin-block-start: var(--space-4)" aria-live="polite" id="menu-log"></p>`,
       (root) => {
         const menu = root.querySelector<HTMLElement>("#deck-actions")!;
         enhanceMenu(menu);
         const log = root.querySelector("#menu-log")!;
         menu.addEventListener("click", (event) => {
-          const item = (event.target as Element).closest(".ds-menu-item");
+          const item = (event.target as Element).closest(".odd-menu-item");
           const label = [...(item?.childNodes ?? [])].filter((n) => n.nodeType === Node.TEXT_NODE).map((n) => n.textContent).join("");
           if (item) log.textContent = `Chose “${label.trim()}”`;
         });
@@ -82,8 +82,8 @@ export const Tabs: Story = {
   },
   render: () =>
     mount(
-      `<div class="ds-stack" style="--gap: var(--space-8); max-inline-size: 40rem">
-        <div class="ds-tabs" id="deck-tabs">
+      `<div class="odd-stack" style="--gap: var(--space-8); max-inline-size: 40rem">
+        <div class="odd-tabs" id="deck-tabs">
           <div role="tablist" aria-label="Deck view">
             <button role="tab" id="tab-cards" aria-controls="panel-cards" aria-selected="true">Cards</button>
             <button role="tab" id="tab-stats" aria-controls="panel-stats" aria-selected="false">Stats</button>
@@ -93,7 +93,7 @@ export const Tabs: Story = {
           <div role="tabpanel" id="panel-stats" aria-labelledby="tab-stats" hidden><p>Average cost 2.4. Curve peaks at 3.</p></div>
           <div role="tabpanel" id="panel-notes" aria-labelledby="tab-notes" hidden><p>Mulligan aggressively for an early unit. <a href="#">Edit notes</a></p></div>
         </div>
-        <div class="ds-tabs" id="manual-tabs">
+        <div class="odd-tabs" id="manual-tabs">
           <div role="tablist" aria-label="Season" data-activation="manual">
             <button role="tab" id="tab-s7" aria-controls="panel-s7" aria-selected="true">Season 7</button>
             <button role="tab" id="tab-s6" aria-controls="panel-s6" aria-selected="false">Season 6</button>
@@ -104,7 +104,7 @@ export const Tabs: Story = {
           <div role="tabpanel" id="panel-s5" aria-labelledby="tab-s5" hidden><p>Not imported yet.</p></div>
         </div>
       </div>`,
-      (root) => root.querySelectorAll<HTMLElement>(".ds-tabs").forEach(enhanceTabs),
+      (root) => root.querySelectorAll<HTMLElement>(".odd-tabs").forEach(enhanceTabs),
     ),
 };
 
@@ -121,19 +121,19 @@ export const Toast: Story = {
   },
   render: () =>
     mount(
-      `<div class="ds-row">
-        <button class="ds-button" data-toast="saved">Save deck</button>
-        <button class="ds-button" data-toast="undo">Remove card</button>
-        <button class="ds-button" data-toast="error" data-variant="danger">Fail to sync</button>
-        <button class="ds-button" commandfor="toast-settings" command="show-modal">Settings…</button>
+      `<div class="odd-row">
+        <button class="odd-button" data-toast="saved">Save deck</button>
+        <button class="odd-button" data-toast="undo">Remove card</button>
+        <button class="odd-button" data-toast="error" data-variant="danger">Fail to sync</button>
+        <button class="odd-button" commandfor="toast-settings" command="show-modal">Settings…</button>
       </div>
-      <dialog class="ds-dialog" id="toast-settings" aria-labelledby="toast-settings-title" closedby="any">
-        <div class="ds-dialog-body">
-          <h2 class="ds-dialog-title" id="toast-settings-title">Deck settings</h2>
-          <p class="ds-muted">Saving here shows a toast while this dialog stays open.</p>
-          <div class="ds-dialog-actions">
-            <button class="ds-button" commandfor="toast-settings" command="close">Close</button>
-            <button class="ds-button" data-variant="primary" data-toast="saved">Save</button>
+      <dialog class="odd-dialog" id="toast-settings" aria-labelledby="toast-settings-title" closedby="any">
+        <div class="odd-dialog-body">
+          <h2 class="odd-dialog-title" id="toast-settings-title">Deck settings</h2>
+          <p class="odd-muted">Saving here shows a toast while this dialog stays open.</p>
+          <div class="odd-dialog-actions">
+            <button class="odd-button" commandfor="toast-settings" command="close">Close</button>
+            <button class="odd-button" data-variant="primary" data-toast="saved">Save</button>
           </div>
         </div>
       </dialog>`,

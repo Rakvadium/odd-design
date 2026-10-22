@@ -24,7 +24,7 @@ Agreed order, from the screen-reader panel. Captions always come from the screen
 - **axe can't see contrast over gradients.** Every story on a gradient page reports a `REVIEW` item. The page-background test in `bun test` covers that math; a person still has to look at anything axe flags for another reason. (a11y pass)
 - **Popovers without anchor positioning are unobserved.** Firefox and Playwright's WebKit both anchor and flip natively, so the centered-in-viewport fallback has never rendered. (step 2)
 - **Sheets under RTL and touch.** `data-side="start|end"` under `dir="rtl"` and `interestfor` on touch (long-press) are unverified. (step 2)
-- **Unobserved paths.** These are written but not proven: the slider fill under `:dir(rtl)`, Enter submitting the `ds-search` form (the story prevents submit), and the restyled search clear button (it only shows while hovered or focused with a value). (step 1)
+- **Unobserved paths.** These are written but not proven: the slider fill under `:dir(rtl)`, Enter submitting the `odd-search` form (the story prevents submit), and the restyled search clear button (it only shows while hovered or focused with a value). (step 1)
 
 ## Behaviors (src/js)
 
@@ -58,7 +58,7 @@ Run with NVDA 2026.2, OneCore David, rate 50, in Chrome. The transcripts are in 
 ## Design debt
 
 - **`focusgroup` seam.** All arrow-key movement goes through `src/js/roving.ts`. When `focusgroup` is in more than Chromium and its role and tab-order bugs are fixed, hand the work to the browser there. (step 3)
-- **`color-mix(in oklch)` can walk the hue wheel.** The tints and the alert icon moved to `oklab` for this reason. `ds-button` hover still mixes `--_bg` and `--_fg` in oklch. Audit every remaining oklch mix of two different hues. (step 1)
+- **`color-mix(in oklch)` can walk the hue wheel.** The tints and the alert icon moved to `oklab` for this reason. `odd-button` hover still mixes `--_bg` and `--_fg` in oklch. Audit every remaining oklch mix of two different hues. (step 1)
 - **Bar fills are not contrast-tested against their rail.** For example, the light-mode warning fill on `--track` is low contrast. The rule is "always show the value as text," and nothing enforces it. (step 1)
 - **Slider hover ring is clipped at the far ends.** This is a side effect of `overflow: hidden`, which the fill technique needs. It's cosmetic. (step 1)
 - **No arrow on tooltips or popovers.** uvs-decks-gg's tooltip has one. An anchored arrow needs anchor functions on a pseudo-element; skipped for now. (step 2)

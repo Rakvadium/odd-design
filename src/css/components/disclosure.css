@@ -1,13 +1,13 @@
 /*
- * <details class="ds-disclosure" name="faq"><summary>Question</summary><div>Answer</div></details>
+ * <details class="odd-disclosure" name="faq"><summary>Question</summary><div>Answer</div></details>
  * Sharing a `name` makes a group exclusive (an accordion) with no JS.
  * ::details-content animates height where supported; elsewhere it opens instantly.
  */
-.ds-disclosure {
+.odd-disclosure {
   border-block-end: var(--border-width) solid var(--border);
 }
 
-.ds-disclosure > summary {
+.odd-disclosure > summary {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -22,11 +22,11 @@
   cursor: pointer;
 }
 
-.ds-disclosure > summary::-webkit-details-marker {
+.odd-disclosure > summary::-webkit-details-marker {
   display: none;
 }
 
-.ds-disclosure > summary::after {
+.odd-disclosure > summary::after {
   content: "";
   flex-shrink: 0;
   inline-size: 0.55rem;
@@ -38,16 +38,16 @@
   transition: rotate var(--duration-base) var(--ease), translate var(--duration-base) var(--ease);
 }
 
-.ds-disclosure[open] > summary::after {
+.odd-disclosure[open] > summary::after {
   rotate: 225deg;
   translate: 0 25%;
 }
 
-.ds-disclosure > summary:hover {
+.odd-disclosure > summary:hover {
   color: var(--primary);
 }
 
-.ds-disclosure::details-content {
+.odd-disclosure::details-content {
   block-size: 0;
   overflow: clip;
   transition-property: block-size, content-visibility;
@@ -56,11 +56,11 @@
   transition-behavior: allow-discrete;
 }
 
-.ds-disclosure[open]::details-content {
+.odd-disclosure[open]::details-content {
   block-size: auto;
 }
 
-.ds-disclosure > :not(summary) {
+.odd-disclosure > :not(summary) {
   padding-block-end: var(--space-4);
   color: var(--muted-foreground);
 }

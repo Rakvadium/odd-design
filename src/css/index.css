@@ -5,7 +5,7 @@
  *   chrome       feel roles            [data-chrome]
  *   preferences  user/OS overrides     prefers-contrast, forced-colors
  *   base         element defaults
- *   components   .ds-* classes
+ *   components   .odd-* classes
  * Later layers win, so a user's OS preference always beats a palette or chrome.
  */
 @layer foundations, palette, chrome, preferences, base, components;

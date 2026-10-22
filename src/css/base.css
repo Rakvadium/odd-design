@@ -67,11 +67,11 @@ a:hover {
   :root { scroll-behavior: smooth; }
 }
 
-.ds-muted {
+.odd-muted {
   color: var(--muted-foreground);
 }
 
-.ds-visually-hidden:not(:focus, :active) {
+.odd-visually-hidden:not(:focus, :active) {
   position: absolute;
   inline-size: 1px;
   block-size: 1px;
@@ -80,7 +80,7 @@ a:hover {
   white-space: nowrap;
 }
 
-.ds-skip-link {
+.odd-skip-link {
   position: absolute;
   inset-block-start: var(--space-2);
   inset-inline-start: var(--space-2);
@@ -92,18 +92,18 @@ a:hover {
   translate: 0 -200%;
 }
 
-.ds-skip-link:focus-visible {
+.odd-skip-link:focus-visible {
   translate: 0 0;
 }
 
-.ds-stack { display: flex; flex-direction: column; gap: var(--gap, var(--space-4)); }
-.ds-row { display: flex; flex-wrap: wrap; align-items: center; gap: var(--gap, var(--space-3)); }
+.odd-stack { display: flex; flex-direction: column; gap: var(--gap, var(--space-4)); }
+.odd-row { display: flex; flex-wrap: wrap; align-items: center; gap: var(--gap, var(--space-3)); }
 
 /*
  * A nested appearance scope. Set all three of data-chrome, data-palette, and data-mode on it:
  * chrome tokens that reference palette colors resolve where they're declared.
  */
-.ds-scope {
+.odd-scope {
   position: relative;
   isolation: isolate;
   font-family: var(--font-body);

@@ -1,18 +1,18 @@
 /*
- * Progress of a task:   <progress class="ds-progress" value="40" max="100" aria-label="Importing decks"></progress>
+ * Progress of a task:   <progress class="odd-progress" value="40" max="100" aria-label="Importing decks"></progress>
  *                       Leave out value for an indeterminate bar.
- * A measurement:        <meter class="ds-meter" min="0" max="60" value="24"></meter>
+ * A measurement:        <meter class="odd-meter" min="0" max="60" value="24"></meter>
  *                       With low/high/optimum it colors itself: success, warning, danger.
  * Stat (label, value, bar):
- *   <div class="ds-stat">
- *     <label for="units">Units</label><span class="ds-stat-value">24 <span class="ds-muted">(40%)</span></span>
- *     <meter class="ds-meter" id="units" min="0" max="60" value="24"></meter>
+ *   <div class="odd-stat">
+ *     <label for="units">Units</label><span class="odd-stat-value">24 <span class="odd-muted">(40%)</span></span>
+ *     <meter class="odd-meter" id="units" min="0" max="60" value="24"></meter>
  *   </div>
  * Always show the value as text too; the bar alone isn't enough. data-tone="success|warning|danger|info"
  * recolors a bar that has no low/high.
  */
-.ds-progress,
-.ds-meter {
+.odd-progress,
+.odd-meter {
   --_bar: var(--primary);
 
   appearance: none;
@@ -25,23 +25,23 @@
   background: var(--track);
 }
 
-:is(.ds-progress, .ds-meter)[data-tone="success"] { --_bar: var(--success); }
-:is(.ds-progress, .ds-meter)[data-tone="warning"] { --_bar: var(--warning); }
-:is(.ds-progress, .ds-meter)[data-tone="danger"] { --_bar: var(--danger); }
-:is(.ds-progress, .ds-meter)[data-tone="info"] { --_bar: var(--info); }
+:is(.odd-progress, .odd-meter)[data-tone="success"] { --_bar: var(--success); }
+:is(.odd-progress, .odd-meter)[data-tone="warning"] { --_bar: var(--warning); }
+:is(.odd-progress, .odd-meter)[data-tone="danger"] { --_bar: var(--danger); }
+:is(.odd-progress, .odd-meter)[data-tone="info"] { --_bar: var(--info); }
 
 /* Chromium and WebKit. */
-.ds-progress::-webkit-progress-bar {
+.odd-progress::-webkit-progress-bar {
   border-radius: inherit;
   background: var(--track);
 }
-.ds-progress::-webkit-progress-value {
+.odd-progress::-webkit-progress-value {
   border-radius: inherit;
   background: var(--_bar);
   transition: inline-size var(--duration-base) var(--ease);
 }
 /* Chromium's UA grid puts the bar in the middle half of the box; span it across the whole height. */
-.ds-meter::-webkit-meter-bar {
+.odd-meter::-webkit-meter-bar {
   grid-row: 1 / -1;
   align-self: stretch;
   block-size: 100%;
@@ -49,65 +49,65 @@
   border-radius: inherit;
   background: var(--track);
 }
-.ds-meter::-webkit-meter-optimum-value,
-.ds-meter::-webkit-meter-suboptimum-value,
-.ds-meter::-webkit-meter-even-less-good-value {
+.odd-meter::-webkit-meter-optimum-value,
+.odd-meter::-webkit-meter-suboptimum-value,
+.odd-meter::-webkit-meter-even-less-good-value {
   block-size: 100%;
   border-radius: inherit;
   background: var(--_bar);
   transition: inline-size var(--duration-base) var(--ease);
 }
-.ds-meter:is([low], [high])::-webkit-meter-optimum-value { background: var(--success); }
-.ds-meter:is([low], [high])::-webkit-meter-suboptimum-value { background: var(--warning); }
-.ds-meter:is([low], [high])::-webkit-meter-even-less-good-value { background: var(--danger); }
+.odd-meter:is([low], [high])::-webkit-meter-optimum-value { background: var(--success); }
+.odd-meter:is([low], [high])::-webkit-meter-suboptimum-value { background: var(--warning); }
+.odd-meter:is([low], [high])::-webkit-meter-even-less-good-value { background: var(--danger); }
 
 /* Firefox. */
-.ds-progress::-moz-progress-bar {
+.odd-progress::-moz-progress-bar {
   border-radius: inherit;
   background: var(--_bar);
 }
-.ds-meter::-moz-meter-bar {
+.odd-meter::-moz-meter-bar {
   border-radius: inherit;
   background: var(--_bar);
 }
-.ds-meter:is([low], [high]):-moz-meter-optimum::-moz-meter-bar { background: var(--success); }
-.ds-meter:is([low], [high]):-moz-meter-sub-optimum::-moz-meter-bar { background: var(--warning); }
-.ds-meter:is([low], [high]):-moz-meter-sub-sub-optimum::-moz-meter-bar { background: var(--danger); }
+.odd-meter:is([low], [high]):-moz-meter-optimum::-moz-meter-bar { background: var(--success); }
+.odd-meter:is([low], [high]):-moz-meter-sub-optimum::-moz-meter-bar { background: var(--warning); }
+.odd-meter:is([low], [high]):-moz-meter-sub-sub-optimum::-moz-meter-bar { background: var(--danger); }
 
 /* Indeterminate: a band that sweeps across. Timed from --duration-slow, so reduced motion holds it still. */
-.ds-progress:indeterminate {
+.odd-progress:indeterminate {
   background:
     linear-gradient(to right, transparent, var(--_bar), transparent) no-repeat 0 0 / 40% 100%,
     var(--track);
-  animation: ds-progress-sweep calc(var(--duration-slow) * 4) ease-in-out infinite;
+  animation: odd-progress-sweep calc(var(--duration-slow) * 4) ease-in-out infinite;
 }
-.ds-progress:indeterminate::-webkit-progress-bar {
+.odd-progress:indeterminate::-webkit-progress-bar {
   background: transparent;
 }
-.ds-progress:indeterminate::-moz-progress-bar {
+.odd-progress:indeterminate::-moz-progress-bar {
   background: transparent;
 }
 
-@keyframes ds-progress-sweep {
+@keyframes odd-progress-sweep {
   from { background-position: -70% 0, 0 0; }
   to { background-position: 170% 0, 0 0; }
 }
 
-.ds-stat {
+.odd-stat {
   display: grid;
   grid-template-columns: 1fr auto;
   align-items: baseline;
   gap: var(--space-1) var(--space-3);
   font-size: var(--text-sm);
 }
-.ds-stat > label {
+.odd-stat > label {
   color: var(--muted-foreground);
 }
-.ds-stat-value {
+.odd-stat-value {
   font-weight: 600;
   font-variant-numeric: tabular-nums;
 }
-.ds-stat > :is(meter, progress) {
+.odd-stat > :is(meter, progress) {
   grid-column: 1 / -1;
 }
 
@@ -116,8 +116,8 @@
  * redraw in system colors: an outlined Canvas track with a Highlight bar, whatever the tone or range.
  */
 @media (forced-colors: active) {
-  .ds-progress,
-  .ds-meter {
+  .odd-progress,
+  .odd-meter {
     --track: Canvas;
     --primary: Highlight;
     --success: Highlight;

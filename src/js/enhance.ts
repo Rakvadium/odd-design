@@ -9,13 +9,13 @@ export { createToaster, type Toaster, type ToastOptions, type ToastTone } from "
 export { roving, type RovingOptions } from "./roving.ts";
 
 /**
- * Avatar image fallback: <span class="ds-avatar" data-initials="KN"><img src="…" alt="Kai Nakamura"></span>
+ * Avatar image fallback: <span class="odd-avatar" data-initials="KN"><img src="…" alt="Kai Nakamura"></span>
  * When the image fails to load, the avatar shows its initials and keeps the image's name
  * (or stays hidden, if the image was decorative with alt="").
  */
 export function avatarFallback(root: Document | HTMLElement = document): () => void {
   const swap = (img: HTMLImageElement) => {
-    const avatar = img.closest<HTMLElement>(".ds-avatar[data-initials]");
+    const avatar = img.closest<HTMLElement>(".odd-avatar[data-initials]");
     if (!avatar) return;
     const name = img.alt;
     avatar.textContent = avatar.dataset.initials!;
@@ -31,7 +31,7 @@ export function avatarFallback(root: Document | HTMLElement = document): () => v
   };
   root.addEventListener("error", onError, true);
   // Images that failed before this ran.
-  for (const img of root.querySelectorAll<HTMLImageElement>(".ds-avatar[data-initials] > img")) {
+  for (const img of root.querySelectorAll<HTMLImageElement>(".odd-avatar[data-initials] > img")) {
     if (img.complete && img.naturalWidth === 0) swap(img);
   }
   return () => root.removeEventListener("error", onError, true);
@@ -71,14 +71,14 @@ export function enhanceSelectAll(table: HTMLTableElement): () => void {
 }
 
 /**
- * Wires every behavior under root: menus (.ds-menu[role="menu"]), tab sets (.ds-tabs), select-all
+ * Wires every behavior under root: menus (.odd-menu[role="menu"]), tab sets (.odd-tabs), select-all
  * tables, avatar fallbacks, and the interestfor and closedby fallbacks. Elements added later need
  * their own enhance* call. Returns one cleanup function for everything.
  */
 export function enhance(root: Document | HTMLElement = document): () => void {
   const cleanups = [
-    ...[...root.querySelectorAll<HTMLElement>('.ds-menu[role="menu"]')].map(enhanceMenu),
-    ...[...root.querySelectorAll<HTMLElement>(".ds-tabs")].map(enhanceTabs),
+    ...[...root.querySelectorAll<HTMLElement>('.odd-menu[role="menu"]')].map(enhanceMenu),
+    ...[...root.querySelectorAll<HTMLElement>(".odd-tabs")].map(enhanceTabs),
     ...[...root.querySelectorAll<HTMLTableElement>("table:has([data-select-all])")].map(enhanceSelectAll),
     avatarFallback(root),
     interestForFallback(root),

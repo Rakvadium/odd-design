@@ -1,9 +1,9 @@
 /*
- * <span class="ds-badge" data-tone="neutral|primary|success|warning|danger|info" data-solid>
+ * <span class="odd-badge" data-tone="neutral|primary|success|warning|danger|info" data-solid>
  * Soft badges keep text in --foreground and carry tone in the tint and dot; TINT_PAIRS checks that
  * text. Solid badges use the tone/foreground pair the palette test checks.
  */
-.ds-badge {
+.odd-badge {
   --_tone: var(--muted-foreground);
   --_tint: var(--tint-neutral);
 
@@ -24,7 +24,7 @@
   white-space: nowrap;
 }
 
-.ds-badge::before {
+.odd-badge::before {
   content: "";
   inline-size: 0.5em;
   block-size: 0.5em;
@@ -32,23 +32,23 @@
   background: var(--_tone);
 }
 
-.ds-badge[data-tone="primary"] { --_tone: var(--primary); --_tint: var(--tint-primary); }
-.ds-badge[data-tone="success"] { --_tone: var(--success); --_tint: var(--tint-success); }
-.ds-badge[data-tone="warning"] { --_tone: var(--warning); --_tint: var(--tint-warning); }
-.ds-badge[data-tone="danger"] { --_tone: var(--danger); --_tint: var(--tint-danger); }
-.ds-badge[data-tone="info"] { --_tone: var(--info); --_tint: var(--tint-info); }
+.odd-badge[data-tone="primary"] { --_tone: var(--primary); --_tint: var(--tint-primary); }
+.odd-badge[data-tone="success"] { --_tone: var(--success); --_tint: var(--tint-success); }
+.odd-badge[data-tone="warning"] { --_tone: var(--warning); --_tint: var(--tint-warning); }
+.odd-badge[data-tone="danger"] { --_tone: var(--danger); --_tint: var(--tint-danger); }
+.odd-badge[data-tone="info"] { --_tone: var(--info); --_tint: var(--tint-info); }
 
-.ds-badge[data-solid] {
+.odd-badge[data-solid] {
   border-color: transparent;
   background: var(--_tone);
 }
-.ds-badge[data-solid]::before { display: none; }
-.ds-badge[data-solid][data-tone="primary"] { color: var(--primary-foreground); }
-.ds-badge[data-solid][data-tone="success"] { color: var(--success-foreground); }
-.ds-badge[data-solid][data-tone="warning"] { color: var(--warning-foreground); }
-.ds-badge[data-solid][data-tone="danger"] { color: var(--danger-foreground); }
-.ds-badge[data-solid][data-tone="info"] { color: var(--info-foreground); }
-.ds-badge[data-solid]:is(:not([data-tone]), [data-tone="neutral"]) {
+.odd-badge[data-solid]::before { display: none; }
+.odd-badge[data-solid][data-tone="primary"] { color: var(--primary-foreground); }
+.odd-badge[data-solid][data-tone="success"] { color: var(--success-foreground); }
+.odd-badge[data-solid][data-tone="warning"] { color: var(--warning-foreground); }
+.odd-badge[data-solid][data-tone="danger"] { color: var(--danger-foreground); }
+.odd-badge[data-solid][data-tone="info"] { color: var(--info-foreground); }
+.odd-badge[data-solid]:is(:not([data-tone]), [data-tone="neutral"]) {
   background: var(--foreground);
   color: var(--background);
 }
