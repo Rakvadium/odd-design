@@ -43,6 +43,24 @@ export const USAGE = {
   ] as const satisfies readonly UsageRule[],
 };
 
+export type WrapperElement = string | { readonly attribute: string; readonly present: string; readonly absent: string };
+
+export type Wrapper = {
+  readonly source: string;
+  readonly className: string;
+  readonly props: Readonly<Record<string, string>>;
+  readonly element: WrapperElement;
+};
+
+export const WRAPPERS = {
+  Button: {
+    source: "odd-design/react",
+    className: "odd-button",
+    props: { variant: "data-variant", size: "data-size", iconOnly: "data-icon-only" },
+    element: { attribute: "href", present: "a", absent: "button" },
+  },
+} as const satisfies Record<string, Wrapper>;
+
 export const COMMENT_RULES = [{ code: "ODD-STATIC-003" }] as const satisfies readonly { code: UsageCode }[];
 
 export const CLASS_REGISTRY = [
