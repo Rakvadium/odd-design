@@ -28,6 +28,14 @@ Preconditions:
 - **States stay focusable.** Run `bun $S goto components-button--states`, then `bun $S press Tab` three times. Each press reports focus on the next button, including the `aria-disabled` ones. The aria snapshot shows `[busy]` and `[disabled]` on the matching buttons.
 - **Focus ring.** After the Tab above, run `bun $S eval 'getComputedStyle(document.activeElement).outlineWidth + " " + getComputedStyle(document.activeElement).outlineStyle'` and `bun $S screenshot buttons/focus.png`. The ring is visible and at least 2px, unless the chrome draws focus with a box-shadow glow. In that case, read `boxShadow` too.
 
+## Usage sweep
+
+Run `bunx playwright test e2e/usage.spec.ts --project firefox`.
+
+The run checks `#storybook-root` on every story. It then opens Playground once for each contract value of `variant`, `size`, `disabled`, and `busy`. It clicks the toast triggers on `components-interactive--toast` and checks `.odd-toaster` after each click. The action and dismiss buttons are not in the first render.
+
+A pass prints `0 diagnostics`. A failure line is `<story id> [<state>] ODD-...`. The Playwright report attaches `usage-summary.json` with those lines under `findings`. That attachment is separate from `axe-summary.json`.
+
 ## Gotchas
 
 - Storybook args syntax uses `!true`/`!false` for booleans and `+` for spaces (`label:Delete+deck`).
