@@ -44,6 +44,9 @@ const wrapperNames: Readonly<Record<string, string | null>> = {
   variant: "data-variant",
   size: "data-size",
   iconOnly: "data-icon-only",
+  "data-variant": null,
+  "data-size": null,
+  "data-icon-only": null,
 };
 
 function isRecord(value: unknown): value is Record<string, unknown> {

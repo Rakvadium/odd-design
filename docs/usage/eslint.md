@@ -86,6 +86,7 @@ Every imported `Button` gets the class `odd-button`, plus the words in its `clas
 | `variant` | `data-variant` |
 | `size` | `data-size` |
 | `iconOnly` | `data-icon-only`. `iconOnly={false}` leaves it out. |
+| `data-variant`, `data-size`, `data-icon-only` | Nothing. `Button` sets these attributes from `variant`, `size`, and `iconOnly`, so it drops a raw one. |
 | `children` | The children, read as on a lowercase element. |
 | Any other prop | The attribute with the same name. |
 
