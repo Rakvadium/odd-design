@@ -82,7 +82,7 @@ bun .agents/skills/verify-odd-design/scripts/ctl.ts axe --run a11y    # every st
 
 ## Usage checks
 
-A button mistake fails with a pinned code. The code names the failure and the fix. The pages live under [docs/usage/](docs/usage/). Button codes are in [Button usage rules](docs/usage/button.md). Class and static codes are in [General usage rules](docs/usage/general.md).
+The package ships the button usage contract and one message per pinned code. Each message names the code, the failure, and the fix. No checker runs yet. The pages under [docs/usage/](docs/usage/) record the same rules. Button codes are in [Button usage rules](docs/usage/button.md). Class and static codes are in [General usage rules](docs/usage/general.md).
 
 ## Add a palette
 

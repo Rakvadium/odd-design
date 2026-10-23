@@ -2,31 +2,9 @@ import { expect, test } from "bun:test";
 import { readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
-import { APPEARANCE_AXES, ATTRIBUTES, CLASS_REGISTRY, COMMENT_RULES, HEADLESS_ALLOWLIST, USAGE, VOCABULARY } from "../src/js/usage/contract.ts";
+import { ATTRIBUTES, CLASS_REGISTRY, COMMENT_RULES, USAGE, VOCABULARY } from "../src/js/usage/contract.ts";
 import { MESSAGES, USAGE_CODES, message, type UsageCode } from "../src/js/usage/format.ts";
 import { read } from "./css.ts";
-
-const PINNED = [
-  "ODD-CLASS-001",
-  "ODD-BUTTON-001",
-  "ODD-BUTTON-002",
-  "ODD-BUTTON-003",
-  "ODD-BUTTON-004",
-  "ODD-BUTTON-005",
-  "ODD-BUTTON-006",
-  "ODD-BUTTON-007",
-  "ODD-BUTTON-008",
-  "ODD-BUTTON-009",
-  "ODD-BUTTON-010",
-  "ODD-BUTTON-011",
-  "ODD-BUTTON-012",
-  "ODD-BUTTON-013",
-  "ODD-BUTTON-014",
-  "ODD-BUTTON-015",
-  "ODD-STATIC-001",
-  "ODD-STATIC-002",
-  "ODD-STATIC-003",
-] as const;
 
 const codes = readFileSync(new URL("./usage-codes.txt", import.meta.url), "utf8").replace(/\r/g, "").replace(/\n$/, "").split("\n");
 
@@ -36,6 +14,10 @@ function headerLists(cssText: string): string[] {
 
 function quotedAttr(css: string, name: string): string[] {
   return [...new Set([...css.matchAll(new RegExp(`\\[${name}="([^"]+)"\\]`, "g"))].map((match) => match[1]!))].sort();
+}
+
+function dataAttributes(css: string): string[] {
+  return [...new Set([...css.matchAll(/\[(data-[a-z0-9-]+)/g)].map((match) => match[1]!))].sort();
 }
 
 function oddClasses(css: string): string[] {
@@ -57,10 +39,9 @@ function enumRule(attribute: string) {
   return rule;
 }
 
-test("usage-codes.txt pins the 19 appendix codes", () => {
-  expect(codes).toEqual([...PINNED]);
+test("usage-codes.txt matches the contract codes", () => {
   expect(codes).toEqual([...USAGE_CODES]);
-  expect(Object.keys(MESSAGES)).toEqual([...PINNED]);
+  expect(Object.keys(MESSAGES)).toEqual(codes);
 });
 
 test("css sync compares data-variant and data-size with button.css", () => {
@@ -78,8 +59,10 @@ test("headerLists reads a header that contains outline", () => {
 
   const raw = readFileSync(new URL("../src/css/components/button.css", import.meta.url), "utf8");
   const header = raw.split(/\r?\n/).slice(0, 5).join("\n");
-  expect(headerLists(header)).toEqual(["primary", "secondary", "ghost", "danger", "sm", "lg"]);
-  expect(header.includes("outline") ? ["outline"] : []).toEqual([]);
+  const variant = enumRule("data-variant");
+  const size = enumRule("data-size");
+  expect(headerLists(header).sort()).toEqual([...variant.values, ...size.values].sort());
+  expect(header).not.toContain("outline");
 });
 
 test("registry matches every odd- class in src/css", () => {
@@ -88,11 +71,21 @@ test("registry matches every odd- class in src/css", () => {
   expect(found).toEqual([...CLASS_REGISTRY].sort());
 });
 
-test("messages include the code, Fix:, a docs path, and no double quote", () => {
-  const quoted = codes.filter((code) => MESSAGES[code as UsageCode].includes('"'));
-  const missingFix = codes.filter((code) => !MESSAGES[code as UsageCode].includes("Fix:"));
-  const missingDocs = codes.filter((code) => !MESSAGES[code as UsageCode].includes(`docs/usage/`) || !MESSAGES[code as UsageCode].includes(`#${code.toLowerCase()}`));
-  const missingCode = codes.filter((code) => !MESSAGES[code as UsageCode].startsWith(`${code}:`));
+test("messages include the code, Fix:, a docs heading in the named file, and no double quote", () => {
+  const quoted = codes.filter((code) => message(code as UsageCode).includes('"'));
+  const missingFix = codes.filter((code) => !message(code as UsageCode).includes("Fix:"));
+  const missingDocs = codes.flatMap((code) => {
+    const text = message(code as UsageCode);
+    const match = /docs\/usage\/([a-z]+\.md)#([a-z0-9-]+)/.exec(text);
+    if (match === null) return [code];
+    const file = match[1]!;
+    const anchor = match[2]!;
+    const markdown = readFileSync(new URL(`../docs/usage/${file}`, import.meta.url), "utf8");
+    const hasHeading = markdown.split(/\r?\n/).includes(`## ${code}`);
+    if (!hasHeading || anchor !== code.toLowerCase()) return [`${code} ${file}#${anchor}`];
+    return [];
+  });
+  const missingCode = codes.filter((code) => !message(code as UsageCode).startsWith(`${code}:`));
   expect(quoted).toEqual([]);
   expect(missingFix).toEqual([]);
   expect(missingDocs).toEqual([]);
@@ -135,10 +128,43 @@ test("docs/usage has a heading for every pinned code", () => {
   expect(codes.filter((code) => !headings.includes(code))).toEqual([]);
 });
 
-test("button data attributes, appearance axes, and the headless allowlist are vocabulary", () => {
-  const attributes: readonly string[] = VOCABULARY.attributes;
-  const missing = [...ATTRIBUTES.button, ...APPEARANCE_AXES, ...HEADLESS_ALLOWLIST].filter((name) => !attributes.includes(name));
-  expect(missing).toEqual([]);
+test("vocabulary matches the data attributes in each component stylesheet", () => {
+  const dir = fileURLToPath(new URL("../src/css/components/", import.meta.url));
+  const files = readdirSync(dir).filter((name) => name.endsWith(".css")).sort();
+  const components = Object.keys(VOCABULARY).sort();
+  expect(components).toEqual(files.map((name) => name.replace(/\.css$/, "")));
+  for (const component of components) {
+    const listed = [...VOCABULARY[component as keyof typeof VOCABULARY]].sort().join(" ");
+    const found = dataAttributes(read(`components/${component}.css`)).join(" ");
+    expect([component, listed]).toEqual([component, found]);
+  }
+  const buttonVocabulary: readonly string[] = VOCABULARY.button;
+  const missingButton = [...ATTRIBUTES.button].filter((name) => !buttonVocabulary.includes(name));
+  expect(missingButton).toEqual([]);
+});
+
+test("allowed values in 002, 003, and 015 come from the contract", () => {
+  expect(message("ODD-BUTTON-002")).toBe(
+    "ODD-BUTTON-002: data-variant has a value this button does not take. Allowed values: primary, secondary, danger, ghost. outline and default mean remove the attribute. Fix: remove data-variant, or set primary, secondary, danger, or ghost. docs/usage/button.md#odd-button-002",
+  );
+  expect(message("ODD-BUTTON-003")).toBe(
+    "ODD-BUTTON-003: data-size has a value this button does not take. Allowed values: sm, lg. md and medium mean remove the attribute. Fix: remove data-size, or set sm or lg. docs/usage/button.md#odd-button-003",
+  );
+  expect(message("ODD-BUTTON-015")).toBe(
+    "ODD-BUTTON-015: this button does not take that data attribute. Allowed values: the button attributes, any app data attribute, the appearance axes, and the headless allowlist. Fix: remove the attribute, or correct its name. Button attributes: data-variant, data-size, data-icon-only. Appearance axes: data-chrome, data-palette, data-mode. Headless allowlist: data-state, data-side, data-disabled, data-orientation, data-highlighted. docs/usage/button.md#odd-button-015",
+  );
+});
+
+test("a found value loses its double quotes before it enters the message", () => {
+  expect(message("ODD-CLASS-001", { found: 'odd-"button"' })).toBe(
+    "ODD-CLASS-001: this class is not in the registry. Allowed values: the registered odd- classes. Fix: use a registered class, or remove the class. docs/usage/general.md#odd-class-001 Found odd-button.",
+  );
+});
+
+test("a hint names the found value and the suggestion", () => {
+  expect(message("ODD-BUTTON-002", { found: "primray", suggestion: "primary" })).toBe(
+    "ODD-BUTTON-002: data-variant has a value this button does not take. Allowed values: primary, secondary, danger, ghost. outline and default mean remove the attribute. Fix: remove data-variant, or set primary, secondary, danger, or ghost. docs/usage/button.md#odd-button-002 Found primray. Did you mean primary?",
+  );
 });
 
 type LiteralMessage<Code extends UsageCode> = string extends (typeof MESSAGES)[Code] ? never : (typeof MESSAGES)[Code];

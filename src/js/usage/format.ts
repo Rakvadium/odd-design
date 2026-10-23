@@ -1,3 +1,5 @@
+import { APPEARANCE_AXES, ATTRIBUTES, HEADLESS_ALLOWLIST, USAGE } from "./contract.ts";
+
 export const USAGE_CODES = [
   "ODD-CLASS-001",
   "ODD-BUTTON-001",
@@ -22,6 +24,43 @@ export const USAGE_CODES = [
 
 export type UsageCode = (typeof USAGE_CODES)[number];
 
+export type MessageDetail = {
+  found?: string;
+  suggestion?: string;
+};
+
+type Join<T extends readonly string[], Sep extends string> = T extends readonly [
+  infer Head extends string,
+  ...infer Tail extends readonly string[],
+]
+  ? Tail extends readonly []
+    ? Head
+    : `${Head}${Sep}${Join<Tail, Sep>}`
+  : "";
+
+function comma<const T extends readonly [string, ...string[]]>(items: T): Join<T, ", "> {
+  return items.join(", ") as Join<T, ", ">;
+}
+
+function and<const T extends readonly [string, ...string[]]>(items: T): Join<T, " and "> {
+  return items.join(" and ") as Join<T, " and ">;
+}
+
+function enumAllowed<const V extends readonly [string, ...string[]], const O extends readonly [string, ...string[]]>(
+  values: V,
+  omit: O,
+): `${Join<V, ", ">}. ${Join<O, " and ">} mean remove the attribute` {
+  return `${comma(values)}. ${and(omit)} mean remove the attribute`;
+}
+
+const variantRule = USAGE.button[1];
+const sizeRule = USAGE.button[2];
+const variantAllowed = enumAllowed(variantRule.values, variantRule.omit);
+const sizeAllowed = enumAllowed(sizeRule.values, sizeRule.omit);
+const buttonAttributes = comma(ATTRIBUTES.button);
+const appearanceAxes = comma(APPEARANCE_AXES);
+const headlessAllowlist = comma(HEADLESS_ALLOWLIST);
+
 function text<
   const Code extends UsageCode,
   const Problem extends string,
@@ -36,6 +75,10 @@ function text<
   docs: Docs,
 ): `${Code}: ${Problem} Allowed values: ${Allowed}. Fix: ${Fix} ${Docs}` {
   return `${code}: ${problem} Allowed values: ${allowed}. Fix: ${fix} ${docs}`;
+}
+
+function withoutQuotes(value: string): string {
+  return value.replaceAll('"', "");
 }
 
 export const MESSAGES = {
@@ -54,16 +97,16 @@ export const MESSAGES = {
     "docs/usage/button.md#odd-button-001",
   ),
   "ODD-BUTTON-002": text(
-    "ODD-BUTTON-002",
+    variantRule.code,
     "data-variant has a value this button does not take.",
-    "primary, secondary, danger, ghost. outline and default mean remove the attribute",
+    variantAllowed,
     "remove data-variant, or set primary, secondary, danger, or ghost.",
     "docs/usage/button.md#odd-button-002",
   ),
   "ODD-BUTTON-003": text(
-    "ODD-BUTTON-003",
+    sizeRule.code,
     "data-size has a value this button does not take.",
-    "sm, lg. md and medium mean remove the attribute",
+    sizeAllowed,
     "remove data-size, or set sm or lg.",
     "docs/usage/button.md#odd-button-003",
   ),
@@ -134,7 +177,7 @@ export const MESSAGES = {
     "ODD-BUTTON-013",
     "aria-disabled is not allowed on a link.",
     "none",
-    "remove aria-disabled from the anchor.",
+    "remove aria-disabled and keep the href. Render a button when the control should not navigate. Render plain text without odd-button when the control should not look like a button.",
     "docs/usage/button.md#odd-button-013",
   ),
   "ODD-BUTTON-014": text(
@@ -147,8 +190,8 @@ export const MESSAGES = {
   "ODD-BUTTON-015": text(
     "ODD-BUTTON-015",
     "this button does not take that data attribute.",
-    "data-variant, data-size, data-icon-only, data-chrome, data-palette, data-mode, data-state, data-side, data-disabled, data-orientation, data-highlighted",
-    "remove the attribute, or correct its name.",
+    "the button attributes, any app data attribute, the appearance axes, and the headless allowlist",
+    `remove the attribute, or correct its name. Button attributes: ${buttonAttributes}. Appearance axes: ${appearanceAxes}. Headless allowlist: ${headlessAllowlist}.`,
     "docs/usage/button.md#odd-button-015",
   ),
   "ODD-STATIC-001": text(
@@ -174,6 +217,15 @@ export const MESSAGES = {
   ),
 } as const satisfies Record<UsageCode, string>;
 
-export function message<Code extends UsageCode>(code: Code): (typeof MESSAGES)[Code] {
-  return MESSAGES[code];
+export function message<Code extends UsageCode>(code: Code): (typeof MESSAGES)[Code];
+export function message<Code extends UsageCode>(code: Code, detail: MessageDetail): string;
+export function message<Code extends UsageCode>(code: Code, detail?: MessageDetail): (typeof MESSAGES)[Code] | string {
+  const base = MESSAGES[code];
+  if (detail === undefined) return base;
+  const found = detail.found === undefined ? "" : withoutQuotes(detail.found);
+  const suggestion = detail.suggestion === undefined ? "" : withoutQuotes(detail.suggestion);
+  if (found === "" && suggestion === "") return base;
+  const foundText = found === "" ? "" : ` Found ${found}.`;
+  const suggestionText = suggestion === "" ? "" : ` Did you mean ${suggestion}?`;
+  return `${base}${foundText}${suggestionText}`;
 }

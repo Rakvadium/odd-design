@@ -102,9 +102,9 @@ Move `aria-current` onto an `a` element, or remove it.
 
 Fails when an `a` element with `odd-button` has `aria-disabled`.
 
-A link does not have a disabled state. Remove `href` when the link should no longer navigate.
+A link does not have a disabled state.
 
-Remove `aria-disabled` from the anchor.
+Remove `aria-disabled` and keep `href` when the link should still navigate. Render a `button` when the control should not navigate. Render plain text without `odd-button` when the control should not look like a button.
 
 ## ODD-BUTTON-014
 

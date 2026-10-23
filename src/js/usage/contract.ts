@@ -1,24 +1,5 @@
 import type { UsageCode } from "./format.ts";
 
-export const RULE_KINDS = [
-  "element",
-  "enum",
-  "boolean-attribute",
-  "aria-boolean",
-  "forbidden-attribute",
-  "required-attribute",
-  "forbidden-on-element",
-  "enum-on-element",
-  "accessible-name",
-  "icon-only-text",
-  "system-data",
-  "unknown-class",
-  "computed-value",
-  "untagged-template",
-] as const;
-
-export type RuleKind = (typeof RULE_KINDS)[number];
-
 export type UsageRule =
   | { kind: "element"; code: UsageCode; className: string; elements: readonly string[] }
   | { kind: "enum"; code: UsageCode; attribute: string; values: readonly string[]; omit: readonly string[] }
@@ -35,15 +16,10 @@ export type UsageRule =
   | { kind: "computed-value"; code: UsageCode }
   | { kind: "untagged-template"; code: UsageCode };
 
-function rules<const T extends readonly UsageRule[]>(items: T): T {
-  return items;
-}
-
-type AssertNever<T extends never> = T;
-type _KindGap = AssertNever<Exclude<UsageRule["kind"], RuleKind> | Exclude<RuleKind, UsageRule["kind"]>>;
+export type RuleKind = UsageRule["kind"];
 
 export const USAGE = {
-  button: rules([
+  button: [
     { kind: "element", code: "ODD-BUTTON-001", className: "odd-button", elements: ["button", "a"] },
     { kind: "enum", code: "ODD-BUTTON-002", attribute: "data-variant", values: ["primary", "secondary", "danger", "ghost"], omit: ["outline", "default"] },
     { kind: "enum", code: "ODD-BUTTON-003", attribute: "data-size", values: ["sm", "lg"], omit: ["md", "medium"] },
@@ -59,13 +35,13 @@ export const USAGE = {
     { kind: "forbidden-on-element", code: "ODD-BUTTON-013", element: "a", attribute: "aria-disabled" },
     { kind: "icon-only-text", code: "ODD-BUTTON-014", attribute: "data-icon-only", ignore: "aria-hidden" },
     { kind: "system-data", code: "ODD-BUTTON-015" },
-  ]),
-  shared: rules([
+  ] as const satisfies readonly UsageRule[],
+  shared: [
     { kind: "unknown-class", code: "ODD-CLASS-001" },
     { kind: "computed-value", code: "ODD-STATIC-001" },
     { kind: "untagged-template", code: "ODD-STATIC-002" },
-  ]),
-} as const;
+  ] as const satisfies readonly UsageRule[],
+};
 
 export const COMMENT_RULES = [{ code: "ODD-STATIC-003" }] as const satisfies readonly { code: UsageCode }[];
 
@@ -138,59 +114,28 @@ export const ATTRIBUTES = {
 } as const;
 
 export const VOCABULARY = {
-  attributes: [
-    "data-activation",
-    "data-chrome",
-    "data-disabled",
-    "data-highlighted",
-    "data-icon-only",
-    "data-initials",
-    "data-interactive",
-    "data-mode",
-    "data-numeric",
-    "data-orientation",
-    "data-palette",
-    "data-select-all",
-    "data-shape",
-    "data-side",
-    "data-size",
-    "data-solid",
-    "data-state",
-    "data-tone",
-    "data-variant",
-  ],
-  values: [
-    "2xl",
-    "avatar",
-    "bottom",
-    "closing",
-    "danger",
-    "default",
-    "end",
-    "false",
-    "foreground",
-    "ghost",
-    "hero",
-    "info",
-    "lg",
-    "manual",
-    "md",
-    "medium",
-    "neutral",
-    "outline",
-    "page",
-    "primary",
-    "secondary",
-    "sm",
-    "start",
-    "success",
-    "top",
-    "true",
-    "warning",
-    "xl",
-    "xs",
-  ],
-} as const;
+  alert: ["data-tone"],
+  avatar: ["data-size"],
+  badge: ["data-solid", "data-tone"],
+  button: ["data-icon-only", "data-size", "data-variant"],
+  card: ["data-interactive"],
+  choice: [],
+  dialog: [],
+  disclosure: [],
+  field: [],
+  menu: ["data-tone"],
+  meter: ["data-tone"],
+  popover: [],
+  search: [],
+  separator: [],
+  sheet: ["data-side"],
+  skeleton: ["data-shape"],
+  slider: [],
+  table: ["data-numeric"],
+  tabs: [],
+  toast: ["data-state", "data-tone"],
+  typography: ["data-size", "data-tone"],
+} as const satisfies Record<string, readonly string[]>;
 
 export const HEADLESS_ALLOWLIST = ["data-state", "data-side", "data-disabled", "data-orientation", "data-highlighted"] as const;
 
