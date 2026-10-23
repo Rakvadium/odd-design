@@ -1,21 +1,12 @@
-import { createRequire } from "node:module";
 import { parse } from "@html-eslint/template-parser";
 import type { Rule } from "eslint";
+// @ts-expect-error The lib path has no declaration that accepts an ESLint node.
+import { shouldCheckTaggedTemplateExpression as checkTaggedTemplate, shouldCheckTemplateLiteral as checkTemplateLiteral } from "@html-eslint/eslint-plugin/lib/rules/utils/settings.js";
 import { checkUsage, type Computed, type Diagnostic, type UsageAttribute, type UsageNode } from "../js/usage/check.ts";
 import { message, type UsageCode } from "../js/usage/format.ts";
 
-const require = createRequire(import.meta.url);
-
-const { createVisitors } = require("@html-eslint/eslint-plugin/lib/rules/utils/visitors.js") as {
-  createVisitors: (context: Rule.RuleContext, visitors: { Tag?: (node: unknown) => void }) => Rule.RuleListener;
-};
-
-const { shouldCheckTaggedTemplateExpression, shouldCheckTemplateLiteral } = require(
-  "@html-eslint/eslint-plugin/lib/rules/utils/settings.js",
-) as {
-  shouldCheckTemplateLiteral: (node: Rule.Node, context: Rule.RuleContext) => boolean;
-  shouldCheckTaggedTemplateExpression: (node: Rule.Node, context: Rule.RuleContext) => boolean;
-};
+const shouldCheckTemplateLiteral: (node: Rule.Node, context: Rule.RuleContext) => boolean = checkTemplateLiteral;
+const shouldCheckTaggedTemplateExpression: (node: Rule.Node, context: Rule.RuleContext) => boolean = checkTaggedTemplate;
 
 export type HtmlReport = "usage" | "incomplete";
 
@@ -56,13 +47,6 @@ function isLoc(value: unknown): value is Loc {
     typeof value.end.line === "number" &&
     typeof value.end.column === "number"
   );
-}
-
-function copyLoc(loc: Loc): Loc {
-  return {
-    start: { line: loc.start.line, column: loc.start.column },
-    end: { line: loc.end.line, column: loc.end.column },
-  };
 }
 
 function partText(part: Part): string {
@@ -120,7 +104,7 @@ function childKind(value: unknown): ChildKind {
 }
 
 function readAttribute(attribute: HtmlAttribute, spans: Map<UsageAttribute | Computed, Loc>): UsageAttribute | Computed {
-  const loc = isLoc(attribute.loc) ? copyLoc(attribute.loc) : undefined;
+  const loc = isLoc(attribute.loc) ? attribute.loc : undefined;
   const name = attributeName(attribute);
   if (name === undefined) {
     const computed: Computed = { computed: [] };
@@ -226,7 +210,7 @@ function parserSees(node: Rule.Node, context: Rule.RuleContext): boolean {
   return parent?.type === "TaggedTemplateExpression" && shouldCheckTaggedTemplateExpression(parent, context);
 }
 
-function selected(report: HtmlReport, code: UsageCode): boolean {
+export function selected(report: HtmlReport, code: UsageCode): boolean {
   switch (report) {
     case "usage":
       return code !== "ODD-STATIC-001";
@@ -240,7 +224,7 @@ function selected(report: HtmlReport, code: UsageCode): boolean {
 }
 
 function reportDiagnostic(context: Rule.RuleContext, diagnostic: Diagnostic, spans: ReadonlyMap<UsageAttribute | Computed, Loc>, fallback: unknown): void {
-  const loc = diagnostic.attribute === undefined ? (isLoc(fallback) ? copyLoc(fallback) : undefined) : spans.get(diagnostic.attribute);
+  const loc = diagnostic.attribute === undefined ? (isLoc(fallback) ? fallback : undefined) : spans.get(diagnostic.attribute);
   if (loc === undefined) return;
   context.report({ loc, message: diagnostic.message });
 }
@@ -260,14 +244,10 @@ function checkTree(node: unknown, context: Rule.RuleContext, report: HtmlReport)
 }
 
 export function htmlVisitors(context: Rule.RuleContext, report: HtmlReport): Rule.RuleListener {
-  const listeners = createVisitors(context, {
-    Tag(node) {
+  return {
+    Tag(node: Rule.Node) {
       if (isTag(node)) reportTag(node, context, report);
     },
-  });
-
-  return {
-    Tag: listeners.Tag,
     TemplateLiteral(node: Rule.Node) {
       const parsed = parseLiteral(node, context);
       if (parsed === undefined) return;
