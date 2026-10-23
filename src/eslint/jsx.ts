@@ -4,7 +4,7 @@ import { selected, type HtmlReport } from "./html.ts";
 
 type Loc = { start: { line: number; column: number }; end: { line: number; column: number } };
 
-type Expression = { type: string; value?: unknown; expressions?: readonly unknown[]; quasis?: readonly { value: { cooked: string | null } }[] };
+type Expression = { type: string; name?: string; value?: unknown; expressions?: readonly unknown[]; quasis?: readonly { value: { cooked: string | null } }[] };
 
 type JsxIdentifier = { type: "JSXIdentifier"; name: string };
 
@@ -102,6 +102,8 @@ function staticValue(name: string, expression: Expression): string | Computed | 
       if (typeof value === "boolean") return booleanValue(name, value);
       return value === null ? undefined : { computed: [] };
     }
+    case "Identifier":
+      return expression.name === "undefined" ? undefined : { computed: [] };
     case "TemplateLiteral": {
       const cooked = expression.quasis?.[0]?.value.cooked;
       return expression.expressions?.length === 0 && typeof cooked === "string" ? cooked : { computed: [] };
@@ -175,6 +177,12 @@ function readChildren(children: readonly JsxChild[], context: Rule.RuleContext):
   });
 }
 
+function wrapperTag(attributes: readonly (UsageAttribute | Computed)[]): string | Computed {
+  const href = attributes.find((attribute): attribute is UsageAttribute => "name" in attribute && attribute.name === "href");
+  if (href === undefined) return "button";
+  return typeof href.value === "string" ? "a" : { computed: [] };
+}
+
 function readElement(element: JsxElement, context: Rule.RuleContext): { usage: UsageNode; spans: Spans } {
   const spans: Spans = new Map();
   const kind = classify(element, context);
@@ -184,8 +192,7 @@ function readElement(element: JsxElement, context: Rule.RuleContext): { usage: U
       return { usage: { tag: kind.tag, attributes: readAttributes(element, domNames, spans), children }, spans };
     case "wrapper": {
       const attributes = withButtonClass(readAttributes(element, wrapperNames, spans), spans);
-      const tag = attributes.some((attribute) => "name" in attribute && attribute.name === "href") ? "a" : "button";
-      return { usage: { tag, attributes, children }, spans };
+      return { usage: { tag: wrapperTag(attributes), attributes, children }, spans };
     }
     case "component":
       return { usage: { tag: { computed: [] }, attributes: readAttributes(element, domNames, spans), children }, spans };

@@ -69,6 +69,7 @@ The plugin checks a lowercase element, such as `<button>`, like the same element
 - A string, a number, and a template literal with no `${...}` are literal values.
 - On a `data-` or `aria-` attribute, `{true}` and `{false}` are the strings `true` and `false`. So `data-icon-only={false}` reports `ODD-BUTTON-004`.
 - On any other attribute, `{true}` sets the attribute and `{false}` leaves it out.
+- `{null}` and `{undefined}` leave the attribute out.
 - Any other expression is not static, and neither is a `{...props}` spread. On an `odd-button` element, `odd/usage-incomplete` warns `ODD-STATIC-001` on a spread, and on a computed value that a button rule reads, such as `data-variant={tone}`.
 - A computed `className` keeps the string literals inside it. `className={cn("odd-button", active && "is-active")}` still runs the button rules, and warns `ODD-STATIC-001` on `className`.
 
@@ -80,7 +81,7 @@ Every imported `Button` gets the class `odd-button`, plus the words in its `clas
 
 | Button prop | What the element gets |
 | --- | --- |
-| `href` | The element is an `a`. Without `href`, it is a `button`. |
+| `href` | The element is an `a`. Without `href`, or with `href={undefined}`, it is a `button`. A computed `href`, such as `href={url}`, can render either. On that element, `odd/usage-incomplete` warns `ODD-STATIC-001` and the plugin runs no button rules. |
 | `variant` | `data-variant` |
 | `size` | `data-size` |
 | `iconOnly` | `data-icon-only`. `iconOnly={false}` leaves it out. |
