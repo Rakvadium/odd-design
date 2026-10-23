@@ -48,6 +48,50 @@ const save = html`<button class="odd-button">Save</button>`;
 
 A bare template is not checked. If it contains an `odd-` class, `odd/usage` reports `ODD-STATIC-002` on the opening backtick. Tag it `html`, or add the comment.
 
+## Check JSX
+
+The plugin also checks JSX. Add your `.jsx` and `.tsx` files to the plugin's `files` list. Your JS parser has to read JSX, as `@typescript-eslint/parser` does, or `@babel/eslint-parser` with its `jsx` plugin.
+
+```js
+{
+  files: ["**/*.{jsx,tsx}"],
+  plugins: { odd },
+  rules: {
+    "odd/usage": "error",
+    "odd/usage-incomplete": "warn",
+    "odd/disable-reason": "error",
+  },
+}
+```
+
+The plugin checks a lowercase element, such as `<button>`, like the same element in HTML. It reads `className` as `class`. It reads each value the way React renders it.
+
+- A string, a number, and a template literal with no `${...}` are literal values.
+- On a `data-` or `aria-` attribute, `{true}` and `{false}` are the strings `true` and `false`. So `data-icon-only={false}` reports `ODD-BUTTON-004`.
+- On any other attribute, `{true}` sets the attribute and `{false}` leaves it out.
+- Any other expression is not static, and neither is a `{...props}` spread. On an `odd-button` element, `odd/usage-incomplete` warns `ODD-STATIC-001` on a spread, and on a computed value that a button rule reads, such as `data-variant={tone}`.
+- A computed `className` keeps the string literals inside it. `className={cn("odd-button", active && "is-active")}` still runs the button rules, and warns `ODD-STATIC-001` on `className`.
+
+### The Button from odd-design/react
+
+The plugin checks `<Button>` as the element it renders when `Button` is imported from `odd-design/react`. An alias, such as `import { Button as OddButton } from "odd-design/react"`, counts too. A `Button` that you declare yourself is not checked.
+
+Every imported `Button` gets the class `odd-button`, plus the words in its `className`. The table shows how its other props map to the element.
+
+| Button prop | What the element gets |
+| --- | --- |
+| `href` | The element is an `a`. Without `href`, it is a `button`. |
+| `variant` | `data-variant` |
+| `size` | `data-size` |
+| `iconOnly` | `data-icon-only`. `iconOnly={false}` leaves it out. |
+| Any other prop | The attribute with the same name. |
+
+So `<Button disabled>` reports `ODD-BUTTON-007`, and `<Button href="#" aria-disabled="true">` reports `ODD-BUTTON-013`.
+
+### Other components
+
+The plugin cannot see what another component renders. A component with an `odd-` class, such as `<Link className="odd-button">`, gets one `ODD-STATIC-001` warning on the element and no button rules. An `odd-` class that is not in the registry still reports `ODD-CLASS-001`. `<UI.Button>`, with `UI` a namespace import, counts as another component.
+
 ## Write a literal attribute value
 
 A `${...}` attribute value is not static. `odd/usage-incomplete` warns `ODD-STATIC-001` on that attribute. The plugin still checks the other attributes on the same element.
