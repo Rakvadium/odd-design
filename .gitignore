@@ -3,3 +3,5 @@ storybook-static
 *.log
 storybook.log
 .verify
+dist/
+*.tgz

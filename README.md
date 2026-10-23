@@ -1,6 +1,6 @@
 # Design system
 
-A framework-free, accessible design system made of CSS custom properties, native HTML, and one small TypeScript helper. Storybook is the workbench.
+A framework-free, accessible design system made of CSS custom properties, native HTML, and one small TypeScript helper. The React wrapper is optional. Storybook is the workbench.
 
 Appearance has three independent axes:
 
@@ -22,6 +22,32 @@ bun run test:browsers   # Playwright: the axe sweep and behavior checks in Firef
 ```
 
 `test:browsers` needs Playwright's own browsers once: `bunx playwright install firefox webkit`. It builds a static Storybook, runs it in both engines, and writes an HTML report with screenshots to `.verify/playwright/report`.
+
+## Install
+
+Install the package.
+
+```sh
+bun add odd-design
+```
+
+The stylesheet, `odd-design/appearance`, `odd-design/enhance`, and `odd-design/palette` need nothing else. Install React 19 when you render `Button`. React is an optional peer dependency.
+
+```sh
+bun add react@^19 react-dom@^19
+```
+
+Set up the checkers the docs describe.
+
+- Types come from `odd-design/react`. See [Use the React Button](docs/usage/react.md).
+- ESLint loads `odd-design/eslint`. See [Check HTML with ESLint](docs/usage/eslint.md).
+- Tests call `registerUsageChecks` from `odd-design/usage/test-setup`. See [Set up the runtime checker](docs/usage/runtime.md).
+
+Add this line to your `AGENTS.md`.
+
+```
+Fix every odd-design ODD- code before you finish. TypeScript, ESLint, and tests all report them.
+```
 
 ## Use it
 
@@ -82,7 +108,7 @@ bun .agents/skills/verify-odd-design/scripts/ctl.ts axe --run a11y    # every st
 
 ## Usage checks
 
-The package ships the button usage contract and one message per pinned code. Each message names the code, the failure, and the fix. No checker runs yet. The pages under [docs/usage/](docs/usage/) record the same rules. Button codes are in [Button usage rules](docs/usage/button.md). Class and static codes are in [General usage rules](docs/usage/general.md).
+The package ships the button usage contract and one message per pinned code. Each message names the code, the failure, and the fix. Types, ESLint, and the runtime checker report the same codes. The pages under [docs/usage/](docs/usage/) record the rules. Button codes are in [Button usage rules](docs/usage/button.md). Class and static codes are in [General usage rules](docs/usage/general.md).
 
 ## Add a palette
 
@@ -145,7 +171,7 @@ The five palettes ported from uvs-decks-gg went through the same repair. Their i
 
 ## Behaviors
 
-Menus, tabs, and toasts have no HTML element yet, so `odd-design/enhance` (`src/js/enhance.ts`) adds them on top of native markup. Each function takes an element and returns a cleanup function. No dependencies, no framework.
+Menus, tabs, and toasts have no HTML element yet, so `odd-design/enhance` (`src/js/enhance.ts`) adds them on top of native markup. Each function takes an element and returns a cleanup function. No dependencies. There is no framework, and the React wrapper is optional.
 
 ```js
 import { enhance, createToaster } from "odd-design/enhance";
