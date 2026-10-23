@@ -17,7 +17,7 @@ export default meta;
 type Story = StoryObj;
 
 export const TextFields: Story = {
-  render: () => `<form class="odd-stack" style="max-inline-size: 26rem" onsubmit="event.preventDefault()">
+  render: () => /* html */ `<form class="odd-stack" style="max-inline-size: 26rem" onsubmit="event.preventDefault()">
     <div class="odd-field">
       <label class="odd-label" for="name">Deck name</label>
       <input class="odd-input" id="name" required placeholder="Midnight Control" aria-describedby="name-hint">
@@ -40,7 +40,7 @@ export const TextFields: Story = {
 };
 
 export const Select: Story = {
-  render: () => `<div class="odd-field" style="max-inline-size: 26rem">
+  render: () => /* html */ `<div class="odd-field" style="max-inline-size: 26rem">
     <label class="odd-label" for="format">Format</label>
     <select class="odd-select" id="format">
       <option>Standard</option>
@@ -52,7 +52,7 @@ export const Select: Story = {
 };
 
 export const Choices: Story = {
-  render: () => `<div class="odd-stack">
+  render: () => /* html */ `<div class="odd-stack">
     <fieldset class="odd-stack" style="--gap: var(--space-2); border: 0; padding: 0; margin: 0">
       <legend class="odd-label" style="margin-block-end: var(--space-2)">Notifications</legend>
       <label class="odd-choice"><input type="checkbox" checked> Deck comments</label>
@@ -69,14 +69,14 @@ export const Choices: Story = {
 };
 
 export const Switch: Story = {
-  render: () => `<div class="odd-stack" style="--gap: var(--space-3)">
+  render: () => /* html */ `<div class="odd-stack" style="--gap: var(--space-3)">
     <label class="odd-choice"><input type="checkbox" role="switch" class="odd-switch" checked> Show card prices</label>
     <label class="odd-choice"><input type="checkbox" role="switch" class="odd-switch"> Compact grid</label>
   </div>`,
 };
 
 export const Segmented: Story = {
-  render: () => `<fieldset class="odd-segmented">
+  render: () => /* html */ `<fieldset class="odd-segmented">
     <legend>View</legend>
     <label><input type="radio" name="view" checked> Grid</label>
     <label><input type="radio" name="view"> List</label>
@@ -93,7 +93,7 @@ export const Slider: Story = {
       },
     },
   },
-  render: () => `<div class="odd-stack" style="--gap: var(--space-5); max-inline-size: 26rem">
+  render: () => /* html */ `<div class="odd-stack" style="--gap: var(--space-5); max-inline-size: 26rem">
     <div class="odd-field">
       <div class="odd-row" style="justify-content: space-between">
         <label class="odd-label" for="copies">Copies per card</label>
@@ -123,7 +123,7 @@ export const Search: Story = {
       },
     },
   },
-  render: () => `<div class="odd-stack" style="max-inline-size: 26rem">
+  render: () => /* html */ `<div class="odd-stack" style="max-inline-size: 26rem">
     <search>
       <form class="odd-search" onsubmit="event.preventDefault()">
         <label class="odd-visually-hidden" for="card-search">Search cards</label>

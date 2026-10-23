@@ -10,7 +10,7 @@ type Args = {
 };
 
 const button = ({ label, variant, size, disabled, busy }: Args) =>
-  `<button class="odd-button"
+  /* html */ `<button class="odd-button"
     ${variant === "default" ? "" : `data-variant="${variant}"`}
     ${size === "md" ? "" : `data-size="${size}"`}
     ${disabled ? `aria-disabled="true"` : ""}
@@ -40,7 +40,7 @@ type Story = StoryObj<Args>;
 export const Playground: Story = {};
 
 export const Variants: Story = {
-  render: () => `<div class="odd-row">
+  render: () => /* html */ `<div class="odd-row">
     <button class="odd-button" data-variant="primary">Primary</button>
     <button class="odd-button" data-variant="secondary">Secondary</button>
     <button class="odd-button">Default</button>
@@ -50,7 +50,7 @@ export const Variants: Story = {
 };
 
 export const Sizes: Story = {
-  render: () => `<div class="odd-row">
+  render: () => /* html */ `<div class="odd-row">
     <button class="odd-button" data-variant="primary" data-size="sm">Small</button>
     <button class="odd-button" data-variant="primary">Medium</button>
     <button class="odd-button" data-variant="primary" data-size="lg">Large ${icons.arrowRight}</button>
@@ -60,7 +60,7 @@ export const Sizes: Story = {
 };
 
 export const States: Story = {
-  render: () => `<div class="odd-row">
+  render: () => /* html */ `<div class="odd-row">
     <button class="odd-button" data-variant="primary" aria-busy="true">Saving…</button>
     <button class="odd-button" data-variant="primary" aria-disabled="true">Unavailable</button>
     <button class="odd-button" aria-disabled="true">Unavailable</button>

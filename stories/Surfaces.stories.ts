@@ -7,7 +7,7 @@ export default meta;
 type Story = StoryObj;
 
 export const Card: Story = {
-  render: () => `<div style="display:grid; gap: var(--space-5); grid-template-columns: repeat(auto-fill, minmax(17rem, 1fr))">
+  render: () => /* html */ `<div style="display:grid; gap: var(--space-5); grid-template-columns: repeat(auto-fill, minmax(17rem, 1fr))">
     <article class="odd-card">
       <p class="odd-eyebrow">Static</p>
       <h3 class="odd-card-title">Midnight Control</h3>
@@ -29,7 +29,7 @@ export const Card: Story = {
 };
 
 export const Badge: Story = {
-  render: () => `<div class="odd-stack">
+  render: () => /* html */ `<div class="odd-stack">
     <div class="odd-row">
       <span class="odd-badge">Neutral</span>
       <span class="odd-badge" data-tone="primary">Primary</span>
@@ -58,7 +58,7 @@ export const Dialog: Story = {
       },
     },
   },
-  render: () => `<div>
+  render: () => /* html */ `<div>
     <button class="odd-button" data-variant="danger" commandfor="confirm-delete" command="show-modal">${icons.trash} Delete deck…</button>
     <dialog class="odd-dialog" id="confirm-delete" aria-labelledby="confirm-delete-title" closedby="any">
       <div class="odd-dialog-body">
@@ -74,7 +74,7 @@ export const Dialog: Story = {
 };
 
 export const Disclosure: Story = {
-  render: () => `<div style="max-inline-size: 36rem">
+  render: () => /* html */ `<div style="max-inline-size: 36rem">
     <details class="odd-disclosure" name="faq" open>
       <summary>What’s the difference between chrome and palette?</summary>
       <div>Chrome is shape, type, depth, and motion. Palette is color. You can pair any chrome with any palette.</div>

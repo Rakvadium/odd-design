@@ -10,13 +10,13 @@ const meta = {
 export default meta;
 type Story = StoryObj;
 
-const radioGroup = (name: string, legend: string, values: readonly string[], current: string) => `
+const radioGroup = (name: string, legend: string, values: readonly string[], current: string) => /* html */ `
   <fieldset class="odd-segmented" data-axis="${name}">
     <legend>${legend}</legend>
     ${values.map((v) => `<label><input type="radio" name="${name}" value="${v}" ${v === current ? "checked" : ""}> ${v}</label>`).join("")}
   </fieldset>`;
 
-const deckCard = (title: string, blurb: string, tone: string, status: string, cards: number) => `
+const deckCard = (title: string, blurb: string, tone: string, status: string, cards: number) => /* html */ `
   <article class="odd-card" data-interactive>
     <div class="odd-row" style="justify-content: space-between">
       <span class="odd-badge" data-tone="${tone}">${status}</span>
@@ -42,7 +42,7 @@ export const SampleApp: Story = {
     root.style.minBlockSize = "100dvh";
     root.style.padding = "clamp(1rem, 4vw, 3rem)";
 
-    root.innerHTML = `
+    root.innerHTML = /* html */ `
       <div class="odd-stack" style="--gap: var(--space-8); max-inline-size: 72rem; margin-inline: auto">
         <header class="odd-row" style="justify-content: space-between">
           <div class="odd-row" style="--gap: var(--space-2)">
@@ -125,7 +125,7 @@ export const SampleApp: Story = {
   },
 };
 
-const tile = (chrome: Chrome, palette: Palette, mode: Mode) => `
+const tile = (chrome: Chrome, palette: Palette, mode: Mode) => /* html */ `
   <div class="odd-scope" data-chrome="${chrome}" data-palette="${palette}" data-mode="${mode}"
        style="padding: var(--space-5); border-radius: var(--radius-surface)">
     <div class="odd-card" style="--gap: var(--space-3)">

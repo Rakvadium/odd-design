@@ -22,12 +22,12 @@ function measure(scope: HTMLElement) {
     out.textContent = `${ratio.toFixed(2)}:1`;
     out.closest("tr")!.querySelector<HTMLElement>(".pair-result")!.innerHTML =
       ratio >= min
-        ? `<span class="odd-badge" data-tone="success">Pass ${min}:1</span>`
-        : `<span class="odd-badge" data-solid data-tone="danger">Fail ${min}:1</span>`;
+        ? /* html */ `<span class="odd-badge" data-tone="success">Pass ${min}:1</span>`
+        : /* html */ `<span class="odd-badge" data-solid data-tone="danger">Fail ${min}:1</span>`;
   }
 }
 
-const column = (mode: "light" | "dark", palette: string, chrome: string) => `
+const column = (mode: "light" | "dark", palette: string, chrome: string) => /* html */ `
   <div class="odd-scope" data-mode="${mode}" data-palette="${palette}" data-chrome="${chrome}" style="padding: var(--space-5); border-radius: var(--radius-surface)">
     <h3 style="margin-block-end: var(--space-4)">${mode}</h3>
     <table style="border-collapse: collapse; inline-size: 100%; font-size: var(--text-sm)">
@@ -99,7 +99,7 @@ export const Palette: Story = {
 };
 
 export const Type: Story = {
-  render: () => `<div class="odd-stack" style="--gap: var(--space-5); max-inline-size: 48rem">
+  render: () => /* html */ `<div class="odd-stack" style="--gap: var(--space-5); max-inline-size: 48rem">
     <p class="odd-eyebrow">Eyebrow label</p>
     <h1>Display heading</h1>
     <h2>Section heading</h2>
@@ -120,7 +120,7 @@ export const Headings: Story = {
       },
     },
   },
-  render: () => `<div class="odd-stack" style="--gap: var(--space-4); max-inline-size: 48rem">
+  render: () => /* html */ `<div class="odd-stack" style="--gap: var(--space-4); max-inline-size: 48rem">
     <h1 class="odd-heading" data-size="hero">Hero · Build sharper decks</h1>
     <h2 class="odd-heading" data-size="2xl">2xl · Season overview</h2>
     <h2 class="odd-heading" data-size="xl">xl · Your collection</h2>

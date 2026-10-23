@@ -16,7 +16,7 @@ const meta = {
 export default meta;
 type Story = StoryObj;
 
-const filters = (id: string) => `<div class="odd-popover" id="${id}" popover role="dialog" aria-labelledby="${id}-title">
+const filters = (id: string) => /* html */ `<div class="odd-popover" id="${id}" popover role="dialog" aria-labelledby="${id}-title">
       <div class="odd-stack" style="--gap: var(--space-3)">
         <p class="odd-eyebrow" id="${id}-title">Filter decks</p>
         <label class="odd-choice"><input type="checkbox" checked> Legal only</label>
@@ -39,7 +39,7 @@ export const Popover: Story = {
       },
     },
   },
-  render: () => `<div class="odd-row" style="justify-content: space-between">
+  render: () => /* html */ `<div class="odd-row" style="justify-content: space-between">
     <button class="odd-button" commandfor="filters" command="toggle-popover">${icons.filter} Filters</button>
     ${filters("filters")}
     <button class="odd-button" commandfor="filters-end" command="toggle-popover">${icons.filter} Filters</button>
@@ -56,7 +56,7 @@ export const Tooltip: Story = {
       },
     },
   },
-  render: () => `<div class="odd-row" style="padding-block-start: var(--space-8)">
+  render: () => /* html */ `<div class="odd-row" style="padding-block-start: var(--space-8)">
     <button class="odd-button" data-variant="ghost" data-icon-only aria-labelledby="tip-copy" interestfor="tip-copy">${icons.copy}</button>
     <div class="odd-tooltip" id="tip-copy" popover="hint" role="tooltip">Duplicate deck</div>
     <button class="odd-button" data-variant="ghost" data-icon-only aria-labelledby="tip-share" interestfor="tip-share">${icons.share}</button>
@@ -78,7 +78,7 @@ export const HoverCard: Story = {
       },
     },
   },
-  render: () => `<p style="max-inline-size: 36rem">
+  render: () => /* html */ `<p style="max-inline-size: 36rem">
     Last week's winner was <a href="#" interestfor="preview-midnight">Midnight Control</a>, a slow list that wins on card advantage.
   </p>
   <div class="odd-hover-card" id="preview-midnight" popover="hint">
@@ -100,7 +100,7 @@ export const HoverCard: Story = {
   </div>`,
 };
 
-const sheet = (id: string, side: string, title: string) => `<dialog class="odd-sheet" id="${id}" data-side="${side}" aria-labelledby="${id}-title" closedby="any">
+const sheet = (id: string, side: string, title: string) => /* html */ `<dialog class="odd-sheet" id="${id}" data-side="${side}" aria-labelledby="${id}-title" closedby="any">
       <div class="odd-sheet-header">
         <h2 class="odd-dialog-title" id="${id}-title">${title}</h2>
         <button class="odd-button" data-variant="ghost" data-icon-only aria-label="Close" commandfor="${id}" command="close">${icons.close}</button>
@@ -132,7 +132,7 @@ export const Sheet: Story = {
       },
     },
   },
-  render: () => `<div class="odd-row">
+  render: () => /* html */ `<div class="odd-row">
     <button class="odd-button" commandfor="sheet-end" command="show-modal">${icons.filter} Filters (end)</button>
     <button class="odd-button" commandfor="sheet-start" command="show-modal">Start</button>
     <button class="odd-button" commandfor="sheet-bottom" command="show-modal">Bottom</button>
@@ -151,7 +151,7 @@ export const AlertDialog: Story = {
       },
     },
   },
-  render: () => `<div>
+  render: () => /* html */ `<div>
     <button class="odd-button" data-variant="danger" commandfor="discard" command="show-modal">Discard changes…</button>
     <dialog class="odd-dialog" id="discard" role="alertdialog" aria-labelledby="discard-title" aria-describedby="discard-desc">
       <div class="odd-dialog-body">

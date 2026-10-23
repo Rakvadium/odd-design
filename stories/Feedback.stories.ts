@@ -15,7 +15,7 @@ export const Alert: Story = {
       },
     },
   },
-  render: () => `<div class="odd-stack" style="max-inline-size: 40rem">
+  render: () => /* html */ `<div class="odd-stack" style="max-inline-size: 40rem">
     <div class="odd-alert">
       ${icons.info}
       <div><p class="odd-alert-title">Drafts are private</p><p>Only you can see a deck until you publish it.</p></div>
@@ -48,7 +48,7 @@ export const Progress: Story = {
       },
     },
   },
-  render: () => `<div class="odd-stack" style="--gap: var(--space-6); max-inline-size: 28rem">
+  render: () => /* html */ `<div class="odd-stack" style="--gap: var(--space-6); max-inline-size: 28rem">
     <div class="odd-stack" style="--gap: var(--space-3)">
       <div class="odd-stat">
         <label for="import">Importing decks</label><span class="odd-stat-value">40%</span>
@@ -84,7 +84,7 @@ export const Progress: Story = {
         ["store-high", "Exports", 0.93],
       ]
         .map(
-          ([id, label, v]) => `<div class="odd-stat">
+          ([id, label, v]) => /* html */ `<div class="odd-stat">
         <label for="${id}">${label}</label><span class="odd-stat-value">${Math.round(Number(v) * 100)}% used</span>
         <meter class="odd-meter" id="${id}" value="${v}" low="0.6" high="0.85" optimum="0"></meter>
       </div>`,
@@ -103,9 +103,9 @@ export const Skeleton: Story = {
       },
     },
   },
-  render: () => `<div style="display:grid; gap: var(--space-5); grid-template-columns: repeat(auto-fill, minmax(17rem, 1fr))" aria-busy="true">
+  render: () => /* html */ `<div style="display:grid; gap: var(--space-5); grid-template-columns: repeat(auto-fill, minmax(17rem, 1fr))" aria-busy="true">
     <span class="odd-visually-hidden">Loading decks…</span>
-    ${`<article class="odd-card" aria-hidden="true">
+    ${/* html */ `<article class="odd-card" aria-hidden="true">
       <div class="odd-row">
         <div class="odd-skeleton" data-shape="avatar"></div>
         <div class="odd-stack" style="--gap: var(--space-2); flex: 1">
