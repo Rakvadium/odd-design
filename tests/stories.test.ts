@@ -1,5 +1,4 @@
 import { expect, test } from "bun:test";
-import { avatarFallback, closedByFallback, interestForFallback } from "../src/js/enhance.ts";
 import { USAGE } from "../src/js/usage/contract.ts";
 import { checkRoot } from "../src/js/usage/dom.ts";
 import * as buttonStories from "../stories/Button.stories.ts";
@@ -12,10 +11,6 @@ import * as interactiveStories from "../stories/Interactive.stories.ts";
 import * as overlaysStories from "../stories/Overlays.stories.ts";
 import * as showcaseStories from "../stories/Showcase.stories.ts";
 import * as surfacesStories from "../stories/Surfaces.stories.ts";
-
-interestForFallback();
-closedByFallback();
-avatarFallback();
 
 const globals = { chrome: "calm", palette: "default", mode: "system" } as const;
 
@@ -98,6 +93,13 @@ const modules = [
 
 const stories = modules.flatMap((mod) => mod.stories);
 
+function fail(message: string): never {
+  throw new Error(message);
+}
+
+const buttonModule = modules.find((mod) => mod.meta.title === "Components/Button") ?? fail("Button stories are missing");
+const playground = buttonModule.stories.find((story) => story.label.endsWith(" / Playground")) ?? fail("Button stories have no Playground");
+
 function asRoot(result: unknown, label: string): ParentNode {
   if (typeof result === "string") {
     const root = document.createElement("div");
@@ -124,35 +126,17 @@ for (const story of stories) {
   });
 }
 
-const button = readModule(buttonStories, "Button.stories.ts");
-
-function findPlayground(list: readonly LoadedStory[]): LoadedStory {
-  const found = list.find((story) => story.label.endsWith(" / Playground"));
-  if (found === undefined) throw new Error("Button stories have no Playground");
-  return found;
-}
-
-const playground = findPlayground(button.stories);
-
 function enumControl(attribute: "data-variant" | "data-size", arg: "variant" | "size") {
   const rule = USAGE.button.find((item) => item.kind === "enum" && item.attribute === attribute);
-  if (rule === undefined || rule.kind !== "enum") throw new Error(`no enum rule for ${attribute}`);
-  const options = button.meta.argTypes?.[arg]?.options;
+  if (rule?.kind !== "enum") throw new Error(`no enum rule for ${attribute}`);
+  const options = buttonModule.meta.argTypes?.[arg]?.options;
   if (options === undefined) throw new Error(`Playground argTypes.${arg} has no options`);
   const absent = rule.omit.filter((token) => options.includes(token));
-  return { rule, options, absent, arg, attribute };
-}
-
-function ariaControl(attribute: "aria-disabled" | "aria-busy", arg: "disabled" | "busy") {
-  const rule = USAGE.button.find((item) => item.kind === "aria-boolean" && item.attribute === attribute);
-  if (rule === undefined || rule.kind !== "aria-boolean") throw new Error(`no aria rule for ${attribute}`);
-  return { rule, arg, attribute };
+  return { values: rule.values, options, absent, arg, attribute };
 }
 
 const variantControl = enumControl("data-variant", "variant");
 const sizeControl = enumControl("data-size", "size");
-const disabledControl = ariaControl("aria-disabled", "disabled");
-const busyControl = ariaControl("aria-busy", "busy");
 
 function playgroundButton(args: Record<string, unknown>): HTMLButtonElement {
   const root = renderStory(playground.meta, playground.story, playground.label, args);
@@ -165,7 +149,7 @@ function playgroundButton(args: Record<string, unknown>): HTMLButtonElement {
 test("Playground argTypes match the button contract", () => {
   for (const control of [variantControl, sizeControl]) {
     expect(control.absent).toHaveLength(1);
-    expect([...control.options].sort()).toEqual([...control.rule.values, control.absent[0]].sort());
+    expect([...control.options].sort()).toEqual([...control.values, control.absent[0]].sort());
   }
 });
 
@@ -179,24 +163,16 @@ for (const control of [variantControl, sizeControl]) {
   }
 }
 
-function pressed(value: "true" | "false"): boolean {
-  switch (value) {
-    case "true":
-      return true;
-    case "false":
-      return false;
-    default: {
-      const unreachable: never = value;
-      return unreachable;
-    }
-  }
-}
-
-for (const control of [disabledControl, busyControl]) {
-  for (const value of control.rule.values) {
-    test(`Playground ${control.arg}=${value}`, () => {
-      const button = playgroundButton({ [control.arg]: pressed(value) });
-      expect(button.getAttribute(control.attribute)).toBe(value === "true" ? "true" : null);
+for (const [arg, attribute] of [
+  ["disabled", "aria-disabled"],
+  ["busy", "aria-busy"],
+] as const) {
+  const rule = USAGE.button.find((item) => item.kind === "aria-boolean" && item.attribute === attribute);
+  if (rule?.kind !== "aria-boolean") throw new Error(`no aria rule for ${attribute}`);
+  for (const value of rule.values) {
+    test(`Playground ${arg}=${value}`, () => {
+      const button = playgroundButton({ [arg]: value === "true" });
+      expect(button.getAttribute(attribute)).toBe(value === "true" ? "true" : null);
       expect(button.hasAttribute("disabled")).toBe(false);
     });
   }
