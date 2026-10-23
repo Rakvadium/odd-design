@@ -1,7 +1,8 @@
 /*
- * <button class="odd-button" data-variant="primary|secondary|outline|ghost|danger" data-size="sm|lg">
- * Disable with aria-disabled="true" (stays focusable and announced) instead of `disabled`.
- * Loading: aria-busy="true". Icon-only: data-icon-only plus an aria-label.
+ * <button class="odd-button"> or <a class="odd-button" href>. Omitting data-variant gives the default bordered button.
+ * data-variant="primary|secondary|ghost|danger" data-size="sm|lg"
+ * Disable with aria-disabled="true", which stays focusable and announced, instead of the disabled attribute.
+ * Loading uses aria-busy="true". Icon-only uses data-icon-only plus an aria-label.
  */
 .odd-button {
   --_bg: var(--surface);
