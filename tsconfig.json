@@ -5,11 +5,13 @@
     "moduleResolution": "bundler",
     "lib": ["ES2023", "DOM", "DOM.Iterable"],
     "types": ["bun"],
+    "jsx": "react-jsx",
     "strict": true,
     "noEmit": true,
     "allowImportingTsExtensions": true,
     "skipLibCheck": true,
     "verbatimModuleSyntax": true
   },
-  "include": ["src", "stories", "tests", ".storybook", "e2e", "playwright.config.ts"]
+  "include": ["src", "stories", "tests", ".storybook", "e2e", "playwright.config.ts"],
+  "exclude": ["tests/fixtures"]
 }

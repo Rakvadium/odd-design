@@ -15,7 +15,9 @@
     "build-storybook": "storybook build",
     "test": "bun test tests",
     "test:browsers": "playwright test",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint .",
+    "check": "bun run typecheck && bun run lint && bun test"
   },
   "devDependencies": {
     "@babel/core": "8.0.7",
