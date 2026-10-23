@@ -38,7 +38,7 @@ function elementsFrom(records: readonly MutationRecord[]): Element[] {
 }
 
 function diagnosticsFor(elements: readonly Element[]): Diagnostic[] {
-  return elements.flatMap((element) => checkUsage(toUsageNode(element)));
+  return [...new Set(elements)].flatMap((element) => checkUsage(toUsageNode(element)));
 }
 
 function throwProblems(diagnostics: readonly Diagnostic[]): void {
