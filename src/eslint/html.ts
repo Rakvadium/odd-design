@@ -1,6 +1,6 @@
 import { parse } from "@html-eslint/template-parser";
 import type { Rule } from "eslint";
-// @ts-expect-error The lib path has no declaration that accepts an ESLint node.
+// @ts-expect-error html-eslint ships no declaration for the lib path.
 import { shouldCheckTaggedTemplateExpression as checkTaggedTemplate, shouldCheckTemplateLiteral as checkTemplateLiteral } from "@html-eslint/eslint-plugin/lib/rules/utils/settings.js";
 import { checkUsage, type Computed, type Diagnostic, type UsageAttribute, type UsageNode } from "../js/usage/check.ts";
 import { message, type UsageCode } from "../js/usage/format.ts";
