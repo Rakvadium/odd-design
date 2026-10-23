@@ -31,6 +31,7 @@ const logoMark = icons.layers.replace(
   '<svg style="inline-size: 1.15em; block-size: 1.15em; flex-shrink: 0" ',
 );
 
+/** A small app screen in its own appearance scope, with live controls built from the system itself. */
 export const SampleApp: Story = {
   render: (_, { globals }) => {
     const root = document.createElement("div");
@@ -142,6 +143,7 @@ const tile = (chrome: Chrome, palette: Palette, mode: Mode) => `
     </div>
   </div>`;
 
+/** Every chrome against every palette. Rows are chrome (feel), columns are palette (color). */
 export const Matrix: Story = {
   render: (_, { globals }) => `
     <div style="display:grid; gap: var(--space-4); padding: var(--space-5); grid-template-columns: repeat(${PALETTES.length}, minmax(18rem, 1fr))">
