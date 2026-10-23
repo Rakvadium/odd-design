@@ -82,7 +82,7 @@ Every imported `Button` gets the class `odd-button`, plus the words in its `clas
 
 | Button prop | What the element gets |
 | --- | --- |
-| `href` | The element is an `a`. Without `href`, or with `href={undefined}`, it is a `button`. A computed `href`, such as `href={url}`, can render either. On that element, `odd/usage-incomplete` warns `ODD-STATIC-001` and the plugin runs no button rules. |
+| `href` | The element is an `a`. Without `href`, or with `href={undefined}`, it is a `button`. A computed `href`, such as `href={url}`, can render either. The plugin then checks an `a` with the `href` and a `button` without it, and reports each finding that both give. On that element, `odd/usage-incomplete` also warns `ODD-STATIC-001`. |
 | `variant` | `data-variant` |
 | `size` | `data-size` |
 | `iconOnly` | `data-icon-only`. `iconOnly={false}` leaves it out. |
@@ -91,6 +91,8 @@ Every imported `Button` gets the class `odd-button`, plus the words in its `clas
 | Any other prop | The attribute with the same name. |
 
 So `<Button disabled>` reports `ODD-BUTTON-007`, and `<Button href="#" aria-disabled="true">` reports `ODD-BUTTON-013`.
+
+With a computed `href`, `<Button href={url} disabled>` still reports `ODD-BUTTON-007`, because both elements give it. `<Button href={url} aria-current="page">` gives only the warning, because the `button` reports `ODD-BUTTON-012` and the `a` does not.
 
 ### Other components
 

@@ -36,6 +36,8 @@ type ElementKind = { kind: "intrinsic"; tag: string } | { kind: "wrapper"; wrapp
 
 type Spans = Map<UsageAttribute | Computed, Loc>;
 
+type Renders = readonly [UsageNode, ...UsageNode[]];
+
 const wrappers: Readonly<Record<string, Wrapper>> = WRAPPERS;
 
 const domNames: Readonly<Record<string, string | null>> = { className: "class", children: null };
@@ -165,7 +167,7 @@ function readChildren(children: readonly JsxChild[], context: Rule.RuleContext):
       case "JSXFragment":
         return readChildren(child.children, context);
       case "JSXElement": {
-        const { usage } = readElement(child, context);
+        const usage = oneNode(readElement(child, context).renders);
         return typeof usage.tag === "string" ? [usage] : [{ computed: [] }];
       }
       case "JSXExpressionContainer": {
@@ -188,28 +190,45 @@ function childrenProp(element: JsxElement): UsageNode["children"] {
   return [];
 }
 
-function wrapperTag(element: WrapperElement, attributes: readonly (UsageAttribute | Computed)[]): string | Computed {
-  if (typeof element === "string") return element;
+function renderings(element: WrapperElement, attributes: readonly (UsageAttribute | Computed)[], children: UsageNode["children"]): Renders {
+  if (typeof element === "string") return [{ tag: element, attributes, children }];
   const chosen = attributes.find((attribute): attribute is UsageAttribute => "name" in attribute && attribute.name === element.attribute);
-  if (chosen === undefined) return element.absent;
-  return typeof chosen.value === "string" ? element.present : { computed: [] };
+  const absent: UsageNode = { tag: element.absent, attributes: attributes.filter((attribute) => attribute !== chosen), children };
+  if (chosen === undefined) return [absent];
+  const present: UsageNode = { tag: element.present, attributes, children };
+  return typeof chosen.value === "string" ? [present] : [present, absent];
 }
 
-function readElement(element: JsxElement, context: Rule.RuleContext): { usage: UsageNode; spans: Spans } {
+function oneNode(renders: Renders): UsageNode {
+  return renders.length === 1 ? renders[0] : { ...renders[0], tag: { computed: [] } };
+}
+
+function readElement(element: JsxElement, context: Rule.RuleContext): { renders: Renders; spans: Spans } {
   const spans: Spans = new Map();
   const kind = classify(element, context);
   const children = element.children.length === 0 ? childrenProp(element) : readChildren(element.children, context);
   switch (kind.kind) {
     case "intrinsic":
-      return { usage: { tag: kind.tag, attributes: readAttributes(element, domNames, spans), children }, spans };
+      return { renders: [{ tag: kind.tag, attributes: readAttributes(element, domNames, spans), children }], spans };
     case "wrapper": {
       const { wrapper } = kind;
       const attributes = withClass(readAttributes(element, wrapperNames(wrapper), spans), wrapper.className, spans);
-      return { usage: { tag: wrapperTag(wrapper.element, attributes), attributes, children }, spans };
+      return { renders: renderings(wrapper.element, attributes, children), spans };
     }
     case "component":
-      return { usage: { tag: { computed: [] }, attributes: readAttributes(element, domNames, spans), children }, spans };
+      return { renders: [{ tag: { computed: [] }, attributes: readAttributes(element, domNames, spans), children }], spans };
   }
+}
+
+function same(a: Diagnostic, b: Diagnostic): boolean {
+  return a.code === b.code && a.attribute === b.attribute && a.message === b.message;
+}
+
+function findings(renders: Renders): Diagnostic[] {
+  const [first = [], ...rest] = renders.map((node) => checkUsage(node));
+  const agreed = first.filter((diagnostic) => rest.every((run) => run.some((other) => same(diagnostic, other))));
+  const unknown = checkUsage(oneNode(renders)).filter((diagnostic) => !agreed.some((other) => same(diagnostic, other)));
+  return [...agreed, ...unknown];
 }
 
 function reportDiagnostic(context: Rule.RuleContext, diagnostic: Diagnostic, spans: Spans, fallback: Loc): void {
@@ -221,8 +240,8 @@ export function jsxVisitors(context: Rule.RuleContext, report: HtmlReport): Rule
   return {
     JSXElement(node: Rule.Node) {
       const element = node as unknown as JsxElement;
-      const { usage, spans } = readElement(element, context);
-      for (const diagnostic of checkUsage(usage)) {
+      const { renders, spans } = readElement(element, context);
+      for (const diagnostic of findings(renders)) {
         if (selected(report, diagnostic.code)) reportDiagnostic(context, diagnostic, spans, element.openingElement.loc);
       }
     },

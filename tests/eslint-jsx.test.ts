@@ -78,6 +78,11 @@ const places: Record<string, readonly (readonly [string, number, number, string]
     ["ODD-STATIC-001", 5, 5, "<Button href={url}"],
     ["ODD-STATIC-001", 6, 5, "<Button href={url}"],
     ["ODD-BUTTON-013", 8, 26, "aria-disabled"],
+    ["ODD-STATIC-001", 9, 5, "<Button href={url}"],
+    ["ODD-BUTTON-002", 9, 24, 'variant="outline"'],
+    ["ODD-BUTTON-007", 9, 42, "disabled"],
+    ["ODD-BUTTON-008", 10, 5, "<Button href={url} iconOnly>"],
+    ["ODD-STATIC-001", 10, 5, "<Button href={url} iconOnly>"],
   ],
   "wrapper.bad.tsx": [
     ["ODD-BUTTON-007", 6, 13, "disabled"],
