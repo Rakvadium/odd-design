@@ -1,6 +1,7 @@
 import type { Rule } from "eslint";
 import { message } from "../js/usage/format.ts";
 import { htmlVisitors, type HtmlReport } from "./html.ts";
+import { jsxVisitors } from "./jsx.ts";
 
 const disablePattern = /^\s*eslint-disable(?:-next-line|-line)?\b([\s\S]*)$/;
 
@@ -23,7 +24,7 @@ function usageRule(report: HtmlReport): Rule.RuleModule {
       schema: [],
     },
     create(context) {
-      return htmlVisitors(context, report);
+      return { ...htmlVisitors(context, report), ...jsxVisitors(context, report) };
     },
   };
 }
