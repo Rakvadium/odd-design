@@ -75,3 +75,9 @@ Run with NVDA 2026.2, OneCore David, rate 50, in Chrome. The transcripts are in 
 - **The Showcase sample app doesn't use the new components.** (step 1)
 - **Branch.** The accessibility pass is on `a11y-pass`, not `main`. Merge or fast-forward when ready. (a11y pass)
 - **Skipped from uvs-decks-gg on purpose.** Aspect ratio is plain CSS (`aspect-ratio`), and the gallery search field is app-specific. (step 1)
+
+## Package
+
+- **`./enhance`, `./palette`, and `./appearance` still ship `.ts`.** `./react`, `./usage`, `./usage/test-setup`, and `./eslint` build to JavaScript and `.d.ts`. These three exports still point at TypeScript source. (P10)
+- **Later components need script-set attributes marked in the contract.** The button rules do not name attributes that script adds after render. A later component has to mark those attributes, or the checkers treat them as unknown. (P10)
+- **A `boolean`-typed `iconOnly` variable skips the type-level `ODD-BUTTON-008` check.** `<Button iconOnly>` with no accessible name is a type error that prints `ODD-BUTTON-008`. `const iconOnly: boolean = true` and then `<Button iconOnly={iconOnly}>` is not a type error, because the value is `boolean` rather than the literal `true`. ESLint and the runtime checker still report `ODD-BUTTON-008`. (P10)

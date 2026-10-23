@@ -8,16 +8,51 @@
     ".": "./src/css/index.css",
     "./appearance": "./src/js/appearance.ts",
     "./enhance": "./src/js/enhance.ts",
-    "./palette": "./src/js/palette.ts"
+    "./palette": "./src/js/palette.ts",
+    "./react": {
+      "types": "./dist/react/button.d.ts",
+      "import": "./dist/react/button.js",
+      "default": "./dist/react/button.js"
+    },
+    "./usage": {
+      "types": "./dist/js/usage/dom.d.ts",
+      "import": "./dist/js/usage/dom.js",
+      "default": "./dist/js/usage/dom.js"
+    },
+    "./usage/test-setup": {
+      "types": "./dist/js/usage/test-setup.d.ts",
+      "import": "./dist/js/usage/test-setup.js",
+      "default": "./dist/js/usage/test-setup.js"
+    },
+    "./eslint": {
+      "types": "./dist/eslint/plugin.d.ts",
+      "import": "./dist/eslint/plugin.js",
+      "default": "./dist/eslint/plugin.js"
+    }
   },
+  "files": [
+    "dist",
+    "docs/usage",
+    "src/css",
+    "src/js"
+  ],
   "scripts": {
     "storybook": "storybook dev -p 6006 --no-open",
     "build-storybook": "storybook build",
+    "build": "bun scripts/build.ts",
     "test": "bun test tests",
     "test:browsers": "playwright test",
     "typecheck": "tsc --noEmit",
     "lint": "eslint .",
     "check": "bun run typecheck && bun run lint && bun test"
+  },
+  "peerDependencies": {
+    "react": "^19"
+  },
+  "peerDependenciesMeta": {
+    "react": {
+      "optional": true
+    }
   },
   "devDependencies": {
     "@babel/core": "8.0.7",
