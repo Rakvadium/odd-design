@@ -4,7 +4,7 @@ import { join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { expect, test, type Page } from "@playwright/test";
 import { USAGE } from "../src/js/usage/contract.ts";
-import * as buttonStories from "../stories/Button.stories.ts";
+import * as buttonStories from "../stories/mirrored/Button.stories.ts";
 import { openStory, storyIds } from "./story.ts";
 
 const checkerDir = fileURLToPath(new URL("../.verify/playwright/usage-checker/", import.meta.url));

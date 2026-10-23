@@ -1,7 +1,8 @@
 import { expect, test } from "bun:test";
 import { USAGE } from "../src/js/usage/contract.ts";
 import { checkRoot } from "../src/js/usage/dom.ts";
-import * as buttonStories from "../stories/Button.stories.ts";
+import { toHtml, type Scene } from "../stories/mirror.ts";
+import * as buttonStories from "../stories/mirrored/Button.stories.ts";
 import * as customPaletteStories from "../stories/CustomPalette.stories.ts";
 import * as dataDisplayStories from "../stories/DataDisplay.stories.ts";
 import * as feedbackStories from "../stories/Feedback.stories.ts";
@@ -20,6 +21,7 @@ type StoryExport = {
   readonly render?: (args: Record<string, unknown>, context: { globals: Globals }) => unknown;
   readonly args?: Record<string, unknown>;
   readonly argTypes?: Readonly<Record<string, { readonly options?: readonly string[] }>>;
+  readonly parameters?: { readonly mirror?: { readonly scene: (args: Record<string, unknown>) => Scene } };
   readonly title?: string;
 };
 
@@ -111,9 +113,12 @@ function asRoot(result: unknown, label: string): ParentNode {
 }
 
 function renderStory(meta: StoryExport, story: StoryExport, label: string, args: Record<string, unknown> = {}): ParentNode {
+  const merged = { ...meta.args, ...story.args, ...args };
+  const mirror = story.parameters?.mirror ?? meta.parameters?.mirror;
+  if (mirror !== undefined) return asRoot(toHtml(mirror.scene(merged)), label);
   const render = story.render ?? meta.render;
   if (render === undefined) throw new Error(`${label} has no render`);
-  return asRoot(render({ ...meta.args, ...story.args, ...args }, { globals }), label);
+  return asRoot(render(merged, { globals }), label);
 }
 
 test("checks 36 stories", () => {
