@@ -1,3 +1,4 @@
 [test]
 # e2e/ holds Playwright specs, which run under `bun run test:browsers`.
 root = "tests"
+preload = ["./tests/setup/happy-dom.ts"]
