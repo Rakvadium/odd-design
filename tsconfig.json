@@ -6,6 +6,7 @@
     "lib": ["ES2023", "DOM", "DOM.Iterable"],
     "types": ["bun"],
     "jsx": "react-jsx",
+    "allowJs": true,
     "strict": true,
     "noEmit": true,
     "allowImportingTsExtensions": true,

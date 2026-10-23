@@ -1,6 +1,7 @@
 import babelParser from "@babel/eslint-parser";
+import { defineConfig } from "eslint/config";
 
-export default [
+export default defineConfig([
   {
     ignores: ["tests/fixtures/**"],
   },
@@ -19,8 +20,10 @@ export default [
         },
       },
     },
+  },
+  {
     linterOptions: {
       reportUnusedDisableDirectives: "error",
     },
   },
-];
+]);
