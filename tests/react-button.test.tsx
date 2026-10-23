@@ -1,0 +1,190 @@
+import { afterEach, describe, expect, test } from "bun:test";
+import { fileURLToPath } from "node:url";
+import { act, type ReactElement } from "react";
+import { createRoot, type Root } from "react-dom/client";
+import { renderToStaticMarkup } from "react-dom/server";
+import { checkRoot } from "../src/js/usage/dom.ts";
+import { Button } from "../src/react/button.tsx";
+
+Object.assign(globalThis, { IS_REACT_ACT_ENVIRONMENT: true });
+
+const repo = fileURLToPath(new URL("..", import.meta.url));
+
+const markup: readonly [string, ReactElement, string][] = [
+  ["no props", <Button>Save</Button>, '<button type="button" class="odd-button">Save</button>'],
+  [
+    "variant and size",
+    <Button variant="primary" size="sm">
+      Save
+    </Button>,
+    '<button type="button" class="odd-button" data-variant="primary" data-size="sm">Save</button>',
+  ],
+  [
+    "submit with aria-disabled",
+    <Button type="submit" aria-disabled="true" aria-busy="true">
+      Pay
+    </Button>,
+    '<button type="submit" aria-disabled="true" aria-busy="true" class="odd-button">Pay</button>',
+  ],
+  [
+    "className",
+    <Button className="wide" variant="ghost">
+      Reset
+    </Button>,
+    '<button type="button" class="odd-button wide" data-variant="ghost">Reset</button>',
+  ],
+  [
+    "link",
+    <Button href="/docs" aria-current="page" variant="secondary">
+      Docs
+    </Button>,
+    '<a href="/docs" aria-current="page" class="odd-button" data-variant="secondary">Docs</a>',
+  ],
+  [
+    "icon-only",
+    <Button iconOnly aria-label="Close" size="lg">
+      <svg aria-hidden="true" />
+    </Button>,
+    '<button aria-label="Close" type="button" class="odd-button" data-size="lg" data-icon-only=""><svg aria-hidden="true"></svg></button>',
+  ],
+  [
+    "invoker commands",
+    <Button command="show-modal" commandfor="settings" interestfor="hint">
+      Settings
+    </Button>,
+    '<button command="show-modal" commandfor="settings" interestfor="hint" type="button" class="odd-button">Settings</button>',
+  ],
+  [
+    "headless and app data attributes",
+    <Button data-state="open" data-chrome="bubblegum" data-testid="menu">
+      Menu
+    </Button>,
+    '<button data-state="open" data-chrome="bubblegum" data-testid="menu" type="button" class="odd-button">Menu</button>',
+  ],
+];
+
+describe("Button markup", () => {
+  test.each(markup)("%s renders markup the runtime checker accepts", (_name, element, expected) => {
+    const html = renderToStaticMarkup(element);
+    expect(html).toBe(expected);
+    const host = document.createElement("div");
+    host.innerHTML = html;
+    expect(() => checkRoot(host)).not.toThrow();
+  });
+});
+
+let mounted: Root | undefined;
+
+afterEach(async () => {
+  const root = mounted;
+  mounted = undefined;
+  if (root !== undefined) await act(async () => root.unmount());
+  document.body.replaceChildren();
+});
+
+async function mountForm(ariaDisabled: "true" | "false" | undefined) {
+  const counts = { clicks: 0, submits: 0 };
+  const host = document.createElement("div");
+  document.body.append(host);
+  const root = createRoot(host);
+  mounted = root;
+  await act(async () =>
+    root.render(
+      <form
+        onSubmit={(event) => {
+          event.preventDefault();
+          counts.submits += 1;
+        }}
+      >
+        <input name="card" />
+        <Button type="submit" aria-disabled={ariaDisabled} onClick={() => (counts.clicks += 1)}>
+          Pay
+        </Button>
+      </form>,
+    ),
+  );
+  const button = host.querySelector("button");
+  const field = host.querySelector("input");
+  if (button === null || field === null) throw new Error("the form did not render");
+  return { counts, button, field };
+}
+
+function pressEnter(field: HTMLInputElement): void {
+  if (!field.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter", bubbles: true, cancelable: true }))) return;
+  // happy-dom has no implicit submission. The HTML spec fires a click at the form's default button.
+  field.form?.querySelector('[type="submit"]')?.dispatchEvent(new MouseEvent("click", { bubbles: true, cancelable: true }));
+}
+
+describe("Button with aria-disabled", () => {
+  test("ignores a click and an Enter, and never sets disabled", async () => {
+    const { counts, button, field } = await mountForm("true");
+    await act(async () => button.click());
+    await act(async () => pressEnter(field));
+    expect(counts).toEqual({ clicks: 0, submits: 0 });
+    expect(button.disabled).toBe(false);
+    expect(button.hasAttribute("disabled")).toBe(false);
+  });
+
+  test.each([[undefined], ["false" as const]])("with aria-disabled %p submits once per click and once per Enter", async (ariaDisabled) => {
+    const { counts, button, field } = await mountForm(ariaDisabled);
+    await act(async () => button.click());
+    expect(counts).toEqual({ clicks: 1, submits: 1 });
+    await act(async () => pressEnter(field));
+    expect(counts).toEqual({ clicks: 2, submits: 2 });
+  });
+});
+
+function tsc(project: string): { exit: number; output: string } {
+  const result = Bun.spawnSync([process.execPath, "x", "tsc", "-p", project], { cwd: repo });
+  return { exit: result.exitCode, output: `${result.stdout.toString()}${result.stderr.toString()}` };
+}
+
+function errorsByFixture(output: string): Map<string, string> {
+  const blocks = new Map<string, string>();
+  let current: string | undefined;
+  for (const line of output.split(/\r?\n/)) {
+    const header = /^tests\/fixtures\/types\/fail\/([\w-]+)\.tsx\(/.exec(line);
+    if (header?.[1] !== undefined) current = header[1];
+    if (current !== undefined && line !== "") blocks.set(current, `${blocks.get(current) ?? ""}${line}\n`);
+  }
+  return blocks;
+}
+
+const failures: Record<string, { codes: string[]; text: string[] }> = {
+  disabled: { codes: ["ODD-BUTTON-007"], text: [] },
+  variant: { codes: [], text: ['"primary"', '"secondary"', '"danger"', '"ghost"'] },
+  size: { codes: [], text: ['"sm"', '"lg"'] },
+  "link-aria-disabled": { codes: ["ODD-BUTTON-013"], text: [] },
+  "icon-only": { codes: ["ODD-BUTTON-008"], text: [] },
+  "data-tone": { codes: ["ODD-BUTTON-015"], text: [] },
+  "aria-current-value": { codes: [], text: ['"page"'] },
+  "aria-current-button": { codes: ["ODD-BUTTON-012"], text: [] },
+  "aria-current-icon-only": { codes: ["ODD-BUTTON-012"], text: [] },
+  "raw-data-variant": { codes: [], text: ['"data-variant"'] },
+};
+
+describe("Button types", () => {
+  test(
+    "each fail fixture prints its own code and no other",
+    () => {
+      const { exit, output } = tsc("tests/fixtures/types/fail");
+      expect(exit).not.toBe(0);
+      const blocks = errorsByFixture(output);
+      expect([...blocks.keys()].sort()).toEqual(Object.keys(failures).sort());
+      for (const [fixture, { codes, text }] of Object.entries(failures)) {
+        const block = blocks.get(fixture) ?? "";
+        expect({ fixture, codes: [...new Set(block.match(/ODD-[A-Z]+-\d{3}/g))] }).toEqual({ fixture, codes });
+        for (const part of text) expect({ fixture, found: block.includes(part) }).toEqual({ fixture, found: true });
+      }
+    },
+    { timeout: 60_000 },
+  );
+
+  test(
+    "the pass fixture compiles with no output",
+    () => {
+      expect(tsc("tests/fixtures/types/pass")).toEqual({ exit: 0, output: "" });
+    },
+    { timeout: 60_000 },
+  );
+});
