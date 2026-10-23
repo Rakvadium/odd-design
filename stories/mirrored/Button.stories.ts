@@ -1,6 +1,3 @@
-// Both Storybooks load this file. It has no render, so each preview supplies one.
-// The only runtime import is mirror.ts, which does not load React.
-
 import { mirrored } from "../mirror.ts";
 
 type Args = {
@@ -30,13 +27,21 @@ const meta = {
 
 export default meta;
 
-// An omit token becomes `undefined`. disabled and busy become the aria attributes, not the native ones.
+const omitToken = {
+  variant(value: Args["variant"]) {
+    return value === "default" ? undefined : value;
+  },
+  size(value: Args["size"]) {
+    return value === "md" ? undefined : value;
+  },
+};
+
 export const Playground = mirrored<Args>({
   scene: ({ label, variant, size, disabled, busy }) => ({
     of: "Button",
     props: {
-      variant: variant === "default" ? undefined : variant,
-      size: size === "md" ? undefined : size,
+      variant: omitToken.variant(variant),
+      size: omitToken.size(size),
       "aria-disabled": disabled ? "true" : undefined,
       "aria-busy": busy ? "true" : undefined,
     },
@@ -96,4 +101,19 @@ export const States = mirrored<Args>({
 - button "Saving…"
 - button "Unavailable" [disabled]
 - button "Unavailable" [disabled]`,
+});
+
+export const Link = mirrored<Args>({
+  scene: () => ({
+    layout: "row",
+    children: [
+      { of: "Button", props: { href: "#docs", variant: "secondary" }, children: ["Docs"] },
+      { of: "Button", props: { href: "#decks", variant: "ghost", "aria-current": "page" }, children: ["Decks"] },
+    ],
+  }),
+  aria: `
+- link "Docs":
+  - /url: "#docs"
+- link "Decks":
+  - /url: "#decks"`,
 });

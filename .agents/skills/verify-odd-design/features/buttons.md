@@ -32,9 +32,22 @@ Preconditions:
 
 Run `bunx playwright test e2e/usage.spec.ts --project firefox`.
 
-The run checks `#storybook-root` on every story. It then opens Playground once for each contract value of `variant`, `size`, `disabled`, and `busy`. It clicks the toast triggers on `components-interactive--toast` and checks `.odd-toaster` after each click. The action and dismiss buttons are not in the first render.
+The run checks `#storybook-root` on every story in the HTML Storybook and the React Storybook. For each mirrored story it compares the two accessibility trees with each other and with the story's `aria` literal, and it compares the two `#storybook-root` screenshots. It then opens Playground once for each contract value of `variant`, `size`, `disabled`, and `busy`, on both sides. It clicks the toast triggers on `components-interactive--toast` and checks `.odd-toaster` after each click. The action and dismiss buttons are not in the first render.
 
-A pass prints the number of stories checked and `0 diagnostics`. A checker failure line is `<story id> [<state>] ODD-...`. A missing root is `<story id> [<state>] missing <selector>`. A Playground mismatch is `<story id> [<arg>=<value>] <attribute>=<actual>`. The disabled mismatch adds ` disabled=true` or ` disabled=false`. If the injected script did not define `checkRoot`, the line is `<story id> [<state>] checkRoot is not installed`. The Playwright report attaches `usage-summary.json` with those lines under `findings`. That attachment is separate from `axe-summary.json`.
+A pass prints the number of stories checked and `0 diagnostics`. The count is every HTML story plus every mirrored story. A pixel mismatch is `<story id> pixels differ`. An accessibility-tree mismatch is `<story id> aria differs`. A checker failure line is `<story id> [<state>] ODD-...`. A missing root is `<story id> [<state>] missing <selector>`. A Playground mismatch is `<story id> [<arg>=<value>] <attribute>=<actual>`. The disabled mismatch adds ` disabled=true` or ` disabled=false`. If the injected script did not define `checkRoot`, the line is `<story id> [<state>] checkRoot is not installed`. The Playwright report attaches `usage-summary.json` with those lines under `findings`. That attachment is separate from `axe-summary.json`.
+
+## React Button
+
+Build the composed Storybook and serve it.
+
+```
+bun scripts/storybooks.ts storybook-static
+bun e2e/serve.ts storybook-static 6106
+```
+
+Open `http://127.0.0.1:6106/?path=/story/react_components-button--variants`. The preview is the React Variants story. Another React story uses the same host with `react_` plus its story id, for example `react_components-button--link`.
+
+Run the pair sweep with `bunx playwright test e2e/usage.spec.ts --project firefox`. A pass prints the story count and `0 diagnostics`. The finding lines are in Usage sweep above.
 
 ## Gotchas
 
