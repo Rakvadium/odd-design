@@ -34,7 +34,7 @@ Run `bunx playwright test e2e/usage.spec.ts --project firefox`.
 
 The run checks `#storybook-root` on every story. It then opens Playground once for each contract value of `variant`, `size`, `disabled`, and `busy`. It clicks the toast triggers on `components-interactive--toast` and checks `.odd-toaster` after each click. The action and dismiss buttons are not in the first render.
 
-A pass prints `0 diagnostics`. A failure line is `<story id> [<state>] ODD-...`. The Playwright report attaches `usage-summary.json` with those lines under `findings`. That attachment is separate from `axe-summary.json`.
+A pass prints the number of stories checked and `0 diagnostics`. A checker failure line is `<story id> [<state>] ODD-...`. A missing root is `<story id> [<state>] missing <selector>`. A Playground mismatch is `<story id> [<arg>=<value>] <attribute>=<actual>`. The disabled mismatch adds ` disabled=true` or ` disabled=false`. If the injected script did not define `checkRoot`, the line is `<story id> [<state>] checkRoot is not installed`. The Playwright report attaches `usage-summary.json` with those lines under `findings`. That attachment is separate from `axe-summary.json`.
 
 ## Gotchas
 
