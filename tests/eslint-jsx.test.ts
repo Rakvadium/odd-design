@@ -22,6 +22,10 @@ function expectedCodes(source: string, pattern: RegExp): string[] {
 }
 
 const places: Record<string, readonly (readonly [string, number, number, string])[]> = {
+  "children-prop.tsx": [
+    ["ODD-BUTTON-014", 5, 5, "<Button"],
+    ["ODD-BUTTON-014", 6, 5, "<button"],
+  ],
   "cn.tsx": [
     ["ODD-STATIC-001", 4, 11, "className={cn("],
     ["ODD-BUTTON-007", 4, 63, "disabled"],

@@ -70,6 +70,7 @@ The plugin checks a lowercase element, such as `<button>`, like the same element
 - On a `data-` or `aria-` attribute, `{true}` and `{false}` are the strings `true` and `false`. So `data-icon-only={false}` reports `ODD-BUTTON-004`.
 - On any other attribute, `{true}` sets the attribute and `{false}` leaves it out.
 - `{null}` and `{undefined}` leave the attribute out.
+- With nothing between its tags, an element reads its `children` prop as its children. A literal `children="Close"` is text, so on an `odd-button` element with `data-icon-only` it reports `ODD-BUTTON-014`. The plugin cannot read a computed `children`, such as `children={label}`, and reports nothing for it.
 - Any other expression is not static, and neither is a `{...props}` spread. On an `odd-button` element, `odd/usage-incomplete` warns `ODD-STATIC-001` on a spread, and on a computed value that a button rule reads, such as `data-variant={tone}`.
 - A computed `className` keeps the string literals inside it. `className={cn("odd-button", active && "is-active")}` still runs the button rules, and warns `ODD-STATIC-001` on `className`.
 
@@ -85,6 +86,7 @@ Every imported `Button` gets the class `odd-button`, plus the words in its `clas
 | `variant` | `data-variant` |
 | `size` | `data-size` |
 | `iconOnly` | `data-icon-only`. `iconOnly={false}` leaves it out. |
+| `children` | The children, read as on a lowercase element. |
 | Any other prop | The attribute with the same name. |
 
 So `<Button disabled>` reports `ODD-BUTTON-007`, and `<Button href="#" aria-disabled="true">` reports `ODD-BUTTON-013`.

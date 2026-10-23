@@ -37,9 +37,9 @@ type Spans = Map<UsageAttribute | Computed, Loc>;
 
 const BUTTON_MODULE = "odd-design/react";
 
-const domNames: Readonly<Record<string, string>> = { className: "class" };
+const domNames: Readonly<Record<string, string | null>> = { className: "class", children: null };
 
-const wrapperNames: Readonly<Record<string, string>> = {
+const wrapperNames: Readonly<Record<string, string | null>> = {
   ...domNames,
   variant: "data-variant",
   size: "data-size",
@@ -127,7 +127,7 @@ function readValue(source: string, value: AttributeValue | null, isClass: boolea
   }
 }
 
-function readAttributes(element: JsxElement, names: Readonly<Record<string, string>>, spans: Spans): (UsageAttribute | Computed)[] {
+function readAttributes(element: JsxElement, names: Readonly<Record<string, string | null>>, spans: Spans): (UsageAttribute | Computed)[] {
   return element.openingElement.attributes.flatMap((attribute): (UsageAttribute | Computed)[] => {
     if (attribute.type === "JSXSpreadAttribute") {
       const spread: Computed = { computed: [] };
@@ -135,7 +135,8 @@ function readAttributes(element: JsxElement, names: Readonly<Record<string, stri
       return [spread];
     }
     const source = attributeName(attribute.name);
-    const name = names[source] ?? source;
+    const name = Object.hasOwn(names, source) ? names[source] : source;
+    if (name === null) return [];
     const value = readValue(source, attribute.value, name === "class");
     if (value === undefined) return [];
     const usage: UsageAttribute = { name, value };
@@ -177,6 +178,15 @@ function readChildren(children: readonly JsxChild[], context: Rule.RuleContext):
   });
 }
 
+function childrenProp(element: JsxElement): UsageNode["children"] {
+  for (const attribute of element.openingElement.attributes) {
+    if (attribute.type !== "JSXAttribute" || attributeName(attribute.name) !== "children") continue;
+    const value = readValue("children", attribute.value, false);
+    return value === undefined || value === "" ? [] : [value];
+  }
+  return [];
+}
+
 function wrapperTag(attributes: readonly (UsageAttribute | Computed)[]): string | Computed {
   const href = attributes.find((attribute): attribute is UsageAttribute => "name" in attribute && attribute.name === "href");
   if (href === undefined) return "button";
@@ -186,7 +196,7 @@ function wrapperTag(attributes: readonly (UsageAttribute | Computed)[]): string 
 function readElement(element: JsxElement, context: Rule.RuleContext): { usage: UsageNode; spans: Spans } {
   const spans: Spans = new Map();
   const kind = classify(element, context);
-  const children = readChildren(element.children, context);
+  const children = element.children.length === 0 ? childrenProp(element) : readChildren(element.children, context);
   switch (kind.kind) {
     case "intrinsic":
       return { usage: { tag: kind.tag, attributes: readAttributes(element, domNames, spans), children }, spans };
