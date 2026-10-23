@@ -39,5 +39,6 @@
   --fx-glow: none;
   --fx-backdrop: none;
   --page-background:
+    radial-gradient(color-mix(in oklch, var(--foreground) 14%, transparent) 1px, transparent 1.5px) 0 0 / 18px 18px,
     var(--background);
 }
