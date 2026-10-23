@@ -80,6 +80,10 @@ bun .agents/skills/verify-odd-design/scripts/ctl.ts axe --run a11y    # every st
 - axe can't measure contrast over gradients, so text on page backgrounds is proven by `bun test` instead.
 - `bun run test:browsers` runs the same sweep, with the same rules and the same record, in Firefox and WebKit. Chrome stays on the harness.
 
+## Usage checks
+
+A button mistake fails with a pinned code. The code names the failure and the fix. The pages live under [docs/usage/](docs/usage/). Button codes are in [Button usage rules](docs/usage/button.md). Class and static codes are in [General usage rules](docs/usage/general.md).
+
 ## Add a palette
 
 1. Copy `src/css/palettes/aurora.css`, rename the selector, and edit the colors. Or generate one from brand colors with `paletteCss` (see Custom palettes).
