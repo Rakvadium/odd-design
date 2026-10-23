@@ -1,7 +1,8 @@
 import type { StorybookConfig } from "@storybook/html-vite";
+import { STORYBOOKS } from "../stories/catalog.ts";
 
 const config: StorybookConfig = {
-  stories: ["../stories/**/*.mdx", "../stories/**/*.stories.ts"],
+  stories: [`../${STORYBOOKS.html.stories}`, "../stories/**/*.mdx"],
   addons: ["@storybook/addon-a11y", "@storybook/addon-docs"],
   framework: { name: "@storybook/html-vite", options: {} },
   // .verify holds harness runs and evidence. Vite reloads the page when an HTML file there changes

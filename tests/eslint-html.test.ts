@@ -177,15 +177,25 @@ test("a misspelled odd-buton suggests odd-button", () => {
   expect(lineText(source, 1).slice(8, 13)).toBe("class");
 });
 
-test("the Playground reports incomplete only on its computed attributes", () => {
-  const files = readdirSync("stories").filter((name) => name.endsWith(".ts")).sort();
-  const found = files.flatMap((name) => lint(`stories/${name}`).map((message) => ({ file: name, ...message, code: codeOf(message.message) })));
-  expect(found.map((message) => [message.file, message.code, message.line, message.column, message.ruleId, message.severity])).toEqual([
-    ["Button.stories.ts", "ODD-STATIC-001", 14, 5, "odd/usage-incomplete", 1],
-    ["Button.stories.ts", "ODD-STATIC-001", 15, 5, "odd/usage-incomplete", 1],
-    ["Button.stories.ts", "ODD-STATIC-001", 16, 5, "odd/usage-incomplete", 1],
-    ["Button.stories.ts", "ODD-STATIC-001", 17, 5, "odd/usage-incomplete", 1],
-  ]);
-  const source = readFileSync("stories/Button.stories.ts", "utf8");
-  for (const line of [14, 15, 16, 17]) expect(lineText(source, line).slice(4, 6)).toBe("${");
+function storySources(dir: string): string[] {
+  return readdirSync(dir, { withFileTypes: true }).flatMap((entry) => {
+    const path = `${dir}/${entry.name}`;
+    if (entry.isDirectory()) return storySources(path);
+    return entry.name.endsWith(".ts") ? [path] : [];
+  });
+}
+
+test("stories have no odd/usage findings, so a new warning fails here", () => {
+  const files = storySources("stories");
+  expect(files).toContain("stories/mirrored/Button.stories.ts");
+  const found = files.flatMap((file) =>
+    lint(file).map((message) => [file, codeOf(message.message), message.line, message.column, message.ruleId, message.severity]),
+  );
+  expect(found).toEqual([]);
+});
+
+test("a stories template reports ODD-BUTTON-007 for a raw disabled button", () => {
+  const source = 'export const bad = /* html */ `<button class="odd-button" disabled>Save</button>`;\n';
+  const messages = lint("stories/bad.stories.ts", source);
+  expect(messages.map((message) => codeOf(message.message))).toEqual(["ODD-BUTTON-007"]);
 });

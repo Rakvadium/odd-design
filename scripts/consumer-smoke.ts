@@ -6,7 +6,7 @@ const root = join(import.meta.dir, "..");
 const fixtures = join(root, "tests/fixtures/consumer");
 const manifest = JSON.parse(readFileSync(join(root, "package.json"), "utf8")) as { name: string; version: string };
 const expectedTarball = join(root, `${manifest.name}-${manifest.version}.tgz`);
-const reactEntry = join(root, "dist/react/button.js");
+const clientModule = join(root, "dist/react/button.js");
 
 const FORBIDDEN =
   "ODD-BUTTON-007: the disabled attribute is forbidden on odd-button. Allowed values: none. Fix: remove disabled and set aria-disabled. docs/usage/button.md#odd-button-007";
@@ -22,6 +22,8 @@ const HOOK_TESTS = [
 ];
 
 const REQUIRED = [
+  "dist/react/index.js",
+  "dist/react/index.d.ts",
   "dist/react/button.js",
   "dist/react/button.d.ts",
   "dist/js/usage/dom.js",
@@ -247,9 +249,9 @@ function checkVitest(app: string, name: string): void {
 let tarball = expectedTarball;
 let app: string | undefined;
 try {
-  const reactFirst = readFileSync(reactEntry, "utf8").split(/\r?\n/, 1)[0] ?? "";
-  if (reactFirst !== '"use client";') fail(`React entry first line is ${JSON.stringify(reactFirst)}`);
-  console.log('react entry: "use client"');
+  const clientFirst = readFileSync(clientModule, "utf8").split(/\r?\n/, 1)[0] ?? "";
+  if (clientFirst !== '"use client";') fail(`button.js first line is ${JSON.stringify(clientFirst)}`);
+  console.log('button.js: "use client"');
   assertOneState();
 
   rmSync(tarball, { force: true });
