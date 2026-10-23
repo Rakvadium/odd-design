@@ -1,5 +1,7 @@
 import babelParser from "@babel/eslint-parser";
+import htmlParser from "@html-eslint/parser";
 import { defineConfig } from "eslint/config";
+import odd from "./src/eslint/plugin.ts";
 
 export default defineConfig([
   {
@@ -19,6 +21,23 @@ export default defineConfig([
           },
         },
       },
+    },
+  },
+  {
+    files: ["**/*.html"],
+    languageOptions: {
+      parser: htmlParser,
+    },
+  },
+  {
+    files: ["stories/**/*.ts", "tests/fixtures/usage/templates/**/*.ts", "**/*.html"],
+    plugins: {
+      odd,
+    },
+    rules: {
+      "odd/usage": "error",
+      "odd/usage-incomplete": "warn",
+      "odd/disable-reason": "error",
     },
   },
   {

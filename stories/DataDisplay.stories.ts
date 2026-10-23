@@ -24,7 +24,7 @@ export const Table: Story = {
   },
   render: () => {
     const root = document.createElement("div");
-    root.innerHTML = `<div class="odd-table-wrap" tabindex="0" role="region" aria-labelledby="decks-caption" style="max-inline-size: 48rem">
+    root.innerHTML = /* html */ `<div class="odd-table-wrap" tabindex="0" role="region" aria-labelledby="decks-caption" style="max-inline-size: 48rem">
     <table class="odd-table">
       <caption id="decks-caption">Your decks, sorted by name</caption>
       <thead>
@@ -40,7 +40,7 @@ export const Table: Story = {
       <tbody>
         ${decks
           .map(
-            ([name, format, cards, versions, tone, status], i) => `<tr>
+            ([name, format, cards, versions, tone, status], i) => /* html */ `<tr>
           <td><input type="checkbox" aria-label="Select ${name}" ${i === 1 ? "checked" : ""}></td>
           <th scope="row" style="font-weight: 600"><a href="#">${name}</a></th>
           <td>${format}</td>
@@ -83,7 +83,7 @@ export const Avatar: Story = {
       },
     },
   },
-  render: () => `<div class="odd-stack" style="--gap: var(--space-5)">
+  render: () => /* html */ `<div class="odd-stack" style="--gap: var(--space-5)">
     <div class="odd-row">
       <span class="odd-avatar" data-size="sm" role="img" aria-label="Ana Rojas">AR</span>
       <span class="odd-avatar" role="img" aria-label="Ana Rojas">AR</span>
@@ -108,7 +108,7 @@ export const Avatar: Story = {
 };
 
 export const Separator: Story = {
-  render: () => `<div class="odd-stack" style="max-inline-size: 32rem">
+  render: () => /* html */ `<div class="odd-stack" style="max-inline-size: 32rem">
     <div class="odd-stack" style="--gap: var(--space-2)">
       <h3 class="odd-heading">Deck notes</h3>
       <p class="odd-muted">Mulligan aggressively for an early unit.</p>

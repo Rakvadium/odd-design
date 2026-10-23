@@ -7,7 +7,7 @@ const meta = { title: "Foundations/Custom Palette" } satisfies Meta;
 export default meta;
 type Story = StoryObj<{ primary: string; secondary: string }>;
 
-const preview = (mode: "light" | "dark") => `
+const preview = (mode: "light" | "dark") => /* html */ `
   <div class="odd-scope odd-stack" data-palette="custom" data-mode="${mode}" data-chrome="calm" style="--gap: var(--space-4); padding: var(--space-5); border-radius: var(--radius-surface)">
     <p class="odd-eyebrow" data-tone="primary">${mode}</p>
     <h3 class="odd-heading" data-size="lg">Midnight Control</h3>
@@ -46,7 +46,7 @@ export const Generator: Story = {
     const root = document.createElement("div");
     root.className = "odd-stack";
     root.style.setProperty("--gap", "var(--space-5)");
-    root.innerHTML = `
+    root.innerHTML = /* html */ `
       <div class="odd-row" style="--gap: var(--space-5); align-items: end">
         <div class="odd-field">
           <label class="odd-label" for="seed-primary">Primary</label>

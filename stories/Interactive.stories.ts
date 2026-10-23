@@ -36,7 +36,7 @@ export const Menu: Story = {
   },
   render: () =>
     mount(
-      `<div class="odd-row">
+      /* html */ `<div class="odd-row">
         <button class="odd-button" commandfor="deck-actions" command="toggle-popover" aria-haspopup="menu">Deck actions</button>
         <button class="odd-button" data-variant="primary" id="after-menu">Publish</button>
       </div>
@@ -82,7 +82,7 @@ export const Tabs: Story = {
   },
   render: () =>
     mount(
-      `<div class="odd-stack" style="--gap: var(--space-8); max-inline-size: 40rem">
+      /* html */ `<div class="odd-stack" style="--gap: var(--space-8); max-inline-size: 40rem">
         <div class="odd-tabs" id="deck-tabs">
           <div role="tablist" aria-label="Deck view">
             <button role="tab" id="tab-cards" aria-controls="panel-cards" aria-selected="true">Cards</button>
@@ -121,7 +121,7 @@ export const Toast: Story = {
   },
   render: () =>
     mount(
-      `<div class="odd-row">
+      /* html */ `<div class="odd-row">
         <button class="odd-button" data-toast="saved">Save deck</button>
         <button class="odd-button" data-toast="undo">Remove card</button>
         <button class="odd-button" data-toast="error" data-variant="danger">Fail to sync</button>
