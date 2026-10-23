@@ -26,7 +26,11 @@ const deckCard = (title: string, blurb: string, tone: string, status: string, ca
     <p class="odd-muted">${blurb}</p>
   </article>`;
 
-/** A small app screen in its own appearance scope, with live controls built from the system itself. */
+const logoMark = icons.layers.replace(
+  "<svg ",
+  '<svg style="inline-size: 1.15em; block-size: 1.15em; flex-shrink: 0" ',
+);
+
 export const SampleApp: Story = {
   render: (_, { globals }) => {
     const root = document.createElement("div");
@@ -41,7 +45,7 @@ export const SampleApp: Story = {
       <div class="odd-stack" style="--gap: var(--space-8); max-inline-size: 72rem; margin-inline: auto">
         <header class="odd-row" style="justify-content: space-between">
           <div class="odd-row" style="--gap: var(--space-2)">
-            <span class="odd-button" data-variant="primary" data-icon-only aria-hidden="true" style="pointer-events:none">${icons.layers}</span>
+            <span aria-hidden="true" style="display: inline-flex; align-items: center; justify-content: center; inline-size: var(--control-height); min-block-size: var(--control-height); padding: 0; border: var(--border-width) solid var(--edge-control-filled); border-radius: var(--radius-control); background-color: var(--primary); color: var(--primary-foreground); box-shadow: var(--shadow-control); font-size: var(--text-sm); line-height: 1; pointer-events: none">${logoMark}</span>
             <strong style="font-family: var(--font-heading); text-transform: var(--heading-case); letter-spacing: var(--heading-tracking); font-size: var(--text-lg)">Deckhouse</strong>
           </div>
           <nav aria-label="Primary" class="odd-row" style="--gap: var(--space-1)">
@@ -138,7 +142,6 @@ const tile = (chrome: Chrome, palette: Palette, mode: Mode) => `
     </div>
   </div>`;
 
-/** Every chrome against every palette. Rows are chrome (feel), columns are palette (color). */
 export const Matrix: Story = {
   render: (_, { globals }) => `
     <div style="display:grid; gap: var(--space-4); padding: var(--space-5); grid-template-columns: repeat(${PALETTES.length}, minmax(18rem, 1fr))">
