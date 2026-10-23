@@ -39,7 +39,7 @@
   "scripts": {
     "storybook": "storybook dev -p 6006 --no-open",
     "storybook:react": "storybook dev -c .storybook-react -p 6007 --no-open",
-    "build-storybook": "storybook build",
+    "build-storybook": "bun scripts/storybooks.ts storybook-static",
     "build": "bun scripts/build.ts",
     "test": "bun test tests",
     "test:browsers": "playwright test",
