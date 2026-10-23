@@ -133,6 +133,23 @@ test("a computed class still reports the static disabled attribute", () => {
   expect(lineText(source, 1).slice(71, 79)).toBe("disabled");
 });
 
+test("a marked template with carriage returns reports the attribute after a computed value", () => {
+  const source = [
+    "export const view = /* html */ `",
+    "<button",
+    '  class="odd-button ${name}"',
+    "  disabled",
+    ">Save</button>`;",
+  ].join("\r\n");
+  const messages = lint("tests/fixtures/usage/templates/crlf.ts", source);
+  expect(messages.map((message) => [codeOf(message.message), message.line, message.column, message.ruleId, message.severity])).toEqual([
+    ["ODD-STATIC-001", 3, 3, "odd/usage-incomplete", 1],
+    ["ODD-BUTTON-007", 4, 3, "odd/usage", 2],
+  ]);
+  expect(lineText(source, 3).slice(2, 7)).toBe("class");
+  expect(lineText(source, 4).slice(2, 10)).toBe("disabled");
+});
+
 test("an unmarked template reports ODD-STATIC-002 and skips the button rules", () => {
   const source = readFileSync("tests/fixtures/usage/templates/bare.ts", "utf8");
   const messages = lint("tests/fixtures/usage/templates/bare.ts", source);
