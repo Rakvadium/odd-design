@@ -1,6 +1,5 @@
 import { execFileSync } from "node:child_process";
-import { mkdtempSync, writeFileSync } from "node:fs";
-import { tmpdir } from "node:os";
+import { mkdirSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { expect, test, type Page } from "@playwright/test";
@@ -8,17 +7,16 @@ import { USAGE } from "../src/js/usage/contract.ts";
 import * as buttonStories from "../stories/Button.stories.ts";
 import { openStory, storyIds } from "./story.ts";
 
-function bundleChecker(): string {
-  const dir = mkdtempSync(join(tmpdir(), "odd-usage-"));
-  const entry = join(dir, "entry.ts");
-  const outfile = join(dir, "checker.js");
+const checkerDir = fileURLToPath(new URL("../.verify/playwright/usage-checker/", import.meta.url));
+const checkerScript = join(checkerDir, "checker.js");
+
+function bundleChecker(): void {
+  mkdirSync(checkerDir, { recursive: true });
+  const entry = join(checkerDir, "entry.ts");
   const dom = fileURLToPath(new URL("../src/js/usage/dom.ts", import.meta.url)).replaceAll("\\", "/");
   writeFileSync(entry, `import { checkRoot } from ${JSON.stringify(dom)};\nglobalThis.checkRoot = checkRoot;\n`);
-  execFileSync("bun", ["build", entry, "--outfile", outfile, "--format", "iife"], { stdio: "pipe" });
-  return outfile;
+  execFileSync("bun", ["build", entry, "--outfile", checkerScript, "--format", "iife"], { stdio: "pipe" });
 }
-
-const CHECKER = bundleChecker();
 
 const STORY_IDS = [
   "components-button--playground",
@@ -67,14 +65,13 @@ const buttonMeta = buttonStories.default as {
 
 function enumValues(attribute: "data-variant" | "data-size", arg: "variant" | "size"): { options: readonly string[]; absent: string } {
   const rule = USAGE.button.find((item) => item.kind === "enum" && item.attribute === attribute);
-  if (rule === undefined || rule.kind !== "enum") throw new Error(`no enum rule for ${attribute}`);
+  if (rule?.kind !== "enum") throw new Error(`no enum rule for ${attribute}`);
   const options = buttonMeta.argTypes?.[arg]?.options;
   if (options === undefined) throw new Error(`Playground argTypes.${arg} has no options`);
   const absent = rule.omit.filter((token) => options.includes(token));
-  if (absent.length !== 1 || absent[0] === undefined) throw new Error(`Playground ${arg} must expose one omit value`);
-  const expected = [...rule.values, absent[0]].sort();
+  const expected = [...rule.values, ...absent].sort();
   const actual = [...options].sort();
-  if (actual.length !== expected.length || actual.some((item, index) => item !== expected[index])) {
+  if (absent.length !== 1 || absent[0] === undefined || actual.length !== expected.length || actual.some((item, index) => item !== expected[index])) {
     throw new Error(`Playground ${arg} options ${actual.join(", ")} do not match ${expected.join(", ")}`);
   }
   return { options, absent: absent[0] };
@@ -82,28 +79,15 @@ function enumValues(attribute: "data-variant" | "data-size", arg: "variant" | "s
 
 function ariaValues(attribute: "aria-disabled" | "aria-busy"): readonly ("true" | "false")[] {
   const rule = USAGE.button.find((item) => item.kind === "aria-boolean" && item.attribute === attribute);
-  if (rule === undefined || rule.kind !== "aria-boolean") throw new Error(`no aria rule for ${attribute}`);
+  if (rule?.kind !== "aria-boolean") throw new Error(`no aria rule for ${attribute}`);
   return rule.values;
 }
 
 const variantControl = enumValues("data-variant", "variant");
 const sizeControl = enumValues("data-size", "size");
 
-function pressed(value: "true" | "false"): string {
-  switch (value) {
-    case "true":
-      return "!true";
-    case "false":
-      return "!false";
-    default: {
-      const unreachable: never = value;
-      return unreachable;
-    }
-  }
-}
-
 async function problemsIn(page: Page, selector: string): Promise<string[]> {
-  await page.addScriptTag({ path: CHECKER });
+  await page.addScriptTag({ path: checkerScript });
   return page.evaluate((sel) => {
     const check = (globalThis as { checkRoot?: (root: ParentNode) => void }).checkRoot;
     if (typeof check !== "function") return ["checkRoot is not installed"];
@@ -117,6 +101,11 @@ async function problemsIn(page: Page, selector: string): Promise<string[]> {
     }
   }, selector);
 }
+
+test.beforeAll(({ browserName }) => {
+  if (browserName !== "firefox") return;
+  bundleChecker();
+});
 
 test.beforeEach(({ browserName }) => {
   test.skip(browserName !== "firefox", "the usage sweep runs in Firefox");
@@ -133,10 +122,12 @@ test("usage: every story, the Playground values, and the toast buttons", async (
   const ids = await storyIds(page);
   expect([...ids].sort()).toEqual([...STORY_IDS].sort());
 
+  let checked = 0;
   for (const story of ids) {
     await test.step(story, async () => {
       await openStory(page, story);
       await record(story, "rendered", "#storybook-root");
+      checked += 1;
     });
   }
 
@@ -157,7 +148,7 @@ test("usage: every story, the Playground values, and the toast buttons", async (
   }
 
   for (const value of ariaValues("aria-disabled")) {
-    await openStory(page, "components-button--playground", "", `disabled:${pressed(value)}`);
+    await openStory(page, "components-button--playground", "", `disabled:!${value}`);
     const button = page.locator("#storybook-root .odd-button");
     const aria = await button.getAttribute("aria-disabled");
     const disabled = await button.evaluate((el) => el.hasAttribute("disabled"));
@@ -168,7 +159,7 @@ test("usage: every story, the Playground values, and the toast buttons", async (
   }
 
   for (const value of ariaValues("aria-busy")) {
-    await openStory(page, "components-button--playground", "", `busy:${pressed(value)}`);
+    await openStory(page, "components-button--playground", "", `busy:!${value}`);
     const aria = await page.locator("#storybook-root .odd-button").getAttribute("aria-busy");
     if (aria !== (value === "true" ? "true" : null)) findings.push(`components-button--playground [busy=${value}] aria-busy=${String(aria)}`);
     await record("components-button--playground", `busy=${value}`, "#storybook-root");
@@ -193,10 +184,11 @@ test("usage: every story, the Playground values, and the toast buttons", async (
   await expect(page.locator('.odd-toast button[aria-label="Dismiss: Deck saved"]').last()).toBeVisible();
   await record("components-interactive--toast", "toast saved inside settings", ".odd-toaster");
 
-  console.log(`[${testInfo.project.name}] ${ids.length} stories, ${findings.length} diagnostics`);
+  console.log(`[${testInfo.project.name}] ${checked} stories, ${findings.length} diagnostics`);
   await testInfo.attach("usage-summary.json", {
     contentType: "application/json",
-    body: JSON.stringify({ stories: ids.length, findings }, null, 2),
+    body: JSON.stringify({ stories: checked, findings }, null, 2),
   });
+  expect(checked).toBe(STORY_IDS.length);
   expect(findings, "usage diagnostics").toEqual([]);
 });
