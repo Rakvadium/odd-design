@@ -11,7 +11,10 @@
     "noEmit": true,
     "allowImportingTsExtensions": true,
     "skipLibCheck": true,
-    "verbatimModuleSyntax": true
+    "verbatimModuleSyntax": true,
+    "paths": {
+      "odd-design/react": ["./src/react/button.tsx"]
+    }
   },
   "include": ["src", "stories", "tests", ".storybook", "e2e", "playwright.config.ts"],
   "exclude": ["tests/fixtures"]
