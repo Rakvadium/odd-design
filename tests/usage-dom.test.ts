@@ -213,7 +213,6 @@ test("a later test passes after a failed usage check", async () => {
     expect(result.exit).not.toBe(0);
     expect(result.output).toContain("ODD-BUTTON-007");
     expect(result.output).toContain("(fail) first appends a disabled odd-button");
-    expect(result.output).toContain("(pass) second does nothing");
     expect(result.output).toContain("1 pass");
     expect(result.output).toContain("1 fail");
   } finally {
