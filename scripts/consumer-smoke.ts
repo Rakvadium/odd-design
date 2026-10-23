@@ -1,11 +1,11 @@
-import { copyFileSync, mkdirSync, readdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { copyFileSync, mkdtempSync, mkdirSync, readdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
-import { join } from "node:path";
+import { basename, dirname, join } from "node:path";
 
 const root = join(import.meta.dir, "..");
 const fixtures = join(root, "tests/fixtures/consumer");
-const tarball = join(root, "odd-design-0.0.0.tgz");
-const app = join(tmpdir(), "odd-p10-consumer");
+const manifest = JSON.parse(readFileSync(join(root, "package.json"), "utf8")) as { name: string; version: string };
+const expectedTarball = join(root, `${manifest.name}-${manifest.version}.tgz`);
 const reactEntry = join(root, "dist/react/button.js");
 
 const FORBIDDEN =
@@ -15,6 +15,11 @@ const BAD_TYPE =
   `src/App.tsx(4,18): error TS2322: Type 'true' is not assignable to type '"${FORBIDDEN}"'.`;
 
 const BAD_ESLINT = [{ ruleId: "odd/usage", severity: 2, message: FORBIDDEN, line: 1, column: 52 }];
+
+const HOOK_TESTS = [
+  "afterEach fails a DOM test that never calls flush",
+  "afterEach fails a React test that never calls flush",
+];
 
 const REQUIRED = [
   "dist/react/button.js",
@@ -38,6 +43,8 @@ const REQUIRED = [
 
 const ALLOWED = ["dist/", "docs/usage/", "src/css/", "src/js/"];
 
+const PACK_EXCLUDED = ["dist/eslint/html.js", "dist/eslint/jsx.js", "dist/eslint/html.d.ts", "dist/eslint/jsx.d.ts"];
+
 type Diagnostic = { ruleId: string | null; severity: number; message: string; line: number; column: number };
 
 function fail(message: string): never {
@@ -59,8 +66,17 @@ function copyTree(from: string, to: string): void {
   }
 }
 
-function packedPaths(): string[] {
-  const listed = run(["tar", "-tf", tarball], root);
+function tarballFrom(output: string): string {
+  const named = output
+    .split(/\r?\n/)
+    .map((line) => line.trim())
+    .find((line) => line.endsWith(".tgz"));
+  if (named === undefined) fail(`pack did not name a tarball\n${output}`);
+  return basename(named);
+}
+
+function packedPaths(file: string): string[] {
+  const listed = run(["tar", "-tf", basename(file)], dirname(file));
   if (listed.status !== 0) fail(listed.output);
   return listed.output
     .split(/\r?\n/)
@@ -75,6 +91,7 @@ function assertPack(paths: string[]): void {
     if (!paths.includes(path)) fail(`pack is missing ${path}`);
   }
   for (const path of paths) {
+    if (PACK_EXCLUDED.includes(path)) fail(`pack has ${path}`);
     if (path === "package.json" || path === "README.md") continue;
     if (!ALLOWED.some((prefix) => path.startsWith(prefix))) fail(`pack has ${path} outside the files allowlist`);
     if (path.startsWith("dist/") && path.endsWith(".ts") && !path.endsWith(".d.ts")) fail(`pack has TypeScript in dist: ${path}`);
@@ -97,8 +114,8 @@ function assertOneState(): void {
   if (flushFiles.length !== 1 || !flushFiles[0]?.endsWith("dom.js")) fail(`flush lives in ${flushFiles.join(", ")}`);
 }
 
-function writePackage(): void {
-  const manifest = {
+function writePackage(app: string, tarball: string): void {
+  const packageManifest = {
     name: "odd-consumer",
     private: true,
     type: "module",
@@ -120,10 +137,10 @@ function writePackage(): void {
       vitest: "5.0.5",
     },
   };
-  writeFileSync(join(app, "package.json"), JSON.stringify(manifest, null, 2));
+  writeFileSync(join(app, "package.json"), JSON.stringify(packageManifest, null, 2));
 }
 
-function installVariant(name: string): void {
+function installVariant(app: string, name: string): void {
   rmSync(join(app, "src"), { recursive: true, force: true });
   rmSync(join(app, "tests"), { recursive: true, force: true });
   copyTree(join(fixtures, "shared/src"), join(app, "src"));
@@ -155,7 +172,7 @@ function sameDiagnostics(actual: Diagnostic[], expected: Diagnostic[]): boolean 
   });
 }
 
-function checkTypes(name: string, expected: string): void {
+function checkTypes(app: string, name: string, expected: string): void {
   const result = run([process.execPath, "x", "tsc", "-p", "tsconfig.json", "--pretty", "false", "--noErrorTruncation"], app);
   const output = result.output.replaceAll("\r\n", "\n").replaceAll("\\", "/").trim();
   console.log(`${name} types:`);
@@ -165,7 +182,7 @@ function checkTypes(name: string, expected: string): void {
   if (output !== expected) fail(`${name} types\n${output}`);
 }
 
-function checkEslint(name: string, expected: Diagnostic[]): void {
+function checkEslint(app: string, name: string, expected: Diagnostic[]): void {
   const result = run([process.execPath, "x", "eslint", "src/raw-button.tsx", "-f", "json"], app);
   const actual = eslintDiagnostics(result.output).map((item) => ({
     ruleId: item.ruleId,
@@ -181,7 +198,31 @@ function checkEslint(name: string, expected: Diagnostic[]): void {
   if (!sameDiagnostics(actual, expected)) fail(`${name} eslint\n${JSON.stringify(actual)}`);
 }
 
-function checkVitest(name: string): void {
+function failureBody(output: string, name: string): string {
+  const lines = output.split(/\r?\n/);
+  const header = `FAIL  tests/button.fixture.ts > ${name}`;
+  const index = lines.findIndex((line) => line.trim() === header);
+  if (index === -1) fail(`Vitest did not fail ${name}\n${output}`);
+  let cursor = index + 1;
+  while (cursor < lines.length && (lines[cursor] ?? "").trim().startsWith("FAIL  tests/button.fixture.ts > ")) cursor += 1;
+  const body: string[] = [];
+  while (cursor < lines.length && !(lines[cursor] ?? "").includes("⎯⎯⎯")) {
+    body.push(lines[cursor] ?? "");
+    cursor += 1;
+  }
+  return body.join("\n");
+}
+
+function assertHookFailure(output: string, name: string): void {
+  const body = failureBody(output, name);
+  const domAt = body.indexOf("dist/js/usage/dom.js");
+  const setupAt = body.indexOf("dist/js/usage/test-setup.js");
+  if (!body.includes(FORBIDDEN) || domAt === -1 || setupAt === -1 || domAt > setupAt) {
+    fail(`${name} did not fail through test-setup.js into dom.js\n${body}`);
+  }
+}
+
+function checkVitest(app: string, name: string): void {
   const result = run([process.execPath, "x", "vitest", "run"], app);
   console.log(`${name} vitest:`);
   if (name === "clean") {
@@ -197,41 +238,50 @@ function checkVitest(name: string): void {
   if (!result.output.includes("flush from odd-design/usage reports the disabled button")) {
     fail(`Vitest did not fail the flush test\n${result.output}`);
   }
+  for (const testName of HOOK_TESTS) assertHookFailure(result.output, testName);
+  if (result.output.includes("FAIL  tests/button.fixture.ts > the next test starts with an empty body")) {
+    fail(`the next test did not start with an empty body\n${result.output}`);
+  }
 }
 
-const reactFirst = readFileSync(reactEntry, "utf8").split(/\r?\n/, 1)[0] ?? "";
-if (reactFirst !== '"use client";') fail(`React entry first line is ${JSON.stringify(reactFirst)}`);
-console.log('react entry: "use client"');
-assertOneState();
+let tarball = expectedTarball;
+let app: string | undefined;
+try {
+  const reactFirst = readFileSync(reactEntry, "utf8").split(/\r?\n/, 1)[0] ?? "";
+  if (reactFirst !== '"use client";') fail(`React entry first line is ${JSON.stringify(reactFirst)}`);
+  console.log('react entry: "use client"');
+  assertOneState();
 
-rmSync(tarball, { force: true });
-const packed = run([process.execPath, "pm", "pack"], root);
-if (packed.status !== 0) fail(packed.output);
-const paths = packedPaths();
-assertPack(paths);
+  rmSync(tarball, { force: true });
+  const packed = run([process.execPath, "pm", "pack"], root);
+  if (packed.status !== 0) fail(packed.output);
+  tarball = join(root, tarballFrom(packed.output));
+  const paths = packedPaths(tarball);
+  assertPack(paths);
 
-rmSync(app, { recursive: true, force: true });
-mkdirSync(app, { recursive: true });
-copyTree(join(fixtures, "shared"), app);
-writePackage();
-const installed = run([process.execPath, "install"], app);
-if (installed.status !== 0) fail(installed.output);
+  app = mkdtempSync(join(tmpdir(), "odd-p10-consumer-"));
+  copyTree(join(fixtures, "shared"), app);
+  writePackage(app, tarball);
+  const installed = run([process.execPath, "install"], app);
+  if (installed.status !== 0) fail(installed.output);
 
-const rules = run(["node", "-e", "import('odd-design/eslint').then(m => console.log(Object.keys(m.default.rules)))"], app);
-console.log("eslint rules:");
-console.log(rules.output.trim());
-if (rules.status !== 0) fail(rules.output);
-if (rules.output.trim() !== "[ 'usage', 'usage-incomplete', 'disable-reason' ]") fail(rules.output);
+  const rules = run(["node", "-e", "import('odd-design/eslint').then(m => console.log(Object.keys(m.default.rules)))"], app);
+  console.log("eslint rules:");
+  console.log(rules.output.trim());
+  if (rules.status !== 0) fail(rules.output);
+  if (rules.output.trim() !== "[ 'usage', 'usage-incomplete', 'disable-reason' ]") fail(rules.output);
 
-installVariant("bad");
-checkTypes("bad", BAD_TYPE);
-checkEslint("bad", BAD_ESLINT);
-checkVitest("bad");
+  installVariant(app, "bad");
+  checkTypes(app, "bad", BAD_TYPE);
+  checkEslint(app, "bad", BAD_ESLINT);
+  checkVitest(app, "bad");
 
-installVariant("clean");
-checkTypes("clean", "");
-checkEslint("clean", []);
-checkVitest("clean");
-
-rmSync(tarball, { force: true });
-rmSync(app, { recursive: true, force: true });
+  installVariant(app, "clean");
+  checkTypes(app, "clean", "");
+  checkEslint(app, "clean", []);
+  checkVitest(app, "clean");
+} finally {
+  rmSync(tarball, { force: true });
+  rmSync(expectedTarball, { force: true });
+  if (app !== undefined) rmSync(app, { recursive: true, force: true });
+}

@@ -1,5 +1,4 @@
 import { mkdirSync, readdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
-import { tmpdir } from "node:os";
 import { join } from "node:path";
 
 const root = join(import.meta.dir, "..");
@@ -11,33 +10,37 @@ const entries = [
   "src/eslint/plugin.ts",
 ];
 
-const config = {
-  compilerOptions: {
-    target: "ES2023",
-    module: "NodeNext",
-    moduleResolution: "NodeNext",
-    lib: ["ES2023", "DOM", "DOM.Iterable"],
-    jsx: "react-jsx",
-    strict: true,
-    skipLibCheck: true,
-    declaration: true,
-    outDir: dist,
-    rootDir: join(root, "src"),
-    rewriteRelativeImportExtensions: true,
-    allowImportingTsExtensions: true,
-    verbatimModuleSyntax: true,
-  },
-  files: entries.map((entry) => join(root, entry)),
-};
-
-const configPath = join(tmpdir(), "odd-design-p10-tsconfig.json");
-
 rmSync(dist, { recursive: true, force: true });
 mkdirSync(dist, { recursive: true });
-writeFileSync(configPath, JSON.stringify(config));
 
 const tsc = Bun.spawnSync({
-  cmd: [process.execPath, "x", "tsc", "-p", configPath],
+  cmd: [
+    process.execPath,
+    "x",
+    "tsc",
+    "--target",
+    "ES2023",
+    "--module",
+    "NodeNext",
+    "--moduleResolution",
+    "NodeNext",
+    "--lib",
+    "ES2023,DOM,DOM.Iterable",
+    "--jsx",
+    "react-jsx",
+    "--strict",
+    "--skipLibCheck",
+    "--declaration",
+    "--outDir",
+    dist,
+    "--rootDir",
+    join(root, "src"),
+    "--rewriteRelativeImportExtensions",
+    "--allowImportingTsExtensions",
+    "--verbatimModuleSyntax",
+    "--ignoreConfig",
+    ...entries.map((entry) => join(root, entry)),
+  ],
   cwd: root,
   stdout: "pipe",
   stderr: "pipe",
@@ -72,8 +75,9 @@ if (bundled.exitCode !== 0) {
   process.exit(bundled.exitCode ?? 1);
 }
 
-rmSync(join(dist, "eslint/html.js"), { force: true });
-rmSync(join(dist, "eslint/jsx.js"), { force: true });
+for (const name of ["html.js", "jsx.js", "html.d.ts", "jsx.d.ts"]) {
+  rmSync(join(dist, "eslint", name), { force: true });
+}
 rewriteDeclarations(dist);
 
 function rewriteDeclarations(dir: string): void {
