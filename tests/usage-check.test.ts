@@ -123,3 +123,9 @@ test("computed children and a computed aria-label do not fail an icon-only butto
   };
   expect(codes(node)).toEqual([]);
 });
+
+test("a computed data-icon-only on a button with text only warns", () => {
+  const iconOnly = attribute("data-icon-only", { computed: [] });
+  const node: UsageNode = { tag: "button", attributes: [attribute("class", "odd-button"), iconOnly], children: ["Save"] };
+  expect(checkUsage(node).map((diagnostic) => [diagnostic.code, diagnostic.attribute])).toEqual([["ODD-STATIC-001", iconOnly]]);
+});

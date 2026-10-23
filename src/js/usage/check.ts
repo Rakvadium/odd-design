@@ -97,6 +97,15 @@ function hasName(node: UsageNode, name: string): boolean {
   return isComputed(attribute.value) || attribute.value.trim() !== "";
 }
 
+function isSet(scope: Scope, name: string): boolean {
+  const attribute = find(scope.node, name);
+  if (attribute === undefined || isComputed(attribute.value)) return false;
+  const value = attribute.value;
+  return scope.components.some((component) =>
+    component.rules.some((rule) => rule.kind === "boolean-attribute" && rule.attribute === name && rule.values.includes(value)),
+  );
+}
+
 function isHidden(node: UsageNode, ignore: string): boolean {
   const attribute = find(node, ignore);
   if (attribute === undefined) return false;
@@ -170,9 +179,9 @@ function apply(rule: UsageRule, scope: Scope): Diagnostic[] {
       return tag !== undefined && tag !== rule.element && attribute !== undefined ? [diagnose(rule.code, attribute, { found: tag })] : [];
     }
     case "accessible-name":
-      return find(node, rule.attribute) !== undefined && !hasUnknownAttributes(node) && !rule.names.some((name) => hasName(node, name)) ? [diagnose(rule.code)] : [];
+      return isSet(scope, rule.attribute) && !hasUnknownAttributes(node) && !rule.names.some((name) => hasName(node, name)) ? [diagnose(rule.code)] : [];
     case "icon-only-text":
-      return find(node, rule.attribute) !== undefined && hasVisibleText(node.children, rule.ignore) ? [diagnose(rule.code)] : [];
+      return isSet(scope, rule.attribute) && hasVisibleText(node.children, rule.ignore) ? [diagnose(rule.code)] : [];
     case "system-data":
       return systemDataFindings(rule.code, scope);
     case "unknown-class":
