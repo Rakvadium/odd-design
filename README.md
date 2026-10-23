@@ -29,7 +29,7 @@ bun run test:browsers   # Playwright: the axe sweep and behavior checks in Firef
 <html data-chrome="calm" data-palette="default" data-mode="system">
   <head>
     <script>/* FIRST_PAINT_SCRIPT from src/js/appearance.ts */</script>
-    <link rel="stylesheet" href="design-system/src/css/index.css">
+    <link rel="stylesheet" href="odd-design/src/css/index.css">
   </head>
   <body>
     <button class="odd-button" data-variant="primary">Save</button>
@@ -88,10 +88,10 @@ bun .agents/skills/verify-odd-design/scripts/ctl.ts axe --run a11y    # every st
 
 ## Custom palettes
 
-`design-system/palette` (`src/js/palette.ts`) builds a full palette, light and dark, from one or two brand colors and holds it to the same contract as the shipped palettes.
+`odd-design/palette` (`src/js/palette.ts`) builds a full palette, light and dark, from one or two brand colors and holds it to the same contract as the shipped palettes.
 
 ```js
-import { applyPalette, generatePalette, paletteCss } from "design-system/palette";
+import { applyPalette, generatePalette, paletteCss } from "odd-design/palette";
 
 const palette = generatePalette({ primary: "#7c3aed", secondary: "#f472b6" });
 applyPalette(palette);                        // defines [data-palette="custom"] in the palette layer
@@ -141,10 +141,10 @@ The five palettes ported from uvs-decks-gg went through the same repair. Their i
 
 ## Behaviors
 
-Menus, tabs, and toasts have no HTML element yet, so `design-system/enhance` (`src/js/enhance.ts`) adds them on top of native markup. Each function takes an element and returns a cleanup function. No dependencies, no framework.
+Menus, tabs, and toasts have no HTML element yet, so `odd-design/enhance` (`src/js/enhance.ts`) adds them on top of native markup. Each function takes an element and returns a cleanup function. No dependencies, no framework.
 
 ```js
-import { enhance, createToaster } from "design-system/enhance";
+import { enhance, createToaster } from "odd-design/enhance";
 
 enhance();                   // menus, tab sets, select-all tables, and the fallbacks below, under document
 const toaster = createToaster();

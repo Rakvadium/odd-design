@@ -8,7 +8,7 @@ const meta = {
     docs: {
       description: {
         component:
-          "Patterns HTML has no element for yet, so a small module from `design-system/enhance` adds the keyboard model and state on top of native markup. Each module takes an element and returns a cleanup function.",
+          "Patterns HTML has no element for yet, so a small module from `odd-design/enhance` adds the keyboard model and state on top of native markup. Each module takes an element and returns a cleanup function.",
       },
     },
   },
