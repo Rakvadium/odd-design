@@ -1,20 +1,16 @@
-// A mirrored story is data. toHtml turns it into the HTML Storybook's markup.
-// React is type-only here, so the HTML Storybook does not load React through this file.
-
 import { WRAPPERS, type WrapperElement } from "../src/js/usage/contract.ts";
-import type * as Wrappers from "odd-design/react";
+import type { WrapperProps } from "../src/react/props.ts";
 import { icons } from "./icons.ts";
 
-export type Component = keyof typeof WRAPPERS & keyof typeof Wrappers;
+export type Component = keyof typeof WRAPPERS & keyof WrapperProps;
 
-// `Parameters<typeof Button>` is `never`. Button's `const` type parameter makes the
-// inferring conditional inside `Parameters` fail, so the widened props type is named here.
-// A component missing from this map fails `tsc` at `PropsOf` below.
-type PropTypes = {
-  Button: Wrappers.ButtonProps;
-};
+type Expect<T extends true> = T;
 
-export type PropsOf<C extends Component & keyof PropTypes> = PropTypes[C];
+type MissingWrapperProps = Exclude<keyof typeof WRAPPERS, keyof WrapperProps>;
+
+type EveryWrapperHasProps = Expect<[MissingWrapperProps] extends [never] ? true : MissingWrapperProps>;
+
+export type PropsOf<C extends Component> = WrapperProps[C];
 
 export type Part = string | { readonly icon: keyof typeof icons };
 
@@ -94,7 +90,6 @@ function elementHtml(scene: Element): string {
     mapped.add(prop);
     pushAttr(attrs, attr, props[prop]);
   }
-  // A scene uses HTML attribute names. A React camelCase name such as tabIndex is unsupported.
   for (const [key, value] of Object.entries(props)) {
     if (mapped.has(key)) continue;
     pushString(attrs, key, value);
@@ -105,7 +100,6 @@ function elementHtml(scene: Element): string {
 }
 
 function layoutHtml(scene: Layout): string {
-  // Joined strings, not a template: odd/usage flags an untagged template that contains an odd-* class.
   const open = '<div class="' + "odd-" + scene.layout + '">';
   const inner = scene.children.map((child) => toHtml(child)).join("\n");
   return open + inner + "</div>";

@@ -3,6 +3,7 @@ import { fileURLToPath } from "node:url";
 import type { StorybookConfig } from "@storybook/react-vite";
 import type { AliasOptions } from "vite";
 import html from "../.storybook/main.ts";
+import { STORYBOOKS } from "../stories/catalog.ts";
 
 function packageAlias(): { find: string; replacement: string } {
   const source = readFileSync(new URL("../tsconfig.json", import.meta.url), "utf8");
@@ -20,7 +21,7 @@ function withPackageAlias(alias: AliasOptions | undefined): AliasOptions {
 }
 
 const config: StorybookConfig = {
-  stories: ["../stories/mirrored/**/*.stories.ts"],
+  stories: [`../${STORYBOOKS.react.stories}`],
   addons: html.addons,
   framework: { name: "@storybook/react-vite", options: {} },
   viteFinal: async (vite, options) => {

@@ -1,106 +1,16 @@
+import { globSync } from "node:fs";
+import { fileURLToPath } from "node:url";
 import { expect, test } from "bun:test";
+import { renderToStaticMarkup } from "react-dom/server";
 import { USAGE } from "../src/js/usage/contract.ts";
 import { checkRoot } from "../src/js/usage/dom.ts";
+import { catalog, renderHtml, STORYBOOKS, type MirroredEntry } from "../stories/catalog.ts";
 import { toHtml, type Scene } from "../stories/mirror.ts";
-import * as buttonStories from "../stories/mirrored/Button.stories.ts";
-import * as customPaletteStories from "../stories/CustomPalette.stories.ts";
-import * as dataDisplayStories from "../stories/DataDisplay.stories.ts";
-import * as feedbackStories from "../stories/Feedback.stories.ts";
-import * as formsStories from "../stories/Forms.stories.ts";
-import * as foundationsStories from "../stories/Foundations.stories.ts";
-import * as interactiveStories from "../stories/Interactive.stories.ts";
-import * as overlaysStories from "../stories/Overlays.stories.ts";
-import * as showcaseStories from "../stories/Showcase.stories.ts";
-import * as surfacesStories from "../stories/Surfaces.stories.ts";
+import { toReact } from "../stories/mirror-react.ts";
 
-const globals = { chrome: "calm", palette: "default", mode: "system" } as const;
+const repo = fileURLToPath(new URL("..", import.meta.url));
 
-type Globals = { chrome: string; palette: string; mode: string };
-
-type StoryExport = {
-  readonly render?: (args: Record<string, unknown>, context: { globals: Globals }) => unknown;
-  readonly args?: Record<string, unknown>;
-  readonly argTypes?: Readonly<Record<string, { readonly options?: readonly string[] }>>;
-  readonly parameters?: { readonly mirror?: { readonly scene: (args: Record<string, unknown>) => Scene } };
-  readonly title?: string;
-};
-
-type LoadedStory = {
-  readonly label: string;
-  readonly meta: StoryExport;
-  readonly story: StoryExport;
-};
-
-const STORY_LABELS = [
-  "Components/Button / Playground",
-  "Components/Button / Sizes",
-  "Components/Button / States",
-  "Components/Button / Variants",
-  "Components/Data Display / Avatar",
-  "Components/Data Display / Separator",
-  "Components/Data Display / Table",
-  "Components/Feedback / Alert",
-  "Components/Feedback / Progress",
-  "Components/Feedback / Skeleton",
-  "Components/Forms / Choices",
-  "Components/Forms / Search",
-  "Components/Forms / Segmented",
-  "Components/Forms / Select",
-  "Components/Forms / Slider",
-  "Components/Forms / Switch",
-  "Components/Forms / TextFields",
-  "Components/Interactive / Menu",
-  "Components/Interactive / Tabs",
-  "Components/Interactive / Toast",
-  "Components/Overlays / AlertDialog",
-  "Components/Overlays / HoverCard",
-  "Components/Overlays / Popover",
-  "Components/Overlays / Sheet",
-  "Components/Overlays / Tooltip",
-  "Components/Surfaces / Badge",
-  "Components/Surfaces / Card",
-  "Components/Surfaces / Dialog",
-  "Components/Surfaces / Disclosure",
-  "Foundations / Contrast",
-  "Foundations / Headings",
-  "Foundations / Palette",
-  "Foundations / Type",
-  "Foundations/Custom Palette / Generator",
-  "Showcase / Matrix",
-  "Showcase / SampleApp",
-] as const;
-
-function readModule(mod: object, file: string): { meta: StoryExport; stories: LoadedStory[] } {
-  const record = mod as Record<string, StoryExport>;
-  const meta = record.default;
-  if (meta === undefined || typeof meta.title !== "string") throw new Error(`${file} has no title`);
-  const stories = Object.entries(record)
-    .filter(([name, value]) => name !== "default" && value !== null && typeof value === "object")
-    .map(([name, story]) => ({ label: `${meta.title} / ${name}`, meta, story }));
-  return { meta, stories };
-}
-
-const modules = [
-  readModule(buttonStories, "Button.stories.ts"),
-  readModule(customPaletteStories, "CustomPalette.stories.ts"),
-  readModule(dataDisplayStories, "DataDisplay.stories.ts"),
-  readModule(feedbackStories, "Feedback.stories.ts"),
-  readModule(formsStories, "Forms.stories.ts"),
-  readModule(foundationsStories, "Foundations.stories.ts"),
-  readModule(interactiveStories, "Interactive.stories.ts"),
-  readModule(overlaysStories, "Overlays.stories.ts"),
-  readModule(showcaseStories, "Showcase.stories.ts"),
-  readModule(surfacesStories, "Surfaces.stories.ts"),
-];
-
-const stories = modules.flatMap((mod) => mod.stories);
-
-function fail(message: string): never {
-  throw new Error(message);
-}
-
-const buttonModule = modules.find((mod) => mod.meta.title === "Components/Button") ?? fail("Button stories are missing");
-const playground = buttonModule.stories.find((story) => story.label.endsWith(" / Playground")) ?? fail("Button stories have no Playground");
+const { html, react } = await catalog();
 
 function asRoot(result: unknown, label: string): ParentNode {
   if (typeof result === "string") {
@@ -112,29 +22,72 @@ function asRoot(result: unknown, label: string): ParentNode {
   throw new Error(`${label} rendered ${result === null ? "null" : typeof result}`);
 }
 
-function renderStory(meta: StoryExport, story: StoryExport, label: string, args: Record<string, unknown> = {}): ParentNode {
-  const merged = { ...meta.args, ...story.args, ...args };
-  const mirror = story.parameters?.mirror ?? meta.parameters?.mirror;
-  if (mirror !== undefined) return asRoot(toHtml(mirror.scene(merged)), label);
-  const render = story.render ?? meta.render;
-  if (render === undefined) throw new Error(`${label} has no render`);
-  return asRoot(render(merged, { globals }), label);
+function reactRoot(entry: MirroredEntry, args: Record<string, unknown> = {}): ParentNode {
+  const merged = { ...entry.meta.args, ...entry.story.args, ...args };
+  return asRoot(renderToStaticMarkup(toReact(entry.mirror.scene(merged))), entry.label);
 }
 
-test("checks 36 stories", () => {
-  expect(stories.map((story) => story.label).sort()).toEqual([...STORY_LABELS].sort());
+test("the catalog has every story file's stories, and Button is mirrored", () => {
+  const storyFiles = globSync(STORYBOOKS.html.stories, { cwd: repo }).map((file) => file.replaceAll("\\", "/"));
+  const covered = new Set(html.map((entry) => entry.file));
+  const skipped = storyFiles.filter((file) => !covered.has(file));
+  expect(skipped).toEqual([]);
+  expect(react.map((entry) => entry.id)).toContain("components-button--playground");
+  expect(react.every((entry) => html.some((item) => item.id === entry.id))).toBe(true);
 });
 
-for (const story of stories) {
-  test(story.label, () => {
-    checkRoot(renderStory(story.meta, story.story, story.label));
+function normalized(markup: string): string {
+  const root = document.createElement("div");
+  root.innerHTML = markup;
+  const walk = (node: Node): string => {
+    if (node.nodeType === Node.TEXT_NODE) return (node.textContent ?? "").replace(/\s+/g, " ");
+    if (!(node instanceof Element)) return "";
+    const attrs = [...node.attributes]
+      .filter((attr) => !(node.localName === "button" && attr.name === "type" && attr.value === "button"))
+      .map((attr) => `${attr.name}="${attr.value.replaceAll("&", "&amp;").replaceAll('"', "&quot;")}"`)
+      .sort()
+      .join(" ");
+    const inner = [...node.childNodes].map(walk).join("");
+    return `<${node.localName}${attrs === "" ? "" : ` ${attrs}`}>${inner}</${node.localName}>`;
+  };
+  return [...root.childNodes].map(walk).join("").replace(/>\s+</g, "><").trim();
+}
+
+function expectSameDom(scene: Scene, label: string): void {
+  const htmlMarkup = normalized(toHtml(scene));
+  const reactMarkup = normalized(renderToStaticMarkup(toReact(scene)));
+  if (htmlMarkup !== reactMarkup) throw new Error(`${label}\n${htmlMarkup}\n${reactMarkup}`);
+}
+
+for (const entry of react) {
+  test(`${entry.label} html matches react`, () => {
+    const merged = { ...entry.meta.args, ...entry.story.args };
+    expectSameDom(entry.mirror.scene(merged), entry.label);
   });
 }
+
+for (const entry of html) {
+  test(entry.label, () => {
+    checkRoot(asRoot(renderHtml(entry), entry.label));
+  });
+}
+
+for (const entry of react) {
+  test(`React ${entry.label}`, () => {
+    checkRoot(reactRoot(entry));
+  });
+}
+
+function fail(message: string): never {
+  throw new Error(message);
+}
+
+const playground = react.find((entry) => entry.id === "components-button--playground") ?? fail("Button stories have no Playground");
 
 function enumControl(attribute: "data-variant" | "data-size", arg: "variant" | "size") {
   const rule = USAGE.button.find((item) => item.kind === "enum" && item.attribute === attribute);
   if (rule?.kind !== "enum") throw new Error(`no enum rule for ${attribute}`);
-  const options = buttonModule.meta.argTypes?.[arg]?.options;
+  const options = playground.meta.argTypes?.[arg]?.options;
   if (options === undefined) throw new Error(`Playground argTypes.${arg} has no options`);
   const absent = rule.omit.filter((token) => options.includes(token));
   return { values: rule.values, options, absent, arg, attribute };
@@ -143,12 +96,20 @@ function enumControl(attribute: "data-variant" | "data-size", arg: "variant" | "
 const variantControl = enumControl("data-variant", "variant");
 const sizeControl = enumControl("data-size", "size");
 
-function playgroundButton(args: Record<string, unknown>): HTMLButtonElement {
-  const root = renderStory(playground.meta, playground.story, playground.label, args);
-  checkRoot(root);
+function oneButton(root: ParentNode): HTMLButtonElement {
   const button = root.querySelector("button");
   if (!(button instanceof HTMLButtonElement)) throw new Error("Playground rendered no button");
   return button;
+}
+
+function playgroundButtons(args: Record<string, unknown>): { html: HTMLButtonElement; react: HTMLButtonElement } {
+  const merged = { ...playground.meta.args, ...playground.story.args, ...args };
+  expectSameDom(playground.mirror.scene(merged), `Playground ${JSON.stringify(args)}`);
+  const htmlRoot = asRoot(renderHtml(playground, args), playground.label);
+  checkRoot(htmlRoot);
+  const reactNode = reactRoot(playground, args);
+  checkRoot(reactNode);
+  return { html: oneButton(htmlRoot), react: oneButton(reactNode) };
 }
 
 test("Playground argTypes match the button contract", () => {
@@ -161,9 +122,12 @@ test("Playground argTypes match the button contract", () => {
 for (const control of [variantControl, sizeControl]) {
   for (const value of control.options) {
     test(`Playground ${control.arg}=${value}`, () => {
-      const button = playgroundButton({ [control.arg]: value });
-      expect(button.getAttribute(control.attribute)).toBe(value === control.absent[0] ? null : value);
-      expect(button.hasAttribute("disabled")).toBe(false);
+      const buttons = playgroundButtons({ [control.arg]: value });
+      const expected = value === control.absent[0] ? null : value;
+      expect(buttons.html.getAttribute(control.attribute)).toBe(expected);
+      expect(buttons.html.hasAttribute("disabled")).toBe(false);
+      expect(buttons.react.getAttribute(control.attribute)).toBe(expected);
+      expect(buttons.react.hasAttribute("disabled")).toBe(false);
     });
   }
 }
@@ -176,9 +140,12 @@ for (const [arg, attribute] of [
   if (rule?.kind !== "aria-boolean") throw new Error(`no aria rule for ${attribute}`);
   for (const value of rule.values) {
     test(`Playground ${arg}=${value}`, () => {
-      const button = playgroundButton({ [arg]: value === "true" });
-      expect(button.getAttribute(attribute)).toBe(value === "true" ? "true" : null);
-      expect(button.hasAttribute("disabled")).toBe(false);
+      const buttons = playgroundButtons({ [arg]: value === "true" });
+      const expected = value === "true" ? "true" : null;
+      expect(buttons.html.getAttribute(attribute)).toBe(expected);
+      expect(buttons.html.hasAttribute("disabled")).toBe(false);
+      expect(buttons.react.getAttribute(attribute)).toBe(expected);
+      expect(buttons.react.hasAttribute("disabled")).toBe(false);
     });
   }
 }

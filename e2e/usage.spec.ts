@@ -4,6 +4,7 @@ import { join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { expect, test, type Page } from "@playwright/test";
 import { USAGE } from "../src/js/usage/contract.ts";
+import { catalog } from "../stories/catalog.ts";
 import * as buttonStories from "../stories/mirrored/Button.stories.ts";
 import { openStory, storyIds } from "./story.ts";
 
@@ -18,44 +19,7 @@ function bundleChecker(): void {
   execFileSync("bun", ["build", entry, "--outfile", checkerScript, "--format", "iife"], { stdio: "pipe" });
 }
 
-const STORY_IDS = [
-  "components-button--playground",
-  "components-button--sizes",
-  "components-button--states",
-  "components-button--variants",
-  "components-data-display--avatar",
-  "components-data-display--separator",
-  "components-data-display--table",
-  "components-feedback--alert",
-  "components-feedback--progress",
-  "components-feedback--skeleton",
-  "components-forms--choices",
-  "components-forms--search",
-  "components-forms--segmented",
-  "components-forms--select",
-  "components-forms--slider",
-  "components-forms--switch",
-  "components-forms--text-fields",
-  "components-interactive--menu",
-  "components-interactive--tabs",
-  "components-interactive--toast",
-  "components-overlays--alert-dialog",
-  "components-overlays--hover-card",
-  "components-overlays--popover",
-  "components-overlays--sheet",
-  "components-overlays--tooltip",
-  "components-surfaces--badge",
-  "components-surfaces--card",
-  "components-surfaces--dialog",
-  "components-surfaces--disclosure",
-  "foundations--contrast",
-  "foundations--headings",
-  "foundations--palette",
-  "foundations--type",
-  "foundations-custom-palette--generator",
-  "showcase--matrix",
-  "showcase--sample-app",
-] as const;
+const { html: catalogStories } = await catalog();
 
 type ArgTypes = { readonly options?: readonly string[] };
 
@@ -120,7 +84,7 @@ test("usage: every story, the Playground values, and the toast buttons", async (
   };
 
   const ids = await storyIds(page);
-  expect([...ids].sort()).toEqual([...STORY_IDS].sort());
+  expect([...ids].sort()).toEqual(catalogStories.map((entry) => entry.id).sort());
 
   let checked = 0;
   for (const story of ids) {
@@ -189,6 +153,6 @@ test("usage: every story, the Playground values, and the toast buttons", async (
     contentType: "application/json",
     body: JSON.stringify({ stories: checked, findings }, null, 2),
   });
-  expect(checked).toBe(STORY_IDS.length);
+  expect(checked).toBe(catalogStories.length);
   expect(findings, "usage diagnostics").toEqual([]);
 });

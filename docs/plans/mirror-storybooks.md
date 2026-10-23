@@ -18,7 +18,7 @@ The build waits for your answers. Each item has a default, and the build uses it
 2. **Add one story, `Components/Button / Link`, to both Storybooks.** No story renders `Button` as a link today. Storybook URL args reject `/` and `#`, so the Playground can't carry an `href` either. The agent session needs a link to use. The 36 existing stories stay the same, and the baseline diff proves it. The default is to add it. If you say no, the session has no link step.
 3. **The composed Storybook has no chrome, palette, or mode toolbar.** Storybook does not forward toolbar globals into composed Storybooks. Opus's lab confirmed this (E6), and an addon that forwarded them failed (E7). Each section's own toolbar still works when you open that Storybook on its own. The default is to accept it. The alternative is a follow-up spike.
 4. **Attach the video by pushing it to an orphan branch.** GitHub has no API for PR attachments. The default is to push `evidence/mirror-storybooks`, an orphan branch that holds only the video and its transcript, and link both from the PR body. That push needs your OK. The alternative is that you drag the file from `.verify/evidence/` into the PR yourself.
-5. **Make `odd-design/react` a barrel now.** Add `src/react/index.ts`, which re-exports `Button`, and point the `./react` export at `dist/react/index.js`. Without it, the second component also has to move the package entry. With it, a new component adds one `export` line beside its wrapper. Consumers keep `import { Button } from "odd-design/react"`. The default is to do it in commit 4.
+5. **Make `odd-design/react` a barrel now.** Add `src/react/index.ts`, which re-exports `Button`, and point the `./react` export at `dist/react/index.js`. Without it, the second component also has to move the package entry. With it, a new component adds one `export` line beside its wrapper and one `WrapperProps` line in `src/react/props.ts`. That file is story metadata and is not a package export, so the published entry stays the component modules. Consumers keep `import { Button } from "odd-design/react"`. The default is to do it in commit 4.
 
 ## Arm the run
 
@@ -130,7 +130,7 @@ Each commit ends with `bun run check`. The boxes under a commit name its extra c
 Badge shows the cost of the next component. Badge is already a story in `stories/Surfaces.stories.ts`.
 
 1. **Its data.** Add `USAGE.badge` and `WRAPPERS.Badge` to `src/js/usage/contract.ts`, with codes in `src/js/usage/format.ts` and `docs/usage/badge.md`. `WRAPPERS.element` takes the form `{ attribute, present, absent }` today. Badge is always a `span`, so that field also needs a fixed-tag form. That is a contract change, and it belongs to the Badge PR.
-2. **Its wrapper.** Create `src/react/badge.tsx` and add `export * from "./badge.tsx";` to `src/react/index.ts`.
+2. **Its wrapper.** Create `src/react/badge.tsx`, add `export * from "./badge.tsx";` to `src/react/index.ts`, and add `Badge: BadgeProps` to `WrapperProps` in `src/react/props.ts`. Do not add `props.ts` to `scripts/build.ts` or to `package.json` exports.
 3. **Its story entries.** Create `stories/mirrored/Badge.stories.ts` with `title: "Components/Surfaces"` and `export const Badge = mirrored({ scene, aria })`. Delete the `Badge` export from `stories/Surfaces.stories.ts`. The id stays `components-surfaces--badge`, because two files may share a title (lab E11).
 
 Nothing else changes. Both `main.ts` globs, `catalog()`, `toHtml`, `toReact`'s type check, `tests/stories.test.ts`, and the Firefox pair sweep pick Badge up from those files.
