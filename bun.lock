@@ -2,7 +2,7 @@
   "lockfileVersion": 1,
   "workspaces": {
     "": {
-      "name": "design-system",
+      "name": "odd-design",
       "devDependencies": {
         "@fontsource-variable/bricolage-grotesque": "^5.3.0",
         "@fontsource-variable/jetbrains-mono": "^5.3.0",
