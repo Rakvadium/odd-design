@@ -78,7 +78,7 @@ The plugin checks a lowercase element, such as `<button>`, like the same element
 
 The plugin checks `<Button>` as the element it renders when `Button` is imported from `odd-design/react`. An alias, such as `import { Button as OddButton } from "odd-design/react"`, counts too. A `Button` that you declare yourself is not checked.
 
-Every imported `Button` gets the class `odd-button`, plus the words in its `className`. The table shows how its other props map to the element.
+Every imported `Button` gets the class `odd-button`, plus the words in its `className`. The table shows how its other props map to the element. The mapping comes from the `Button` entry of `WRAPPERS` in `src/js/usage/contract.ts`.
 
 | Button prop | What the element gets |
 | --- | --- |

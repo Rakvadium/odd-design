@@ -1,5 +1,6 @@
 import type { Rule, Scope } from "eslint";
 import { checkUsage, type Computed, type Diagnostic, type UsageAttribute, type UsageNode } from "../js/usage/check.ts";
+import { WRAPPERS, type Wrapper, type WrapperElement } from "../js/usage/contract.ts";
 import { selected, type HtmlReport } from "./html.ts";
 
 type Loc = { start: { line: number; column: number }; end: { line: number; column: number } };
@@ -31,23 +32,13 @@ type JsxChild =
   | { type: "JSXFragment"; children: readonly JsxChild[] }
   | { type: "JSXSpreadChild" };
 
-type ElementKind = { kind: "intrinsic"; tag: string } | { kind: "wrapper" } | { kind: "component" };
+type ElementKind = { kind: "intrinsic"; tag: string } | { kind: "wrapper"; wrapper: Wrapper } | { kind: "component" };
 
 type Spans = Map<UsageAttribute | Computed, Loc>;
 
-const BUTTON_MODULE = "odd-design/react";
+const wrappers: Readonly<Record<string, Wrapper>> = WRAPPERS;
 
 const domNames: Readonly<Record<string, string | null>> = { className: "class", children: null };
-
-const wrapperNames: Readonly<Record<string, string | null>> = {
-  ...domNames,
-  variant: "data-variant",
-  size: "data-size",
-  iconOnly: "data-icon-only",
-  "data-variant": null,
-  "data-size": null,
-  "data-icon-only": null,
-};
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null;
@@ -65,19 +56,20 @@ function literalWords(node: unknown): string[] {
   return Object.entries(node).flatMap(([key, child]) => (key === "parent" ? [] : literalWords(child)));
 }
 
-function importedName(definition: Scope.Definition): string | undefined {
+function wrapperOf(definition: Scope.Definition): Wrapper | undefined {
   if (definition.type !== "ImportBinding" || definition.node.type !== "ImportSpecifier") return undefined;
-  if (definition.parent.source.value !== BUTTON_MODULE) return undefined;
   const imported = definition.node.imported;
-  return imported.type === "Identifier" ? imported.name : String(imported.value);
+  const name = imported.type === "Identifier" ? imported.name : String(imported.value);
+  const wrapper = Object.hasOwn(wrappers, name) ? wrappers[name] : undefined;
+  return wrapper?.source === definition.parent.source.value ? wrapper : undefined;
 }
 
-function isButtonImport(name: string, scope: Scope.Scope | null): boolean {
+function importedWrapper(name: string, scope: Scope.Scope | null): Wrapper | undefined {
   for (let current = scope; current !== null; current = current.upper) {
     const variable = current.set.get(name);
-    if (variable !== undefined) return variable.defs.some((definition) => importedName(definition) === "Button");
+    if (variable !== undefined) return variable.defs.map(wrapperOf).find((wrapper) => wrapper !== undefined);
   }
-  return false;
+  return undefined;
 }
 
 function classify(element: JsxElement, context: Rule.RuleContext): ElementKind {
@@ -85,7 +77,13 @@ function classify(element: JsxElement, context: Rule.RuleContext): ElementKind {
   if (name.type !== "JSXIdentifier") return { kind: "component" };
   if (/^[a-z]/.test(name.name)) return { kind: "intrinsic", tag: name.name };
   const scope = context.sourceCode.getScope(element as unknown as Rule.Node);
-  return isButtonImport(name.name, scope) ? { kind: "wrapper" } : { kind: "component" };
+  const wrapper = importedWrapper(name.name, scope);
+  return wrapper === undefined ? { kind: "component" } : { kind: "wrapper", wrapper };
+}
+
+function wrapperNames(wrapper: Wrapper): Readonly<Record<string, string | null>> {
+  const written = Object.fromEntries(Object.values(wrapper.props).map((name) => [name, null]));
+  return { ...domNames, ...written, ...wrapper.props };
 }
 
 function attributeName(name: JsxIdentifier | JsxNamespacedName): string {
@@ -148,11 +146,11 @@ function readAttributes(element: JsxElement, names: Readonly<Record<string, stri
   });
 }
 
-function withButtonClass(attributes: readonly (UsageAttribute | Computed)[], spans: Spans): (UsageAttribute | Computed)[] {
+function withClass(attributes: readonly (UsageAttribute | Computed)[], className: string, spans: Spans): (UsageAttribute | Computed)[] {
   const index = attributes.findIndex((attribute) => "name" in attribute && attribute.name === "class");
   const given = index === -1 ? undefined : attributes[index];
-  if (given === undefined || !("name" in given)) return [...attributes, { name: "class", value: "odd-button" }];
-  const value = typeof given.value === "string" ? `odd-button ${given.value}` : { computed: ["odd-button", ...given.value.computed] };
+  if (given === undefined || !("name" in given)) return [...attributes, { name: "class", value: className }];
+  const value = typeof given.value === "string" ? `${className} ${given.value}` : { computed: [className, ...given.value.computed] };
   const merged: UsageAttribute = { name: "class", value };
   const loc = spans.get(given);
   if (loc !== undefined) spans.set(merged, loc);
@@ -190,10 +188,11 @@ function childrenProp(element: JsxElement): UsageNode["children"] {
   return [];
 }
 
-function wrapperTag(attributes: readonly (UsageAttribute | Computed)[]): string | Computed {
-  const href = attributes.find((attribute): attribute is UsageAttribute => "name" in attribute && attribute.name === "href");
-  if (href === undefined) return "button";
-  return typeof href.value === "string" ? "a" : { computed: [] };
+function wrapperTag(element: WrapperElement, attributes: readonly (UsageAttribute | Computed)[]): string | Computed {
+  if (typeof element === "string") return element;
+  const chosen = attributes.find((attribute): attribute is UsageAttribute => "name" in attribute && attribute.name === element.attribute);
+  if (chosen === undefined) return element.absent;
+  return typeof chosen.value === "string" ? element.present : { computed: [] };
 }
 
 function readElement(element: JsxElement, context: Rule.RuleContext): { usage: UsageNode; spans: Spans } {
@@ -204,8 +203,9 @@ function readElement(element: JsxElement, context: Rule.RuleContext): { usage: U
     case "intrinsic":
       return { usage: { tag: kind.tag, attributes: readAttributes(element, domNames, spans), children }, spans };
     case "wrapper": {
-      const attributes = withButtonClass(readAttributes(element, wrapperNames, spans), spans);
-      return { usage: { tag: wrapperTag(attributes), attributes, children }, spans };
+      const { wrapper } = kind;
+      const attributes = withClass(readAttributes(element, wrapperNames(wrapper), spans), wrapper.className, spans);
+      return { usage: { tag: wrapperTag(wrapper.element, attributes), attributes, children }, spans };
     }
     case "component":
       return { usage: { tag: { computed: [] }, attributes: readAttributes(element, domNames, spans), children }, spans };
