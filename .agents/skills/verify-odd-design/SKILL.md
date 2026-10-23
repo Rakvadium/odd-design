@@ -114,6 +114,18 @@ bun run test:browsers                    # or: bunx playwright test e2e/behavior
 - Each behavior test records whether the engine used the native feature or the fallback (`interestfor`, `closedby`, anchor positioning, slider fill) as an annotation, and attaches screenshots. Read them in `.verify/playwright/report`.
 - These are Playwright's patched builds, not Firefox or Safari as shipped. Playwright's WebKit on Windows draws variable fonts at their thinnest weight, though layout uses the requested one, so thin text in a WebKit screenshot is not a bug in the CSS. `emulateMedia({ forcedColors })` in WebKit matches the media query but doesn't swap in system colors. Real Safari needs a Mac (see `docs/follow-ups.md`).
 
+## Button usage sweep
+
+```sh
+bunx playwright test e2e/usage.spec.ts --project firefox
+```
+
+`e2e/usage.spec.ts` builds `src/js/usage/dom.ts` once in the Firefox worker, during `beforeAll`, and writes `checker.js` under `.verify/playwright/usage-checker`. It injects that script the way `e2e/axe.spec.ts` injects axe. It opens every story and runs `checkRoot` on `#storybook-root`. It opens the Button Playground once per contract value. It clicks each toast trigger and runs `checkRoot` on `.odd-toaster`, because the action and dismiss buttons appear only after the click.
+
+A clean run prints one line that starts with `[firefox]`, gives the number of stories the sweep checked, and ends with `0 diagnostics`. That number matches the pinned story list. A checker problem is one line, `<story id> [<state>] ODD-...`. A missing root is `<story id> [<state>] missing <selector>`. A Playground control that rendered the wrong attribute is `<story id> [<arg>=<value>] <attribute>=<actual>`. The disabled control adds ` disabled=true` or ` disabled=false` on that same line. If the injected script did not define `checkRoot`, the line is `<story id> [<state>] checkRoot is not installed`. The attached `usage-summary.json` stores those lines under `findings`. That file is not the axe report. Read it in the test output, or in the Playwright HTML report at `.verify/playwright/report`.
+
+The sweep runs in the Firefox project only.
+
 ## Screen reader (NVDA)
 
 `scripts/sr.ts` runs NVDA against a headed run and records what it says. Use it after changing names, roles, states, live regions, focus movement, or dialogs. axe checks the markup; this checks what a listener hears. Windows only.

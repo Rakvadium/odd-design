@@ -3,7 +3,7 @@ import { defineConfig } from "eslint/config";
 
 export default defineConfig([
   {
-    ignores: ["tests/fixtures/**"],
+    ignores: ["tests/fixtures/**", ".verify/**", "storybook-static/**"],
   },
   {
     files: ["**/*.{ts,tsx}"],
