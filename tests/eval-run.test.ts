@@ -8,6 +8,10 @@ const exempt = ["send themselves a test notification", "/notifications/test"];
 const skipDirs = new Set(["node_modules", "vendor", ".git"]);
 const skipText = new Set(["bun.lock"]);
 const needles = ["C:\\wt", "odd-design\\eval"];
+const briefApiPath = join(repo, "eval", "briefs", "settings", "api.ts");
+const briefDocPath = join(repo, "eval", "briefs", "settings", "API.md");
+const briefApi = readFileSync(briefApiPath, "utf8");
+const briefDoc = readFileSync(briefDocPath, "utf8");
 
 type Prepared = { runId: string; folder: string; launchPath: string };
 
@@ -97,6 +101,28 @@ function messageOf(launchPath: string): string {
   return parsed.message;
 }
 
+function launchObject(launchPath: string): Record<string, unknown> {
+  const parsed: unknown = JSON.parse(readFileSync(launchPath, "utf8"));
+  if (typeof parsed !== "object" || parsed === null || Array.isArray(parsed)) throw new Error("launch.json is not an object");
+  return parsed;
+}
+
+function portMark(apiSource: string): string {
+  const mark = /^export const port = (\d+);/.exec(apiSource)?.[1];
+  if (mark === undefined) throw new Error("api.ts has no port");
+  return mark;
+}
+
+function prepareSettings(): Prepared {
+  const result = runEval(["prepare", "--brief", "settings", "--model", "opus"]);
+  if (result.status !== 0) throw new Error(`${result.stdout}\n${result.stderr}`);
+  const prepared = preparedFrom(result.stdout);
+  const launch = launchObject(prepared.launchPath);
+  writeFileSync(prepared.launchPath, `${JSON.stringify({ ...launch, threadId: "thread-under-test" }, null, 2)}\n`);
+  writeFileSync(join(prepared.launchPath, "..", "isolation.json"), `${JSON.stringify({ findings: [] })}\n`);
+  return prepared;
+}
+
 function remove(run: Prepared | undefined): void {
   if (run === undefined) return;
   rmSync(run.folder, { recursive: true, force: true });
@@ -119,16 +145,7 @@ test("a clean probe still writes a scratch folder", () => {
   }
 });
 
-const settings = (async (): Promise<Prepared> => {
-  const result = runEval(["prepare", "--brief", "settings", "--model", "opus"]);
-  if (result.status !== 0) throw new Error(`${result.stdout}\n${result.stderr}`);
-  const prepared = preparedFrom(result.stdout);
-  const launch: unknown = JSON.parse(readFileSync(prepared.launchPath, "utf8"));
-  if (typeof launch !== "object" || launch === null) throw new Error("launch.json is not an object");
-  writeFileSync(prepared.launchPath, `${JSON.stringify({ ...launch, threadId: "thread-under-test" }, null, 2)}\n`);
-  writeFileSync(join(prepared.launchPath, "..", "isolation.json"), `${JSON.stringify({ findings: [] })}\n`);
-  return prepared;
-})();
+const settings = (async (): Promise<Prepared> => prepareSettings())();
 
 afterAll(async () => {
   const run = await settings.catch(() => undefined);
@@ -163,6 +180,42 @@ describe("prepare --brief settings", () => {
     const run = await settings;
     expect(harnessHits(run.folder)).toEqual([]);
   }, 420_000);
+
+  test("two settings runs listen on different ports", async () => {
+    const first = await settings;
+    const second = prepareSettings();
+    const index = join(repo, ".verify", "eval", "runs.jsonl");
+    try {
+      expect(readFileSync(briefApiPath, "utf8")).toBe(briefApi);
+      expect(readFileSync(briefDocPath, "utf8")).toBe(briefDoc);
+      const mark = portMark(briefApi);
+      const runs = [first, second];
+      const ports = runs.map((run) => Number(portMark(readFileSync(join(run.folder, "api.ts"), "utf8"))));
+      expect(ports[0]).not.toBe(ports[1]);
+      for (const [indexInRun, run] of runs.entries()) {
+        const port = ports[indexInRun];
+        expect(launchObject(run.launchPath).port).toBe(port);
+        expect(readFileSync(join(run.folder, "api.ts"), "utf8")).toBe(briefApi.replaceAll(mark, String(port)));
+        expect(readFileSync(join(run.folder, "API.md"), "utf8")).toBe(briefDoc.replaceAll(mark, String(port)));
+        expect(harnessHits(run.folder)).toEqual([]);
+        expect(repoPathHits(run.folder)).toEqual([]);
+        const finished = runEval(["finish", run.runId]);
+        expect(finished.status).toBe(0);
+        const line = readFileSync(index, "utf8")
+          .split(/\r?\n/)
+          .find((item) => item.includes(`"runId":"${run.runId}"`));
+        expect(JSON.parse(line ?? "{}")).toMatchObject({ port });
+      }
+    } finally {
+      remove(second);
+      if (existsSync(index)) {
+        const kept = readFileSync(index, "utf8")
+          .split(/\r?\n/)
+          .filter((line) => line !== "" && !line.includes(`"runId":"${first.runId}"`) && !line.includes(`"runId":"${second.runId}"`));
+        writeFileSync(index, kept.length === 0 ? "" : `${kept.join("\n")}\n`);
+      }
+    }
+  }, 900_000);
 
   test("finish keeps one record when it runs twice", async () => {
     const run = await settings;
