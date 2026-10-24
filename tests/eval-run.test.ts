@@ -101,9 +101,13 @@ function messageOf(launchPath: string): string {
   return parsed.message;
 }
 
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null && !Array.isArray(value);
+}
+
 function launchObject(launchPath: string): Record<string, unknown> {
   const parsed: unknown = JSON.parse(readFileSync(launchPath, "utf8"));
-  if (typeof parsed !== "object" || parsed === null || Array.isArray(parsed)) throw new Error("launch.json is not an object");
+  if (!isRecord(parsed)) throw new Error("launch.json is not an object");
   return parsed;
 }
 

@@ -33,6 +33,7 @@ export type BriefName = (typeof BRIEFS)[number];
 export type RunRecord = {
   runId: string;
   brief: string;
+  port: number;
   provider: string;
   model: string;
   threadId: string;
@@ -50,6 +51,7 @@ const state = join(repo, ".verify", "eval");
 type BriefLaunch = {
   runId: string;
   folder: string;
+  port: number;
   provider: string;
   model: string;
   brief: string;
@@ -114,6 +116,29 @@ function copyTree(from: string, to: string): void {
   }
 }
 
+function freePort(): number {
+  const server = Bun.listen({
+    hostname: "127.0.0.1",
+    port: 0,
+    socket: {
+      data() {},
+    },
+  });
+  const port = server.port;
+  server.stop(true);
+  return port;
+}
+
+function copyBrief(briefDir: string, folder: string, port: number): void {
+  const api = readFileSync(join(briefDir, "api.ts"), "utf8");
+  const doc = readFileSync(join(briefDir, "API.md"), "utf8");
+  const mark = /^export const port = (\d+);/.exec(api)?.[1];
+  if (mark === undefined || !doc.includes(`port ${mark}`)) throw new Error(`${briefDir} has no port`);
+  const next = String(port);
+  writeFileSync(join(folder, "api.ts"), api.replaceAll(mark, next));
+  writeFileSync(join(folder, "API.md"), doc.replaceAll(mark, next));
+}
+
 function publish(runId: string, folder: string, body: object): string {
   const runDir = join(state, "runs", runId);
   mkdirSync(runDir, { recursive: true });
@@ -148,6 +173,7 @@ export function prepare(model: ModelName, probe: ProbeName): string {
 export function prepareBrief(model: ModelName, brief: BriefName): string {
   const preparedAt = new Date().toISOString();
   const { runId, folder } = allocate();
+  const port = freePort();
   const token = issueToken(repo, runId);
   plant(runId, token);
   copyTree(join(repo, "eval", "template"), folder);
@@ -156,15 +182,14 @@ export function prepareBrief(model: ModelName, brief: BriefName): string {
     mkdirSync(join(folder, "vendor"), { recursive: true });
     copyFileSync(tarball, join(folder, "vendor", "odd-design.tgz"));
     const briefDir = join(repo, "eval", "briefs", brief);
-    copyFileSync(join(briefDir, "api.ts"), join(folder, "api.ts"));
-    copyFileSync(join(briefDir, "API.md"), join(folder, "API.md"));
+    copyBrief(briefDir, folder, port);
     const installed = run([process.execPath, "install"], folder);
     if (installed.status !== 0) throw new Error(`install failed in ${folder}\n${installed.output}`);
   } finally {
     rmSync(tarball, { force: true });
   }
   const message = readFileSync(join(repo, "eval", "briefs", brief, "prompt.md"), "utf8");
-  return publish(runId, folder, { runId, folder, ...MODELS[model], brief, preparedAt, message, threadId: null });
+  return publish(runId, folder, { runId, folder, port, ...MODELS[model], brief, preparedAt, message, threadId: null });
 }
 
 function readBriefLaunch(runId: string): BriefLaunch | string {
@@ -173,6 +198,9 @@ function readBriefLaunch(runId: string): BriefLaunch | string {
   const parsed: unknown = JSON.parse(readFileSync(file, "utf8"));
   if (!isRecord(parsed)) return `launch file for ${runId} is not an object`;
   if (typeof parsed.brief !== "string") return `${runId} has no brief`;
+  if (typeof parsed.port !== "number" || !Number.isInteger(parsed.port) || parsed.port < 1 || parsed.port > 65535) {
+    return `${runId} has no port`;
+  }
   if (typeof parsed.threadId !== "string" || parsed.threadId === "") return `${runId} has no thread id`;
   if (typeof parsed.preparedAt !== "string") return `${runId} has no start time`;
   if (typeof parsed.folder !== "string" || typeof parsed.provider !== "string" || typeof parsed.model !== "string") {
@@ -181,6 +209,7 @@ function readBriefLaunch(runId: string): BriefLaunch | string {
   return {
     runId,
     folder: parsed.folder,
+    port: parsed.port,
     provider: parsed.provider,
     model: parsed.model,
     brief: parsed.brief,
@@ -242,6 +271,7 @@ export function finish(runId: string): number {
   const record: RunRecord = {
     runId: launch.runId,
     brief: launch.brief,
+    port: launch.port,
     provider: launch.provider,
     model: launch.model,
     threadId: launch.threadId,
