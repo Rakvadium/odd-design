@@ -129,6 +129,10 @@ function prepareSettings(): Prepared {
   return prepared;
 }
 
+function promptBlob(): string {
+  return Bun.spawnSync(["git", "cat-file", "blob", "HEAD:eval/briefs/settings/prompt.md"], { cwd: repo }).stdout.toString();
+}
+
 function dropRecords(runIds: string[]): void {
   if (!existsSync(index)) return;
   const kept = readFileSync(index, "utf8")
@@ -220,9 +224,9 @@ describe("prepare --brief settings", () => {
     expect(repoPathHits(run.folder)).toEqual([]);
   }, 420_000);
 
-  test("launch.json carries prompt.md unchanged", async () => {
+  test("launch.json carries prompt.md as git stores it", async () => {
     const run = await settings;
-    const prompt = readFileSync(join(repo, "eval", "briefs", "settings", "prompt.md"), "utf8");
+    const prompt = promptBlob();
     expect(messageOf(run.launchPath)).toBe(prompt);
     expect(prompt.includes("C:\\workspaces")).toBe(false);
     expect(prompt.includes("C:\\wt")).toBe(false);
