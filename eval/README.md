@@ -1,6 +1,6 @@
 # Launch a run and scan it for escapes
 
-Each run is a fresh top-level T3 thread in its own folder under `C:\eval-runs`. The agent can read any file on the machine, so `bun eval scan` reads the thread's native transcript after it finishes and fails the run on any escape. A failed run is discarded, never graded, and never reused.
+Each run is a fresh top-level T3 thread in its own folder under `C:\workspaces`. The agent can read any file on the machine, so `bun eval scan` reads the thread's native transcript after it finishes and fails the run on any escape. A failed run is discarded, never graded, and never reused.
 
 ## Prepare the run folder
 
@@ -15,10 +15,10 @@ bun eval prepare --model opus
 The command prints the run id, the folder, and the path of `launch.json`:
 
 ```
-prepared run-001  C:\eval-runs\run-001  C:\wt\odd-design\eval-button\.verify\eval\runs\run-001\launch.json
+prepared app-001  C:\workspaces\app-001  C:\wt\odd-design\eval-button\.verify\eval\runs\app-001\launch.json
 ```
 
-It also appends a token for the run to `odd-eval/tokens.txt` in the git common directory, which `git rev-parse --git-common-dir` prints. Every checkout appends to and scans against that one list, so a token planted by another checkout's `prepare` still counts as a canary. It writes the token into `.odd-notes.md` at the root of every checkout that `git worktree list` prints, into `eval/.canary/<run-id>`, and into `C:\eval-runs\notes.md`. The shared `.git/info/exclude` lists `.odd-notes.md`, so `git status` shows none of them.
+It also appends a token for the run to `odd-eval/tokens.txt` in the git common directory, which `git rev-parse --git-common-dir` prints. Every checkout appends to and scans against that one list, so a token planted by another checkout's `prepare` still counts as a canary. It writes the token into `.odd-notes.md` at the root of every checkout that `git worktree list` prints, into `eval/.canary/<run-id>`, and into `C:\workspaces\notes.md`. The shared `.git/info/exclude` lists `.odd-notes.md`, so `git status` shows none of them.
 
 ## Launch the thread
 
@@ -27,14 +27,14 @@ Take `folder`, `provider`, `model`, and `message` from `launch.json`. Make these
 1. Register the folder as a project.
 
 	```json
-	t3_project_create {"title": "run-001", "workspaceRoot": "C:\\eval-runs\\run-001"}
+	t3_project_create {"title": "app-001", "workspaceRoot": "C:\\workspaces\\app-001"}
 	```
 
 2. Launch the thread with the returned project `id`. Pass `message` unchanged.
 
 	```json
 	t3_thread_launch {
-		"title": "run-001",
+		"title": "app-001",
 		"projectId": "<id from step 1>",
 		"workspaceStrategy": {"type": "root"},
 		"modelSelection": {"instanceId": "claudeAgent", "model": "claude-opus-5-5"},
@@ -58,10 +58,10 @@ t3_thread_wait {"threadId": "<threadId>", "timeoutMs": 300000}
 ## Scan the transcript
 
 ```sh
-bun eval scan run-001
+bun eval scan app-001
 ```
 
-The scan reads every file under `~/.claude/projects/C--eval-runs-run-001/` and `~/.cursor/projects/C-eval-runs-run-001/`, plus the run folder outside `node_modules` and `.git`. It prints one line per finding and ends with the count:
+The scan reads every file under `~/.claude/projects/C--workspaces-app-001/` and `~/.cursor/projects/C-workspaces-app-001/`, plus the run folder outside `node_modules` and `.git`. It prints one line per finding and ends with the count:
 
 ```
 isolation: 0 findings

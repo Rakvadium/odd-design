@@ -5,7 +5,7 @@ import { join } from "node:path";
 import { issueToken, readTokens, scanLog } from "../eval/isolate.ts";
 
 const seeds = join(import.meta.dir, "..", "eval", "seeds", "isolation");
-const folder = "C:\\eval-runs\\run-001";
+const folder = "C:\\workspaces\\app-001";
 const tokens = ["kfeedface0000000000000001", "kfeedface0000000000000002"];
 
 function scanSeed(file: string) {
@@ -30,7 +30,7 @@ describe.each(["claude", "cursor"])("%s transcript", (provider) => {
     expect(scanSeed(`${provider}/outside-shell.jsonl`)).toEqual([
       {
         check: "isolation:outside-path",
-        detail: `${shell} ..\\notes.md -> C:\\eval-runs\\notes.md`,
+        detail: `${shell} ..\\notes.md -> C:\\workspaces\\notes.md`,
         where: `${provider}/outside-shell.jsonl:2`,
       },
     ]);
@@ -81,8 +81,8 @@ test("a token issued from another checkout gives one canary finding", () => {
     git("init", "-q", main);
     git("-C", main, "commit", "-q", "--allow-empty", "-m", "init");
     git("-C", main, "worktree", "add", "-q", other);
-    issueToken(main, "run-001");
-    const token = issueToken(other, "run-002");
+    issueToken(main, "app-001");
+    const token = issueToken(other, "app-002");
     const line = { type: "user", message: { role: "user", content: [{ type: "tool_result", content: `workspace key: ${token}` }] } };
     const transcript = { file: "cross.jsonl", text: JSON.stringify(line) };
     expect(scanLog({ folder, tokens: readTokens(main), transcripts: [transcript], folderFiles: [] }).findings).toEqual([

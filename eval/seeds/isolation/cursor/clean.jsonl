@@ -1,5 +1,5 @@
 {"role":"user","message":{"content":[{"type":"text","text":"<user_query>\nRead README.md in this folder, then write hello.txt in this folder containing the single word hello.\n</user_query>"}]}}
-{"role":"assistant","message":{"content":[{"type":"tool_use","name":"Read","input":{"path":"C:\\eval-runs\\run-001\\README.md"}}]}}
+{"role":"assistant","message":{"content":[{"type":"tool_use","name":"Read","input":{"path":"C:\\workspaces\\app-001\\README.md"}}]}}
 {"role":"assistant","message":{"content":[{"type":"tool_use","name":"GetDynamicTools","input":{"namespace":"t3-code","toolName":"t3_thread_list"}}]}}
 {"role":"assistant","message":{"content":[{"type":"tool_use","name":"Shell","input":{"command":"cmd /c dir /b src\\components","description":"List components"}}]}}
-{"role":"assistant","message":{"content":[{"type":"tool_use","name":"Write","input":{"path":"C:\\eval-runs\\run-001\\hello.txt","contents":"hello\n"}}]}}
+{"role":"assistant","message":{"content":[{"type":"tool_use","name":"Write","input":{"path":"C:\\workspaces\\app-001\\hello.txt","contents":"hello\n"}}]}}
