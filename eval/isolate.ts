@@ -1,6 +1,6 @@
-import { appendFileSync, existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
+import { appendFileSync, existsSync, mkdirSync, readdirSync, readFileSync, realpathSync, statSync, writeFileSync } from "node:fs";
 import { randomBytes } from "node:crypto";
-import { homedir } from "node:os";
+import { homedir, tmpdir } from "node:os";
 import { delimiter, dirname, join, relative, resolve, win32 } from "node:path";
 
 export type ToolEvent = {
@@ -21,7 +21,7 @@ export type Finding = { check: Check; detail: string; where: string };
 
 export type TextFile = { file: string; text: string };
 
-export type Scan = { findings: Finding[]; web: string[] };
+export type Scan = { findings: Finding[]; web: string[]; skills: string[] };
 
 type ContentItem = { type?: unknown; id?: unknown; name?: unknown; input?: unknown };
 
@@ -35,6 +35,7 @@ const T3_SERVER = /t3[-_]code/i;
 const T3_OWN_UI = /^(html_preview|html_render)$|^preview_/;
 const REPO =
   /github\.com[/:]rakvadium\b|raw\.githubusercontent\.com\/rakvadium\b|api\.github\.com\/repos\/rakvadium\b|github\.com[/:][^/\s]+\/odd-design\b|\brakvadium\/odd-design\b/i;
+const GUARDED = ["odd-design", "odd-button", "Rakvadium/odd-design"];
 const repo = join(import.meta.dir, "..");
 const WORD_BREAK = /[\s"'`|;&<>(),=]+/;
 const DRIVE = /(?<![a-z])[a-z]:[\\/]/i;
@@ -46,7 +47,7 @@ const VARIABLE = /^(?:%([a-z]\w*)%|\$env:([a-z]\w*)|\$\{env:([a-z]\w*)\}|\$\{([a
 
 type Shell = { cwd: string; stack: string[] };
 type PathHit = [raw: string, resolved: string | null];
-type Role = "pattern" | "pattern-file" | "value" | "list" | "flag";
+type Role = "pattern" | "pattern-file" | "value" | "list" | "flag" | "file";
 type ParseOption = (word: string) => [role: Role, attached: string] | null;
 const TAKES_VALUE = new Set<string>(["pattern", "pattern-file", "value"]);
 const NAMES_PATTERN = new Set<string>(["pattern", "pattern-file", "list"]);
@@ -73,6 +74,8 @@ const selectString: ParseOption = (word) => {
   return [name.length >= 3 && "pattern".startsWith(name) ? "pattern" : switches.test(name) ? "flag" : "value", option[2] ?? ""];
 };
 
+const perlScript = getopt({ pattern: "-e -E" });
+
 const SEARCH = new Map<string, ParseOption>(
   Object.entries({
     rg: getopt({
@@ -95,6 +98,9 @@ const SEARCH = new Map<string, ParseOption>(
       const name = option[1]!.toLowerCase();
       return [name === "c" ? "pattern" : name === "g" ? "pattern-file" : "flag", option[2] ?? ""];
     },
+    sed: getopt({ pattern: "-e --expression", "pattern-file": "-f --file", value: "-l --line-length" }),
+    awk: getopt({ pattern: "-e --source", "pattern-file": "-f --file", value: "-F -v --assign --field-separator" }),
+    perl: (word) => perlScript(word) ?? ["file", ""],
   }),
 );
 
@@ -259,8 +265,9 @@ function webTarget(event: ToolEvent): string | null {
   return strings(event.input).join(" ");
 }
 
-function eventFindings(folder: string, shell: Shell, event: ToolEvent): Finding[] {
+function eventFindings(folder: string, own: string[], skillDirs: string[], shell: Shell, event: ToolEvent): Omit<Scan, "web"> {
   const findings: Finding[] = [];
+  const skills: string[] = [];
   const label = event.server ? `${event.server}/${event.tool}` : event.tool;
   const start = [event.input.working_directory, event.input.cwd].find((dir) => typeof dir === "string");
   const callShell = start === undefined ? shell : { cwd: resolvePath(folder, start) ?? shell.cwd, stack: [] };
@@ -269,9 +276,9 @@ function eventFindings(folder: string, shell: Shell, event: ToolEvent): Finding[
     ...strings(event.input.command).flatMap((command) => commandPaths(callShell, command)),
   ];
   for (const [raw, resolved] of paths) {
-    if (resolved !== null && !inside(folder, resolved)) {
-      findings.push({ check: "isolation:outside-path", detail: `${label} ${raw} -> ${resolved}`, where: event.where });
-    }
+    if (resolved === null || own.some((dir) => inside(dir, resolved))) continue;
+    if (skillDirs.some((dir) => inside(dir, resolved))) skills.push(resolved);
+    else findings.push({ check: "isolation:outside-path", detail: `${label} ${raw} -> ${resolved}`, where: event.where });
   }
   const t3 = event.server !== null && T3_SERVER.test(event.server) && !T3_OWN_UI.test(event.tool);
   if (t3 || event.tool === "SearchConversations") {
@@ -281,34 +288,71 @@ function eventFindings(folder: string, shell: Shell, event: ToolEvent): Finding[
   if (repoText !== undefined) {
     findings.push({ check: "isolation:web-repo", detail: `${label} ${repoText}`, where: event.where });
   }
-  return findings;
+  return { findings, skills };
 }
 
-export function scanLog(run: { folder: string; tokens: string[]; transcripts: TextFile[]; folderFiles: TextFile[] }): Scan {
+export function scanLog(run: { folder: string; tokens: string[]; transcripts: TextFile[]; folderFiles: TextFile[]; skillDirs: string[] }): Scan {
   const logs = run.transcripts.filter((t) => t.file.endsWith(".jsonl"));
   if (logs.length === 0) {
-    return { findings: [{ check: "isolation:no-transcript", detail: "no transcript", where: run.folder }], web: [] };
+    return { findings: [{ check: "isolation:no-transcript", detail: "no transcript", where: run.folder }], web: [], skills: [] };
   }
   const canaries = run.tokens.flatMap((token): Finding[] => {
     const hit = [...run.transcripts, ...run.folderFiles].find((f) => f.text.includes(token));
     return hit ? [{ check: "isolation:canary", detail: token, where: hit.file }] : [];
   });
   const transcripts = logs.map(toolEvents);
-  const pathFindings = transcripts.flatMap((events) => {
+  const own = runFolders(run.folder);
+  const events = transcripts.flatMap((log) => {
     const shell: Shell = { cwd: run.folder, stack: [] };
-    return events.flatMap((e) => eventFindings(run.folder, shell, e));
+    return log.map((e) => eventFindings(run.folder, own, run.skillDirs, shell, e));
   });
   return {
-    findings: [...canaries, ...pathFindings],
+    findings: [...canaries, ...events.flatMap((e) => e.findings)],
     web: transcripts.flat().flatMap((e) => webTarget(e) ?? []),
+    skills: events.flatMap((e) => e.skills),
   };
+}
+
+export function skillDirs(home = homedir()): string[] {
+  return [join(home, ".claude", "skills"), join(home, ".cursor", "skills"), join(home, ".agents", "skills"), join(home, ".cursor", "plugins", "cache")];
+}
+
+function filesUnder(path: string, seen: Set<string>): string[] {
+  const stat = statSync(path, { throwIfNoEntry: false });
+  if (!stat?.isDirectory()) return stat?.isFile() ? [path] : [];
+  const real = realpathSync(path);
+  if (seen.has(real)) return [];
+  seen.add(real);
+  return readdirSync(path).flatMap((name) => filesUnder(join(path, name), seen));
+}
+
+export function skillGuard(tokens: string[], dirs = skillDirs()): string[] {
+  const needles = [...GUARDED, ...tokens];
+  const pattern = new RegExp(needles.map((n) => n.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")).join("|"), "gi");
+  const seen = new Set<string>();
+  return dirs.flatMap((dir) => filesUnder(dir, seen)).flatMap((file) => {
+    const found = new Set(readFileSync(file, "latin1").match(pattern)?.map((m) => m.toLowerCase()));
+    return needles.filter((n) => found.has(n.toLowerCase())).map((n) => `refused: ${file} mentions ${n}`);
+  });
+}
+
+function claudeSlug(folder: string): string {
+  return folder.replace(/[^A-Za-z0-9]/g, "-");
 }
 
 function transcriptDirs(folder: string): string[] {
   return [
-    join(homedir(), ".claude", "projects", folder.replace(/[^A-Za-z0-9]/g, "-")),
+    join(homedir(), ".claude", "projects", claudeSlug(folder)),
     join(homedir(), ".cursor", "projects", folder.replace(/[^A-Za-z0-9]+/g, "-").replace(/^-|-$/g, "")),
   ];
+}
+
+function tempDir(folder: string): string {
+  return join(tmpdir(), "claude", claudeSlug(folder));
+}
+
+function runFolders(folder: string): string[] {
+  return [folder, ...transcriptDirs(folder), tempDir(folder)];
 }
 
 function readTree(dir: string, skip: Set<string>): TextFile[] {
@@ -320,9 +364,13 @@ function readTree(dir: string, skip: Set<string>): TextFile[] {
     .map((file) => ({ file, text: readFileSync(file, "latin1") }));
 }
 
-function tokenFile(checkout: string): string {
+export function sharedDir(checkout: string): string {
   const common = Bun.spawnSync(["git", "rev-parse", "--git-common-dir"], { cwd: checkout }).stdout.toString().trim();
-  return join(resolve(checkout, common), "odd-eval", "tokens.txt");
+  return join(resolve(checkout, common), "odd-eval");
+}
+
+function tokenFile(checkout: string): string {
+  return join(sharedDir(checkout), "tokens.txt");
 }
 
 export function issueToken(checkout: string, runId: string): string {
@@ -339,17 +387,21 @@ export function readTokens(checkout: string): string[] {
     .flatMap((line) => line.split("\t")[1]?.trim() || []);
 }
 
-export function scan(runId: string): number {
+export function scan(runId: string, dirs = skillDirs()): number {
+  const tokens = readTokens(repo);
+  const refusals = skillGuard(tokens, dirs);
+  for (const line of refusals) console.log(line);
+  if (refusals.length > 0) return 2;
   const runDir = join(repo, ".verify", "eval", "runs", runId);
   const { folder } = JSON.parse(readFileSync(join(runDir, "launch.json"), "utf8")) as { folder: string };
-  const tokens = readTokens(repo);
   const transcripts = transcriptDirs(folder).flatMap((dir) => readTree(dir, new Set()));
-  const folderFiles = readTree(folder, new Set(["node_modules", ".git"]));
-  const result = scanLog({ folder, tokens, transcripts, folderFiles });
+  const folderFiles = [...readTree(folder, new Set(["node_modules", ".git"])), ...readTree(tempDir(folder), new Set())];
+  const result = scanLog({ folder, tokens, transcripts, folderFiles, skillDirs: dirs });
   const report = { runId, folder, transcripts: transcripts.map((t) => t.file), ...result };
   writeFileSync(join(runDir, "isolation.json"), `${JSON.stringify(report, null, 2)}\n`);
   for (const f of result.findings) console.log(`${f.check}  ${f.detail}  (${f.where})`);
   for (const url of result.web) console.log(`web  ${url}`);
+  for (const path of result.skills) console.log(`skill  ${path}`);
   console.log(`isolation: ${result.findings.length} findings`);
   return result.findings.length === 0 ? 0 : 1;
 }

@@ -20,6 +20,35 @@ prepared app-001  C:\workspaces\app-001  C:\wt\odd-design\eval-button\.verify\ev
 
 It also appends a token for the run to `odd-eval/tokens.txt` in the git common directory, which `git rev-parse --git-common-dir` prints. Every checkout appends to and scans against that one list, so a token planted by another checkout's `prepare` still counts as a canary. It writes the token into `.odd-notes.md` at the root of every checkout that `git worktree list` prints, into `eval/.canary/<run-id>`, and into `C:\workspaces\notes.md`. The shared `.git/info/exclude` lists `.odd-notes.md`, so `git status` shows none of them.
 
+## Start a settings run
+
+Run this from the repo root.
+
+```sh
+bun eval prepare --brief settings --model opus
+```
+
+`--model` is `opus` or `grok`, the same names as a probe. The command packs odd-design, copies `eval/template/` into the run folder, copies that tarball to `vendor/odd-design.tgz`, and runs `bun install` in the folder. It also copies `eval/briefs/settings/api.ts` and `eval/briefs/settings/API.md`, with this run's port written where the brief names its port. Prepare picks a port that is free at that moment. Another process can, rarely, take it before the agent starts the mock, and then the agent sees a bind error. `launch.json` records that port, plus `gitSha` and `dirty`, the commit and whether the tree had changes when the tarball was packed. `finish` copies both into the record. The `message` in `launch.json` is `eval/briefs/settings/prompt.md` as git stores it, with LF line endings even when the checkout has CRLF.
+
+Launch and wait with the same two T3 calls as a probe. Write the returned `threadId` into `launch.json`. Then scan.
+
+```sh
+bun eval scan app-001
+bun eval finish app-001
+```
+
+`finish` prints one line and writes one JSON object to `.verify/eval/runs.jsonl`. A second `finish` for the same run replaces that object.
+
+```
+run app-001  opus  05m03s  isolation 0
+```
+
+The printed name is the short model name. The JSON object stores the provider model id, such as `claude-opus-5-5`. It also stores the brief, the port, the provider, the thread id, the git SHA and whether the tree was dirty, the tarball SHA-256, the duration in milliseconds from the start of prepare, and the finding count. `launch.ts` is the only writer of that file.
+
+Packing in a brief prepare and writing `runs.jsonl` in `finish` take one lock, the file `odd-eval/lock` in the git common directory, so prepares and finishes started at once take turns. A process killed while it holds the lock leaves the file behind. The next prepare or finish waits 10 minutes, then fails and names the file to delete.
+
+In the run folder, `bun run api` starts the mock and `bun run dev` serves the app.
+
 ## Launch the thread
 
 Take `folder`, `provider`, `model`, and `message` from `launch.json`. Make these two T3 calls.
@@ -61,26 +90,31 @@ t3_thread_wait {"threadId": "<threadId>", "timeoutMs": 300000}
 bun eval scan app-001
 ```
 
-The scan reads every file under `~/.claude/projects/C--workspaces-app-001/` and `~/.cursor/projects/C-workspaces-app-001/`, plus the run folder outside `node_modules` and `.git`. It prints one line per finding and ends with the count:
+The scan reads every file under `~/.claude/projects/C--workspaces-app-001/`, `%TEMP%/claude/C--workspaces-app-001/`, and `~/.cursor/projects/C-workspaces-app-001/`, plus the run folder outside `node_modules` and `.git`. It prints one line per finding and ends with the count:
 
 ```
 isolation: 0 findings
 ```
 
+Before it reads a transcript, the scan searches every file under the user-level skill folders, following links, for `odd-design`, `odd-button`, `Rakvadium/odd-design`, and every issued token, in any case. The skill folders are `~/.claude/skills/`, `~/.cursor/skills/`, `~/.agents/skills/`, and the Cursor plugin cache `~/.cursor/plugins/cache/`. On any match it grades nothing, prints `refused: <file> mentions <match>` for each match, and exits 2. `Rakvadium/odd-stack` does not match.
+
 It exits 1 on any finding and writes `.verify/eval/runs/<run-id>/isolation.json`. A Cursor MCP call wrapped in `CallMcpTool` or `CallDynamicTool` is scanned by its `arguments`, under the server and tool it names. These are the findings.
 
 - `isolation:canary` is any issued token found in the transcript folders or the run folder.
-- `isolation:outside-path` is a path that resolves outside the run folder. [Path forms the scan expands](#path-forms-the-scan-expands) lists how the scan expands a path before it resolves it. The scan reads paths from five places.
+- `isolation:outside-path` is a path that resolves outside the run's folders. Those are the run folder and the run's own runtime folders, `~/.claude/projects/C--workspaces-app-001/`, `%TEMP%/claude/C--workspaces-app-001/`, and `~/.cursor/projects/C-workspaces-app-001/`, which hold only that run's spill files and task output. The scan derives each runtime folder from the run folder with the slug rules it uses to find the transcripts. Another run's runtime folders are outside. A token in the run's own runtime folders is still an `isolation:canary` finding. [Path forms the scan expands](#path-forms-the-scan-expands) lists how the scan expands a path before it resolves it. The scan reads paths from six places.
   - Path fields such as `file_path`, `path`, and `glob_pattern`.
-  - Shell commands. The scan finds every absolute path, UNC path, `~`, variable path, and `..` segment anywhere in the command, inside quotes too. A word that starts with `/` is a path only in the Git Bash drive form, such as `/c/wt`, or under `/etc`, `/usr`, `/home`, `/root`, `/tmp`, `/mnt`, `/proc`, `/var`, `/opt`, or `/bin`. So `echo /api/settings` holds no path. The scan keeps one working folder per transcript, starting at the run folder, and follows `cd`, `chdir`, `Set-Location`, `sl`, `pushd`, and `popd` in order, within a command and across commands. Relative shell paths resolve against that folder. A `cd` that lands outside the run folder is itself a finding. A shell call that carries `working_directory` or `cwd` starts in that folder instead, for that call only. The scan still checks that field against the run folder.
+  - Shell commands. The scan finds every absolute path, UNC path, `~`, variable path, and `..` segment anywhere in the command, inside quotes too. A word that starts with `/` is a path only in the Git Bash drive form, such as `/c/wt`, or under `/etc`, `/usr`, `/home`, `/root`, `/tmp`, `/mnt`, `/proc`, `/var`, `/opt`, or `/bin`. So `echo /api/settings` holds no path. The scan keeps one working folder per transcript, starting at the run folder, and follows `cd`, `chdir`, `Set-Location`, `sl`, `pushd`, and `popd` in order, within a command and across commands. Relative shell paths resolve against that folder. A `cd` that lands outside the run's folders is itself a finding. A shell call that carries `working_directory` or `cwd` starts in that folder instead, for that call only. The scan still checks that field against the run's folders.
   - The body of a PowerShell here-string (`@" ... "@` or `@' ... '@`) or a shell heredoc (`<<EOF`). The body follows the rules for written file contents. The rest of the command follows the shell rules.
   - The search pattern of `rg`, `grep`, `Select-String`, and `findstr`. The pattern follows the rules for written file contents, so `rg -n "../components/Field" src` holds no path. The pattern is any `-e`, `--regexp`, `-Pattern`, or `/C:` value. Without one, it is the first positional argument. A pattern file from `-f`, `--file`, or `/G:`, or `rg --files`, leaves no positional pattern. The other arguments, `-Path` values and pattern files included, follow the shell rules.
+  - The script of `sed`, `awk`, and `perl`. The script follows the rules for written file contents, so `sed 's/var(--space-12)/var(--space-10)/' src/settings.css` holds no path. For `sed` and `awk`, the script is any `-e` value, plus `--expression` for `sed` and `--source` for `awk`. Without one, it is the first positional argument. A script file from `-f` or `--file` leaves no positional script. For `perl`, the script is any `-e` or `-E` value, and every positional argument is a file. The other arguments, script files included, follow the shell rules.
   - Written file contents in `content`, `contents`, and `new_string`. The scan flags drive, UNC, and variable paths there. It skips `~/` and `../`, because source code uses them for import aliases and relative imports.
 - `isolation:t3` is any `t3-code` call, or a Cursor `SearchConversations` call. Calls such as `t3_project_list`, `t3_worktree_list`, and `t3_environment_read` reveal other projects, threads, or paths. The exceptions are `html_preview`, `html_render`, and tools whose names start with `preview_`, which T3 tells every thread to use for its own UI.
 - `isolation:web-repo` is any string in any tool input that names the public repo after percent-decoding. That covers `github.com/rakvadium`, `raw.githubusercontent.com/rakvadium`, `api.github.com/repos/rakvadium`, `github.com/<anyone>/odd-design`, and the `rakvadium/odd-design` slug that `gh` takes, in any case. A `fetch` inside `preview_evaluate` counts. The npm package, such as `https://www.npmjs.com/package/odd-design`, does not.
 - `isolation:no-transcript` means the scan found no `.jsonl` for the folder. A run with no log cannot prove it stayed in its folder.
 
 The scan lists each `url` field and each `WebFetch` and `WebSearch` call as a `web <url>` line. These lines do not fail the run. A URL in a shell command, such as `curl https://example.com`, is not listed as a `web` line yet. E3's scorecard adds that.
+
+The scan lists each path under a skill folder as a `skill <path>` line instead of an `isolation:outside-path` finding. These lines do not fail the run. Any other path under `~/.cursor/plugins/` is outside. `isolation.json` holds these paths in `skills`, beside the URLs in `web`.
 
 ## Path forms the scan expands
 
