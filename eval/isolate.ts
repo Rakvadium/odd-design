@@ -27,6 +27,7 @@ type ContentItem = { type?: unknown; id?: unknown; name?: unknown; input?: unkno
 
 const PATH_FIELDS = new Set(["file_path", "path", "paths", "notebook_path", "target_directory", "directory", "cwd", "working_directory"]);
 const GLOB_FIELDS = new Set(["glob_pattern", "glob"]);
+const CONTENT_FIELDS = new Set(["content", "contents", "new_string"]);
 const DEVICES = new Set(["/dev/null", "/dev/stdin", "/dev/stdout", "/dev/stderr"]);
 const WEB_TOOLS = new Set(["WebFetch", "WebSearch"]);
 const MCP_ENVELOPES = new Set(["CallMcpTool", "call_mcp_tool", "CallDynamicTool"]);
@@ -99,18 +100,22 @@ function expand(raw: string): string | null {
   return raw;
 }
 
-function looksLikePath(word: string): boolean {
+function shellPath(word: string): boolean {
   if (word.startsWith("\\\\")) return true;
   if (/^~([\\/]|$)/.test(word) || /^(%\w+%|\$env:\w+|\$\{?\w+\}?)/i.test(word)) return true;
   if (/^\/[a-z]\//i.test(word) || /^\/[^/]+\/./.test(word)) return !DEVICES.has(word);
   return word.split(/[\\/]/).includes("..");
 }
 
-function shellPaths(command: string): string[] {
-  return command.split(WORD_BREAK).flatMap((word) => {
+function writtenPath(word: string): boolean {
+  return /^\\{2,}[\w.-]{2,}\\/.test(word) || /^(%\w+%|\$[Ee][Nn][Vv]:\w+|\$\{?[A-Z_][A-Z0-9_]*\}?)/.test(word);
+}
+
+function pathsIn(text: string, isPath: (word: string) => boolean): string[] {
+  return text.split(WORD_BREAK).flatMap((word) => {
     const drive = DRIVE.exec(word);
     if (drive) return [word.slice(drive.index)];
-    return looksLikePath(word) ? [word] : [];
+    return isPath(word) ? [word] : [];
   });
 }
 
@@ -126,15 +131,16 @@ function inside(folder: string, path: string): boolean {
 }
 
 function fieldPaths(event: ToolEvent): string[] {
-  return Object.entries(event.input).flatMap(([field, value]) =>
-    PATH_FIELDS.has(field) || GLOB_FIELDS.has(field) || (field === "pattern" && event.tool === "Glob") ? strings(value) : [],
-  );
+  return Object.entries(event.input).flatMap(([field, value]) => {
+    if (CONTENT_FIELDS.has(field)) return strings(value).flatMap((text) => pathsIn(text, writtenPath));
+    return PATH_FIELDS.has(field) || GLOB_FIELDS.has(field) || (field === "pattern" && event.tool === "Glob") ? strings(value) : [];
+  });
 }
 
 function commandPaths(shell: Shell, command: string): [string, string | null][] {
   return [...command.matchAll(SEGMENT)].flatMap(([segment]): [string, string | null][] => {
     const [verb, ...args] = [...segment.matchAll(SHELL_WORD)].map((m) => m[1] ?? m[2] ?? m[0]);
-    if (verb === undefined || !CD.test(verb)) return shellPaths(segment).map((raw) => [raw, resolvePath(shell.cwd, raw)]);
+    if (verb === undefined || !CD.test(verb)) return pathsIn(segment, shellPath).map((raw) => [raw, resolvePath(shell.cwd, raw)]);
     if (/^popd$/i.test(verb)) {
       shell.cwd = shell.stack.pop() ?? shell.cwd;
       return [];
