@@ -32,7 +32,7 @@ const DEVICES = new Set(["/dev/null", "/dev/stdin", "/dev/stdout", "/dev/stderr"
 const WEB_TOOLS = new Set(["WebFetch", "WebSearch"]);
 const MCP_ENVELOPES = new Set(["CallMcpTool", "call_mcp_tool", "CallDynamicTool"]);
 const T3_SERVER = /t3[-_]code/i;
-const T3_CROSS_THREAD = /thread|task|queue/i;
+const T3_OWN_UI = /^(html_preview|html_render)$|^preview_/;
 const REPO = /rakvadium|odd-design/i;
 const REPO_IN_SHELL = /github\.com[/:]rakvadium|https?:\/\/\S*odd-design|\bgh\s.*odd-design/i;
 const repo = join(import.meta.dir, "..");
@@ -149,8 +149,8 @@ function eventFindings(folder: string, event: ToolEvent): Finding[] {
     const resolved = outside(folder, raw);
     if (resolved !== null) findings.push({ check: "isolation:outside-path", detail: `${label} ${raw} -> ${resolved}`, where: event.where });
   }
-  const crossThread = event.server !== null && T3_SERVER.test(event.server) && T3_CROSS_THREAD.test(event.tool);
-  if (crossThread || event.tool === "SearchConversations") {
+  const t3 = event.server !== null && T3_SERVER.test(event.server) && !T3_OWN_UI.test(event.tool);
+  if (t3 || event.tool === "SearchConversations") {
     findings.push({ check: "isolation:t3", detail: label, where: event.where });
   }
   const web = webTarget(event);

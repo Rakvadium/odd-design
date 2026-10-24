@@ -71,7 +71,7 @@ It exits 1 on any finding and writes `.verify/eval/runs/<run-id>/isolation.json`
 
 - `isolation:canary` is any issued token found in the transcript folders or the run folder.
 - `isolation:outside-path` is a tool-input path that resolves outside the run folder after the scan expands `~`, `%USERPROFILE%`, `$HOME`, `$env:`, and `..`.
-- `isolation:t3` is a `t3-code` call whose tool name contains `thread`, `task`, or `queue`, or a Cursor `SearchConversations` call.
+- `isolation:t3` is any `t3-code` call, or a Cursor `SearchConversations` call. Calls such as `t3_project_list`, `t3_worktree_list`, and `t3_environment_read` reveal other projects, threads, or paths. The exceptions are `html_preview`, `html_render`, and tools whose names start with `preview_`, which T3 tells every thread to use for its own UI.
 - `isolation:web-repo` is a web call or shell command that names the public repo.
 - `isolation:no-transcript` means the scan found no `.jsonl` for the folder. A run with no log cannot prove it stayed in its folder.
 
