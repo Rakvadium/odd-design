@@ -61,8 +61,6 @@ export const WRAPPERS = {
   },
 } as const satisfies Record<string, Wrapper>;
 
-export const COMMENT_RULES = [{ code: "ODD-STATIC-003" }] as const satisfies readonly { code: UsageCode }[];
-
 export const CLASS_REGISTRY = [
   "odd-alert",
   "odd-alert-title",

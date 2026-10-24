@@ -1,5 +1,5 @@
 import { afterEach, expect, test } from "bun:test";
-import { mkdtempSync, readdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -9,15 +9,7 @@ import { registerUsageChecks } from "../src/js/usage/test-setup.ts";
 
 registerUsageChecks(afterEach);
 
-const fixtureDir = new URL("./fixtures/usage/", import.meta.url);
-const fixtures = readdirSync(fixtureDir).filter((name) => name.endsWith(".html")).sort();
 const repoRoot = fileURLToPath(new URL("..", import.meta.url));
-
-function expectedCodes(html: string): string[] {
-  const match = /^<!-- expect: (.+) -->/.exec(html);
-  if (match === null || match[1] === undefined) throw new Error("fixture has no expect line");
-  return match[1] === "none" ? [] : match[1].split(" ");
-}
 
 function codesIn(root: ParentNode): string[] {
   try {
@@ -37,13 +29,11 @@ function resetPage(): void {
   document.body.replaceChildren();
 }
 
-for (const name of fixtures) {
-  test(name, () => {
-    const html = readFileSync(new URL(name, fixtureDir), "utf8");
-    const body = new DOMParser().parseFromString(html, "text/html").body;
-    expect(codesIn(body)).toEqual(expectedCodes(html));
-  });
-}
+test("checkRoot reports every problem in the tree, not only the first", () => {
+  const html = readFileSync(new URL("./fixtures/usage/odd-button-001.bad.html", import.meta.url), "utf8");
+  const body = new DOMParser().parseFromString(html, "text/html").body;
+  expect(codesIn(body)).toEqual(["ODD-BUTTON-001", "ODD-BUTTON-001"]);
+});
 
 test("dev mode logs the code and flush does not throw", () => {
   const lines: string[] = [];

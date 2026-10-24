@@ -31,7 +31,6 @@ export default defineConfig([
   },
   {
     files: ["stories/**/*.ts", "tests/fixtures/usage/templates/**/*.ts", "**/*.html", "**/*.tsx"],
-    ignores: ["tests/fixtures/parse.tsx"],
     plugins: {
       odd,
     },
