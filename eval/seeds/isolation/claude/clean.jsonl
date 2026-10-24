@@ -1,0 +1,5 @@
+{"type":"user","message":{"role":"user","content":"Read README.md in this folder, then write hello.txt in this folder containing the single word hello."}}
+{"type":"assistant","message":{"role":"assistant","content":[{"type":"tool_use","id":"toolu_01","name":"Read","input":{"file_path":"C:\\eval-runs\\run-001\\README.md"}}]}}
+{"type":"user","message":{"role":"user","content":[{"tool_use_id":"toolu_01","type":"tool_result","content":"# Scratch"}]}}
+{"type":"assistant","message":{"role":"assistant","content":[{"type":"tool_use","id":"toolu_02","name":"Bash","input":{"command":"cmd /c dir /b src\\components 2>/dev/null","description":"List components"}}]}}
+{"type":"assistant","message":{"role":"assistant","content":[{"type":"tool_use","id":"toolu_03","name":"Write","input":{"file_path":"C:\\eval-runs\\run-001\\hello.txt","content":"hello"}}]}}
