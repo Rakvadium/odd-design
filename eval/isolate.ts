@@ -27,7 +27,6 @@ type ContentItem = { type?: unknown; id?: unknown; name?: unknown; input?: unkno
 
 const PATH_FIELDS = new Set(["file_path", "path", "paths", "notebook_path", "target_directory", "directory", "cwd", "working_directory"]);
 const GLOB_FIELDS = new Set(["glob_pattern", "glob"]);
-const COMMAND_FIELDS = new Set(["command"]);
 const DEVICES = new Set(["/dev/null", "/dev/stdin", "/dev/stdout", "/dev/stderr"]);
 const WEB_TOOLS = new Set(["WebFetch", "WebSearch"]);
 const MCP_ENVELOPES = new Set(["CallMcpTool", "call_mcp_tool", "CallDynamicTool"]);
@@ -38,7 +37,11 @@ const REPO_IN_SHELL = /github\.com[/:]rakvadium|https?:\/\/\S*odd-design|\bgh\s.
 const repo = join(import.meta.dir, "..");
 const WORD_BREAK = /[\s"'`|;&<>(),=]+/;
 const DRIVE = /(?<![a-z])[a-z]:[\\/]/i;
+const SEGMENT = /(?:"[^"]*"|'[^']*'|[^"';&|\n])+/g;
+const SHELL_WORD = /"([^"]*)"|'([^']*)'|[^\s"']+/g;
+const CD = /^(cd|chdir|set-location|sl|pushd|popd)$/i;
 
+type Shell = { cwd: string; stack: string[] };
 function record(value: unknown): Record<string, unknown> {
   return typeof value === "object" && value !== null && !Array.isArray(value) ? (value as Record<string, unknown>) : {};
 }
@@ -111,23 +114,38 @@ function shellPaths(command: string): string[] {
   });
 }
 
-function rawPaths(event: ToolEvent): string[] {
-  const paths: string[] = [];
-  for (const [field, value] of Object.entries(event.input)) {
-    const values = (Array.isArray(value) ? value : [value]).filter((v): v is string => typeof v === "string");
-    if (PATH_FIELDS.has(field) || GLOB_FIELDS.has(field) || (field === "pattern" && event.tool === "Glob")) paths.push(...values);
-    if (COMMAND_FIELDS.has(field)) paths.push(...values.flatMap(shellPaths));
-  }
-  return paths;
-}
-
-function outside(folder: string, raw: string): string | null {
+function resolvePath(base: string, raw: string): string | null {
   const expanded = expand(raw);
   if (expanded === null) return null;
-  if (expanded.startsWith("/")) return expanded;
-  const resolved = win32.resolve(folder, expanded);
-  const rel = win32.relative(folder, resolved);
-  return rel === "" || (!rel.startsWith("..") && !win32.isAbsolute(rel)) ? null : resolved;
+  return expanded.startsWith("/") ? expanded : win32.resolve(base, expanded);
+}
+
+function inside(folder: string, path: string): boolean {
+  const rel = win32.relative(folder, path);
+  return rel === "" || (!rel.startsWith("..") && !win32.isAbsolute(rel));
+}
+
+function fieldPaths(event: ToolEvent): string[] {
+  return Object.entries(event.input).flatMap(([field, value]) =>
+    PATH_FIELDS.has(field) || GLOB_FIELDS.has(field) || (field === "pattern" && event.tool === "Glob") ? strings(value) : [],
+  );
+}
+
+function commandPaths(shell: Shell, command: string): [string, string | null][] {
+  return [...command.matchAll(SEGMENT)].flatMap(([segment]): [string, string | null][] => {
+    const [verb, ...args] = [...segment.matchAll(SHELL_WORD)].map((m) => m[1] ?? m[2] ?? m[0]);
+    if (verb === undefined || !CD.test(verb)) return shellPaths(segment).map((raw) => [raw, resolvePath(shell.cwd, raw)]);
+    if (/^popd$/i.test(verb)) {
+      shell.cwd = shell.stack.pop() ?? shell.cwd;
+      return [];
+    }
+    const target = args.find((arg) => !/^-./.test(arg) && !/^\/d$/i.test(arg)) ?? "~";
+    const next = target === "-" ? null : resolvePath(shell.cwd, target);
+    if (next === null) return [];
+    if (/^pushd$/i.test(verb)) shell.stack.push(shell.cwd);
+    shell.cwd = next;
+    return [[target, next]];
+  });
 }
 
 function strings(value: unknown): string[] {
@@ -144,21 +162,26 @@ function webTarget(event: ToolEvent): string | null {
   return strings(event.input).join(" ");
 }
 
-function eventFindings(folder: string, event: ToolEvent): Finding[] {
+function eventFindings(folder: string, shell: Shell, event: ToolEvent): Finding[] {
   const findings: Finding[] = [];
   const label = event.server ? `${event.server}/${event.tool}` : event.tool;
-  for (const raw of rawPaths(event)) {
-    const resolved = outside(folder, raw);
-    if (resolved !== null) findings.push({ check: "isolation:outside-path", detail: `${label} ${raw} -> ${resolved}`, where: event.where });
+  const paths = [
+    ...fieldPaths(event).map((raw): [string, string | null] => [raw, resolvePath(folder, raw)]),
+    ...strings(event.input.command).flatMap((command) => commandPaths(shell, command)),
+  ];
+  for (const [raw, resolved] of paths) {
+    if (resolved !== null && !inside(folder, resolved)) {
+      findings.push({ check: "isolation:outside-path", detail: `${label} ${raw} -> ${resolved}`, where: event.where });
+    }
   }
   const t3 = event.server !== null && T3_SERVER.test(event.server) && !T3_OWN_UI.test(event.tool);
   if (t3 || event.tool === "SearchConversations") {
     findings.push({ check: "isolation:t3", detail: label, where: event.where });
   }
   const web = webTarget(event);
-  const shell = strings(event.input.command).find((c) => REPO_IN_SHELL.test(c));
-  if ((web !== null && REPO.test(web)) || shell !== undefined) {
-    findings.push({ check: "isolation:web-repo", detail: `${label} ${web ?? shell}`, where: event.where });
+  const repoCommand = strings(event.input.command).find((c) => REPO_IN_SHELL.test(c));
+  if ((web !== null && REPO.test(web)) || repoCommand !== undefined) {
+    findings.push({ check: "isolation:web-repo", detail: `${label} ${web ?? repoCommand}`, where: event.where });
   }
   return findings;
 }
@@ -172,10 +195,14 @@ export function scanLog(run: { folder: string; tokens: string[]; transcripts: Te
     const hit = [...run.transcripts, ...run.folderFiles].find((f) => f.text.includes(token));
     return hit ? [{ check: "isolation:canary", detail: token, where: hit.file }] : [];
   });
-  const events = logs.flatMap(toolEvents);
+  const transcripts = logs.map(toolEvents);
+  const pathFindings = transcripts.flatMap((events) => {
+    const shell: Shell = { cwd: run.folder, stack: [] };
+    return events.flatMap((e) => eventFindings(run.folder, shell, e));
+  });
   return {
-    findings: [...canaries, ...events.flatMap((e) => eventFindings(run.folder, e))],
-    web: events.flatMap((e) => webTarget(e) ?? []),
+    findings: [...canaries, ...pathFindings],
+    web: transcripts.flat().flatMap((e) => webTarget(e) ?? []),
   };
 }
 
