@@ -15,6 +15,7 @@ function scanSeed(file: string) {
 
 describe.each(["claude", "cursor"])("%s transcript", (provider) => {
   const shell = provider === "claude" ? "Bash" : "Shell";
+  const script = provider === "claude" ? "PowerShell" : "Shell";
 
   test("a clean run gives no finding", () => {
     expect(scanSeed(`${provider}/clean.jsonl`)).toEqual([]);
@@ -32,6 +33,21 @@ describe.each(["claude", "cursor"])("%s transcript", (provider) => {
         check: "isolation:outside-path",
         detail: `${shell} ..\\notes.md -> C:\\workspaces\\notes.md`,
         where: `${provider}/outside-shell.jsonl:2`,
+      },
+    ]);
+  });
+
+  test("a repo path inside a quoted cmd script is outside", () => {
+    expect([...scanSeed(`${provider}/quoted-type.jsonl`), ...scanSeed(`${provider}/quoted-junction.jsonl`)]).toEqual([
+      {
+        check: "isolation:outside-path",
+        detail: `${script} C:\\wt\\odd-design\\eval-button\\package.json -> C:\\wt\\odd-design\\eval-button\\package.json`,
+        where: `${provider}/quoted-type.jsonl:2`,
+      },
+      {
+        check: "isolation:outside-path",
+        detail: `${script} C:\\wt\\odd-design\\eval-button -> C:\\wt\\odd-design\\eval-button`,
+        where: `${provider}/quoted-junction.jsonl:2`,
       },
     ]);
   });
