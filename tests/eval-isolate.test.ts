@@ -50,6 +50,7 @@ describe.each(["claude", "cursor"])("%s transcript", (provider) => {
 
   test("a here-string or heredoc body follows the written-contents rules and the rest of the command the shell rules", () => {
     expect(scanSeed(`${provider}/here-string.jsonl`)).toEqual([
+      { check: "isolation:outside-path", detail: `${shell} ../api.ts -> C:\\workspaces\\api.ts`, where: `${provider}/here-string.jsonl:3` },
       {
         check: "isolation:outside-path",
         detail: `${script} C:\\wt\\odd-design\\eval-button\\package.json -> C:\\wt\\odd-design\\eval-button\\package.json`,
