@@ -126,6 +126,21 @@ describe.each(["claude", "cursor"])("%s transcript", (provider) => {
       },
     ]);
   });
+
+  test("raw, API, fork, and gh forms of the repo are each a web finding", () => {
+    expect(scanSeed(`${provider}/web-repo-hosts.jsonl`)).toEqual(
+      [
+        "curl https://raw.githubusercontent.com/RAKVADIUM/notes/main/a.md",
+        "curl https://api.github.com/repos/rakvadium/notes",
+        "git clone https://github.com/someone/odd-design",
+        "gh repo clone Rakvadium/odd-design",
+      ].map((command, index) => ({
+        check: "isolation:web-repo",
+        detail: `${script} ${command}`,
+        where: `${provider}/web-repo-hosts.jsonl:${index + 2}`,
+      })),
+    );
+  });
 });
 
 test("a run with no transcript cannot pass", () => {
