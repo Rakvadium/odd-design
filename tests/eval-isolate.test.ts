@@ -37,6 +37,17 @@ describe.each(["claude", "cursor"])("%s transcript", (provider) => {
     ]);
   });
 
+  test("a rooted shell word is a path only under a drive or a real POSIX root", () => {
+    expect(scanSeed(`${provider}/posix-roots.jsonl`)).toEqual([
+      { check: "isolation:outside-path", detail: `${shell} /etc/hosts -> /etc/hosts`, where: `${provider}/posix-roots.jsonl:3` },
+      {
+        check: "isolation:outside-path",
+        detail: `${shell} /c/wt/odd-design/eval-button/package.json -> C:\\wt\\odd-design\\eval-button\\package.json`,
+        where: `${provider}/posix-roots.jsonl:4`,
+      },
+    ]);
+  });
+
   test("a repo path inside a quoted cmd script is outside", () => {
     expect([...scanSeed(`${provider}/quoted-type.jsonl`), ...scanSeed(`${provider}/quoted-junction.jsonl`)]).toEqual([
       {
