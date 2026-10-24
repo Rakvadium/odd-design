@@ -88,7 +88,7 @@ t3_thread_wait {"threadId": "<threadId>", "timeoutMs": 300000}
 bun eval scan app-001
 ```
 
-The scan reads every file under `~/.claude/projects/C--workspaces-app-001/` and `~/.cursor/projects/C-workspaces-app-001/`, plus the run folder outside `node_modules` and `.git`. It prints one line per finding and ends with the count:
+The scan reads every file under `~/.claude/projects/C--workspaces-app-001/`, `%TEMP%/claude/C--workspaces-app-001/`, and `~/.cursor/projects/C-workspaces-app-001/`, plus the run folder outside `node_modules` and `.git`. It prints one line per finding and ends with the count:
 
 ```
 isolation: 0 findings

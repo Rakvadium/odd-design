@@ -316,8 +316,12 @@ function transcriptDirs(folder: string): string[] {
   ];
 }
 
+function tempDir(folder: string): string {
+  return join(tmpdir(), "claude", claudeSlug(folder));
+}
+
 function runFolders(folder: string): string[] {
-  return [folder, ...transcriptDirs(folder), join(tmpdir(), "claude", claudeSlug(folder))];
+  return [folder, ...transcriptDirs(folder), tempDir(folder)];
 }
 
 function readTree(dir: string, skip: Set<string>): TextFile[] {
@@ -353,7 +357,7 @@ export function scan(runId: string): number {
   const { folder } = JSON.parse(readFileSync(join(runDir, "launch.json"), "utf8")) as { folder: string };
   const tokens = readTokens(repo);
   const transcripts = transcriptDirs(folder).flatMap((dir) => readTree(dir, new Set()));
-  const folderFiles = readTree(folder, new Set(["node_modules", ".git"]));
+  const folderFiles = [...readTree(folder, new Set(["node_modules", ".git"])), ...readTree(tempDir(folder), new Set())];
   const result = scanLog({ folder, tokens, transcripts, folderFiles });
   const report = { runId, folder, transcripts: transcripts.map((t) => t.file), ...result };
   writeFileSync(join(runDir, "isolation.json"), `${JSON.stringify(report, null, 2)}\n`);
