@@ -161,6 +161,18 @@ describe.each(["claude", "cursor"])("%s transcript", (provider) => {
   });
 });
 
+test("a Cursor shell call resolves its paths against its own working_directory", () => {
+  expect(scanSeed("cursor/working-directory.jsonl")).toEqual([
+    {
+      check: "isolation:outside-path",
+      detail: "Shell ..\\..\\..\\notes.md -> C:\\workspaces\\notes.md",
+      where: "cursor/working-directory.jsonl:3",
+    },
+    { check: "isolation:outside-path", detail: "Shell C:\\workspaces -> C:\\workspaces", where: "cursor/working-directory.jsonl:4" },
+    { check: "isolation:outside-path", detail: "Shell ..\\notes.md -> C:\\workspaces\\notes.md", where: "cursor/working-directory.jsonl:5" },
+  ]);
+});
+
 test("a run with no transcript cannot pass", () => {
   expect(scanLog({ folder, tokens, transcripts: [], folderFiles: [] }).findings).toEqual([
     { check: "isolation:no-transcript", detail: "no transcript", where: folder },
