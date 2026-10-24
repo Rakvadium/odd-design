@@ -13,6 +13,6 @@
     "skipLibCheck": true,
     "verbatimModuleSyntax": true
   },
-  "include": ["src", "stories", "tests", ".storybook", "e2e", "playwright.config.ts"],
-  "exclude": ["tests/fixtures"]
+  "include": ["src", "stories", "tests", ".storybook", "e2e", "playwright.config.ts", "eval"],
+  "exclude": ["tests/fixtures", "eval/template"]
 }
