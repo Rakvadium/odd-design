@@ -14,7 +14,7 @@ Tests alone are not sufficient verification. A PR is verified only when its unit
 
 ## Decide these before the build starts
 
-The build waits for your go. Each item has a default, and the build uses it unless you say otherwise.
+The operator approved every default on 2026-10-24, with decision 9 changed to Sonnet 5.5.
 
 1. **The two models are Claude Opus 5.5 and Grok 4.7.** Opus runs through `claude`. Grok runs through `cursor-agent` inside the same Linux image, where Cursor's sandbox can run. Cursor's sandbox refuses to start on Windows (Appendix A, B-E2). E1 proves it in the image. If it fails there, the default falls back to Claude Sonnet 5.5, and E1 says so.
 2. **Each agent runs in a throwaway Docker container.** On native Windows, Claude Code's Bash sandbox is switched off, so Bash read a canary and reached GitHub (A-E2). Inside a Linux container, the sandbox runtime that Claude Code uses (`srt`) blocked both when run on its own (A-E3). Whether `claude` turns that sandbox on inside the container is still a guess (G1), and E1 settles it first. The runtime's own controls still do the scoping. Docker only gives them a platform where they work. The alternative is a no-shell agent on Windows, which never sees a TypeScript error (Appendix B).
@@ -24,7 +24,7 @@ The build waits for your go. Each item has a default, and the build uses it unle
 6. **You create the two agent logins once.** Run `claude setup-token` and set `CLAUDE_CODE_OAUTH_TOKEN`. Create a Cursor API key and set `CURSOR_API_KEY`. The harness passes both into each container and writes them nowhere.
 7. **Videos stay local.** Each run writes `drive.webm` under `.verify/eval/runs/<id>/`, which git ignores. Nothing is pushed to an evidence branch.
 8. **The brief keeps "send themselves a test notification".** It is product language you approved, and the blinding word list targets words about the measurement. The folder name check exempts that phrase and the route `POST /notifications/test`. The alternative is "a sample notification".
-9. **The round reviewer runs on Gemini 4 Argon, a third model family.** The eval playbook wants a blinded judge whose family differs from the candidates, and the candidates are Claude and Grok. odd-mode does not use Gemini unless you say so, so this needs your yes. The alternative is an Opus reviewer that sees only run labels.
+9. **The round reviewer runs on Claude Sonnet 5.5.** The operator chose it because Gemini 4 Argon is not available. The eval playbook wants a judge from a family other than the candidates', and Sonnet shares Opus's family, so the reviewer sees only run labels and copies with the model removed. Where its notes and the lead's reading disagree, the lead records it.
 
 ## Throughput checkpoint
 
@@ -86,7 +86,7 @@ Each live lane runs locally in its own worktree at the PR head. Cursor cloud VMs
 ### Run the rounds, after E4
 
 - [ ] Run round 1 with `bun eval round`. It starts one fresh run per brief and model, in parallel, against the current tarball. The evidence is the round line in `.verify/eval/runs.jsonl` and one `scorecard.json` per run.
-- [ ] Spawn one blinded reviewer per round on the model from decision 9. It reads copies of each run's diff and scorecard labeled `r1`, `r2`, and so on, with the model removed, and lists corners the agent cut that no check caught. Each one becomes a grader PR (G1, G2, and so on) that adds one row and its seed to `eval/checks.ts`. A grader PR changes the grader version, so rounds before it stop counting toward decision 5. It never changes what the agent sees.
+- [ ] Spawn one blinded reviewer per round on `claudeAgent claude-sonnet-5-5`, per decision 9. It reads copies of each run's diff and scorecard labeled `r1`, `r2`, and so on, with the model removed, and lists corners the agent cut that no check caught. Each one becomes a grader PR (G1, G2, and so on) that adds one row and its seed to `eval/checks.ts`. A grader PR changes the grader version, so rounds before it stop counting toward decision 5. It never changes what the agent sees.
 - [ ] Read every run's code and video yourself, end to end. Where you and the reviewer disagree, the rubric or a check is ambiguous. Record it.
 - [ ] Record new holes with `bun eval status --record`. Each `open` hole gets an H PR.
 - [ ] After each H PR is stack-ready, run `bun eval rerun <signature>`, then the next full round.
