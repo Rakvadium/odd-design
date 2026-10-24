@@ -61,6 +61,25 @@ describe.each(["claude", "cursor"])("%s transcript", (provider) => {
         detail: `${script} ..\\notes.md -> C:\\workspaces\\notes.md`,
         where: `${provider}/cd-verbs.jsonl:2`,
       },
+      {
+        check: "isolation:outside-path",
+        detail: `${script} ..\\notes.md -> C:\\workspaces\\notes.md`,
+        where: `${provider}/cd-verbs.jsonl:3`,
+      },
+    ]);
+  });
+
+  test("each transcript starts its shell in the run folder", () => {
+    const transcripts = ["cd-then-parent", "outside-shell"].map((seed) => {
+      const file = `${provider}/${seed}.jsonl`;
+      return { file, text: readFileSync(join(seeds, file), "utf8") };
+    });
+    expect(scanLog({ folder, tokens, transcripts, folderFiles: [] }).findings).toEqual([
+      {
+        check: "isolation:outside-path",
+        detail: `${shell} ..\\notes.md -> C:\\workspaces\\notes.md`,
+        where: `${provider}/outside-shell.jsonl:2`,
+      },
     ]);
   });
 
