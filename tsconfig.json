@@ -16,6 +16,6 @@
       "odd-design/react": ["./src/react/index.ts"]
     }
   },
-  "include": ["src", "stories", "tests", ".storybook", ".storybook-react", ".storybook-composed", "scripts/capture-stories.ts", "scripts/storybooks.ts", "e2e", "playwright.config.ts"],
-  "exclude": ["tests/fixtures"]
+  "include": ["src", "stories", "tests", ".storybook", ".storybook-react", ".storybook-composed", "scripts/capture-stories.ts", "scripts/storybooks.ts", "e2e", "playwright.config.ts", "eval"],
+  "exclude": ["tests/fixtures", "eval/template"]
 }
