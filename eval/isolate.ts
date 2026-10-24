@@ -163,7 +163,7 @@ function commandPaths(shell: Shell, command: string): PathHit[] {
   const bodies: string[] = [];
   const script = command.replace(HERE_BODY, (...match) => {
     const { hereString, heredoc, rest } = match.at(-1) as Record<string, string | undefined>;
-    bodies.push(hereString ?? heredoc ?? "");
+    bodies.push((hereString ?? heredoc)!);
     return `""${rest ?? ""}`;
   });
   return [
