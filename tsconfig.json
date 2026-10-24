@@ -11,8 +11,11 @@
     "noEmit": true,
     "allowImportingTsExtensions": true,
     "skipLibCheck": true,
-    "verbatimModuleSyntax": true
+    "verbatimModuleSyntax": true,
+    "paths": {
+      "odd-design/react": ["./src/react/index.ts"]
+    }
   },
-  "include": ["src", "stories", "tests", ".storybook", "e2e", "playwright.config.ts", "eval"],
+  "include": ["src", "stories", "tests", ".storybook", ".storybook-react", ".storybook-composed", "scripts/capture-stories.ts", "scripts/storybooks.ts", "e2e", "playwright.config.ts", "eval"],
   "exclude": ["tests/fixtures", "eval/template"]
 }

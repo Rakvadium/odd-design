@@ -10,9 +10,9 @@
     "./enhance": "./src/js/enhance.ts",
     "./palette": "./src/js/palette.ts",
     "./react": {
-      "types": "./dist/react/button.d.ts",
-      "import": "./dist/react/button.js",
-      "default": "./dist/react/button.js"
+      "types": "./dist/react/index.d.ts",
+      "import": "./dist/react/index.js",
+      "default": "./dist/react/index.js"
     },
     "./usage": {
       "types": "./dist/js/usage/dom.d.ts",
@@ -38,7 +38,8 @@
   ],
   "scripts": {
     "storybook": "storybook dev -p 6006 --no-open",
-    "build-storybook": "storybook build",
+    "storybook:react": "storybook dev -c .storybook-react -p 6007 --no-open",
+    "build-storybook": "bun scripts/storybooks.ts storybook-static",
     "build": "bun scripts/build.ts",
     "test": "bun test tests",
     "test:browsers": "playwright test",
@@ -68,6 +69,7 @@
     "@storybook/addon-a11y": "10.6.2",
     "@storybook/addon-docs": "10.6.2",
     "@storybook/html-vite": "10.6.2",
+    "@storybook/react-vite": "10.6.2",
     "@types/bun": "^1.4.3",
     "@types/culori": "^4.0.1",
     "@types/react": "^19.3.0",

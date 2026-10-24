@@ -23,8 +23,8 @@ export default defineConfig({
   // A fresh static build of Storybook, served as files. The dev server reloads pages while it
   // prepares code on first use, which interrupts tests mid-step.
   webServer: {
-    command: `bunx storybook build --quiet --disable-telemetry -o .verify/playwright/storybook && bun e2e/serve.ts .verify/playwright/storybook ${PORT}`,
-    url: `http://127.0.0.1:${PORT}/index.json`,
+    command: `bun scripts/storybooks.ts .verify/playwright/storybook && bun e2e/serve.ts .verify/playwright/storybook ${PORT}`,
+    url: `http://127.0.0.1:${PORT}/react/index.json`,
     reuseExistingServer: false,
     timeout: 300_000,
   },
