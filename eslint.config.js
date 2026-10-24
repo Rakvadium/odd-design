@@ -5,7 +5,7 @@ import odd from "./src/eslint/plugin.ts";
 
 export default defineConfig([
   {
-    ignores: ["tests/fixtures/**", ".verify/**", "storybook-static/**"],
+    ignores: ["tests/fixtures/**", ".verify/**", "storybook-static/**", "eval/template/**", "eval/seeds/**"],
   },
   {
     files: ["**/*.{ts,tsx}"],

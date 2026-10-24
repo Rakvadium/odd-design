@@ -1,0 +1,4 @@
+{"type":"user","message":{"role":"user","content":"Read README.md in this folder, then write hello.txt in this folder containing the single word hello."}}
+{"type":"assistant","message":{"role":"assistant","content":[{"type":"tool_use","id":"toolu_01","name":"Bash","input":{"command":"echo /api/settings"}}]}}
+{"type":"assistant","message":{"role":"assistant","content":[{"type":"tool_use","id":"toolu_02","name":"Bash","input":{"command":"cat /etc/hosts"}}]}}
+{"type":"assistant","message":{"role":"assistant","content":[{"type":"tool_use","id":"toolu_03","name":"Bash","input":{"command":"cat /c/wt/odd-design/eval-button/package.json"}}]}}

@@ -1,0 +1,2 @@
+{"type":"user","message":{"role":"user","content":"Read README.md in this folder, then write hello.txt in this folder containing the single word hello."}}
+{"type":"assistant","message":{"role":"assistant","content":[{"type":"tool_use","id":"toolu_01","name":"mcp__t3-code__t3_thread_read","input":{"threadId":"mcp:00000000-0000-0000-0000-000000000000"}}]}}

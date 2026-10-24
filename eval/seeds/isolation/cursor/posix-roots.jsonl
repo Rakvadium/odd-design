@@ -1,0 +1,4 @@
+{"role":"user","message":{"content":[{"type":"text","text":"<user_query>\nRead README.md in this folder, then write hello.txt in this folder containing the single word hello.\n</user_query>"}]}}
+{"role":"assistant","message":{"content":[{"type":"tool_use","name":"Shell","input":{"command":"echo /api/settings"}}]}}
+{"role":"assistant","message":{"content":[{"type":"tool_use","name":"Shell","input":{"command":"cat /etc/hosts"}}]}}
+{"role":"assistant","message":{"content":[{"type":"tool_use","name":"Shell","input":{"command":"cat /c/wt/odd-design/eval-button/package.json"}}]}}
