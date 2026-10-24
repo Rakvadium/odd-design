@@ -2,7 +2,7 @@
 
 Measured on `audit/test-suite` at `2c5766f`, 2026-10-24. The standard is the test-behavior-not-implementation principle. A test must call the code the way its users do and assert an observed result against a literal value. If it would pass with every import returning `undefined`, it gets rewritten or cut.
 
-Nothing has been deleted yet. Every cut and merge waits for Caleb's approval.
+This branch applies cut-list rows 1 to 16. Rows 17 and 18 and every rewrite except R1 and T2 stay open. R1 and T2 are applied.
 
 ## Summary
 
@@ -252,7 +252,7 @@ The e2e sweep catches three things `bun test` misses today:
 
 ## Cut list for approval
 
-Nothing has been deleted yet. These cuts and merges wait for Caleb's approval. Each duplicate target below was checked against the code on 2c5766f.
+This branch applies cut-list rows 1 to 16. Rows 17 and 18 and every rewrite except R1 and T2 stay open. R1 and T2 are applied. Each duplicate target below was checked against the code on 2c5766f.
 
 | # | Delete or merge | Tests removed | Still covered by |
 | --- | --- | --- | --- |
