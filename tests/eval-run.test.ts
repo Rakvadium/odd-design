@@ -1,5 +1,6 @@
 import { describe, expect, test, afterAll } from "bun:test";
-import { existsSync, readdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { tmpdir } from "node:os";
 import { join } from "node:path";
 
 const repo = join(import.meta.dir, "..");
@@ -8,6 +9,7 @@ const exempt = ["send themselves a test notification", "/notifications/test"];
 const skipDirs = new Set(["node_modules", "vendor", ".git"]);
 const skipText = new Set(["bun.lock"]);
 const needles = ["C:\\wt", "odd-design\\eval"];
+const index = join(repo, ".verify", "eval", "runs.jsonl");
 const briefApiPath = join(repo, "eval", "briefs", "settings", "api.ts");
 const briefDocPath = join(repo, "eval", "briefs", "settings", "API.md");
 const briefApi = readFileSync(briefApiPath, "utf8");
@@ -127,6 +129,14 @@ function prepareSettings(): Prepared {
   return prepared;
 }
 
+function dropRecords(runIds: string[]): void {
+  if (!existsSync(index)) return;
+  const kept = readFileSync(index, "utf8")
+    .split(/\r?\n/)
+    .filter((line) => line !== "" && !runIds.some((runId) => line.includes(`"runId":"${runId}"`)));
+  writeFileSync(index, kept.length === 0 ? "" : `${kept.join("\n")}\n`);
+}
+
 function remove(run: Prepared | undefined): void {
   if (run === undefined) return;
   rmSync(run.folder, { recursive: true, force: true });
@@ -148,6 +158,44 @@ test("a clean probe still writes a scratch folder", () => {
     remove(run);
   }
 });
+
+test("eight finishes at once keep eight records", async () => {
+  const folder = mkdtempSync(join(tmpdir(), "odd-finish-"));
+  const runIds = Array.from({ length: 8 }, (_, n) => `finish-${process.pid}-${n}`);
+  const runDirs = runIds.map((runId) => join(repo, ".verify", "eval", "runs", runId));
+  try {
+    mkdirSync(join(folder, "vendor"));
+    writeFileSync(join(folder, "vendor", "odd-design.tgz"), "tarball");
+    for (const [n, runId] of runIds.entries()) {
+      const launch = {
+        runId,
+        folder,
+        port: 4000 + n,
+        provider: "claudeAgent",
+        model: "claude-opus-5-5",
+        brief: "settings",
+        preparedAt: new Date().toISOString(),
+        gitSha: "0123456789abcdef0123456789abcdef01234567",
+        dirty: false,
+        threadId: `thread-${n}`,
+      };
+      mkdirSync(runDirs[n]!, { recursive: true });
+      writeFileSync(join(runDirs[n]!, "launch.json"), JSON.stringify(launch));
+      writeFileSync(join(runDirs[n]!, "isolation.json"), JSON.stringify({ findings: [] }));
+    }
+    const finished = runIds.map((runId) => Bun.spawn({ cmd: [process.execPath, "eval", "finish", runId], cwd: repo, stdout: "ignore", stderr: "ignore" }));
+    expect(await Promise.all(finished.map((child) => child.exited))).toEqual([0, 0, 0, 0, 0, 0, 0, 0]);
+    const threads = readFileSync(index, "utf8")
+      .split(/\r?\n/)
+      .filter((line) => runIds.some((runId) => line.includes(`"runId":"${runId}"`)))
+      .map((line) => JSON.parse(line).threadId)
+      .sort();
+    expect(threads).toEqual(["thread-0", "thread-1", "thread-2", "thread-3", "thread-4", "thread-5", "thread-6", "thread-7"]);
+  } finally {
+    dropRecords(runIds);
+    for (const dir of [folder, ...runDirs]) rmSync(dir, { recursive: true, force: true });
+  }
+}, 120_000);
 
 const settings = (async (): Promise<Prepared> => prepareSettings())();
 
@@ -188,7 +236,6 @@ describe("prepare --brief settings", () => {
   test("two settings runs listen on different ports", async () => {
     const first = await settings;
     const second = prepareSettings();
-    const index = join(repo, ".verify", "eval", "runs.jsonl");
     try {
       expect(readFileSync(briefApiPath, "utf8")).toBe(briefApi);
       expect(readFileSync(briefDocPath, "utf8")).toBe(briefDoc);
@@ -212,18 +259,12 @@ describe("prepare --brief settings", () => {
       }
     } finally {
       remove(second);
-      if (existsSync(index)) {
-        const kept = readFileSync(index, "utf8")
-          .split(/\r?\n/)
-          .filter((line) => line !== "" && !line.includes(`"runId":"${first.runId}"`) && !line.includes(`"runId":"${second.runId}"`));
-        writeFileSync(index, kept.length === 0 ? "" : `${kept.join("\n")}\n`);
-      }
+      dropRecords([first.runId, second.runId]);
     }
   }, 900_000);
 
   test("finish keeps one record when it runs twice", async () => {
     const run = await settings;
-    const index = join(repo, ".verify", "eval", "runs.jsonl");
     try {
       const first = runEval(["finish", run.runId]);
       const second = runEval(["finish", run.runId]);
@@ -235,9 +276,7 @@ describe("prepare --brief settings", () => {
       expect(lines).toHaveLength(1);
       expect(JSON.parse(lines[0] ?? "")).toMatchObject({ threadId: "thread-under-test", isolation: 0 });
     } finally {
-      if (!existsSync(index)) return;
-      const kept = readFileSync(index, "utf8").split(/\r?\n/).filter((line) => line !== "" && !line.includes(`"runId":"${run.runId}"`));
-      writeFileSync(index, kept.length === 0 ? "" : `${kept.join("\n")}\n`);
+      dropRecords([run.runId]);
     }
   }, 420_000);
 });
