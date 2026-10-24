@@ -1,7 +1,7 @@
 import { appendFileSync, existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
 import { randomBytes } from "node:crypto";
 import { homedir } from "node:os";
-import { dirname, join, relative, win32 } from "node:path";
+import { dirname, join, relative, resolve, win32 } from "node:path";
 
 export type ToolEvent = {
   tool: string;
@@ -194,7 +194,8 @@ function readTree(dir: string, skip: Set<string>): TextFile[] {
 }
 
 function tokenFile(checkout: string): string {
-  return join(checkout, ".verify", "eval", "tokens.txt");
+  const common = Bun.spawnSync(["git", "rev-parse", "--git-common-dir"], { cwd: checkout }).stdout.toString().trim();
+  return join(resolve(checkout, common), "odd-eval", "tokens.txt");
 }
 
 export function issueToken(checkout: string, runId: string): string {

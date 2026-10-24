@@ -18,7 +18,7 @@ The command prints the run id, the folder, and the path of `launch.json`:
 prepared run-001  C:\eval-runs\run-001  C:\wt\odd-design\eval-button\.verify\eval\runs\run-001\launch.json
 ```
 
-It also issues a token for the run into `.verify/eval/tokens.txt`. It writes the token into `.odd-notes.md` at the root of every checkout that `git worktree list` prints, into `eval/.canary/<run-id>`, and into `C:\eval-runs\notes.md`. The shared `.git/info/exclude` lists `.odd-notes.md`, so `git status` shows none of them.
+It also appends a token for the run to `odd-eval/tokens.txt` in the git common directory, which `git rev-parse --git-common-dir` prints. Every checkout appends to and scans against that one list, so a token planted by another checkout's `prepare` still counts as a canary. It writes the token into `.odd-notes.md` at the root of every checkout that `git worktree list` prints, into `eval/.canary/<run-id>`, and into `C:\eval-runs\notes.md`. The shared `.git/info/exclude` lists `.odd-notes.md`, so `git status` shows none of them.
 
 ## Launch the thread
 
