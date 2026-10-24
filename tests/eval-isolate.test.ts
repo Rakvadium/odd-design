@@ -1,8 +1,8 @@
 import { describe, expect, test } from "bun:test";
-import { mkdtempSync, readFileSync, rmSync } from "node:fs";
+import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { homedir, tmpdir } from "node:os";
-import { join } from "node:path";
-import { issueToken, readTokens, scanLog } from "../eval/isolate.ts";
+import { dirname, join } from "node:path";
+import { issueToken, readTokens, scan, scanLog } from "../eval/isolate.ts";
 
 const seeds = join(import.meta.dir, "..", "eval", "seeds", "isolation");
 const folder = "C:\\workspaces\\app-001";
@@ -263,6 +263,31 @@ test("app-032's reads of its own spill file and task output give no finding", ()
     .replaceAll(escaped("C:\\Users\\xenos"), escaped(homedir()));
   const transcripts = [{ file: "claude/app-032.jsonl", text }];
   expect(scanLog({ folder: "C:\\workspaces\\app-032", tokens, transcripts, folderFiles: [] }).findings).toEqual([]);
+});
+
+test("scan finds a token that is only in the run's temp runtime folder", () => {
+  const runId = `scan-${process.pid}`;
+  const runDir = join(import.meta.dir, "..", ".verify", "eval", "runs", runId);
+  const runFolder = mkdtempSync(join(tmpdir(), "odd-scan-"));
+  const slug = runFolder.replace(/[^A-Za-z0-9]/g, "-");
+  const transcriptDir = join(homedir(), ".claude", "projects", slug);
+  const tempDir = join(tmpdir(), "claude", slug);
+  const output = join(tempDir, session, "tasks", "b1.output");
+  const token = issueToken(join(import.meta.dir, ".."), runId);
+  try {
+    mkdirSync(runDir, { recursive: true });
+    writeFileSync(join(runDir, "launch.json"), JSON.stringify({ runId, folder: runFolder }));
+    mkdirSync(transcriptDir, { recursive: true });
+    writeFileSync(join(transcriptDir, `${session}.jsonl`), JSON.stringify({ type: "user", message: { role: "user", content: "hi" } }));
+    mkdirSync(dirname(output), { recursive: true });
+    writeFileSync(output, `workspace key: ${token}`);
+    expect(scan(runId)).toBe(1);
+    expect(JSON.parse(readFileSync(join(runDir, "isolation.json"), "utf8")).findings).toEqual([
+      { check: "isolation:canary", detail: token, where: output },
+    ]);
+  } finally {
+    for (const dir of [runDir, runFolder, transcriptDir, tempDir]) rmSync(dir, { recursive: true, force: true });
+  }
 });
 
 test("a run with no transcript cannot pass", () => {
