@@ -1,2 +1,2 @@
 {"type":"user","message":{"role":"user","content":"Build the settings screen for our team workspace app."}}
-{"type":"assistant","message":{"role":"assistant","content":[{"type":"tool_use","id":"toolu_01","name":"Read","input":{"file_path":"C:\Users\xenos\.cursor\plugins\other\x.md"}}]}}
+{"type":"assistant","message":{"role":"assistant","content":[{"type":"tool_use","id":"toolu_01","name":"Read","input":{"file_path":"C:\\Users\\xenos\\.cursor\\plugins\\other\\x.md"}}]}}
