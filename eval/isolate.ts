@@ -1,7 +1,7 @@
 import { appendFileSync, existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
 import { randomBytes } from "node:crypto";
 import { homedir } from "node:os";
-import { dirname, join, relative, resolve, win32 } from "node:path";
+import { delimiter, dirname, join, relative, resolve, win32 } from "node:path";
 
 export type ToolEvent = {
   tool: string;
@@ -42,6 +42,7 @@ const SEGMENT = /(?:"[^"]*"|'[^']*'|[^"';&|\n])+/g;
 const SHELL_WORD = /"([^"]*)"|'([^']*)'|[^\s"']+/g;
 const HERE_BODY = /@(["'])\r?\n(?<hereString>[\s\S]*?)\r?\n\1@|<<-?[ \t]*(["']?)(\w+)\3(?<rest>[^\n]*)\n(?<heredoc>[\s\S]*?)\n[ \t]*\4(?=\r?\n|$)/g;
 const CD = /^(cd|chdir|set-location|sl|pushd|popd)$/i;
+const VARIABLE = /^(?:%([a-z]\w*)%|\$env:([a-z]\w*)|\$\{env:([a-z]\w*)\}|\$\{([a-z]\w*)\}|\$([a-z]\w*))/i;
 
 type Shell = { cwd: string; stack: string[] };
 type PathHit = [raw: string, resolved: string | null];
@@ -85,17 +86,20 @@ function toolEvents(transcript: TextFile): ToolEvent[] {
   return events;
 }
 
-function env(name: string): string | undefined {
+function variableValue(variable: RegExpExecArray, cwd: string): string | undefined {
+  if (/^(%cd%|\$\{?pwd\}?)$/i.test(variable[0])) return cwd;
+  const name = variable.slice(1).find(Boolean)!;
   if (/^home$/i.test(name)) return process.env.HOME ?? homedir();
   const key = Object.keys(process.env).find((k) => k.toLowerCase() === name.toLowerCase());
-  return key === undefined ? undefined : process.env[key];
+  const value = key === undefined ? undefined : process.env[key];
+  return value?.includes(delimiter) ? undefined : value;
 }
 
-function expand(raw: string): string | null {
+function expand(raw: string, cwd: string): string | null {
   if (raw === "~" || /^~[\\/]/.test(raw)) return homedir() + raw.slice(1);
-  const variable = /^(?:%(\w+)%|\$env:(\w+)|\$\{(\w+)\}|\$(\w+))/i.exec(raw);
+  const variable = VARIABLE.exec(raw);
   if (variable) {
-    const value = env(variable.slice(1).find(Boolean)!);
+    const value = variableValue(variable, cwd);
     return value === undefined ? null : value + raw.slice(variable[0].length);
   }
   const drive = /^\/([a-z])(\/|$)/i.exec(raw);
@@ -105,13 +109,13 @@ function expand(raw: string): string | null {
 
 function shellPath(word: string): boolean {
   if (word.startsWith("\\\\")) return true;
-  if (/^~([\\/]|$)/.test(word) || /^(%\w+%|\$env:\w+|\$\{?\w+\}?)/i.test(word)) return true;
+  if (/^~([\\/]|$)/.test(word) || VARIABLE.test(word)) return true;
   if (/^\/[a-z]\//i.test(word) || POSIX_ROOT.test(word)) return true;
   return word.split(/[\\/]/).includes("..");
 }
 
 function writtenPath(word: string): boolean {
-  return /^\\{2,}[\w.-]{2,}\\/.test(word) || /^(%\w+%|\$[Ee][Nn][Vv]:\w+|\$\{?[A-Z_][A-Z0-9_]*\}?)/.test(word);
+  return /^\\{2,}[\w.-]{2,}\\/.test(word) || VARIABLE.test(word);
 }
 
 function pathsIn(text: string, isPath: (word: string) => boolean): string[] {
@@ -123,7 +127,7 @@ function pathsIn(text: string, isPath: (word: string) => boolean): string[] {
 }
 
 function resolvePath(base: string, raw: string): string | null {
-  const expanded = expand(raw);
+  const expanded = expand(raw, base);
   if (expanded === null) return null;
   return expanded.startsWith("/") ? expanded : win32.resolve(base, expanded);
 }
