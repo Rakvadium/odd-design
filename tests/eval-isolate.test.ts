@@ -48,6 +48,17 @@ describe.each(["claude", "cursor"])("%s transcript", (provider) => {
     ]);
   });
 
+  test("a here-string or heredoc body follows the written-contents rules and the rest of the command the shell rules", () => {
+    expect(scanSeed(`${provider}/here-string.jsonl`)).toEqual([
+      {
+        check: "isolation:outside-path",
+        detail: `${script} C:\\wt\\odd-design\\eval-button\\package.json -> C:\\wt\\odd-design\\eval-button\\package.json`,
+        where: `${provider}/here-string.jsonl:4`,
+      },
+      { check: "isolation:outside-path", detail: `${script} ..\\read.js -> C:\\workspaces\\read.js`, where: `${provider}/here-string.jsonl:4` },
+    ]);
+  });
+
   test("a repo path inside a quoted cmd script is outside", () => {
     expect([...scanSeed(`${provider}/quoted-type.jsonl`), ...scanSeed(`${provider}/quoted-junction.jsonl`)]).toEqual([
       {
