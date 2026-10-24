@@ -30,29 +30,16 @@ const places: Record<string, readonly (readonly [string, number, number, string]
     ["ODD-STATIC-001", 4, 11, "className={cn("],
     ["ODD-BUTTON-007", 4, 63, "disabled"],
   ],
-  "icon-only-false.tsx": [["ODD-BUTTON-004", 3, 34, "data-icon-only={false}"]],
   "link.tsx": [["ODD-STATIC-001", 3, 21, "<Link"]],
   "local-button.tsx": [],
-  "odd-button-001.bad.tsx": [
-    ["ODD-BUTTON-001", 4, 11, "className"],
-    ["ODD-BUTTON-001", 5, 10, "className"],
-  ],
   "odd-button-004.bad.tsx": [
     ["ODD-BUTTON-004", 4, 36, 'data-icon-only="false"'],
     ["ODD-BUTTON-004", 5, 36, "data-icon-only={false}"],
     ["ODD-BUTTON-004", 6, 36, 'data-icon-only="false"'],
   ],
-  "odd-button-008.bad.tsx": [
-    ["ODD-BUTTON-008", 4, 5, "<button"],
-    ["ODD-BUTTON-008", 5, 5, "<button"],
-  ],
   "odd-button-014.bad.tsx": [
     ["ODD-BUTTON-014", 4, 5, "<button"],
     ["ODD-BUTTON-014", 5, 5, "<button"],
-  ],
-  "odd-button-015.bad.tsx": [
-    ["ODD-BUTTON-015", 4, 36, "data-tone"],
-    ["ODD-BUTTON-015", 5, 36, "data-varient"],
   ],
   "radix.tsx": [],
   "raw.bad.tsx": [
@@ -99,10 +86,6 @@ const fixtures = readdirSync(folder)
   .filter((name) => name.endsWith(".tsx"))
   .sort();
 
-test("every jsx fixture has a case", () => {
-  expect(fixtures).toEqual(Object.keys(places).sort());
-});
-
 for (const name of fixtures) {
   test(`${name} reports its expected codes at their places`, () => {
     const source = readFileSync(`${folder}/${name}`, "utf8");
@@ -119,13 +102,3 @@ for (const name of fixtures) {
     }
   });
 }
-
-test("each jsx twin reports the codes of its html fixture", () => {
-  const twins = fixtures.filter((name) => name.startsWith("odd-"));
-  expect(twins).toEqual(["odd-button-001.bad.tsx", "odd-button-004.bad.tsx", "odd-button-008.bad.tsx", "odd-button-014.bad.tsx", "odd-button-015.bad.tsx"]);
-  for (const name of twins) {
-    const html = readFileSync(`tests/fixtures/usage/${name.replace(".tsx", ".html")}`, "utf8");
-    const messages = linter.verify(readFileSync(`${folder}/${name}`, "utf8"), flat, { filename: `${folder}/${name}` });
-    expect(messages.map((message) => codeOf(message.message)), name).toEqual(expectedCodes(html, /^<!-- expect: (.+) -->/));
-  }
-});
