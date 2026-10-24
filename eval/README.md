@@ -45,6 +45,8 @@ run app-001  opus  05m03s  isolation 0
 
 The printed name is the short model name. The JSON object stores the provider model id, such as `claude-opus-5-5`. It also stores the brief, the port, the provider, the thread id, the git SHA, the tarball SHA-256, the duration in milliseconds from the start of prepare, and the finding count. `launch.ts` is the only writer of that file.
 
+Packing in a brief prepare and writing `runs.jsonl` in `finish` take one lock, the file `odd-eval/lock` in the git common directory, so prepares and finishes started at once take turns. A process killed while it holds the lock leaves the file behind. The next prepare or finish waits 10 minutes, then fails and names the file to delete.
+
 In the run folder, `bun run api` starts the mock and `bun run dev` serves the app.
 
 ## Launch the thread

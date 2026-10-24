@@ -333,9 +333,13 @@ function readTree(dir: string, skip: Set<string>): TextFile[] {
     .map((file) => ({ file, text: readFileSync(file, "latin1") }));
 }
 
-function tokenFile(checkout: string): string {
+export function sharedDir(checkout: string): string {
   const common = Bun.spawnSync(["git", "rev-parse", "--git-common-dir"], { cwd: checkout }).stdout.toString().trim();
-  return join(resolve(checkout, common), "odd-eval", "tokens.txt");
+  return join(resolve(checkout, common), "odd-eval");
+}
+
+function tokenFile(checkout: string): string {
+  return join(sharedDir(checkout), "tokens.txt");
 }
 
 export function issueToken(checkout: string, runId: string): string {

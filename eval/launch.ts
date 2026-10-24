@@ -1,7 +1,19 @@
-import { createHash } from "node:crypto";
-import { appendFileSync, copyFileSync, existsSync, mkdirSync, readdirSync, readFileSync, renameSync, rmSync, writeFileSync } from "node:fs";
+import { createHash, randomUUID } from "node:crypto";
+import {
+  appendFileSync,
+  closeSync,
+  copyFileSync,
+  existsSync,
+  mkdirSync,
+  openSync,
+  readdirSync,
+  readFileSync,
+  renameSync,
+  rmSync,
+  writeFileSync,
+} from "node:fs";
 import { basename, join, resolve } from "node:path";
-import { issueToken, scan } from "./isolate.ts";
+import { issueToken, scan, sharedDir } from "./isolate.ts";
 
 export const MODELS = {
   opus: { provider: "claudeAgent", model: "claude-opus-5-5" },
@@ -47,6 +59,7 @@ const RUNS_ROOT = "C:\\workspaces";
 const README = "# Scratch\n\nThis folder is a scratch workspace. Keep new files at its top level.\n";
 const repo = join(import.meta.dir, "..");
 const state = join(repo, ".verify", "eval");
+const LOCK_WAIT_MS = 600_000;
 
 type BriefLaunch = {
   runId: string;
@@ -104,6 +117,28 @@ function plant(runId: string, token: string): void {
   mkdirSync(join(repo, "eval", ".canary"), { recursive: true });
   writeFileSync(join(repo, "eval", ".canary", runId), notes);
   writeFileSync(join(RUNS_ROOT, "notes.md"), notes);
+}
+
+function locked<T>(work: () => T): T {
+  const dir = sharedDir(repo);
+  mkdirSync(dir, { recursive: true });
+  const lock = join(dir, "lock");
+  const deadline = Date.now() + LOCK_WAIT_MS;
+  for (;;) {
+    try {
+      closeSync(openSync(lock, "wx"));
+      break;
+    } catch (error) {
+      if ((error as NodeJS.ErrnoException).code !== "EEXIST") throw error;
+      if (Date.now() > deadline) throw new Error(`${lock} is still held. Delete it if no prepare or finish is running.`);
+      Bun.sleepSync(100);
+    }
+  }
+  try {
+    return work();
+  } finally {
+    rmSync(lock, { force: true });
+  }
 }
 
 function copyTree(from: string, to: string): void {
@@ -177,17 +212,18 @@ export function prepareBrief(model: ModelName, brief: BriefName): string {
   const token = issueToken(repo, runId);
   plant(runId, token);
   copyTree(join(repo, "eval", "template"), folder);
-  const tarball = packTarball();
-  try {
-    mkdirSync(join(folder, "vendor"), { recursive: true });
-    copyFileSync(tarball, join(folder, "vendor", "odd-design.tgz"));
-    const briefDir = join(repo, "eval", "briefs", brief);
-    copyBrief(briefDir, folder, port);
-    const installed = run([process.execPath, "install"], folder);
-    if (installed.status !== 0) throw new Error(`install failed in ${folder}\n${installed.output}`);
-  } finally {
-    rmSync(tarball, { force: true });
-  }
+  locked(() => {
+    const tarball = packTarball();
+    try {
+      mkdirSync(join(folder, "vendor"), { recursive: true });
+      copyFileSync(tarball, join(folder, "vendor", "odd-design.tgz"));
+    } finally {
+      rmSync(tarball, { force: true });
+    }
+  });
+  copyBrief(join(repo, "eval", "briefs", brief), folder, port);
+  const installed = run([process.execPath, "install"], folder);
+  if (installed.status !== 0) throw new Error(`install failed in ${folder}\n${installed.output}`);
   const message = readFileSync(join(repo, "eval", "briefs", brief, "prompt.md"), "utf8");
   return publish(runId, folder, { runId, folder, port, ...MODELS[model], brief, preparedAt, message, threadId: null });
 }
@@ -241,15 +277,17 @@ function formatDuration(ms: number): string {
 function writeRecord(record: RunRecord): void {
   mkdirSync(state, { recursive: true });
   const index = join(state, "runs.jsonl");
-  const lines = existsSync(index) ? readFileSync(index, "utf8").split(/\r?\n/).filter((line) => line !== "") : [];
-  const kept = lines.filter((line) => {
-    const parsed: unknown = JSON.parse(line);
-    return !isRecord(parsed) || parsed.runId !== record.runId;
+  locked(() => {
+    const lines = existsSync(index) ? readFileSync(index, "utf8").split(/\r?\n/).filter((line) => line !== "") : [];
+    const kept = lines.filter((line) => {
+      const parsed: unknown = JSON.parse(line);
+      return !isRecord(parsed) || parsed.runId !== record.runId;
+    });
+    kept.push(JSON.stringify(record));
+    const tmp = `${index}.${randomUUID()}.tmp`;
+    writeFileSync(tmp, `${kept.join("\n")}\n`);
+    renameSync(tmp, index);
   });
-  kept.push(JSON.stringify(record));
-  const tmp = `${index}.tmp`;
-  writeFileSync(tmp, `${kept.join("\n")}\n`);
-  renameSync(tmp, index);
 }
 
 export function finish(runId: string): number {
