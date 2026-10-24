@@ -263,6 +263,24 @@ describe("prepare --brief settings", () => {
     }
   }, 900_000);
 
+  test("launch.json records the commit at pack time and finish copies it", async () => {
+    const run = await settings;
+    const launch = launchObject(run.launchPath);
+    const git = (...args: string[]) => Bun.spawnSync(["git", ...args], { cwd: repo }).stdout.toString().trim();
+    expect(launch).toMatchObject({ gitSha: git("rev-parse", "HEAD"), dirty: git("status", "--porcelain") !== "" });
+    try {
+      writeFileSync(run.launchPath, JSON.stringify({ ...launch, gitSha: "f".repeat(40), dirty: true }));
+      expect(runEval(["finish", run.runId]).status).toBe(0);
+      const line = readFileSync(index, "utf8")
+        .split(/\r?\n/)
+        .find((item) => item.includes(`"runId":"${run.runId}"`));
+      expect(JSON.parse(line ?? "{}")).toMatchObject({ gitSha: "ffffffffffffffffffffffffffffffffffffffff", dirty: true });
+    } finally {
+      writeFileSync(run.launchPath, JSON.stringify(launch));
+      dropRecords([run.runId]);
+    }
+  }, 420_000);
+
   test("finish keeps one record when it runs twice", async () => {
     const run = await settings;
     try {
