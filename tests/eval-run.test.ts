@@ -2,6 +2,7 @@ import { describe, expect, test, afterAll } from "bun:test";
 import { existsSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
+import { briefMessage } from "../eval/launch.ts";
 
 const repo = join(import.meta.dir, "..");
 const words = ["eval", "test", "judge", "experiment", "rubric", "score", "compare", "benchmark", "candidate", "arena", "grade", "canary"];
@@ -160,6 +161,16 @@ test("a clean probe still writes a scratch folder", () => {
     expect(existsSync(join(run.folder, "vendor"))).toBe(false);
   } finally {
     remove(run);
+  }
+});
+
+test("a CRLF copy of prompt.md gives the LF message git stores", () => {
+  const dir = mkdtempSync(join(tmpdir(), "odd-brief-"));
+  try {
+    writeFileSync(join(dir, "prompt.md"), promptBlob().replaceAll("\n", "\r\n"));
+    expect(briefMessage(dir)).toBe(promptBlob());
+  } finally {
+    rmSync(dir, { recursive: true, force: true });
   }
 });
 

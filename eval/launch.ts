@@ -208,6 +208,10 @@ export function prepare(model: ModelName, probe: ProbeName): string {
   return publish(runId, folder, { runId, folder, ...MODELS[model], probe, message, threadId: null });
 }
 
+export function briefMessage(briefDir: string): string {
+  return readFileSync(join(briefDir, "prompt.md"), "utf8").replaceAll("\r\n", "\n");
+}
+
 export function prepareBrief(model: ModelName, brief: BriefName): string {
   const preparedAt = new Date().toISOString();
   const { runId, folder } = allocate();
@@ -229,7 +233,7 @@ export function prepareBrief(model: ModelName, brief: BriefName): string {
   copyBrief(join(repo, "eval", "briefs", brief), folder, port);
   const installed = run([process.execPath, "install"], folder);
   if (installed.status !== 0) throw new Error(`install failed in ${folder}\n${installed.output}`);
-  const message = readFileSync(join(repo, "eval", "briefs", brief, "prompt.md"), "utf8");
+  const message = briefMessage(join(repo, "eval", "briefs", brief));
   return publish(runId, folder, { runId, folder, port, ...MODELS[model], brief, preparedAt, ...commit, message, threadId: null });
 }
 
