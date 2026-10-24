@@ -75,6 +75,16 @@ describe.each(["claude", "cursor"])("%s transcript", (provider) => {
     ]);
   });
 
+  test("a sed, awk, or perl script follows the written-contents rules and its file arguments the shell rules", () => {
+    expect(scanSeed(`${provider}/script-args.jsonl`)).toEqual(
+      [
+        { detail: `${shell} C:\\wt\\odd-design\\package.json -> C:\\wt\\odd-design\\package.json`, line: 3 },
+        { detail: `${shell} ../notes.md -> C:\\workspaces\\notes.md`, line: 5 },
+        { detail: `${shell} ../edit.sed -> C:\\workspaces\\edit.sed`, line: 6 },
+      ].map(({ detail, line }) => ({ check: "isolation:outside-path", detail, where: `${provider}/script-args.jsonl:${line}` })),
+    );
+  });
+
   test("a repo path inside a quoted cmd script is outside", () => {
     expect([...scanSeed(`${provider}/quoted-type.jsonl`), ...scanSeed(`${provider}/quoted-junction.jsonl`)]).toEqual([
       {
