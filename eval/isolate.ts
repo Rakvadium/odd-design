@@ -28,7 +28,7 @@ type ContentItem = { type?: unknown; id?: unknown; name?: unknown; input?: unkno
 const PATH_FIELDS = new Set(["file_path", "path", "paths", "notebook_path", "target_directory", "directory", "cwd", "working_directory"]);
 const GLOB_FIELDS = new Set(["glob_pattern", "glob"]);
 const CONTENT_FIELDS = new Set(["content", "contents", "new_string"]);
-const DEVICES = new Set(["/dev/null", "/dev/stdin", "/dev/stdout", "/dev/stderr"]);
+const POSIX_ROOT = /^\/(etc|usr|home|root|tmp|mnt|proc|var|opt|bin)(\/|$)/;
 const WEB_TOOLS = new Set(["WebFetch", "WebSearch"]);
 const MCP_ENVELOPES = new Set(["CallMcpTool", "call_mcp_tool", "CallDynamicTool"]);
 const T3_SERVER = /t3[-_]code/i;
@@ -105,7 +105,7 @@ function expand(raw: string): string | null {
 function shellPath(word: string): boolean {
   if (word.startsWith("\\\\")) return true;
   if (/^~([\\/]|$)/.test(word) || /^(%\w+%|\$env:\w+|\$\{?\w+\}?)/i.test(word)) return true;
-  if (/^\/[a-z]\//i.test(word) || /^\/[^/]+\/./.test(word)) return !DEVICES.has(word);
+  if (/^\/[a-z]\//i.test(word) || POSIX_ROOT.test(word)) return true;
   return word.split(/[\\/]/).includes("..");
 }
 
