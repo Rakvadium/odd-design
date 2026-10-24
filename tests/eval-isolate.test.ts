@@ -83,6 +83,23 @@ describe.each(["claude", "cursor"])("%s transcript", (provider) => {
     ]);
   });
 
+  test("an absolute path written into a file is outside, and relative source paths are not", () => {
+    const edit = provider === "claude" ? "Edit" : "StrReplace";
+    const profile = (process.env.USERPROFILE ??= "C:\\Users\\eval");
+    expect([...scanSeed(`${provider}/write-then-run.jsonl`), ...scanSeed(`${provider}/write-source.jsonl`)]).toEqual([
+      {
+        check: "isolation:outside-path",
+        detail: `Write C:\\\\wt\\\\odd-design\\\\eval-button\\\\package.json -> C:\\wt\\odd-design\\eval-button\\package.json`,
+        where: `${provider}/write-then-run.jsonl:2`,
+      },
+      {
+        check: "isolation:outside-path",
+        detail: `${edit} %USERPROFILE%\\\\.odd-notes.md -> ${profile}\\.odd-notes.md`,
+        where: `${provider}/write-then-run.jsonl:4`,
+      },
+    ]);
+  });
+
   test("a read of the repo is outside", () => {
     expect(scanSeed(`${provider}/outside-read.jsonl`)).toEqual([
       {
