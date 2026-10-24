@@ -28,7 +28,7 @@ Run this from the repo root.
 bun eval prepare --brief settings --model opus
 ```
 
-`--model` is `opus` or `grok`, the same names as a probe. The command packs odd-design, copies `eval/template/` into the run folder, copies that tarball to `vendor/odd-design.tgz`, and runs `bun install` in the folder. It also copies `eval/briefs/settings/api.ts` and `eval/briefs/settings/API.md`, with this run's port written where the brief names its port. `launch.json` records that port, plus `gitSha` and `dirty`, the commit and whether the tree had changes when the tarball was packed. `finish` copies both into the record. The `message` in `launch.json` is `eval/briefs/settings/prompt.md` with the same bytes.
+`--model` is `opus` or `grok`, the same names as a probe. The command packs odd-design, copies `eval/template/` into the run folder, copies that tarball to `vendor/odd-design.tgz`, and runs `bun install` in the folder. It also copies `eval/briefs/settings/api.ts` and `eval/briefs/settings/API.md`, with this run's port written where the brief names its port. Prepare picks a port that is free at that moment. Another process can, rarely, take it before the agent starts the mock, and then the agent sees a bind error. `launch.json` records that port, plus `gitSha` and `dirty`, the commit and whether the tree had changes when the tarball was packed. `finish` copies both into the record. The `message` in `launch.json` is `eval/briefs/settings/prompt.md` as git stores it, with LF line endings even when the checkout has CRLF.
 
 Launch and wait with the same two T3 calls as a probe. Write the returned `threadId` into `launch.json`. Then scan.
 
