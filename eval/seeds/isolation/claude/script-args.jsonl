@@ -4,3 +4,4 @@
 {"type":"assistant","message":{"role":"assistant","content":[{"type":"tool_use","id":"toolu_3","name":"Bash","input":{"command":"awk '{ print \"/var/\" $1 }' src/routes.txt"}}]}}
 {"type":"assistant","message":{"role":"assistant","content":[{"type":"tool_use","id":"toolu_4","name":"Bash","input":{"command":"perl -ne \"print if /var/\" ../notes.md"}}]}}
 {"type":"assistant","message":{"role":"assistant","content":[{"type":"tool_use","id":"toolu_5","name":"Bash","input":{"command":"sed -f ../edit.sed src/settings.css"}}]}}
+{"type":"assistant","message":{"role":"assistant","content":[{"type":"tool_use","id":"toolu_6","name":"Bash","input":{"command":"perl ../build.pl src/routes.txt"}}]}}

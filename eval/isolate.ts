@@ -46,7 +46,7 @@ const VARIABLE = /^(?:%([a-z]\w*)%|\$env:([a-z]\w*)|\$\{env:([a-z]\w*)\}|\$\{([a
 
 type Shell = { cwd: string; stack: string[] };
 type PathHit = [raw: string, resolved: string | null];
-type Role = "pattern" | "pattern-file" | "value" | "list" | "flag";
+type Role = "pattern" | "pattern-file" | "value" | "list" | "flag" | "file";
 type ParseOption = (word: string) => [role: Role, attached: string] | null;
 const TAKES_VALUE = new Set<string>(["pattern", "pattern-file", "value"]);
 const NAMES_PATTERN = new Set<string>(["pattern", "pattern-file", "list"]);
@@ -99,8 +99,7 @@ const SEARCH = new Map<string, ParseOption>(
     },
     sed: getopt({ pattern: "-e --expression", "pattern-file": "-f --file", value: "-l --line-length" }),
     awk: getopt({ pattern: "-e --source", "pattern-file": "-f --file", value: "-F -v --assign --field-separator" }),
-    // perl takes its script only from -e or -E. A positional argument is a script file or an input file.
-    perl: (word) => perlScript(word) ?? ["flag", ""],
+    perl: (word) => perlScript(word) ?? ["file", ""],
   }),
 );
 

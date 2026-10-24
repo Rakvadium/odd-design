@@ -81,6 +81,7 @@ describe.each(["claude", "cursor"])("%s transcript", (provider) => {
         { detail: `${shell} C:\\wt\\odd-design\\package.json -> C:\\wt\\odd-design\\package.json`, line: 3 },
         { detail: `${shell} ../notes.md -> C:\\workspaces\\notes.md`, line: 5 },
         { detail: `${shell} ../edit.sed -> C:\\workspaces\\edit.sed`, line: 6 },
+        { detail: `${shell} ../build.pl -> C:\\workspaces\\build.pl`, line: 7 },
       ].map(({ detail, line }) => ({ check: "isolation:outside-path", detail, where: `${provider}/script-args.jsonl:${line}` })),
     );
   });
