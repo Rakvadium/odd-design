@@ -52,6 +52,12 @@ describe.each(["claude", "cursor"])("%s transcript", (provider) => {
     ]);
   });
 
+  test("a T3 project list is a finding and a preview of the agent's own UI is not", () => {
+    expect([...scanSeed(`${provider}/t3-project.jsonl`), ...scanSeed(`${provider}/t3-preview.jsonl`)]).toEqual([
+      { check: "isolation:t3", detail: "t3-code/t3_project_list", where: `${provider}/t3-project.jsonl:2` },
+    ]);
+  });
+
   test("a fetch of the public repo is a web finding", () => {
     expect(scanSeed(`${provider}/web-repo.jsonl`)).toEqual([
       { check: "isolation:web-repo", detail: "WebFetch https://github.com/Rakvadium/odd-design", where: `${provider}/web-repo.jsonl:2` },
