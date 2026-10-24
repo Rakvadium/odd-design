@@ -36,7 +36,8 @@ const T3_OWN_UI = /^(html_preview|html_render)$|^preview_/;
 const REPO = /rakvadium|odd-design/i;
 const REPO_IN_SHELL = /github\.com[/:]rakvadium|https?:\/\/\S*odd-design|\bgh\s.*odd-design/i;
 const repo = join(import.meta.dir, "..");
-const SHELL_TOKEN = /"([^"]*)"|'([^']*)'|[^\s"'|;&<>()]+/g;
+const WORD_BREAK = /[\s"'`|;&<>(),=]+/;
+const DRIVE = /(?<![a-z])[a-z]:[\\/]/i;
 
 function record(value: unknown): Record<string, unknown> {
   return typeof value === "object" && value !== null && !Array.isArray(value) ? (value as Record<string, unknown>) : {};
@@ -95,18 +96,19 @@ function expand(raw: string): string | null {
   return raw;
 }
 
-function looksLikePath(token: string): boolean {
-  if (/^[a-z]:([\\/]|$)/i.test(token) || token.startsWith("\\\\")) return true;
-  if (/^~([\\/]|$)/.test(token) || /^(%\w+%|\$env:\w+|\$\{?\w+\}?)/i.test(token)) return true;
-  if (/^\/[a-z]\//i.test(token) || /^\/[^/]+\/./.test(token)) return !DEVICES.has(token);
-  return token.split(/[\\/]/).includes("..");
+function looksLikePath(word: string): boolean {
+  if (word.startsWith("\\\\")) return true;
+  if (/^~([\\/]|$)/.test(word) || /^(%\w+%|\$env:\w+|\$\{?\w+\}?)/i.test(word)) return true;
+  if (/^\/[a-z]\//i.test(word) || /^\/[^/]+\/./.test(word)) return !DEVICES.has(word);
+  return word.split(/[\\/]/).includes("..");
 }
 
 function shellPaths(command: string): string[] {
-  return [...command.matchAll(SHELL_TOKEN)]
-    .map((m) => m[1] ?? m[2] ?? m[0])
-    .map((token) => (/^-[^=]*=/.test(token) ? token.slice(token.indexOf("=") + 1) : token))
-    .filter(looksLikePath);
+  return command.split(WORD_BREAK).flatMap((word) => {
+    const drive = DRIVE.exec(word);
+    if (drive) return [word.slice(drive.index)];
+    return looksLikePath(word) ? [word] : [];
+  });
 }
 
 function rawPaths(event: ToolEvent): string[] {
