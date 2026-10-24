@@ -1,5 +1,5 @@
 import { describe, expect, test, afterAll } from "bun:test";
-import { existsSync, readdirSync, readFileSync, rmSync } from "node:fs";
+import { existsSync, readdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 
 const repo = join(import.meta.dir, "..");
@@ -122,7 +122,12 @@ test("a clean probe still writes a scratch folder", () => {
 const settings = (async (): Promise<Prepared> => {
   const result = runEval(["prepare", "--brief", "settings", "--model", "opus"]);
   if (result.status !== 0) throw new Error(`${result.stdout}\n${result.stderr}`);
-  return preparedFrom(result.stdout);
+  const prepared = preparedFrom(result.stdout);
+  const launch: unknown = JSON.parse(readFileSync(prepared.launchPath, "utf8"));
+  if (typeof launch !== "object" || launch === null) throw new Error("launch.json is not an object");
+  writeFileSync(prepared.launchPath, `${JSON.stringify({ ...launch, threadId: "thread-under-test" }, null, 2)}\n`);
+  writeFileSync(join(prepared.launchPath, "..", "isolation.json"), `${JSON.stringify({ findings: [] })}\n`);
+  return prepared;
 })();
 
 afterAll(async () => {
@@ -157,5 +162,25 @@ describe("prepare --brief settings", () => {
   test("names and text the harness wrote have no measurement word", async () => {
     const run = await settings;
     expect(harnessHits(run.folder)).toEqual([]);
+  }, 420_000);
+
+  test("finish keeps one record when it runs twice", async () => {
+    const run = await settings;
+    const index = join(repo, ".verify", "eval", "runs.jsonl");
+    try {
+      const first = runEval(["finish", run.runId]);
+      const second = runEval(["finish", run.runId]);
+      expect(first.status).toBe(0);
+      expect(second.status).toBe(0);
+      const lines = existsSync(index)
+        ? readFileSync(index, "utf8").split(/\r?\n/).filter((line) => line.includes(`"runId":"${run.runId}"`))
+        : [];
+      expect(lines).toHaveLength(1);
+      expect(JSON.parse(lines[0] ?? "")).toMatchObject({ threadId: "thread-under-test", isolation: 0 });
+    } finally {
+      if (!existsSync(index)) return;
+      const kept = readFileSync(index, "utf8").split(/\r?\n/).filter((line) => line !== "" && !line.includes(`"runId":"${run.runId}"`));
+      writeFileSync(index, kept.length === 0 ? "" : `${kept.join("\n")}\n`);
+    }
   }, 420_000);
 });
