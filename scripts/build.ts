@@ -7,6 +7,9 @@ const entries = [
   "src/react/button.tsx",
   "src/js/usage/dom.ts",
   "src/js/usage/test-setup.ts",
+  "src/js/enhance.ts",
+  "src/js/appearance.ts",
+  "src/js/palette.ts",
   "src/eslint/plugin.ts",
 ];
 
