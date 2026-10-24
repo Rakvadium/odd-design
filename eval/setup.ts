@@ -1,4 +1,4 @@
-import { cpSync, existsSync, mkdirSync, readdirSync, readFileSync, renameSync, writeFileSync } from "node:fs";
+import { cpSync, existsSync, mkdirSync, readdirSync, readFileSync, renameSync } from "node:fs";
 import { join } from "node:path";
 
 const repo = join(import.meta.dir, "..");
@@ -19,19 +19,6 @@ function nextApp(root: string): string {
   throw new Error(`no free app folder under ${root}`);
 }
 
-function install(folder: string): void {
-  try {
-    run([process.execPath, "install"], folder);
-  } catch (error) {
-    const file = join(folder, "package.json");
-    const manifest = JSON.parse(readFileSync(file, "utf8")) as { dependencies: { "odd-design": string } };
-    const tarball = join(folder, "vendor/odd-design.tgz").replaceAll("\\", "/");
-    manifest.dependencies["odd-design"] = `file:${tarball}`;
-    writeFileSync(file, `${JSON.stringify(manifest, null, 2)}\n`);
-    console.error(error instanceof Error ? error.message : error);
-    run([process.execPath, "install"], folder);
-  }
-}
 if (!existsSync(parent)) throw new Error(`missing parent folder ${parent}`);
 if (!existsSync(join(repo, "node_modules"))) run([process.execPath, "install"], repo);
 run([process.execPath, "run", "build"], repo);
@@ -41,8 +28,10 @@ const vendor = join(app, "vendor");
 mkdirSync(vendor);
 run([process.execPath, "pm", "pack", "--destination", vendor], repo);
 const packed = readdirSync(vendor).find((name) => name.endsWith(".tgz"));
-if (packed !== undefined && packed !== "odd-design.tgz") renameSync(join(vendor, packed), join(vendor, "odd-design.tgz"));
-install(app);
+if (packed !== undefined && packed !== "odd-design.tgz") {
+  renameSync(join(vendor, packed), join(vendor, "odd-design.tgz"));
+}
+run([process.execPath, "install"], app);
 run(["git", "init"], app);
 run(["git", "add", "-A"], app);
 run(["git", "commit", "-m", "Initial scaffold"], app);
