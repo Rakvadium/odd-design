@@ -46,6 +46,57 @@ const VARIABLE = /^(?:%([a-z]\w*)%|\$env:([a-z]\w*)|\$\{env:([a-z]\w*)\}|\$\{([a
 
 type Shell = { cwd: string; stack: string[] };
 type PathHit = [raw: string, resolved: string | null];
+type Role = "pattern" | "pattern-file" | "value" | "list" | "flag";
+type ParseOption = (word: string) => [role: Role, attached: string] | null;
+const TAKES_VALUE = new Set<string>(["pattern", "pattern-file", "value"]);
+const NAMES_PATTERN = new Set<string>(["pattern", "pattern-file", "list"]);
+
+function getopt(names: Partial<Record<Role, string>>): ParseOption {
+  const roles = new Map(Object.entries(names).flatMap(([role, list]) => list.split(" ").map((name) => [name, role as Role] as const)));
+  const role = (name: string) => roles.get(name) ?? "flag";
+  return (word) => {
+    if (word.startsWith("--")) {
+      const [name, ...attached] = word.split("=");
+      return [role(name!), attached.join("=")];
+    }
+    if (!/^-./.test(word)) return null;
+    const at = [...word.slice(1)].findIndex((letter) => role(`-${letter}`) !== "flag");
+    return at < 0 ? ["flag", ""] : [role(`-${word[at + 1]}`), word.slice(at + 2)];
+  };
+}
+
+const selectString: ParseOption = (word) => {
+  const option = /^-(\w+)(?::(.*))?$/.exec(word);
+  if (!option) return null;
+  const name = option[1]!.toLowerCase();
+  const switches = /^(allmatches|casesensitive|list|noemphasis|notmatch|quiet|raw|simplematch)$/;
+  return [name.length >= 3 && "pattern".startsWith(name) ? "pattern" : switches.test(name) ? "flag" : "value", option[2] ?? ""];
+};
+
+const SEARCH = new Map<string, ParseOption>(
+  Object.entries({
+    rg: getopt({
+      pattern: "-e --regexp",
+      "pattern-file": "-f --file",
+      value:
+        "-A -B -C -E -M -T -d -g -j -m -r -t --after-context --before-context --context --encoding --glob --iglob --ignore-file --max-count --max-depth --replace --type --type-not",
+      list: "--files --type-list",
+    }),
+    grep: getopt({
+      pattern: "-e --regexp",
+      "pattern-file": "-f --file",
+      value: "-A -B -C -D -d -m --after-context --before-context --context --exclude --exclude-dir --include --max-count",
+    }),
+    "select-string": selectString,
+    sls: selectString,
+    findstr: (word) => {
+      const option = /^\/(\w+)(?::(.*))?$/.exec(word);
+      if (!option) return null;
+      const name = option[1]!.toLowerCase();
+      return [name === "c" ? "pattern" : name === "g" ? "pattern-file" : "flag", option[2] ?? ""];
+    },
+  }),
+);
 
 function record(value: unknown): Record<string, unknown> {
   return typeof value === "object" && value !== null && !Array.isArray(value) ? (value as Record<string, unknown>) : {};
@@ -144,8 +195,25 @@ function fieldPaths(event: ToolEvent): string[] {
   });
 }
 
+function searchWords(parse: ParseOption, args: string[]): [word: string, isPattern: boolean][] {
+  const words: [word: string, role: Role | "positional"][] = [];
+  for (let i = 0; i < args.length; i++) {
+    const [role, attached] = parse(args[i]!) ?? ["positional", ""];
+    words.push([TAKES_VALUE.has(role) ? attached || (args[++i] ?? "") : args[i]!, role]);
+  }
+  const explicit = words.some(([, role]) => NAMES_PATTERN.has(role));
+  const first = explicit ? -1 : words.findIndex(([, role]) => role === "positional");
+  return words.map(([word, role], index) => [word, role === "pattern" || index === first]);
+}
+
 function segmentPaths(shell: Shell, segment: string): PathHit[] {
   const [verb, ...args] = [...segment.matchAll(SHELL_WORD)].map((m) => m[1] ?? m[2] ?? m[0]);
+  const search = SEARCH.get(verb?.toLowerCase() ?? "");
+  if (search) {
+    return searchWords(search, args)
+      .flatMap(([word, isPattern]) => pathsIn(word, isPattern ? writtenPath : shellPath))
+      .map((raw) => [raw, resolvePath(shell.cwd, raw)]);
+  }
   if (verb === undefined || !CD.test(verb)) return pathsIn(segment, shellPath).map((raw) => [raw, resolvePath(shell.cwd, raw)]);
   if (/^popd$/i.test(verb)) {
     shell.cwd = shell.stack.pop() ?? shell.cwd;
