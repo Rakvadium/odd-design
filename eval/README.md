@@ -20,6 +20,33 @@ prepared app-001  C:\workspaces\app-001  C:\wt\odd-design\eval-button\.verify\ev
 
 It also appends a token for the run to `odd-eval/tokens.txt` in the git common directory, which `git rev-parse --git-common-dir` prints. Every checkout appends to and scans against that one list, so a token planted by another checkout's `prepare` still counts as a canary. It writes the token into `.odd-notes.md` at the root of every checkout that `git worktree list` prints, into `eval/.canary/<run-id>`, and into `C:\workspaces\notes.md`. The shared `.git/info/exclude` lists `.odd-notes.md`, so `git status` shows none of them.
 
+## Start a settings run
+
+Run this from the repo root.
+
+```sh
+bun eval prepare --brief settings --model opus
+```
+
+`--model` is `opus` or `grok`, the same names as a probe. The command packs odd-design, copies `eval/template/` into the run folder, copies that tarball to `vendor/odd-design.tgz`, copies `eval/briefs/settings/api.ts` and `eval/briefs/settings/API.md`, and runs `bun install` in the folder. The `message` in `launch.json` is `eval/briefs/settings/prompt.md` with the same bytes.
+
+Launch and wait with the same two T3 calls as a probe. Write the returned `threadId` into `launch.json`. Then scan.
+
+```sh
+bun eval scan app-001
+bun eval finish app-001
+```
+
+`finish` prints one line and writes one JSON object to `.verify/eval/runs.jsonl`. A second `finish` for the same run replaces that object.
+
+```
+run app-001  opus  05m03s  isolation 0
+```
+
+The printed name is the short model name. The JSON object stores the provider model id, such as `claude-opus-5-5`. It also stores the brief, the provider, the thread id, the git SHA, the tarball SHA-256, the duration in milliseconds from the start of prepare, and the finding count. `launch.ts` is the only writer of that file.
+
+In the run folder, `bun run api` starts the mock and `bun run dev` serves the app.
+
 ## Launch the thread
 
 Take `folder`, `provider`, `model`, and `message` from `launch.json`. Make these two T3 calls.

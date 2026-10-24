@@ -46,7 +46,7 @@
     "typecheck": "tsc --noEmit",
     "lint": "eslint .",
     "check": "bun run typecheck && bun run lint && bun test",
-    "eval": "bun eval/launch.ts"
+    "eval": "bun eval/cli.ts"
   },
   "peerDependencies": {
     "react": "^19"
