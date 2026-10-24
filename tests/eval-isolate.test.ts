@@ -110,6 +110,22 @@ describe.each(["claude", "cursor"])("%s transcript", (provider) => {
       { check: "isolation:web-repo", detail: "WebFetch https://github.com/Rakvadium/odd-design", where: `${provider}/web-repo.jsonl:2` },
     ]);
   });
+
+  test("the public repo is matched after decoding in any tool input, and the npm package is not", () => {
+    const seeds = ["web-encoded", "web-npm", "web-preview-fetch"];
+    expect(seeds.flatMap((seed) => scanSeed(`${provider}/${seed}.jsonl`))).toEqual([
+      {
+        check: "isolation:web-repo",
+        detail: "WebFetch https://github.com/%52akvadium/odd%2Ddesign",
+        where: `${provider}/web-encoded.jsonl:2`,
+      },
+      {
+        check: "isolation:web-repo",
+        detail: "t3-code/preview_evaluate fetch('https://github.com/Rakvadium/odd-design').then(r => r.text())",
+        where: `${provider}/web-preview-fetch.jsonl:2`,
+      },
+    ]);
+  });
 });
 
 test("a run with no transcript cannot pass", () => {
