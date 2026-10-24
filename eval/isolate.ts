@@ -43,6 +43,8 @@ const SHELL_WORD = /"([^"]*)"|'([^']*)'|[^\s"']+/g;
 const CD = /^(cd|chdir|set-location|sl|pushd|popd)$/i;
 
 type Shell = { cwd: string; stack: string[] };
+type PathHit = [raw: string, resolved: string | null];
+
 function record(value: unknown): Record<string, unknown> {
   return typeof value === "object" && value !== null && !Array.isArray(value) ? (value as Record<string, unknown>) : {};
 }
@@ -137,8 +139,8 @@ function fieldPaths(event: ToolEvent): string[] {
   });
 }
 
-function commandPaths(shell: Shell, command: string): [string, string | null][] {
-  return [...command.matchAll(SEGMENT)].flatMap(([segment]): [string, string | null][] => {
+function commandPaths(shell: Shell, command: string): PathHit[] {
+  return [...command.matchAll(SEGMENT)].flatMap(([segment]): PathHit[] => {
     const [verb, ...args] = [...segment.matchAll(SHELL_WORD)].map((m) => m[1] ?? m[2] ?? m[0]);
     if (verb === undefined || !CD.test(verb)) return pathsIn(segment, shellPath).map((raw) => [raw, resolvePath(shell.cwd, raw)]);
     if (/^popd$/i.test(verb)) {
@@ -177,7 +179,7 @@ function eventFindings(folder: string, shell: Shell, event: ToolEvent): Finding[
   const findings: Finding[] = [];
   const label = event.server ? `${event.server}/${event.tool}` : event.tool;
   const paths = [
-    ...fieldPaths(event).map((raw): [string, string | null] => [raw, resolvePath(folder, raw)]),
+    ...fieldPaths(event).map((raw): PathHit => [raw, resolvePath(folder, raw)]),
     ...strings(event.input.command).flatMap((command) => commandPaths(shell, command)),
   ];
   for (const [raw, resolved] of paths) {
