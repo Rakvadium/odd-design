@@ -16,4 +16,4 @@
 4. In the app folder, run `git add -A` and then `git diff --cached scaffold --stat`.
    That diff is what the agent changed after the scaffold.
 
-The checks are the `CHECKS` list in `eval/grade.ts`.
+The checks are `grade()` in `eval/grade.ts`.

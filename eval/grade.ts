@@ -14,8 +14,7 @@ type Evidence = {
   raw: Site[];
   buttons: ButtonSite[];
 };
-type CheckId = "compiles" | "rules" | "raw-buttons" | "pending" | "busy-blocks";
-type Check = { id: CheckId; run(evidence: Evidence): { pass: boolean; lines: string[] } };
+type Row = { id: "compiles" | "rules" | "raw-buttons" | "pending" | "busy-blocks"; pass: boolean; lines: string[] };
 
 const parserOptions = {
   requireConfigFile: false,
@@ -32,17 +31,17 @@ function rel(app: string, file: string): string {
 
 function buttonRule(app: string, raw: Site[], buttons: ButtonSite[]): Rule.RuleModule {
   return {
-    meta: { type: "problem", schema: [] },
     create(context) {
       const imported = new Set<string>();
       return {
         ImportDeclaration(node) {
           if (node.source.value !== "odd-design/react") return;
           for (const specifier of node.specifiers) {
-            if (specifier.type !== "ImportSpecifier") continue;
-            const importedName =
-              specifier.imported.type === "Identifier" ? specifier.imported.name : String(specifier.imported.value);
-            if (importedName === "Button") imported.add(specifier.local.name);
+            if (
+              specifier.type === "ImportSpecifier" &&
+              specifier.imported.type === "Identifier" &&
+              specifier.imported.name === "Button"
+            ) imported.add(specifier.local.name);
           }
         },
         JSXOpeningElement(node: Rule.Node) {
@@ -102,51 +101,18 @@ export async function lintApp(app: string, plugin: ESLint.Plugin): Promise<Omit<
   return { usage, computed, raw, buttons };
 }
 
-export const CHECKS: readonly Check[] = [
-  {
-    id: "compiles",
-    run(evidence) {
-      if (evidence.tsc.exit === 0) return { pass: true, lines: [] };
-      const body = evidence.tsc.output.trim().split(/\r?\n/).filter((line) => line !== "").slice(0, 3);
-      return { pass: false, lines: body.length > 0 ? body : [`exit ${evidence.tsc.exit}`] };
-    },
-  },
-  {
-    id: "rules",
-    run(evidence) {
-      return {
-        pass: evidence.usage.length === 0,
-        lines: evidence.usage.map((item) => `${item.file}:${item.line} ${item.message}`),
-      };
-    },
-  },
-  {
-    id: "raw-buttons",
-    run(evidence) {
-      return {
-        pass: evidence.raw.length === 0,
-        lines: evidence.raw.map((item) => `${item.file}:${item.line}`),
-      };
-    },
-  },
-  {
-    id: "pending",
-    run(evidence) {
-      const pass = evidence.buttons.some((button) => button.busy);
-      return { pass, lines: pass ? [] : ["no button sets aria-busy"] };
-    },
-  },
-  {
-    id: "busy-blocks",
-    run(evidence) {
-      const open = evidence.buttons.filter((button) => button.busy && !button.blocked);
-      return { pass: open.length === 0, lines: open.map((button) => `${button.file}:${button.line}`) };
-    },
-  },
-];
-
-export function grade(evidence: Evidence): { id: CheckId; pass: boolean; lines: string[] }[] {
-  return CHECKS.map((check) => ({ id: check.id, ...check.run(evidence) }));
+export function grade(evidence: Evidence): Row[] {
+  const compileLines = evidence.tsc.output.trim().split(/\r?\n/).filter((line) => line !== "").slice(0, 3);
+  const usageLines = evidence.usage.map((item) => `${item.file}:${item.line} ${item.message}`);
+  const rawLines = evidence.raw.map((item) => `${item.file}:${item.line}`);
+  const unblocked = evidence.buttons.filter((button) => button.busy && !button.blocked);
+  return [
+    { id: "compiles", pass: evidence.tsc.exit === 0, lines: compileLines },
+    { id: "rules", pass: evidence.usage.length === 0, lines: usageLines },
+    { id: "raw-buttons", pass: evidence.raw.length === 0, lines: rawLines },
+    { id: "pending", pass: evidence.buttons.some((button) => button.busy), lines: ["no button sets aria-busy"] },
+    { id: "busy-blocks", pass: unblocked.length === 0, lines: unblocked.map((site) => `${site.file}:${site.line}`) },
+  ];
 }
 
 function format(app: string, evidence: Evidence): string {
@@ -156,7 +122,7 @@ function format(app: string, evidence: Evidence): string {
   const lines = [`${basename(app)}  ${verdict}  ${passed}/${rows.length}`];
   for (const row of rows) {
     lines.push(`${row.pass ? "PASS" : "FAIL"}  ${row.id}`);
-    for (const line of row.lines) lines.push(`  ${line}`);
+    if (!row.pass) for (const line of row.lines) lines.push(`  ${line}`);
   }
   if (evidence.computed > 0) lines.push(`note: ${evidence.computed} ODD-STATIC-001 warning`);
   return lines.join("\n");
