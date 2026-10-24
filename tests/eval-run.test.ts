@@ -2,6 +2,7 @@ import { describe, expect, test, afterAll } from "bun:test";
 import { existsSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
+import { openMemory, respond } from "../eval/briefs/settings/api.ts";
 import { briefMessage } from "../eval/launch.ts";
 
 const repo = join(import.meta.dir, "..");
@@ -172,6 +173,14 @@ test("a CRLF copy of prompt.md gives the LF message git stores", () => {
   } finally {
     rmSync(dir, { recursive: true, force: true });
   }
+});
+
+test("a cross-origin page can read Retry-After on a 429", async () => {
+  const memory = openMemory();
+  const notify = () => respond(memory, new Request("http://127.0.0.1/notifications/test", { method: "POST", headers: { Origin: "http://localhost:5173" } }));
+  expect((await notify()).status).toBe(200);
+  const limited = await notify();
+  expect([limited.status, limited.headers.get("Retry-After"), limited.headers.get("Access-Control-Expose-Headers")]).toEqual([429, "60", "Retry-After"]);
 });
 
 test("eight finishes at once keep eight records", async () => {
