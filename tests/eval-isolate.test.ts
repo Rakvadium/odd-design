@@ -65,6 +65,12 @@ describe.each(["claude", "cursor"])("%s transcript", (provider) => {
       { check: "isolation:outside-path", detail: `${shell} C:\\wt\\odd-design -> C:\\wt\\odd-design`, where: `${provider}/search-pattern.jsonl:10` },
       { check: "isolation:outside-path", detail: `${script} ..\\notes.md -> C:\\workspaces\\notes.md`, where: `${provider}/search-pattern.jsonl:11` },
       { check: "isolation:outside-path", detail: `${shell} .. -> C:\\workspaces`, where: `${provider}/search-pattern.jsonl:12` },
+      {
+        check: "isolation:outside-path",
+        detail: `${shell} ../patterns.txt -> C:\\workspaces\\patterns.txt`,
+        where: `${provider}/search-pattern.jsonl:13`,
+      },
+      { check: "isolation:outside-path", detail: `${script} ..\\notes.md -> C:\\workspaces\\notes.md`, where: `${provider}/search-pattern.jsonl:14` },
     ]);
   });
 

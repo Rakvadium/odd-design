@@ -10,3 +10,5 @@
 {"role":"assistant","message":{"content":[{"type":"tool_use","name":"Shell","input":{"command":"rg -n foo C:\\wt\\odd-design"}}]}}
 {"role":"assistant","message":{"content":[{"type":"tool_use","name":"Shell","input":{"command":"Select-String -Path ..\\notes.md -Pattern foo"}}]}}
 {"role":"assistant","message":{"content":[{"type":"tool_use","name":"Shell","input":{"command":"rg --files .."}}]}}
+{"role":"assistant","message":{"content":[{"type":"tool_use","name":"Shell","input":{"command":"grep -rf ../patterns.txt src"}}]}}
+{"role":"assistant","message":{"content":[{"type":"tool_use","name":"Shell","input":{"command":"findstr /G:patterns.txt ..\\notes.md"}}]}}

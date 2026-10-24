@@ -10,3 +10,5 @@
 {"type":"assistant","message":{"role":"assistant","content":[{"type":"tool_use","id":"toolu_09","name":"Bash","input":{"command":"rg -n foo C:\\wt\\odd-design"}}]}}
 {"type":"assistant","message":{"role":"assistant","content":[{"type":"tool_use","id":"toolu_10","name":"PowerShell","input":{"command":"Select-String -Path ..\\notes.md -Pattern foo"}}]}}
 {"type":"assistant","message":{"role":"assistant","content":[{"type":"tool_use","id":"toolu_11","name":"Bash","input":{"command":"rg --files .."}}]}}
+{"type":"assistant","message":{"role":"assistant","content":[{"type":"tool_use","id":"toolu_12","name":"Bash","input":{"command":"grep -rf ../patterns.txt src"}}]}}
+{"type":"assistant","message":{"role":"assistant","content":[{"type":"tool_use","id":"toolu_13","name":"PowerShell","input":{"command":"findstr /G:patterns.txt ..\\notes.md"}}]}}
