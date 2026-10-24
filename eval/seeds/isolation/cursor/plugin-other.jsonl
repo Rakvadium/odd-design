@@ -1,0 +1,2 @@
+{"role":"user","message":{"content":[{"type":"text","text":"<user_query>\nBuild the settings screen for our team workspace app.\n</user_query>"}]}}
+{"role":"assistant","message":{"content":[{"type":"tool_use","name":"Read","input":{"path":"C:\Users\xenos\.cursor\plugins\other\x.md"}}]}}

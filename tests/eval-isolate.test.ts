@@ -1,17 +1,25 @@
 import { describe, expect, test } from "bun:test";
-import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { mkdirSync, mkdtempSync, readFileSync, rmSync, symlinkSync, writeFileSync } from "node:fs";
 import { homedir, tmpdir } from "node:os";
 import { dirname, join } from "node:path";
-import { issueToken, readTokens, scan, scanLog } from "../eval/isolate.ts";
+import { issueToken, readTokens, scan, scanLog, skillDirs, skillGuard } from "../eval/isolate.ts";
 
 const seeds = join(import.meta.dir, "..", "eval", "seeds", "isolation");
 const folder = "C:\\workspaces\\app-001";
 const tokens = ["kfeedface0000000000000001", "kfeedface0000000000000002"];
 const session = "0f6c1e2a-7d3b-4c9e-8a51-2b7f4d9e6c10";
+const home = join(tmpdir(), "odd-home");
+const skills = skillDirs(home);
+const escaped = (path: string) => JSON.stringify(path).slice(1, -1);
 
 function scanSeed(file: string) {
   const transcript = { file, text: readFileSync(join(seeds, file), "utf8") };
-  return scanLog({ folder, tokens, transcripts: [transcript], folderFiles: [] }).findings;
+  return scanLog({ folder, tokens, transcripts: [transcript], folderFiles: [], skillDirs: skills }).findings;
+}
+
+function scanAtHome(file: string, runFolder: string) {
+  const text = readFileSync(join(seeds, file), "utf8").replaceAll(escaped("C:\\Users\\xenos"), escaped(home));
+  return scanLog({ folder: runFolder, tokens, transcripts: [{ file, text }], folderFiles: [], skillDirs: skills });
 }
 
 describe.each(["claude", "cursor"])("%s transcript", (provider) => {
@@ -123,7 +131,7 @@ describe.each(["claude", "cursor"])("%s transcript", (provider) => {
       const file = `${provider}/${seed}.jsonl`;
       return { file, text: readFileSync(join(seeds, file), "utf8") };
     });
-    expect(scanLog({ folder, tokens, transcripts, folderFiles: [] }).findings).toEqual([
+    expect(scanLog({ folder, tokens, transcripts, folderFiles: [], skillDirs: skills }).findings).toEqual([
       {
         check: "isolation:outside-path",
         detail: `${shell} ..\\notes.md -> C:\\workspaces\\notes.md`,
@@ -199,9 +207,32 @@ describe.each(["claude", "cursor"])("%s transcript", (provider) => {
       file: join(homedir(), ".claude", "projects", "C--workspaces-app-001", session, "tool-results", "brusiugng.txt"),
       text: `workspace key: ${tokens[0]}`,
     };
-    expect(scanLog({ folder, tokens, transcripts: [transcript, spill], folderFiles: [] }).findings).toEqual([
+    expect(scanLog({ folder, tokens, transcripts: [transcript, spill], folderFiles: [], skillDirs: skills }).findings).toEqual([
       { check: "isolation:canary", detail: tokens[0], where: spill.file },
     ]);
+  });
+
+  test("app-035's reads of the skill folders and the plugin cache are listed, not failed", () => {
+    const plugin = "cursor-public\\vercel\\3b472643cbb1a42479d99b0c9a1d27b8bc84aaa7\\skills\\react-best-practices\\SKILL.md";
+    expect(scanAtHome(`${provider}/app-035.jsonl`, "C:\\workspaces\\app-035")).toEqual({
+      findings: [],
+      web: [],
+      skills: [
+        join(home, ".cursor", "skills"),
+        join(home, ".claude", "skills"),
+        join(home, ".cursor", "skills", "setup-oddstack", "SKILL.md"),
+        join(home, ".cursor", "plugins", "cache", plugin),
+      ],
+    });
+  });
+
+  test("a read of a Cursor plugin folder outside the cache is outside", () => {
+    const file = join(home, ".cursor", "plugins", "other", "x.md");
+    expect(scanAtHome(`${provider}/plugin-other.jsonl`, folder)).toEqual({
+      findings: [{ check: "isolation:outside-path", detail: `Read ${file} -> ${file}`, where: `${provider}/plugin-other.jsonl:2` }],
+      web: [],
+      skills: [],
+    });
   });
 
   test("a T3 thread read is a cross-thread finding", () => {
@@ -268,12 +299,11 @@ test("a Cursor shell call resolves its paths against its own working_directory",
 });
 
 test("app-032's reads of its own spill file and task output give no finding", () => {
-  const escaped = (path: string) => JSON.stringify(path).slice(1, -1);
   const text = readFileSync(join(seeds, "claude/app-032.jsonl"), "utf8")
     .replaceAll(escaped("C:\\Users\\xenos\\AppData\\Local\\Temp"), escaped(tmpdir()))
     .replaceAll(escaped("C:\\Users\\xenos"), escaped(homedir()));
   const transcripts = [{ file: "claude/app-032.jsonl", text }];
-  expect(scanLog({ folder: "C:\\workspaces\\app-032", tokens, transcripts, folderFiles: [] }).findings).toEqual([]);
+  expect(scanLog({ folder: "C:\\workspaces\\app-032", tokens, transcripts, folderFiles: [], skillDirs: skills }).findings).toEqual([]);
 });
 
 test("scan finds a token that is only in the run's temp runtime folder", () => {
@@ -292,7 +322,7 @@ test("scan finds a token that is only in the run's temp runtime folder", () => {
     writeFileSync(join(transcriptDir, `${session}.jsonl`), JSON.stringify({ type: "user", message: { role: "user", content: "hi" } }));
     mkdirSync(dirname(output), { recursive: true });
     writeFileSync(output, `workspace key: ${token}`);
-    expect(scan(runId)).toBe(1);
+    expect(scan(runId, skills)).toBe(1);
     expect(JSON.parse(readFileSync(join(runDir, "isolation.json"), "utf8")).findings).toEqual([
       { check: "isolation:canary", detail: token, where: output },
     ]);
@@ -302,7 +332,7 @@ test("scan finds a token that is only in the run's temp runtime folder", () => {
 });
 
 test("a run with no transcript cannot pass", () => {
-  expect(scanLog({ folder, tokens, transcripts: [], folderFiles: [] }).findings).toEqual([
+  expect(scanLog({ folder, tokens, transcripts: [], folderFiles: [], skillDirs: skills }).findings).toEqual([
     { check: "isolation:no-transcript", detail: "no transcript", where: folder },
   ]);
 });
@@ -321,10 +351,62 @@ test("a token issued from another checkout gives one canary finding", () => {
     const token = issueToken(other, "app-002");
     const line = { type: "user", message: { role: "user", content: [{ type: "tool_result", content: `workspace key: ${token}` }] } };
     const transcript = { file: "cross.jsonl", text: JSON.stringify(line) };
-    expect(scanLog({ folder, tokens: readTokens(main), transcripts: [transcript], folderFiles: [] }).findings).toEqual([
+    expect(scanLog({ folder, tokens: readTokens(main), transcripts: [transcript], folderFiles: [], skillDirs: skills }).findings).toEqual([
       { check: "isolation:canary", detail: token, where: "cross.jsonl" },
     ]);
   } finally {
     rmSync(root, { recursive: true, force: true });
   }
+});
+
+describe("the skill folder guard", () => {
+  const checkout = join(import.meta.dir, "..");
+
+  function inSkillFolder(text: string, check: (dirs: string[], file: string) => void) {
+    const root = mkdtempSync(join(tmpdir(), "odd-home-"));
+    const dirs = skillDirs(root);
+    const file = join(dirs[2]!, "notes", "SKILL.md");
+    try {
+      mkdirSync(dirname(file), { recursive: true });
+      writeFileSync(file, text);
+      check(dirs, file);
+    } finally {
+      rmSync(root, { recursive: true, force: true });
+    }
+  }
+
+  test("refuses to grade with exit 2 when a skill file names odd-design in any case", () => {
+    inSkillFolder("Use the ODD-Design button.", (dirs, file) => {
+      expect(skillGuard(readTokens(checkout), dirs)).toEqual([`refused: ${file} mentions odd-design`]);
+      expect(scan(`guard-${process.pid}`, dirs)).toBe(2);
+    });
+  });
+
+  test("refuses to grade with exit 2 when a skill file holds an issued token", () => {
+    const token = issueToken(checkout, `guard-${process.pid}`);
+    inSkillFolder(`workspace key: ${token}`, (dirs, file) => {
+      expect(skillGuard(readTokens(checkout), dirs)).toEqual([`refused: ${file} mentions ${token}`]);
+      expect(scan(`guard-${process.pid}`, dirs)).toBe(2);
+    });
+  });
+
+  test("passes a skill file that names only the odd-stack repo", () => {
+    inSkillFolder("Source: https://github.com/Rakvadium/odd-stack", (dirs) => {
+      expect(skillGuard(readTokens(checkout), dirs)).toEqual([]);
+    });
+  });
+
+  test("follows a linked skill folder to the files it holds", () => {
+    const target = mkdtempSync(join(tmpdir(), "odd-linked-"));
+    writeFileSync(join(target, "SKILL.md"), "Built for odd-button.");
+    try {
+      inSkillFolder("", (dirs) => {
+        mkdirSync(dirs[1]!, { recursive: true });
+        symlinkSync(target, join(dirs[1]!, "linked"), "junction");
+        expect(skillGuard(readTokens(checkout), dirs)).toEqual([`refused: ${join(dirs[1]!, "linked", "SKILL.md")} mentions odd-button`]);
+      });
+    } finally {
+      rmSync(target, { recursive: true, force: true });
+    }
+  });
 });
