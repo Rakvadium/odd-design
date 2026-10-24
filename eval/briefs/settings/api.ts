@@ -36,6 +36,7 @@ export function headers(retryAfterSeconds?: number): Headers {
     "Access-Control-Allow-Origin": "*",
     "Access-Control-Allow-Methods": "GET, PUT, POST, OPTIONS",
     "Access-Control-Allow-Headers": "Content-Type",
+    "Access-Control-Expose-Headers": "Retry-After",
   });
   if (retryAfterSeconds !== undefined) head.set("Retry-After", String(retryAfterSeconds));
   return head;

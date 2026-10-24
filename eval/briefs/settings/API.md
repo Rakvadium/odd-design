@@ -26,3 +26,9 @@ Sends a notification to this person. A success returns `{ "ok": true }`. For 60 
 ## POST /sessions/sign-out-others
 
 Ends the other sessions for this person. A success returns `{ "ok": true }`.
+
+## Errors
+
+Any route can answer 500 with `{ "error": "<message>" }` when the server fails.
+
+`PUT /settings` answers 400 with `{ "error": "<message>" }` when a field is missing or the body is not JSON.
