@@ -45,7 +45,8 @@
     "test:browsers": "playwright test",
     "typecheck": "tsc --noEmit",
     "lint": "eslint .",
-    "check": "bun run typecheck && bun run lint && bun test"
+    "check": "bun run typecheck && bun run lint && bun test",
+    "eval": "bun eval/launch.ts"
   },
   "peerDependencies": {
     "react": "^19"
