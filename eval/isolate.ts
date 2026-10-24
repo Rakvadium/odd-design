@@ -32,8 +32,8 @@ const WEB_TOOLS = new Set(["WebFetch", "WebSearch"]);
 const MCP_ENVELOPES = new Set(["CallMcpTool", "call_mcp_tool", "CallDynamicTool"]);
 const T3_SERVER = /t3[-_]code/i;
 const T3_OWN_UI = /^(html_preview|html_render)$|^preview_/;
-const REPO = /rakvadium|odd-design/i;
-const REPO_IN_SHELL = /github\.com[/:]rakvadium|https?:\/\/\S*odd-design|\bgh\s.*odd-design/i;
+const REPO =
+  /github\.com[/:]rakvadium\b|raw\.githubusercontent\.com\/rakvadium\b|api\.github\.com\/repos\/rakvadium\b|github\.com[/:][^/\s]+\/odd-design\b|\brakvadium\/odd-design\b/i;
 const repo = join(import.meta.dir, "..");
 const WORD_BREAK = /[\s"'`|;&<>(),=]+/;
 const DRIVE = /(?<![a-z])[a-z]:[\\/]/i;
@@ -155,6 +155,11 @@ function strings(value: unknown): string[] {
   return [];
 }
 
+function percentDecoded(text: string): string {
+  const next = text.replace(/%([0-9a-f]{2})/gi, (_, hex: string) => String.fromCharCode(parseInt(hex, 16)));
+  return next === text ? text : percentDecoded(next);
+}
+
 function webTarget(event: ToolEvent): string | null {
   const url = event.input.url;
   if (typeof url === "string") return url;
@@ -178,10 +183,9 @@ function eventFindings(folder: string, shell: Shell, event: ToolEvent): Finding[
   if (t3 || event.tool === "SearchConversations") {
     findings.push({ check: "isolation:t3", detail: label, where: event.where });
   }
-  const web = webTarget(event);
-  const repoCommand = strings(event.input.command).find((c) => REPO_IN_SHELL.test(c));
-  if ((web !== null && REPO.test(web)) || repoCommand !== undefined) {
-    findings.push({ check: "isolation:web-repo", detail: `${label} ${web ?? repoCommand}`, where: event.where });
+  const repoText = strings(event.input).find((text) => REPO.test(percentDecoded(text)));
+  if (repoText !== undefined) {
+    findings.push({ check: "isolation:web-repo", detail: `${label} ${repoText}`, where: event.where });
   }
   return findings;
 }
