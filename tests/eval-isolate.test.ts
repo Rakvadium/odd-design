@@ -1,6 +1,6 @@
 import { describe, expect, test } from "bun:test";
 import { mkdtempSync, readFileSync, rmSync } from "node:fs";
-import { tmpdir } from "node:os";
+import { homedir, tmpdir } from "node:os";
 import { join } from "node:path";
 import { issueToken, readTokens, scanLog } from "../eval/isolate.ts";
 
@@ -121,6 +121,22 @@ describe.each(["claude", "cursor"])("%s transcript", (provider) => {
         where: `${provider}/write-then-run.jsonl:4`,
       },
     ]);
+  });
+
+  test("a variable expands in any form and case, and $PWD and %CD% are the shell's folder", () => {
+    const profile = (process.env.USERPROFILE ??= "C:\\Users\\eval");
+    const home = process.env.HOME ?? homedir();
+    const skill = "\\.claude\\skills\\find-skills\\SKILL.md";
+    const repo = "\\..\\..\\wt\\odd-design\\eval-button\\package.json";
+    expect(scanSeed(`${provider}/variables.jsonl`)).toEqual(
+      [
+        { detail: `${script} \${env:USERPROFILE}${skill} -> ${profile}${skill}`, line: 2 },
+        { detail: `${script} $PWD${repo} -> C:\\wt\\odd-design\\eval-button\\package.json`, line: 3 },
+        { detail: `${script} %CD%${repo} -> C:\\wt\\odd-design\\eval-button\\package.json`, line: 4 },
+        { detail: `Write $home${skill} -> ${home}${skill}`, line: 6 },
+        { detail: `${script} \${env:USERPROFILE} -> ${profile}`, line: 7 },
+      ].map(({ detail, line }) => ({ check: "isolation:outside-path", detail, where: `${provider}/variables.jsonl:${line}` })),
+    );
   });
 
   test("a read of the repo is outside", () => {
