@@ -1,6 +1,7 @@
-import { existsSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
+import { appendFileSync, existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
+import { randomBytes } from "node:crypto";
 import { homedir } from "node:os";
-import { join, relative, win32 } from "node:path";
+import { dirname, join, relative, win32 } from "node:path";
 
 export type ToolEvent = {
   tool: string;
@@ -192,12 +193,28 @@ function readTree(dir: string, skip: Set<string>): TextFile[] {
     .map((file) => ({ file, text: readFileSync(file, "latin1") }));
 }
 
+function tokenFile(checkout: string): string {
+  return join(checkout, ".verify", "eval", "tokens.txt");
+}
+
+export function issueToken(checkout: string, runId: string): string {
+  const token = `k${randomBytes(12).toString("hex")}`;
+  const file = tokenFile(checkout);
+  mkdirSync(dirname(file), { recursive: true });
+  appendFileSync(file, `${runId}\t${token}\n`);
+  return token;
+}
+
+export function readTokens(checkout: string): string[] {
+  return readFileSync(tokenFile(checkout), "utf8")
+    .split("\n")
+    .flatMap((line) => line.split("\t")[1]?.trim() || []);
+}
+
 export function scan(runId: string): number {
   const runDir = join(repo, ".verify", "eval", "runs", runId);
   const { folder } = JSON.parse(readFileSync(join(runDir, "launch.json"), "utf8")) as { folder: string };
-  const tokens = readFileSync(join(repo, ".verify", "eval", "tokens.txt"), "utf8")
-    .split("\n")
-    .flatMap((line) => line.split("\t")[1]?.trim() || []);
+  const tokens = readTokens(repo);
   const transcripts = transcriptDirs(folder).flatMap((dir) => readTree(dir, new Set()));
   const folderFiles = readTree(folder, new Set(["node_modules", ".git"]));
   const result = scanLog({ folder, tokens, transcripts, folderFiles });

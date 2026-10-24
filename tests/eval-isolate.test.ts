@@ -1,7 +1,8 @@
 import { describe, expect, test } from "bun:test";
-import { readFileSync } from "node:fs";
+import { mkdtempSync, readFileSync, rmSync } from "node:fs";
+import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { scanLog } from "../eval/isolate.ts";
+import { issueToken, readTokens, scanLog } from "../eval/isolate.ts";
 
 const seeds = join(import.meta.dir, "..", "eval", "seeds", "isolation");
 const folder = "C:\\eval-runs\\run-001";
@@ -62,4 +63,26 @@ test("a run with no transcript cannot pass", () => {
   expect(scanLog({ folder, tokens, transcripts: [], folderFiles: [] }).findings).toEqual([
     { check: "isolation:no-transcript", detail: "no transcript", where: folder },
   ]);
+});
+
+test("a token issued from another checkout gives one canary finding", () => {
+  const root = mkdtempSync(join(tmpdir(), "odd-eval-"));
+  const main = join(root, "main");
+  const other = join(root, "other");
+  const git = (...args: string[]) =>
+    expect(Bun.spawnSync(["git", "-c", "user.name=eval", "-c", "user.email=eval@example.com", ...args], { cwd: root }).exitCode).toBe(0);
+  try {
+    git("init", "-q", main);
+    git("-C", main, "commit", "-q", "--allow-empty", "-m", "init");
+    git("-C", main, "worktree", "add", "-q", other);
+    issueToken(main, "run-001");
+    const token = issueToken(other, "run-002");
+    const line = { type: "user", message: { role: "user", content: [{ type: "tool_result", content: `workspace key: ${token}` }] } };
+    const transcript = { file: "cross.jsonl", text: JSON.stringify(line) };
+    expect(scanLog({ folder, tokens: readTokens(main), transcripts: [transcript], folderFiles: [] }).findings).toEqual([
+      { check: "isolation:canary", detail: token, where: "cross.jsonl" },
+    ]);
+  } finally {
+    rmSync(root, { recursive: true, force: true });
+  }
 });

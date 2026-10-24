@@ -1,8 +1,7 @@
 import { appendFileSync, existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
-import { randomBytes } from "node:crypto";
 import { join, resolve } from "node:path";
 import { parseArgs } from "node:util";
-import { scan } from "./isolate.ts";
+import { issueToken, scan } from "./isolate.ts";
 
 export const MODELS = {
   opus: { provider: "claudeAgent", model: "claude-opus-5-5" },
@@ -72,9 +71,7 @@ function plant(runId: string, token: string): void {
 
 export function prepare(model: ModelName, probe: ProbeName): string {
   const { runId, folder } = allocate();
-  const token = `k${randomBytes(12).toString("hex")}`;
-  mkdirSync(state, { recursive: true });
-  appendFileSync(join(state, "tokens.txt"), `${runId}\t${token}\n`);
+  const token = issueToken(repo, runId);
   plant(runId, token);
   writeFileSync(join(folder, "README.md"), README);
   const message = probe === "clean" ? PROBES.clean() : PROBES.escape(join(repo, ".odd-notes.md"));
