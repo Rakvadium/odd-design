@@ -52,6 +52,18 @@ describe.each(["claude", "cursor"])("%s transcript", (provider) => {
     ]);
   });
 
+  test("relative shell paths resolve against the folder the shell is in", () => {
+    const seeds = ["cd-back", "cd-then-parent", "cd-out", "cd-verbs"];
+    expect(seeds.flatMap((seed) => scanSeed(`${provider}/${seed}.jsonl`))).toEqual([
+      { check: "isolation:outside-path", detail: `${script} ..\\.. -> C:\\`, where: `${provider}/cd-out.jsonl:2` },
+      {
+        check: "isolation:outside-path",
+        detail: `${script} ..\\notes.md -> C:\\workspaces\\notes.md`,
+        where: `${provider}/cd-verbs.jsonl:2`,
+      },
+    ]);
+  });
+
   test("a read of the repo is outside", () => {
     expect(scanSeed(`${provider}/outside-read.jsonl`)).toEqual([
       {
