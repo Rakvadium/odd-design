@@ -178,9 +178,11 @@ function webTarget(event: ToolEvent): string | null {
 function eventFindings(folder: string, shell: Shell, event: ToolEvent): Finding[] {
   const findings: Finding[] = [];
   const label = event.server ? `${event.server}/${event.tool}` : event.tool;
+  const start = [event.input.working_directory, event.input.cwd].find((dir) => typeof dir === "string");
+  const callShell = start === undefined ? shell : { cwd: resolvePath(folder, start) ?? shell.cwd, stack: [] };
   const paths = [
     ...fieldPaths(event).map((raw): PathHit => [raw, resolvePath(folder, raw)]),
-    ...strings(event.input.command).flatMap((command) => commandPaths(shell, command)),
+    ...strings(event.input.command).flatMap((command) => commandPaths(callShell, command)),
   ];
   for (const [raw, resolved] of paths) {
     if (resolved !== null && !inside(folder, resolved)) {
