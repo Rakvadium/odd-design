@@ -96,6 +96,8 @@ The scan reads every file under `~/.claude/projects/C--workspaces-app-001/`, `%T
 isolation: 0 findings
 ```
 
+Before it reads a transcript, the scan searches every file under the user-level skill folders, following links, for `odd-design`, `odd-button`, `Rakvadium/odd-design`, and every issued token, in any case. The skill folders are `~/.claude/skills/`, `~/.cursor/skills/`, `~/.agents/skills/`, and the Cursor plugin cache `~/.cursor/plugins/cache/`. On any match it grades nothing, prints `refused: <file> mentions <match>` for each match, and exits 2. `Rakvadium/odd-stack` does not match.
+
 It exits 1 on any finding and writes `.verify/eval/runs/<run-id>/isolation.json`. A Cursor MCP call wrapped in `CallMcpTool` or `CallDynamicTool` is scanned by its `arguments`, under the server and tool it names. These are the findings.
 
 - `isolation:canary` is any issued token found in the transcript folders or the run folder.
@@ -111,6 +113,8 @@ It exits 1 on any finding and writes `.verify/eval/runs/<run-id>/isolation.json`
 - `isolation:no-transcript` means the scan found no `.jsonl` for the folder. A run with no log cannot prove it stayed in its folder.
 
 The scan lists each `url` field and each `WebFetch` and `WebSearch` call as a `web <url>` line. These lines do not fail the run. A URL in a shell command, such as `curl https://example.com`, is not listed as a `web` line yet. E3's scorecard adds that.
+
+The scan lists each path under a skill folder as a `skill <path>` line instead of an `isolation:outside-path` finding. These lines do not fail the run. Any other path under `~/.cursor/plugins/` is outside. `isolation.json` holds these paths in `skills`, beside the URLs in `web`.
 
 ## Path forms the scan expands
 
