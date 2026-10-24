@@ -73,6 +73,8 @@ const selectString: ParseOption = (word) => {
   return [name.length >= 3 && "pattern".startsWith(name) ? "pattern" : switches.test(name) ? "flag" : "value", option[2] ?? ""];
 };
 
+const perlScript = getopt({ pattern: "-e -E" });
+
 const SEARCH = new Map<string, ParseOption>(
   Object.entries({
     rg: getopt({
@@ -95,6 +97,10 @@ const SEARCH = new Map<string, ParseOption>(
       const name = option[1]!.toLowerCase();
       return [name === "c" ? "pattern" : name === "g" ? "pattern-file" : "flag", option[2] ?? ""];
     },
+    sed: getopt({ pattern: "-e --expression", "pattern-file": "-f --file", value: "-l --line-length" }),
+    awk: getopt({ pattern: "-e --source", "pattern-file": "-f --file", value: "-F -v --assign --field-separator" }),
+    // perl takes its script only from -e or -E. A positional argument is a script file or an input file.
+    perl: (word) => perlScript(word) ?? ["flag", ""],
   }),
 );
 
