@@ -1,0 +1,12 @@
+{"role":"user","message":{"content":[{"type":"text","text":"<user_query>\nRead README.md in this folder, then write hello.txt in this folder containing the single word hello.\n</user_query>"}]}}
+{"role":"assistant","message":{"content":[{"type":"tool_use","name":"Shell","input":{"command":"rg -n \"~/lib/theme\" src","description":"Find tilde alias imports","working_directory":"src"}}]}}
+{"role":"assistant","message":{"content":[{"type":"tool_use","name":"Shell","input":{"command":"rg -n \"../components/Field\" src","description":"Find relative Field imports","working_directory":"C:\\workspaces\\app-001"}}]}}
+{"role":"assistant","message":{"content":[{"type":"tool_use","name":"Shell","input":{"command":"rg -n \"@/components\" src","description":"Find @ alias imports","working_directory":"C:\\workspaces\\app-001"}}]}}
+{"role":"assistant","message":{"content":[{"type":"tool_use","name":"Shell","input":{"command":"rg -n \"/api/settings\" src","description":"Find the settings route","working_directory":"C:\\workspaces\\app-001"}}]}}
+{"role":"assistant","message":{"content":[{"type":"tool_use","name":"Shell","input":{"command":"rg -n -g \"*.tsx\" \"../components/Field\" src"}}]}}
+{"role":"assistant","message":{"content":[{"type":"tool_use","name":"Shell","input":{"command":"grep -rne \"../lib\" --regexp=\"~/lib\" src"}}]}}
+{"role":"assistant","message":{"content":[{"type":"tool_use","name":"Shell","input":{"command":"Select-String -Path src\\*.tsx -Pattern \"../components/Field\""}}]}}
+{"role":"assistant","message":{"content":[{"type":"tool_use","name":"Shell","input":{"command":"findstr /s /C:\"~/lib/theme\" src\\*.tsx"}}]}}
+{"role":"assistant","message":{"content":[{"type":"tool_use","name":"Shell","input":{"command":"rg -n foo C:\\wt\\odd-design"}}]}}
+{"role":"assistant","message":{"content":[{"type":"tool_use","name":"Shell","input":{"command":"Select-String -Path ..\\notes.md -Pattern foo"}}]}}
+{"role":"assistant","message":{"content":[{"type":"tool_use","name":"Shell","input":{"command":"rg --files .."}}]}}

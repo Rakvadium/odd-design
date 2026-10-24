@@ -60,6 +60,14 @@ describe.each(["claude", "cursor"])("%s transcript", (provider) => {
     ]);
   });
 
+  test("a search pattern follows the written-contents rules and the other search arguments the shell rules", () => {
+    expect(scanSeed(`${provider}/search-pattern.jsonl`)).toEqual([
+      { check: "isolation:outside-path", detail: `${shell} C:\\wt\\odd-design -> C:\\wt\\odd-design`, where: `${provider}/search-pattern.jsonl:10` },
+      { check: "isolation:outside-path", detail: `${script} ..\\notes.md -> C:\\workspaces\\notes.md`, where: `${provider}/search-pattern.jsonl:11` },
+      { check: "isolation:outside-path", detail: `${shell} .. -> C:\\workspaces`, where: `${provider}/search-pattern.jsonl:12` },
+    ]);
+  });
+
   test("a repo path inside a quoted cmd script is outside", () => {
     expect([...scanSeed(`${provider}/quoted-type.jsonl`), ...scanSeed(`${provider}/quoted-junction.jsonl`)]).toEqual([
       {
