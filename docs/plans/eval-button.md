@@ -133,7 +133,7 @@ Each live lane runs locally in its own worktree at the PR head. Cursor cloud VMs
 - [ ] Lane 9. Prepare two runs at once. Save `parallel.txt`. Pass when they get different folders and tokens, and each scan sees only its own transcripts.
 - [ ] Lane 10. Delete a run's transcript folder and scan it. Save `missing-log.txt`. Pass when the scan exits 1 with `no transcript`, because a run with no log cannot prove it stayed in its folder.
 
-The operator approved a reduced recheck for the head that fix round 3 produces. It runs the gates lane, lanes 2, 3, and 5, and one audit lane for false findings on ordinary app work. Lanes 1, 4, 6 to 10, and perf keep their results from `72ed103`. If round 3 changes `prepare`, the launch steps, or the canaries, the full swarm runs instead.
+The operator approved a reduced recheck for the head that fix round 3 produces. It runs the gates lane, lanes 2, 3, and 5, and one audit lane for false findings on ordinary app work. Lanes 1, 4, 6 to 10, and perf keep their results from `72ed103`. If round 3 changes `prepare`, the launch steps, or the canaries, the full swarm runs instead. The operator approved a second reduced recheck for the head that fix round 4 produces. It runs the gates lane, lanes 2, 3, and 5, and a rerun of the false-finding audit on its two transcripts. Lanes 2 and 3 run because round 4 makes the scan read some text as patterns, and they prove real escapes are still caught. Every other lane keeps its earlier result. If round 4 changes `prepare`, the launch steps, or the canaries, the full swarm runs instead.
 
 **Verify, perf.** Tests alone are not sufficient verification. A PR is verified only when its unit, live, and perf boxes are all checked.
 
