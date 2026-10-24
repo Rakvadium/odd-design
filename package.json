@@ -6,9 +6,21 @@
   "description": "Framework-free, accessible design system. Chrome sets the feel, palette sets the color.",
   "exports": {
     ".": "./src/css/index.css",
-    "./appearance": "./src/js/appearance.ts",
-    "./enhance": "./src/js/enhance.ts",
-    "./palette": "./src/js/palette.ts",
+    "./appearance": {
+      "types": "./dist/js/appearance.d.ts",
+      "import": "./dist/js/appearance.js",
+      "default": "./dist/js/appearance.js"
+    },
+    "./enhance": {
+      "types": "./dist/js/enhance.d.ts",
+      "import": "./dist/js/enhance.js",
+      "default": "./dist/js/enhance.js"
+    },
+    "./palette": {
+      "types": "./dist/js/palette.d.ts",
+      "import": "./dist/js/palette.js",
+      "default": "./dist/js/palette.js"
+    },
     "./react": {
       "types": "./dist/react/index.d.ts",
       "import": "./dist/react/index.js",
