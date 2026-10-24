@@ -1,6 +1,6 @@
 import { appendFileSync, existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
 import { randomBytes } from "node:crypto";
-import { homedir } from "node:os";
+import { homedir, tmpdir } from "node:os";
 import { delimiter, dirname, join, relative, resolve, win32 } from "node:path";
 
 export type ToolEvent = {
@@ -259,7 +259,7 @@ function webTarget(event: ToolEvent): string | null {
   return strings(event.input).join(" ");
 }
 
-function eventFindings(folder: string, shell: Shell, event: ToolEvent): Finding[] {
+function eventFindings(folder: string, own: string[], shell: Shell, event: ToolEvent): Finding[] {
   const findings: Finding[] = [];
   const label = event.server ? `${event.server}/${event.tool}` : event.tool;
   const start = [event.input.working_directory, event.input.cwd].find((dir) => typeof dir === "string");
@@ -269,7 +269,7 @@ function eventFindings(folder: string, shell: Shell, event: ToolEvent): Finding[
     ...strings(event.input.command).flatMap((command) => commandPaths(callShell, command)),
   ];
   for (const [raw, resolved] of paths) {
-    if (resolved !== null && !inside(folder, resolved)) {
+    if (resolved !== null && !own.some((dir) => inside(dir, resolved))) {
       findings.push({ check: "isolation:outside-path", detail: `${label} ${raw} -> ${resolved}`, where: event.where });
     }
   }
@@ -294,9 +294,10 @@ export function scanLog(run: { folder: string; tokens: string[]; transcripts: Te
     return hit ? [{ check: "isolation:canary", detail: token, where: hit.file }] : [];
   });
   const transcripts = logs.map(toolEvents);
+  const own = runFolders(run.folder);
   const pathFindings = transcripts.flatMap((events) => {
     const shell: Shell = { cwd: run.folder, stack: [] };
-    return events.flatMap((e) => eventFindings(run.folder, shell, e));
+    return events.flatMap((e) => eventFindings(run.folder, own, shell, e));
   });
   return {
     findings: [...canaries, ...pathFindings],
@@ -304,11 +305,19 @@ export function scanLog(run: { folder: string; tokens: string[]; transcripts: Te
   };
 }
 
+function claudeSlug(folder: string): string {
+  return folder.replace(/[^A-Za-z0-9]/g, "-");
+}
+
 function transcriptDirs(folder: string): string[] {
   return [
-    join(homedir(), ".claude", "projects", folder.replace(/[^A-Za-z0-9]/g, "-")),
+    join(homedir(), ".claude", "projects", claudeSlug(folder)),
     join(homedir(), ".cursor", "projects", folder.replace(/[^A-Za-z0-9]+/g, "-").replace(/^-|-$/g, "")),
   ];
+}
+
+function runFolders(folder: string): string[] {
+  return [folder, ...transcriptDirs(folder), join(tmpdir(), "claude", claudeSlug(folder))];
 }
 
 function readTree(dir: string, skip: Set<string>): TextFile[] {
