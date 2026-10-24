@@ -28,7 +28,7 @@ Run this from the repo root.
 bun eval prepare --brief settings --model opus
 ```
 
-`--model` is `opus` or `grok`, the same names as a probe. The command packs odd-design, copies `eval/template/` into the run folder, copies that tarball to `vendor/odd-design.tgz`, and runs `bun install` in the folder. It also copies `eval/briefs/settings/api.ts` and `eval/briefs/settings/API.md`, with this run's port written where the brief names its port. `launch.json` records that port. The `message` in `launch.json` is `eval/briefs/settings/prompt.md` with the same bytes.
+`--model` is `opus` or `grok`, the same names as a probe. The command packs odd-design, copies `eval/template/` into the run folder, copies that tarball to `vendor/odd-design.tgz`, and runs `bun install` in the folder. It also copies `eval/briefs/settings/api.ts` and `eval/briefs/settings/API.md`, with this run's port written where the brief names its port. `launch.json` records that port, plus `gitSha` and `dirty`, the commit and whether the tree had changes when the tarball was packed. `finish` copies both into the record. The `message` in `launch.json` is `eval/briefs/settings/prompt.md` with the same bytes.
 
 Launch and wait with the same two T3 calls as a probe. Write the returned `threadId` into `launch.json`. Then scan.
 
@@ -43,7 +43,7 @@ bun eval finish app-001
 run app-001  opus  05m03s  isolation 0
 ```
 
-The printed name is the short model name. The JSON object stores the provider model id, such as `claude-opus-5-5`. It also stores the brief, the port, the provider, the thread id, the git SHA, the tarball SHA-256, the duration in milliseconds from the start of prepare, and the finding count. `launch.ts` is the only writer of that file.
+The printed name is the short model name. The JSON object stores the provider model id, such as `claude-opus-5-5`. It also stores the brief, the port, the provider, the thread id, the git SHA and whether the tree was dirty, the tarball SHA-256, the duration in milliseconds from the start of prepare, and the finding count. `launch.ts` is the only writer of that file.
 
 Packing in a brief prepare and writing `runs.jsonl` in `finish` take one lock, the file `odd-eval/lock` in the git common directory, so prepares and finishes started at once take turns. A process killed while it holds the lock leaves the file behind. The next prepare or finish waits 10 minutes, then fails and names the file to delete.
 

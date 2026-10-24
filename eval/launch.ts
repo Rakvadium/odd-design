@@ -50,6 +50,7 @@ export type RunRecord = {
   model: string;
   threadId: string;
   gitSha: string;
+  dirty: boolean;
   tarballSha256: string;
   durationMs: number;
   isolation: number;
@@ -69,6 +70,8 @@ type BriefLaunch = {
   model: string;
   brief: string;
   preparedAt: string;
+  gitSha: string;
+  dirty: boolean;
   threadId: string;
 };
 
@@ -212,7 +215,8 @@ export function prepareBrief(model: ModelName, brief: BriefName): string {
   const token = issueToken(repo, runId);
   plant(runId, token);
   copyTree(join(repo, "eval", "template"), folder);
-  locked(() => {
+  const commit = locked(() => {
+    const packed = { gitSha: git("rev-parse", "HEAD"), dirty: git("status", "--porcelain") !== "" };
     const tarball = packTarball();
     try {
       mkdirSync(join(folder, "vendor"), { recursive: true });
@@ -220,12 +224,13 @@ export function prepareBrief(model: ModelName, brief: BriefName): string {
     } finally {
       rmSync(tarball, { force: true });
     }
+    return packed;
   });
   copyBrief(join(repo, "eval", "briefs", brief), folder, port);
   const installed = run([process.execPath, "install"], folder);
   if (installed.status !== 0) throw new Error(`install failed in ${folder}\n${installed.output}`);
   const message = readFileSync(join(repo, "eval", "briefs", brief, "prompt.md"), "utf8");
-  return publish(runId, folder, { runId, folder, port, ...MODELS[model], brief, preparedAt, message, threadId: null });
+  return publish(runId, folder, { runId, folder, port, ...MODELS[model], brief, preparedAt, ...commit, message, threadId: null });
 }
 
 function readBriefLaunch(runId: string): BriefLaunch | string {
@@ -239,6 +244,7 @@ function readBriefLaunch(runId: string): BriefLaunch | string {
   }
   if (typeof parsed.threadId !== "string" || parsed.threadId === "") return `${runId} has no thread id`;
   if (typeof parsed.preparedAt !== "string") return `${runId} has no start time`;
+  if (typeof parsed.gitSha !== "string" || typeof parsed.dirty !== "boolean") return `${runId} has no commit`;
   if (typeof parsed.folder !== "string" || typeof parsed.provider !== "string" || typeof parsed.model !== "string") {
     return `${runId} launch file is missing a field`;
   }
@@ -250,6 +256,8 @@ function readBriefLaunch(runId: string): BriefLaunch | string {
     model: parsed.model,
     brief: parsed.brief,
     preparedAt: parsed.preparedAt,
+    gitSha: parsed.gitSha,
+    dirty: parsed.dirty,
     threadId: parsed.threadId,
   };
 }
@@ -313,7 +321,8 @@ export function finish(runId: string): number {
     provider: launch.provider,
     model: launch.model,
     threadId: launch.threadId,
-    gitSha: git("rev-parse", "HEAD"),
+    gitSha: launch.gitSha,
+    dirty: launch.dirty,
     tarballSha256: createHash("sha256").update(readFileSync(tarball)).digest("hex"),
     durationMs: Date.now() - started,
     isolation: findingCount(runId),
