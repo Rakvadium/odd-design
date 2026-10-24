@@ -40,6 +40,7 @@ const WORD_BREAK = /[\s"'`|;&<>(),=]+/;
 const DRIVE = /(?<![a-z])[a-z]:[\\/]/i;
 const SEGMENT = /(?:"[^"]*"|'[^']*'|[^"';&|\n])+/g;
 const SHELL_WORD = /"([^"]*)"|'([^']*)'|[^\s"']+/g;
+const HERE_BODY = /@(["'])\r?\n(?<hereString>[\s\S]*?)\r?\n\1@|<<-?[ \t]*(["']?)(\w+)\3(?<rest>[^\n]*)\n(?<heredoc>[\s\S]*?)\n[ \t]*\4(?=\r?\n|$)/g;
 const CD = /^(cd|chdir|set-location|sl|pushd|popd)$/i;
 
 type Shell = { cwd: string; stack: string[] };
@@ -139,21 +140,32 @@ function fieldPaths(event: ToolEvent): string[] {
   });
 }
 
+function segmentPaths(shell: Shell, segment: string): PathHit[] {
+  const [verb, ...args] = [...segment.matchAll(SHELL_WORD)].map((m) => m[1] ?? m[2] ?? m[0]);
+  if (verb === undefined || !CD.test(verb)) return pathsIn(segment, shellPath).map((raw) => [raw, resolvePath(shell.cwd, raw)]);
+  if (/^popd$/i.test(verb)) {
+    shell.cwd = shell.stack.pop() ?? shell.cwd;
+    return [];
+  }
+  const target = args.find((arg) => !/^-./.test(arg) && !/^\/d$/i.test(arg)) ?? "~";
+  const next = target === "-" ? null : resolvePath(shell.cwd, target);
+  if (next === null) return [];
+  if (/^pushd$/i.test(verb)) shell.stack.push(shell.cwd);
+  shell.cwd = next;
+  return [[target, next]];
+}
+
 function commandPaths(shell: Shell, command: string): PathHit[] {
-  return [...command.matchAll(SEGMENT)].flatMap(([segment]): PathHit[] => {
-    const [verb, ...args] = [...segment.matchAll(SHELL_WORD)].map((m) => m[1] ?? m[2] ?? m[0]);
-    if (verb === undefined || !CD.test(verb)) return pathsIn(segment, shellPath).map((raw) => [raw, resolvePath(shell.cwd, raw)]);
-    if (/^popd$/i.test(verb)) {
-      shell.cwd = shell.stack.pop() ?? shell.cwd;
-      return [];
-    }
-    const target = args.find((arg) => !/^-./.test(arg) && !/^\/d$/i.test(arg)) ?? "~";
-    const next = target === "-" ? null : resolvePath(shell.cwd, target);
-    if (next === null) return [];
-    if (/^pushd$/i.test(verb)) shell.stack.push(shell.cwd);
-    shell.cwd = next;
-    return [[target, next]];
+  const bodies: string[] = [];
+  const script = command.replace(HERE_BODY, (...match) => {
+    const { hereString, heredoc, rest } = match.at(-1) as Record<string, string | undefined>;
+    bodies.push(hereString ?? heredoc ?? "");
+    return `""${rest ?? ""}`;
   });
+  return [
+    ...bodies.flatMap((body) => pathsIn(body, writtenPath)).map((raw): PathHit => [raw, resolvePath(shell.cwd, raw)]),
+    ...[...script.matchAll(SEGMENT)].flatMap(([segment]) => segmentPaths(shell, segment)),
+  ];
 }
 
 function strings(value: unknown): string[] {
