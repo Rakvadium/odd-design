@@ -1,5 +1,6 @@
 import { useRef, type MouseEvent } from "react";
 import { Button } from "../../../../src/react/button.tsx";
+import { Field, FieldError, Hint, Input, Label, Select, Textarea } from "../../../../src/react/field.tsx";
 
 function save(event: MouseEvent<HTMLButtonElement>): void {
   event.currentTarget.blur();
@@ -38,6 +39,33 @@ export function Views() {
       <Button data-state="open" data-chrome="bubblegum" data-testid="menu">
         Menu
       </Button>
+    </>
+  );
+}
+
+export function Fields({ error }: { error: string | undefined }) {
+  const ref = useRef<HTMLInputElement>(null);
+  return (
+    <>
+      <Field className="wide">
+        <Label htmlFor="email">Email</Label>
+        <Input
+          id="email"
+          ref={ref}
+          type="email"
+          required
+          aria-invalid={error !== undefined}
+          aria-describedby={error === undefined ? "email-hint" : "email-hint email-error"}
+        />
+        <Hint id="email-hint">We never share it.</Hint>
+        {error === undefined ? null : <FieldError id="email-error">{error}</FieldError>}
+      </Field>
+      <Input id="owner" value="you" disabled readOnly />
+      <Textarea id="notes" rows={4} disabled />
+      <Select id="format" defaultValue="standard" disabled>
+        <option value="standard">Standard</option>
+      </Select>
+      <Input type="search" aria-label="Search cards" />
     </>
   );
 }

@@ -74,6 +74,13 @@ export const WRAPPERS = {
     props: { variant: "data-variant", size: "data-size", iconOnly: "data-icon-only" },
     element: { attribute: "href", present: "a", absent: "button" },
   },
+  Field: { source: "odd-design/react", className: "odd-field", props: {}, element: "div" },
+  Label: { source: "odd-design/react", className: "odd-label", props: {}, element: "label" },
+  Input: { source: "odd-design/react", className: "odd-input", props: {}, element: "input" },
+  Textarea: { source: "odd-design/react", className: "odd-textarea", props: {}, element: "textarea" },
+  Select: { source: "odd-design/react", className: "odd-select", props: {}, element: "select" },
+  Hint: { source: "odd-design/react", className: "odd-hint", props: {}, element: "p" },
+  FieldError: { source: "odd-design/react", className: "odd-error", props: {}, element: "p" },
 } as const satisfies Record<string, Wrapper>;
 
 export const CLASS_REGISTRY = [
