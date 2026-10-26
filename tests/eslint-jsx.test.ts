@@ -31,6 +31,11 @@ const places: Record<string, readonly (readonly [string, number, number, string]
     ["ODD-BUTTON-007", 4, 63, "disabled"],
   ],
   "field.tsx": [
+    ["ODD-FIELD-001", 5, 12, 'className="odd-input"'],
+    ["ODD-FIELD-001", 6, 14, 'className="odd-input"'],
+    ["ODD-FIELD-001", 8, 13, 'className="odd-input"'],
+    ["ODD-FIELD-001", 11, 15, 'className="odd-input"'],
+    ["ODD-FIELD-001", 12, 13, 'className="odd-input"'],
     ["ODD-FIELD-003", 13, 23, 'aria-disabled="true"'],
     ["ODD-FIELD-002", 14, 33, "hidden"],
   ],
