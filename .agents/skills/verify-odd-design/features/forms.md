@@ -34,6 +34,19 @@ Preconditions:
 - **Slider fill follows the thumb.** Run `bun $S goto components-forms--slider "mode:light"`. Then `bun $S eval '[...document.querySelectorAll(".odd-slider")].map(s => [s.id, (s.value - s.min) / (s.max - s.min), getComputedStyle(s).getPropertyValue("--_progress")])'` shows each slider's value fraction equal to its `--_progress` (`copies` is `0.6667` and `"0.666667"`). Capture `forms/slider-before.png`. Run `bun $S focus '#copies'` and `bun $S press ArrowLeft` twice. The same eval shows `copies` at `0` and `"0"`, and `#copies-value` reads `1 of 4`. In `forms/slider-after.png` the track is empty and the thumb sits at the start.
 - **Search landmark.** Run `bun $S goto components-forms--search` and `bun $S aria forms/search.aria.txt`. It shows `search` containing `searchbox "Search cards" value="Ember"`.
 
+## React Field
+
+Build the composed Storybook and serve it.
+
+```
+bun scripts/storybooks.ts storybook-static
+bun e2e/serve.ts storybook-static 6106
+```
+
+Open `http://127.0.0.1:6106/?path=/story/react_components-forms--text-fields`. The preview is the React TextFields story, built from `Field`, `Label`, `Input`, `Textarea`, `Hint`, and `FieldError`. The React Select story is `react_components-forms--select`. Choices, Switch, Segmented, Slider, and Search have no React wrapper, so they appear only in the HTML section.
+
+Run the pair sweep with `bunx playwright test e2e/usage.spec.ts --project firefox`. A pass prints the story count and `0 diagnostics`. For each Field story, both sides then match the `aria` literal in `stories/mirrored/Field.stories.ts`, and the two screenshots are byte-identical.
+
 ## Gotchas
 
 - Do not clear inputs with `eval` (setting `.value`). Script changes do not count as user interaction, so `:user-invalid` stays false and the proof is invalid. Use `type` with `Backspace`.
