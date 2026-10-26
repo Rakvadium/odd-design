@@ -76,6 +76,23 @@ const places: Record<string, readonly (readonly [string, number, number, string]
     ["ODD-BUTTON-015", 2, 28, "data-tone"],
     ["ODD-BUTTON-015", 3, 28, "data-varient"],
   ],
+  "odd-field-001.bad.html": [
+    ["ODD-FIELD-001", 2, 7, "class"],
+    ["ODD-FIELD-001", 3, 6, "class"],
+    ["ODD-FIELD-001", 4, 8, "class"],
+    ["ODD-FIELD-001", 5, 6, "class"],
+    ["ODD-FIELD-001", 6, 7, "class"],
+    ["ODD-FIELD-001", 7, 6, "class"],
+  ],
+  "odd-field-002.bad.html": [
+    ["ODD-FIELD-002", 2, 39, "hidden"],
+    ["ODD-FIELD-002", 3, 38, "aria-hidden"],
+  ],
+  "odd-field-003.bad.html": [
+    ["ODD-FIELD-003", 2, 37, "aria-disabled"],
+    ["ODD-FIELD-003", 3, 43, "aria-disabled"],
+    ["ODD-FIELD-003", 4, 40, "aria-disabled"],
+  ],
   "odd-class-001.bad.html": [
     ["ODD-CLASS-001", 2, 6, "class"],
     ["ODD-CLASS-001", 3, 4, "class"],

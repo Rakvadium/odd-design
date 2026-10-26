@@ -2,7 +2,7 @@ import { expect, test } from "bun:test";
 import { readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
-import { ATTRIBUTES, CLASS_REGISTRY, USAGE, VOCABULARY } from "../src/js/usage/contract.ts";
+import { ATTRIBUTES, CLASS_REGISTRY, USAGE, VOCABULARY, type UsageRule } from "../src/js/usage/contract.ts";
 import { MESSAGES, USAGE_CODES, message, type UsageCode } from "../src/js/usage/format.ts";
 import { read } from "./css.ts";
 
@@ -72,9 +72,16 @@ test("messages include the code, Fix:, a docs heading in the named file, and no 
   expect(missingDocs).toEqual([]);
   expect(missingCode).toEqual([]);
 
+  const rules: readonly UsageRule[] = Object.values(USAGE).flat();
   const absent: string[] = [];
-  for (const rule of USAGE.button) {
+  for (const rule of rules) {
     const text = MESSAGES[rule.code];
+    if (rule.kind === "element") {
+      const listed = (/Allowed values: (.*?)\. Fix:/.exec(text)?.[1] ?? "").split(", ");
+      for (const element of rule.elements) {
+        if (!listed.includes(element) && !listed.includes(`${rule.className} on ${element}`)) absent.push(`${rule.code} ${rule.className} ${element}`);
+      }
+    }
     if (rule.kind === "enum") {
       for (const token of [...rule.values, ...rule.omit]) {
         if (!text.includes(token)) absent.push(`${rule.code} ${token}`);
@@ -93,7 +100,7 @@ test("messages include the code, Fix:, a docs heading in the named file, and no 
   }
   expect(absent).toEqual([]);
 
-  const dataCodes = [...USAGE.button.map((rule) => rule.code), ...USAGE.shared.map((rule) => rule.code), "ODD-STATIC-003"];
+  const dataCodes = [...new Set([...rules.map((rule) => rule.code), "ODD-STATIC-003"])];
   expect(dataCodes.sort()).toEqual([...USAGE_CODES].sort());
 });
 
