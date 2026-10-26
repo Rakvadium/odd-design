@@ -52,13 +52,14 @@ export const Playground = mirrored<Args>({
 
 export const Variants = mirrored<Args>({
   scene: () => ({
-    layout: "row",
+    of: "div",
+    props: { className: "odd-row" },
     children: [
       { of: "Button", props: { variant: "primary" }, children: ["Primary"] },
       { of: "Button", props: { variant: "secondary" }, children: ["Secondary"] },
       { of: "Button", children: ["Default"] },
       { of: "Button", props: { variant: "ghost" }, children: ["Ghost"] },
-      { of: "Button", props: { variant: "danger" }, children: [{ icon: "trash" }, "Delete"] },
+      { of: "Button", props: { variant: "danger" }, children: [{ icon: "trash" }, " Delete"] },
     ],
   }),
   aria: `
@@ -71,11 +72,12 @@ export const Variants = mirrored<Args>({
 
 export const Sizes = mirrored<Args>({
   scene: () => ({
-    layout: "row",
+    of: "div",
+    props: { className: "odd-row" },
     children: [
       { of: "Button", props: { variant: "primary", size: "sm" }, children: ["Small"] },
       { of: "Button", props: { variant: "primary" }, children: ["Medium"] },
-      { of: "Button", props: { variant: "primary", size: "lg" }, children: ["Large", { icon: "arrowRight" }] },
+      { of: "Button", props: { variant: "primary", size: "lg" }, children: ["Large ", { icon: "arrowRight" }] },
       { of: "Button", props: { iconOnly: true, "aria-label": "Settings" }, children: [{ icon: "settings" }] },
       { of: "Button", props: { iconOnly: true, variant: "primary", "aria-label": "Add card" }, children: [{ icon: "plus" }] },
     ],
@@ -90,7 +92,8 @@ export const Sizes = mirrored<Args>({
 
 export const States = mirrored<Args>({
   scene: () => ({
-    layout: "row",
+    of: "div",
+    props: { className: "odd-row" },
     children: [
       { of: "Button", props: { variant: "primary", "aria-busy": "true" }, children: ["Saving…"] },
       { of: "Button", props: { variant: "primary", "aria-disabled": "true" }, children: ["Unavailable"] },
@@ -105,7 +108,8 @@ export const States = mirrored<Args>({
 
 export const Link = mirrored<Args>({
   scene: () => ({
-    layout: "row",
+    of: "div",
+    props: { className: "odd-row" },
     children: [
       { of: "Button", props: { href: "#docs", variant: "secondary" }, children: ["Docs"] },
       { of: "Button", props: { href: "#decks", variant: "ghost", "aria-current": "page" }, children: ["Decks"] },

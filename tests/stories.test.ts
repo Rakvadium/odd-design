@@ -27,12 +27,14 @@ function reactRoot(entry: MirroredEntry, args: Record<string, unknown> = {}): Pa
   return asRoot(renderToStaticMarkup(toReact(entry.mirror.scene(merged))), entry.label);
 }
 
-test("the catalog has every story file's stories, and Button is mirrored", () => {
+test("the catalog has every story file's stories, and Button and Field are mirrored", () => {
   const storyFiles = globSync(STORYBOOKS.html.stories, { cwd: repo }).map((file) => file.replaceAll("\\", "/"));
   const covered = new Set(html.map((entry) => entry.file));
   const skipped = storyFiles.filter((file) => !covered.has(file));
   expect(skipped).toEqual([]);
-  expect(react.map((entry) => entry.id)).toContain("components-button--playground");
+  expect(react.map((entry) => entry.id)).toEqual(
+    expect.arrayContaining(["components-button--playground", "components-forms--text-fields", "components-forms--select"]),
+  );
   expect(react.every((entry) => html.some((item) => item.id === entry.id))).toBe(true);
 });
 
@@ -53,9 +55,22 @@ function normalized(markup: string): string {
   return [...root.childNodes].map(walk).join("").replace(/>\s+</g, "><").trim();
 }
 
+function reactWithoutWarnings(scene: Scene, label: string): string {
+  const warnings: string[] = [];
+  const original = console.error;
+  console.error = (...args: unknown[]) => warnings.push(args.join(" "));
+  try {
+    const markup = renderToStaticMarkup(toReact(scene));
+    if (warnings.length > 0) throw new Error(`${label}: React warned\n${warnings.join("\n")}`);
+    return markup;
+  } finally {
+    console.error = original;
+  }
+}
+
 function expectSameDom(scene: Scene, label: string): void {
   const htmlMarkup = normalized(toHtml(scene));
-  const reactMarkup = normalized(renderToStaticMarkup(toReact(scene)));
+  const reactMarkup = normalized(reactWithoutWarnings(scene, label));
   if (htmlMarkup !== reactMarkup) throw new Error(`${label}\n${htmlMarkup}\n${reactMarkup}`);
 }
 

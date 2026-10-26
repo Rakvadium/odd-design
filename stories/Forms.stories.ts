@@ -16,41 +16,6 @@ const meta = {
 export default meta;
 type Story = StoryObj;
 
-export const TextFields: Story = {
-  render: () => /* html */ `<form class="odd-stack" style="max-inline-size: 26rem" onsubmit="event.preventDefault()">
-    <div class="odd-field">
-      <label class="odd-label" for="name">Deck name</label>
-      <input class="odd-input" id="name" required placeholder="Midnight Control" aria-describedby="name-hint">
-      <p class="odd-hint" id="name-hint">Shown on your public profile.</p>
-    </div>
-    <div class="odd-field">
-      <label class="odd-label" for="email">Email</label>
-      <input class="odd-input" id="email" type="email" value="not-an-email" aria-invalid="true" aria-describedby="email-error">
-      <p class="odd-error" id="email-error">Enter an email address like name@example.com.</p>
-    </div>
-    <div class="odd-field">
-      <label class="odd-label" for="notes">Notes</label>
-      <textarea class="odd-textarea" id="notes" placeholder="The textarea grows with its content."></textarea>
-    </div>
-    <div class="odd-field">
-      <label class="odd-label" for="disabled">Owner</label>
-      <input class="odd-input" id="disabled" value="you" disabled>
-    </div>
-  </form>`,
-};
-
-export const Select: Story = {
-  render: () => /* html */ `<div class="odd-field" style="max-inline-size: 26rem">
-    <label class="odd-label" for="format">Format</label>
-    <select class="odd-select" id="format">
-      <option>Standard</option>
-      <option selected>Extended</option>
-      <option>Retro</option>
-      <option>Draft</option>
-    </select>
-  </div>`,
-};
-
 export const Choices: Story = {
   render: () => /* html */ `<div class="odd-stack">
     <fieldset class="odd-stack" style="--gap: var(--space-2); border: 0; padding: 0; margin: 0">

@@ -1,8 +1,8 @@
 import { expect, test } from "bun:test";
 import { icons } from "../stories/icons.ts";
-import { mirrorOf, toHtml, type PropsOf, type Scene } from "../stories/mirror.ts";
+import { mirrorOf, toHtml, type Node, type Scene } from "../stories/mirror.ts";
 
-function button(props?: PropsOf<"Button">, children?: readonly (string | { readonly icon: keyof typeof icons })[]): Scene {
+function button(props?: Node<"Button">["props"], children?: readonly (string | { readonly icon: keyof typeof icons })[]): Node<"Button"> {
   return { of: "Button", props, children };
 }
 
@@ -47,25 +47,81 @@ test("uses an anchor when href is set instead of always rendering a button", () 
 });
 
 test("inlines the named icon svg instead of the icon's name", () => {
-  expect(toHtml(button({ variant: "danger" }, [{ icon: "trash" }, "Delete"]))).toBe(
+  expect(toHtml(button({ variant: "danger" }, [{ icon: "trash" }, " Delete"]))).toBe(
     '<button class="odd-button" data-variant="danger">' + icons.trash + " Delete</button>",
   );
 });
 
-test("wraps a row in odd-row and separates the children with newlines", () => {
+test("renders a native element with its own tag and class, instead of only wrappers", () => {
+  const scene: Scene = { of: "form", props: { className: "odd-stack", method: "dialog" }, children: [button(undefined, ["A"])] };
+  expect(toHtml(scene)).toBe('<form class="odd-stack" method="dialog"><button class="odd-button">A</button></form>');
+});
+
+test("nests a Hint inside a Field instead of dropping it", () => {
+  const scene: Scene = { of: "Field", children: [{ of: "Hint", props: { id: "name-hint" }, children: ["Shown"] }] };
+  expect(toHtml(scene)).toBe('<div class="odd-field"><p class="odd-hint" id="name-hint">Shown</p></div>');
+});
+
+test("writes htmlFor as for instead of an htmlfor attribute", () => {
+  expect(toHtml({ of: "Label", props: { htmlFor: "name" }, children: ["Name"] })).toBe('<label class="odd-label" for="name">Name</label>');
+});
+
+test('writes required true as a bare attribute instead of required="true", and drops disabled false', () => {
+  expect(toHtml({ of: "Input", props: { id: "name", required: true, disabled: false } })).toBe('<input class="odd-input" id="name" required>');
+});
+
+test("writes an input as a void tag instead of adding </input>, and throws on children instead of dropping them", () => {
+  expect(toHtml({ of: "Input", props: { id: "name" } })).toBe('<input class="odd-input" id="name">');
+  const withChildren = { of: "Input", props: { id: "name" }, children: ["Name"] } as unknown as Scene;
+  expect(() => toHtml(withChildren)).toThrow("<input> is a void element and cannot have children");
+});
+
+test("writes an input's defaultValue as the value attribute instead of a dead defaultvalue", () => {
+  expect(toHtml({ of: "Input", props: { id: "owner", defaultValue: "you" } })).toBe('<input class="odd-input" id="owner" value="you">');
+});
+
+test("marks the option that matches the select's defaultValue instead of writing defaultvalue on the select", () => {
   const scene: Scene = {
-    layout: "row",
-    children: [button(undefined, ["A"]), button(undefined, ["B"])],
+    of: "Select",
+    props: { id: "format", defaultValue: "Extended" },
+    children: [
+      { of: "option", children: ["Standard"] },
+      { of: "option", children: ["Extended"] },
+    ],
   };
-  expect(toHtml(scene)).toBe(
-    '<div class="odd-row"><button class="odd-button">A</button>\n<button class="odd-button">B</button></div>',
+  expect(toHtml(scene)).toBe('<select class="odd-select" id="format"><option>Standard</option><option selected>Extended</option></select>');
+});
+
+test("writes a textarea's defaultValue as its content instead of a value attribute", () => {
+  expect(toHtml({ of: "Textarea", props: { id: "notes", defaultValue: "a < b" } })).toBe(
+    '<textarea class="odd-textarea" id="notes">a &lt; b</textarea>',
   );
 });
 
-test("uses odd-stack for a stack instead of hard-coding odd-row", () => {
-  const scene: Scene = { layout: "stack", children: [button(undefined, ["A"])] };
-  expect(toHtml(scene)).toBe('<div class="odd-stack"><button class="odd-button">A</button></div>');
+test("writes a style object as CSS text instead of [object Object]", () => {
+  expect(toHtml({ of: "Field", props: { style: { maxInlineSize: "26rem" } } })).toBe('<div class="odd-field" style="max-inline-size:26rem"></div>');
 });
+
+export const illegal: readonly (() => Scene)[] = [
+  // @ts-expect-error an input is void, so it takes no children
+  () => ({ of: "Input", props: { id: "name" }, children: ["Name"] }),
+  // @ts-expect-error a Label needs htmlFor
+  () => ({ of: "Label", children: ["Name"] }),
+  // @ts-expect-error an option belongs inside a select
+  () => ({ of: "Field", children: [{ of: "option", children: ["Standard"] }] }),
+  // @ts-expect-error style is an object, as React takes it
+  () => ({ of: "Field", props: { style: "max-inline-size: 26rem" } }),
+  // @ts-expect-error a style value is a string, because React would add px to a number
+  () => ({ of: "Field", props: { style: { maxInlineSize: 26 } } }),
+  // @ts-expect-error value needs an onChange, so a scene sets defaultValue
+  () => ({ of: "Input", props: { id: "owner", value: "you" } }),
+  // @ts-expect-error checked needs an onChange too, so a scene sets defaultChecked
+  () => ({ of: "Input", props: { id: "opt", type: "checkbox", checked: true, disabled: true } }),
+  // @ts-expect-error a handler has no HTML form
+  () => ({ of: "form", props: { onSubmit: () => undefined } }),
+  // @ts-expect-error a wrapper's class goes through the wrapper
+  () => ({ of: "div", props: { className: "odd-field" } }),
+];
 
 test("escapes text so a label cannot close the element", () => {
   expect(toHtml(button(undefined, ['a<b> & "c"']))).toBe('<button class="odd-button">a&lt;b&gt; &amp; &quot;c&quot;</button>');
