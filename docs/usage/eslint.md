@@ -1,6 +1,6 @@
 # Check HTML with ESLint
 
-Add the plugin so ESLint reports a bad button in an HTML file or a template. Codes and fixes are in [Button usage rules](button.md) and [General usage rules](general.md).
+Add the plugin so ESLint reports a bad button or field in an HTML file or a template. Codes and fixes are in [Button usage rules](button.md), [Field usage rules](field.md), and [General usage rules](general.md).
 
 ## Add the plugin
 
@@ -93,6 +93,22 @@ Every imported `Button` gets the class `odd-button`, plus the words in its `clas
 So `<Button disabled>` reports `ODD-BUTTON-007`, and `<Button href="#" aria-disabled="true">` reports `ODD-BUTTON-013`.
 
 With a computed `href`, `<Button href={url} disabled>` still reports `ODD-BUTTON-007`, because both elements give it. `<Button href={url} aria-current="page">` gives only the warning, because the `button` reports `ODD-BUTTON-012` and the `a` does not.
+
+### The Field parts from odd-design/react
+
+The plugin checks each Field part imported from `odd-design/react` as the element it renders. The mapping comes from the part's entry of `WRAPPERS` in `src/js/usage/contract.ts`.
+
+| Part | Element |
+| --- | --- |
+| `Field` | `div` with `odd-field` |
+| `Label` | `label` with `odd-label` |
+| `Input` | `input` with `odd-input` |
+| `Textarea` | `textarea` with `odd-textarea` |
+| `Select` | `select` with `odd-select` |
+| `Hint` | `p` with `odd-hint` |
+| `FieldError` | `p` with `odd-error` |
+
+Each part adds the words in its `className`. Every other prop is the attribute with the same name. So `<FieldError id="email-error" hidden>` reports `ODD-FIELD-002`, and `<Input id="owner" aria-disabled="true">` reports `ODD-FIELD-003`.
 
 ### Other components
 

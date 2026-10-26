@@ -1,8 +1,8 @@
-# Use the React Button
+# Use the React components
 
-`Button` renders an `odd-button` element from typed props. A contract mistake in those props is a TypeScript error that starts with its code, such as `ODD-BUTTON-007`. `Button` lives in `src/react/button.tsx`, and consumers import it as `odd-design/react`. Codes and fixes are in [Button usage rules](button.md).
+`odd-design/react` exports `Button` and the Field parts. Each renders an `odd-` element from typed props. A contract mistake in those props is a TypeScript error that starts with its code, such as `ODD-BUTTON-007`. `Button` lives in `src/react/button.tsx`, and the Field parts live in `src/react/field.tsx`. Codes and fixes are in [Button usage rules](button.md) and [Field usage rules](field.md).
 
-The file starts with `"use client"`, so a React Server Components app can render `Button` from a server component.
+`button.tsx` starts with `"use client"`, so a React Server Components app can render `Button` from a server component. The Field parts hold no state and no handlers, so `field.tsx` has no directive.
 
 ## Render a button or a link
 
@@ -40,6 +40,65 @@ Set `aria-disabled="true"`. The button stays focusable and stays in the tab orde
 
 A link takes no `aria-disabled`. Render a button when the control should not navigate.
 
+## Build a field
+
+```tsx
+import { Field, Hint, Input, Label } from "odd-design/react";
+
+<Field>
+  <Label htmlFor="email">Email</Label>
+  <Input id="email" type="email" required aria-describedby="email-hint" />
+  <Hint id="email-hint">We never share it.</Hint>
+</Field>;
+```
+
+Each part renders one element with its class, plus the words in `className`. Every other prop goes to the element as is. The ESLint plugin reads each part as the same element.
+
+| Part | Element | Required prop |
+| --- | --- | --- |
+| `Field` | `div.odd-field` | |
+| `Label` | `label.odd-label` | `htmlFor` |
+| `Input` | `input.odd-input` | |
+| `Textarea` | `textarea.odd-textarea` | |
+| `Select` | `select.odd-select` | |
+| `Hint` | `p.odd-hint` | `id` |
+| `FieldError` | `p.odd-error` | `id` |
+
+Wire `htmlFor`, `id`, and `aria-describedby` yourself, as in HTML. No checker follows these references, so a dangling `aria-describedby` is not an error. `Input` takes no required `id`, because a search box is named with `aria-label`. `FieldError` is named so it does not shadow the global `Error`.
+
+## Show an error
+
+Render `FieldError` only while the field is invalid. Set `aria-invalid` on the control, and add the error's `id` to its `aria-describedby`.
+
+```tsx
+import { Field, FieldError, Hint, Input, Label } from "odd-design/react";
+
+<Field>
+  <Label htmlFor="email">Email</Label>
+  <Input
+    id="email"
+    type="email"
+    required
+    aria-invalid={error === undefined ? undefined : "true"}
+    aria-describedby={error === undefined ? "email-hint" : "email-hint email-error"}
+  />
+  <Hint id="email-hint">We never share it.</Hint>
+  {error === undefined ? null : <FieldError id="email-error">{error}</FieldError>}
+</Field>;
+```
+
+Do not keep a hidden error in the tree. A screen reader still announces a hidden element that `aria-describedby` references. `hidden` and `aria-hidden` on `FieldError` are type errors.
+
+## Disable a field with disabled
+
+A field control is the reverse of `Button`. Set `disabled` on `Input`, `Textarea`, or `Select`. The field styles only `:disabled`.
+
+```tsx
+<Input id="owner" defaultValue="you" disabled />
+```
+
+`aria-disabled` on a field control is a type error. It leaves the control editable, and the control does not look disabled.
+
 ## Read a type error
 
 The type error names the code and the fix. The table lists what each mistake prints.
@@ -51,11 +110,14 @@ The type error names the code and the fix. The table lists what each mistake pri
 | `aria-current` without `href` | `ODD-BUTTON-012` |
 | `aria-disabled` with `href` | `ODD-BUTTON-013` |
 | A system `data-` attribute the button does not take, such as `data-tone` | `ODD-BUTTON-015` |
+| `hidden` or `aria-hidden` on `FieldError` | `ODD-FIELD-002` |
+| `aria-disabled` on `Input`, `Textarea`, or `Select` | `ODD-FIELD-003` |
+| `Label` without `htmlFor`, or `Hint` or `FieldError` without `id` | TypeScript's missing property error |
 | A `variant`, `size`, or `aria-current` value outside the contract | The allowed values |
 
 TypeScript shortens a long type in an error. Set `noErrorTruncation` in `tsconfig.json` to see the whole message.
 
-Some rules are not type errors. `Button` picks the element from `href`, so you cannot write an anchor without `href` (`ODD-BUTTON-009`) or a button with `href` (`ODD-BUTTON-010`). Those two codes apply to a raw `a` or `button` with the `odd-button` class. Visible text in an icon-only button (`ODD-BUTTON-014`) and a misspelled `data-` name are not type errors either. The ESLint plugin and the [runtime checker](runtime.md) report each of these.
+Some rules are not type errors. `Button` picks the element from `href`, so you cannot write an anchor without `href` (`ODD-BUTTON-009`) or a button with `href` (`ODD-BUTTON-010`). Those two codes apply to a raw `a` or `button` with the `odd-button` class. Each Field part picks its own element too, so `ODD-FIELD-001` applies only to raw markup. Visible text in an icon-only button (`ODD-BUTTON-014`) and a misspelled `data-` name are not type errors either. The ESLint plugin and the [runtime checker](runtime.md) report each of these.
 
 ## Open a dialog or a popover with a command
 
