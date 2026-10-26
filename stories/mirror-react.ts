@@ -2,7 +2,7 @@ import { createElement, type ReactElement, type ReactNode } from "react";
 import * as Wrappers from "odd-design/react";
 import type { WRAPPERS } from "../src/js/usage/contract.ts";
 import { icons } from "./icons.ts";
-import { isComponent, type AnyNode, type Scene, type Text } from "./mirror.ts";
+import { isComponent, type Scene, type Text } from "./mirror.ts";
 
 type Expect<T extends true> = T;
 
@@ -30,16 +30,12 @@ function icon(name: keyof typeof icons): ReactElement {
   return createElement("svg", { ...props, dangerouslySetInnerHTML: { __html: inner } });
 }
 
-function child(node: Text | AnyNode): ReactNode {
+function child(node: Text | Scene): ReactNode {
   if (typeof node === "string") return node;
-  return "icon" in node ? icon(node.icon) : element(node);
+  return "icon" in node ? icon(node.icon) : toReact(node);
 }
 
-function element(node: AnyNode): ReactElement {
+export function toReact(node: Scene): ReactElement {
   const type = isComponent(node.of) ? (Wrappers[node.of] as (props: object) => ReactElement) : node.of;
   return createElement(type, node.props, ...(node.children ?? []).map(child));
-}
-
-export function toReact(scene: Scene): ReactElement {
-  return element(scene);
 }

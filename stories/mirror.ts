@@ -68,9 +68,6 @@ type Flow = Nodes[Exclude<Component | Tag, "option">];
 
 export type Scene = Nodes[Component | Tag];
 
-// Both renderers walk this wider shape, because reading props or children off the full Scene union is too complex for tsc.
-export type AnyNode = { readonly of: Component | Tag; readonly props?: object; readonly children?: readonly (Text | AnyNode)[] };
-
 export type Mirror<Args> = { readonly scene: (args: Args) => Scene; readonly aria: string };
 
 export type MirroredStory<Args> = { readonly parameters: { readonly mirror: Mirror<Args> } };
@@ -143,7 +140,7 @@ function textOf(children: readonly unknown[]): string {
   return children.filter((child) => typeof child === "string").join("");
 }
 
-function nodeHtml(scene: AnyNode, selected?: unknown): string {
+function nodeHtml(scene: Scene, selected?: unknown): string {
   const props: Record<string, unknown> = { ...scene.props };
   const wrapper = isComponent(scene.of) ? WRAPPERS[scene.of] : undefined;
   const tag = wrapper === undefined ? scene.of : tagName(wrapper.element, props);
@@ -169,7 +166,7 @@ function nodeHtml(scene: AnyNode, selected?: unknown): string {
   return open + inner + "</" + tag + ">";
 }
 
-function childHtml(child: Text | AnyNode, selected: unknown): string {
+function childHtml(child: Text | Scene, selected: unknown): string {
   if (typeof child === "string") return escapeText(child);
   if ("icon" in child) return icons[child.icon];
   return nodeHtml(child, selected);
