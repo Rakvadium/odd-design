@@ -34,7 +34,11 @@ const systemData = new Set<string>(Object.values(VOCABULARY).flat());
 const alwaysAllowed = new Set<string>([...APPEARANCE_AXES, ...HEADLESS_ALLOWLIST]);
 
 const components: readonly Component[] = Object.entries(byComponent).flatMap(([name, rules]: [string, readonly UsageRule[]]) =>
-  rules.flatMap((rule) => (rule.kind === "element" ? [{ className: rule.className, rules, attributes: attributesOf[name] ?? [] }] : [])),
+  rules.flatMap((rule) =>
+    rule.kind === "element"
+      ? [{ className: rule.className, rules: rules.filter((other) => other.kind !== "element" || other === rule), attributes: attributesOf[name] ?? [] }]
+      : [],
+  ),
 );
 
 function isComputed(value: string | Computed | UsageAttribute | UsageNode): value is Computed {

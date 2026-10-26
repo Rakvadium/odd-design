@@ -36,6 +36,21 @@ export const USAGE = {
     { kind: "icon-only-text", code: "ODD-BUTTON-014", attribute: "data-icon-only", ignore: "aria-hidden" },
     { kind: "system-data", code: "ODD-BUTTON-015" },
   ] as const satisfies readonly UsageRule[],
+  field: [
+    { kind: "element", code: "ODD-FIELD-001", className: "odd-field", elements: ["div"] },
+    { kind: "element", code: "ODD-FIELD-001", className: "odd-hint", elements: ["p"] },
+  ] as const satisfies readonly UsageRule[],
+  fieldControl: [
+    { kind: "element", code: "ODD-FIELD-001", className: "odd-input", elements: ["input"] },
+    { kind: "element", code: "ODD-FIELD-001", className: "odd-textarea", elements: ["textarea"] },
+    { kind: "element", code: "ODD-FIELD-001", className: "odd-select", elements: ["select"] },
+    { kind: "forbidden-attribute", code: "ODD-FIELD-003", attribute: "aria-disabled" },
+  ] as const satisfies readonly UsageRule[],
+  fieldError: [
+    { kind: "element", code: "ODD-FIELD-001", className: "odd-error", elements: ["p"] },
+    { kind: "forbidden-attribute", code: "ODD-FIELD-002", attribute: "hidden" },
+    { kind: "forbidden-attribute", code: "ODD-FIELD-002", attribute: "aria-hidden" },
+  ] as const satisfies readonly UsageRule[],
   shared: [
     { kind: "unknown-class", code: "ODD-CLASS-001" },
     { kind: "computed-value", code: "ODD-STATIC-001" },
@@ -59,6 +74,13 @@ export const WRAPPERS = {
     props: { variant: "data-variant", size: "data-size", iconOnly: "data-icon-only" },
     element: { attribute: "href", present: "a", absent: "button" },
   },
+  Field: { source: "odd-design/react", className: "odd-field", props: {}, element: "div" },
+  Label: { source: "odd-design/react", className: "odd-label", props: {}, element: "label" },
+  Input: { source: "odd-design/react", className: "odd-input", props: {}, element: "input" },
+  Textarea: { source: "odd-design/react", className: "odd-textarea", props: {}, element: "textarea" },
+  Select: { source: "odd-design/react", className: "odd-select", props: {}, element: "select" },
+  Hint: { source: "odd-design/react", className: "odd-hint", props: {}, element: "p" },
+  FieldError: { source: "odd-design/react", className: "odd-error", props: {}, element: "p" },
 } as const satisfies Record<string, Wrapper>;
 
 export const CLASS_REGISTRY = [
@@ -158,4 +180,6 @@ export const HEADLESS_ALLOWLIST = ["data-state", "data-side", "data-disabled", "
 export const APPEARANCE_AXES = ["data-chrome", "data-palette", "data-mode"] as const;
 
 export type ButtonRule = (typeof USAGE.button)[number];
+export type FieldControlRule = (typeof USAGE.fieldControl)[number];
+export type FieldErrorRule = (typeof USAGE.fieldError)[number];
 export type SharedRule = (typeof USAGE.shared)[number];

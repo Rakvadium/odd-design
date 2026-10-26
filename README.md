@@ -31,7 +31,7 @@ Install the package.
 bun add odd-design
 ```
 
-The stylesheet, `odd-design/appearance`, `odd-design/enhance`, and `odd-design/palette` need nothing else. Install React 19 when you render `Button`. React is an optional peer dependency.
+The stylesheet, `odd-design/appearance`, `odd-design/enhance`, and `odd-design/palette` need nothing else. Install React 19 when you render `Button` or the Field parts. React is an optional peer dependency.
 
 ```sh
 bun add react@^19 react-dom@^19
@@ -39,7 +39,7 @@ bun add react@^19 react-dom@^19
 
 Set up the checkers the docs describe.
 
-- Types come from `odd-design/react`. See [Use the React Button](docs/usage/react.md).
+- Types come from `odd-design/react`. See [Use the React components](docs/usage/react.md).
 - ESLint loads `odd-design/eslint`. See [Check HTML with ESLint](docs/usage/eslint.md).
 - Tests call `registerUsageChecks` from `odd-design/usage/test-setup`. See [Set up the runtime checker](docs/usage/runtime.md).
 
@@ -108,7 +108,7 @@ bun .agents/skills/verify-odd-design/scripts/ctl.ts axe --run a11y    # every st
 
 ## Usage checks
 
-The package ships the button usage contract and one message per pinned code. Each message names the code, the failure, and the fix. Types, ESLint, and the runtime checker report the same codes. The pages under [docs/usage/](docs/usage/) record the rules. Button codes are in [Button usage rules](docs/usage/button.md). Class and static codes are in [General usage rules](docs/usage/general.md).
+The package ships the button and field usage contracts and one message per pinned code. Each message names the code, the failure, and the fix. Types, ESLint, and the runtime checker report the same codes. The pages under [docs/usage/](docs/usage/) record the rules. Button codes are in [Button usage rules](docs/usage/button.md). Field codes are in [Field usage rules](docs/usage/field.md). Class and static codes are in [General usage rules](docs/usage/general.md).
 
 ## Add a palette
 

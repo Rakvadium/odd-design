@@ -5,6 +5,7 @@ import { createRoot, type Root } from "react-dom/client";
 import { renderToStaticMarkup } from "react-dom/server";
 import { checkRoot } from "../src/js/usage/dom.ts";
 import { Button } from "../src/react/button.tsx";
+import { Field, FieldError, Hint, Input, Label, Select, Textarea } from "../src/react/field.tsx";
 
 Object.assign(globalThis, { IS_REACT_ACT_ENVIRONMENT: true });
 
@@ -61,9 +62,29 @@ const markup: readonly [string, ReactElement, string][] = [
     </Button>,
     '<button data-state="open" data-chrome="bubblegum" data-testid="menu" type="button" class="odd-button">Menu</button>',
   ],
+  [
+    "field with an error",
+    <Field>
+      <Label htmlFor="email">Email</Label>
+      <Input id="email" type="email" required aria-invalid="true" aria-describedby="email-hint email-error" />
+      <Hint id="email-hint">We never share it.</Hint>
+      <FieldError id="email-error">Enter an email address.</FieldError>
+    </Field>,
+    '<div class="odd-field"><label for="email" class="odd-label">Email</label><input id="email" type="email" required="" aria-invalid="true" aria-describedby="email-hint email-error" class="odd-input"/><p id="email-hint" class="odd-hint">We never share it.</p><p id="email-error" class="odd-error">Enter an email address.</p></div>',
+  ],
+  [
+    "disabled textarea and select with className",
+    <>
+      <Textarea id="notes" disabled />
+      <Select id="format" className="wide">
+        <option>Standard</option>
+      </Select>
+    </>,
+    '<textarea id="notes" disabled="" class="odd-textarea"></textarea><select id="format" class="odd-select wide"><option>Standard</option></select>',
+  ],
 ];
 
-describe("Button markup", () => {
+describe("React markup", () => {
   test.each(markup)("%s renders markup the runtime checker accepts", (_name, element, expected) => {
     const html = renderToStaticMarkup(element);
     expect(html).toBe(expected);
@@ -161,9 +182,11 @@ const failures: Record<string, { codes: string[]; text: string[] }> = {
   "aria-current-button": { codes: ["ODD-BUTTON-012"], text: [] },
   "aria-current-icon-only": { codes: ["ODD-BUTTON-012"], text: [] },
   "raw-data-variant": { codes: [], text: ['"data-variant"'] },
+  "field-error-hidden": { codes: ["ODD-FIELD-002"], text: [] },
+  "input-aria-disabled": { codes: ["ODD-FIELD-003"], text: [] },
 };
 
-describe("Button types", () => {
+describe("React types", () => {
   test(
     "each fail fixture prints its own code and no other",
     () => {
