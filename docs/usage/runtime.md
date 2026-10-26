@@ -1,6 +1,6 @@
 # Set up the runtime checker
 
-Install the checker so a bad button prints in development and fails the test that created it. Production does not report it. `checkRoot`, `installUsageChecker`, and `flush` live in `src/js/usage/dom.ts`. `registerUsageChecks` lives in `src/js/usage/test-setup.ts`. Consumers import those modules as `odd-design/usage` and `odd-design/usage/test-setup`. Codes and fixes are in [Button usage rules](button.md) and [General usage rules](general.md).
+Install the checker so a bad button prints in development and fails the test that created it. Production does not report it. `checkRoot`, `installUsageChecker`, and `flush` live in `src/js/usage/dom.ts`. `registerUsageChecks` lives in `src/js/usage/test-setup.ts`. Consumers import those modules as `odd-design/usage` and `odd-design/usage/test-setup`. Codes and fixes are in [Button usage rules](button.md), [Field usage rules](field.md), and [General usage rules](general.md).
 
 ## Log added elements in development
 

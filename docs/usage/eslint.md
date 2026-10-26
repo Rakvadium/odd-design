@@ -108,7 +108,7 @@ The plugin checks each Field part imported from `odd-design/react` as the elemen
 | `Hint` | `p` with `odd-hint` |
 | `FieldError` | `p` with `odd-error` |
 
-Each part adds the words in its `className`. Every other prop is the attribute with the same name. So `<FieldError id="email-error" hidden>` reports `ODD-FIELD-002`, and `<Input id="owner" aria-disabled="true">` reports `ODD-FIELD-003`.
+Each part adds the words in its `className`. Its `children` are the children, read as on a lowercase element. Every other prop is the attribute with the same name. So `<FieldError id="email-error" hidden>` reports `ODD-FIELD-002`, and `<Input id="owner" aria-disabled="true">` reports `ODD-FIELD-003`.
 
 ### Other components
 
