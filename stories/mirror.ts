@@ -32,7 +32,7 @@ type NativeClass = Exclude<(typeof CLASS_REGISTRY)[number], (typeof WRAPPERS)[Co
 type Unlowerable = "children" | "dangerouslySetInnerHTML" | "ref" | "key" | `on${string}`;
 
 // A controlled value needs an onChange, which a scene cannot carry, and React stays silent on a disabled one.
-type Controlled<T> = [T] extends ["input" | "textarea" | "select"] ? "value" : never;
+type Controlled<T> = ([T] extends ["input" | "textarea" | "select"] ? "value" : never) | ([T] extends ["input"] ? "checked" : never);
 
 // React appends px to a bare number and toHtml would not, so a style value is always a string.
 type StoryStyle = { readonly [Name in keyof CSSProperties]?: string };
