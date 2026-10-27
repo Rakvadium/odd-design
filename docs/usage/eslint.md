@@ -124,9 +124,9 @@ So `<Switch type="radio" role="switch">` reports `ODD-CHOICE-002`, and `<Choice 
 
 ### Badge from odd-design/react
 
-The plugin checks `Badge` as a `span` with `odd-badge`, from its entry of `WRAPPERS`. `tone` is read as `data-tone`, and `solid` as `data-solid` with an empty value. `solid={false}` leaves it out. Every other prop is the attribute with the same name.
+The plugin checks `Badge` as a `span` with `odd-badge`, from its entry of `WRAPPERS`. `tone` is read as `data-tone`, and `solid` as `data-solid` with an empty value. `solid={false}` leaves it out. A raw `data-tone` or `data-solid` gives nothing. `Badge` sets these attributes from `tone` and `solid`, so it drops a raw one, and its type rejects one. Every other prop is the attribute with the same name.
 
-So `<Badge tone="sucess">` reports `ODD-BADGE-002`, and `<Badge data-variant="danger">` reports `ODD-BADGE-004`. A computed `tone`, such as `<Badge tone={toneOf[status]}>`, gives the `ODD-STATIC-001` warning, the same as a computed `variant` on `Button`.
+So `<Badge tone="sucess">` reports `ODD-BADGE-002`, `<Badge data-tone="sucess">` reports nothing, and `<Badge data-variant="danger">` reports `ODD-BADGE-004`. A computed `tone`, such as `<Badge tone={toneOf[status]}>`, gives the `ODD-STATIC-001` warning, the same as a computed `variant` on `Button`.
 
 ### Other components
 

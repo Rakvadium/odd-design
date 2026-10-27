@@ -81,8 +81,8 @@ Each item is the default the build uses. Each one can be reversed after review.
 
 ## Capture the baseline (no source change)
 
-- [ ] Run `bun install`. Build both Storybooks from this branch before any change with `bun scripts/storybooks.ts .verify/badge/base-sb`. Serve the build and capture the HTML section with `bun scripts/capture-stories.ts <url> .verify/badge/base.json .verify/badge/base-shots`. The evidence is `base.json`, with one light and one dark capture per story.
-- [ ] Save `bunx tsc -p tests/fixtures/types/fail --noErrorTruncation` to `.verify/badge/fail-before.txt`.
+- [x] Run `bun install`. Build both Storybooks from this branch before any change with `bun scripts/storybooks.ts .verify/badge/base-sb`. Serve the build and capture the HTML section with `bun scripts/capture-stories.ts <url> .verify/badge/base.json .verify/badge/base-shots`. The evidence is `base.json`, with one light and one dark capture per story.
+- [x] Save `bunx tsc -p tests/fixtures/types/fail --noErrorTruncation` to `.verify/badge/fail-before.txt`.
 
 ## Build
 
@@ -129,14 +129,14 @@ Each commit ends with `bun run check`. The boxes under a commit name its extra c
 
 ## Verify on the real surface
 
-- [ ] Rebuild both Storybooks on the finished branch, capture the HTML section to `after.json`, and run `bun scripts/capture-stories.ts --diff .verify/badge/base.json .verify/badge/after.json`. Pass means `changed` lists at most `components-surfaces--badge`, and only in the `dom` field, never in `aria` or `png`. `components-data-display--table` and `showcase--sample-app` must not appear, which proves the literal rewrites render the same page.
-- [ ] Run `bun run test:browsers`. Pass means the Firefox and WebKit runs pass, the Badge pair has equal accessibility trees and byte-identical screenshots, and the sweep reports 0 diagnostics.
-- [ ] Serve the composed build with `bun e2e/serve.ts <dir> 6106` and drive it per the verify-odd-design skill. Open `react_components-surfaces--badge` and `components-surfaces--badge` in `calm` light, `sorbet` dark, and `holoterminal` dark. Save each screenshot and the `ariaSnapshot`, and confirm that every badge is legible and that the React and HTML sides look the same. Write a transcript with one line per step. Badge has no interaction, so the evidence is screenshots and snapshots, not a video.
+- [x] Rebuild both Storybooks on the finished branch, capture the HTML section to `after.json`, and run `bun scripts/capture-stories.ts --diff .verify/badge/base.json .verify/badge/after.json`. Pass means `changed` lists at most `components-surfaces--badge`, and only in the `dom` field, never in `aria` or `png`. `components-data-display--table` and `showcase--sample-app` must not appear, which proves the literal rewrites render the same page.
+- [x] Run `bun run test:browsers`. Pass means the Firefox and WebKit runs pass, the Badge pair has equal accessibility trees and byte-identical screenshots, and the sweep reports 0 diagnostics.
+- [x] Serve the composed build with `bun e2e/serve.ts <dir> <port>` on any free port and drive it per the verify-odd-design skill. Open `react_components-surfaces--badge` and `components-surfaces--badge` in `calm` light, `sorbet` dark, and `holoterminal` dark. Save each screenshot and the `ariaSnapshot`, and confirm that every badge is legible and that the React and HTML sides look the same. Write a transcript with one line per step. Badge has no interaction, so the evidence is screenshots and snapshots, not a video.
 
 ## Review and open the PR
 
-- [ ] The `cursor grok-4.7` reviewer reads the diff against this plan and `.verify/plan/synthesis.md`. A fresh builder fixes each finding that blocks. Other findings go to `docs/follow-ups.md`.
-- [ ] Run `/deslop` and `/no-comments` over the diff.
+- [x] The `cursor grok-4.7` reviewer reads the diff against this plan and `.verify/plan/synthesis.md`. A fresh builder fixes each finding that blocks. Other findings go to `docs/follow-ups.md`.
+- [x] Run `/deslop` and `/no-comments` over the diff.
 - [ ] Open the PR ready, not draft, with `gh pr create --base main --repo Rakvadium/odd-design`. The title is `feat(react): add Badge and mirror it in the Storybooks`. Link the PR to this thread.
 - [ ] Run `gh pr checks`. The repo has no workflows, so expect "no checks reported". Report the PR as open. Do not merge.
 

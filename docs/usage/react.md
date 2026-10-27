@@ -153,7 +153,7 @@ const toneOf: Record<Status, BadgeTone> = { draft: "neutral", legal: "success", 
 | `solid` | `data-solid` with an empty value. `solid={false}` leaves it out. |
 | Any other prop | The attribute with the same name. |
 
-Use `tone` and `solid`. Passing `data-tone` or `data-solid` yourself is a type error. `BadgeTone` is the type of `tone`, for a map from your data to a tone.
+Use `tone` and `solid`. Passing `data-tone` or `data-solid` yourself is a type error, and `Badge` drops the raw attribute. A `solid` that is not a boolean, such as `solid="false"`, is a type error too. Without types, it renders `data-solid="false"`, which is solid, and ESLint and the runtime checker report `ODD-BADGE-003`. `BadgeTone` is the type of `tone`, for a map from your data to a tone.
 
 ## Read a type error
 
@@ -177,7 +177,7 @@ The type error names the code and the fix. The table lists what each mistake pri
 
 TypeScript shortens a long type in an error. Set `noErrorTruncation` in `tsconfig.json` to see the whole message.
 
-Some rules are not type errors. `Button` picks the element from `href`, so you cannot write an anchor without `href` (`ODD-BUTTON-009`) or a button with `href` (`ODD-BUTTON-010`). Those two codes apply to a raw `a` or `button` with the `odd-button` class. Each Field and Choice part and `Badge` picks its own element too, so `ODD-FIELD-001`, `ODD-CHOICE-001`, and `ODD-BADGE-001` apply only to raw markup. `solid` is a boolean, so a `data-solid` value other than empty or `true` (`ODD-BADGE-003`) also applies only to raw markup. Visible text in an icon-only button (`ODD-BUTTON-014`) and a misspelled `data-` name are not type errors either. The ESLint plugin and the [runtime checker](runtime.md) report each of these.
+Some rules are not type errors. `Button` picks the element from `href`, so you cannot write an anchor without `href` (`ODD-BUTTON-009`) or a button with `href` (`ODD-BUTTON-010`). Those two codes apply to a raw `a` or `button` with the `odd-button` class. Each Field and Choice part and `Badge` picks its own element too, so `ODD-FIELD-001`, `ODD-CHOICE-001`, and `ODD-BADGE-001` apply only to raw markup. Visible text in an icon-only button (`ODD-BUTTON-014`) and a misspelled `data-` name are not type errors either. The ESLint plugin and the [runtime checker](runtime.md) report each of these.
 
 ## Open a dialog or a popover with a command
 
