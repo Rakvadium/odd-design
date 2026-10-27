@@ -1,22 +1,6 @@
-import { createElement, type ComponentProps, type ReactElement } from "react";
-import type { FieldControlRule, FieldErrorRule, WRAPPERS } from "../js/usage/contract.ts";
-import type { MESSAGES } from "../js/usage/format.ts";
-
-type Message<Code extends keyof typeof MESSAGES> = (typeof MESSAGES)[Code];
-
-type Forbidden<Rule> = {
-  [R in Rule as R extends { kind: "forbidden-attribute"; attribute: infer Name extends string } ? Name : never]?: R extends {
-    code: infer Code extends keyof typeof MESSAGES;
-  }
-    ? Message<Code>
-    : never;
-};
-
-type Part = "Field" | "Label" | "Input" | "Textarea" | "Select" | "Hint" | "FieldError";
-
-type Tag<Name extends Part> = (typeof WRAPPERS)[Name]["element"];
-
-type Native<Name extends Part, Replaced extends PropertyKey = never> = Omit<ComponentProps<Tag<Name>>, Replaced>;
+import type { ReactElement } from "react";
+import type { FieldControlRule, FieldErrorRule } from "../js/usage/contract.ts";
+import { part, type Forbidden, type Native } from "./part.ts";
 
 interface ControlContract extends Forbidden<FieldControlRule> {}
 
@@ -40,14 +24,6 @@ export interface HintProps extends Native<"Hint", "id"> {
 
 export interface FieldErrorProps extends ErrorContract, Native<"FieldError", "id" | keyof ErrorContract> {
   id: string;
-}
-
-function part<Name extends Part>(name: Name, tag: Tag<Name>, base: (typeof WRAPPERS)[Name]["className"]) {
-  function render(props: { className?: string | undefined }): ReactElement {
-    const { className, ...attributes } = props;
-    return createElement(tag, { ...attributes, className: className ? `${base} ${className}` : base });
-  }
-  return Object.assign(render, { displayName: name });
 }
 
 export const Field: (props: FieldProps) => ReactElement = part("Field", "div", "odd-field");

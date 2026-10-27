@@ -109,8 +109,8 @@ Each commit ends with `bun run check`. The boxes under a commit name its extra c
 
 ### Commit 2. Share the Field part helpers
 
-- [ ] Create `src/react/part.ts` with `Message`, `Forbidden`, `Pinned`, the derived `Part` union, `Native`, and `part`. `field.tsx` imports them and keeps its exports byte for byte.
-- [ ] Check. `bun run check` passes with no test edited. `react-public-api.test.ts` still finds the barrel equal to the `.tsx` exports and no `WrapperProps` leak.
+- [x] Create `src/react/part.ts` with `Message`, `Forbidden`, `Pinned`, the derived `Part` union, `Native`, and `part`. `field.tsx` imports them and keeps its exports byte for byte.
+- [x] Check. `bun run check` passes with no test edited. `react-public-api.test.ts` still finds the barrel equal to the `.tsx` exports and no `WrapperProps` leak.
 
 ### Commit 3. Add the Choice parts
 
