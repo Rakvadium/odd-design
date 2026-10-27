@@ -128,6 +128,12 @@ The plugin checks `Badge` as a `span` with `odd-badge`, from its entry of `WRAPP
 
 So `<Badge tone="sucess">` reports `ODD-BADGE-002`, `<Badge data-tone="sucess">` reports nothing, and `<Badge data-variant="danger">` reports `ODD-BADGE-004`. A computed `tone`, such as `<Badge tone={toneOf[status]}>`, gives the `ODD-STATIC-001` warning, the same as a computed `variant` on `Button`.
 
+### The Alert parts from odd-design/react
+
+The plugin checks `Alert` as a `div` with `odd-alert`, and `AlertTitle` as a `p` with `odd-alert-title`, from their entries of `WRAPPERS`. `tone` is read as `data-tone`. A raw `data-tone` on `Alert` gives nothing. `Alert` sets that attribute from `tone`, so it drops a raw one, and its type rejects one. Every other prop is the attribute with the same name.
+
+So `<Alert tone="neutral">` reports `ODD-ALERT-002`, `<Alert role="status">` and `<Alert aria-live="polite">` report `ODD-ALERT-003`, `<Alert data-variant="primary">` reports `ODD-ALERT-004`, and `<AlertTitle data-tone="info">` reports `ODD-ALERT-005`. A computed `tone`, such as `<Alert tone={toneOf[state]}>`, gives the `ODD-STATIC-001` warning, the same as a computed `tone` on `Badge`.
+
 ### Other components
 
 The plugin cannot see what another component renders. A component with an `odd-` class, such as `<Link className="odd-button">`, gets one `ODD-STATIC-001` warning on the element and no button rules. An `odd-` class that is not in the registry still reports `ODD-CLASS-001`. `<UI.Button>`, with `UI` a namespace import, counts as another component.
