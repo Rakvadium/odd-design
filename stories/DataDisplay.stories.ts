@@ -6,11 +6,13 @@ const meta = { title: "Components/Data Display" } satisfies Meta;
 export default meta;
 type Story = StoryObj;
 
+const legal = /* html */ `<span class="odd-badge" data-tone="success">Legal</span>`;
+
 const decks = [
-  ["Midnight Control", "Extended", 60, 14, "success", "Legal"],
-  ["Ember Aggro", "Standard", 60, 9, "warning", "Rotating"],
-  ["Tidecaller", "Standard", 62, 21, "success", "Legal"],
-  ["Old Faithful", "Retro", 55, 3, "danger", "Banned card"],
+  ["Midnight Control", "Extended", 60, 14, legal],
+  ["Ember Aggro", "Standard", 60, 9, /* html */ `<span class="odd-badge" data-tone="warning">Rotating</span>`],
+  ["Tidecaller", "Standard", 62, 21, legal],
+  ["Old Faithful", "Retro", 55, 3, /* html */ `<span class="odd-badge" data-tone="danger">Banned card</span>`],
 ] as const;
 
 export const Table: Story = {
@@ -40,13 +42,13 @@ export const Table: Story = {
       <tbody>
         ${decks
           .map(
-            ([name, format, cards, versions, tone, status], i) => /* html */ `<tr>
+            ([name, format, cards, versions, badge], i) => /* html */ `<tr>
           <td><input type="checkbox" aria-label="Select ${name}" ${i === 1 ? "checked" : ""}></td>
           <th scope="row" style="font-weight: 600"><a href="#">${name}</a></th>
           <td>${format}</td>
           <td data-numeric>${cards}</td>
           <td data-numeric>${versions}</td>
-          <td><span class="odd-badge" data-tone="${tone}">${status}</span></td>
+          <td>${badge}</td>
         </tr>`,
           )
           .join("")}

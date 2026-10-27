@@ -64,6 +64,12 @@ export const USAGE = {
     { kind: "enum", code: "ODD-CHOICE-002", attribute: "role", values: ["switch"], omit: [] },
     { kind: "forbidden-attribute", code: "ODD-CHOICE-003", attribute: "aria-disabled" },
   ] as const satisfies readonly UsageRule[],
+  badge: [
+    { kind: "element", code: "ODD-BADGE-001", className: "odd-badge", elements: ["span"] },
+    { kind: "enum", code: "ODD-BADGE-002", attribute: "data-tone", values: ["neutral", "primary", "success", "warning", "danger", "info"], omit: [] },
+    { kind: "boolean-attribute", code: "ODD-BADGE-003", attribute: "data-solid", values: ["", "true"] },
+    { kind: "system-data", code: "ODD-BADGE-004" },
+  ] as const satisfies readonly UsageRule[],
   shared: [
     { kind: "unknown-class", code: "ODD-CLASS-001" },
     { kind: "computed-value", code: "ODD-STATIC-001" },
@@ -97,6 +103,7 @@ export const WRAPPERS = {
   Choice: { source: "odd-design/react", className: "odd-choice", props: {}, element: "label" },
   Switch: { source: "odd-design/react", className: "odd-switch", props: {}, element: "input" },
   Segmented: { source: "odd-design/react", className: "odd-segmented", props: {}, element: "fieldset" },
+  Badge: { source: "odd-design/react", className: "odd-badge", props: { tone: "data-tone", solid: "data-solid" }, element: "span" },
 } as const satisfies Record<string, Wrapper>;
 
 export const CLASS_REGISTRY = [
@@ -174,10 +181,6 @@ export const CLASS_REGISTRY = [
   "odd-visually-hidden",
 ] as const;
 
-export const ATTRIBUTES = {
-  button: ["data-variant", "data-size", "data-icon-only"],
-} as const;
-
 export const VOCABULARY = {
   alert: ["data-tone"],
   avatar: ["data-size"],
@@ -216,3 +219,4 @@ export type FieldControlRule = (typeof USAGE.fieldControl)[number];
 export type FieldErrorRule = (typeof USAGE.fieldError)[number];
 export type ChoiceRule = (typeof USAGE.choice)[number];
 export type SwitchRule = (typeof USAGE.switch)[number];
+export type BadgeRule = (typeof USAGE.badge)[number];

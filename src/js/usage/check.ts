@@ -1,4 +1,4 @@
-import { APPEARANCE_AXES, ATTRIBUTES, CLASS_REGISTRY, HEADLESS_ALLOWLIST, USAGE, VOCABULARY, type UsageRule } from "./contract.ts";
+import { APPEARANCE_AXES, CLASS_REGISTRY, HEADLESS_ALLOWLIST, USAGE, VOCABULARY, WRAPPERS, type UsageRule, type Wrapper } from "./contract.ts";
 import { message, type MessageDetail, type UsageCode } from "./format.ts";
 
 export type Computed = { readonly computed: readonly string[] };
@@ -28,15 +28,19 @@ type Scope = {
 };
 
 const { shared, ...byComponent } = USAGE;
-const attributesOf: Record<string, readonly string[]> = ATTRIBUTES;
+const wrappers: readonly Wrapper[] = Object.values(WRAPPERS);
 const registry: readonly string[] = CLASS_REGISTRY;
 const systemData = new Set<string>(Object.values(VOCABULARY).flat());
 const alwaysAllowed = new Set<string>([...APPEARANCE_AXES, ...HEADLESS_ALLOWLIST]);
 
-const components: readonly Component[] = Object.entries(byComponent).flatMap(([name, rules]: [string, readonly UsageRule[]]) =>
+function ownAttributes(className: string): readonly string[] {
+  return wrappers.flatMap((wrapper) => (wrapper.className === className ? Object.values(wrapper.props) : []));
+}
+
+const components: readonly Component[] = Object.values(byComponent).flatMap((rules: readonly UsageRule[]) =>
   rules.flatMap((rule) =>
     rule.kind === "element"
-      ? [{ className: rule.className, rules: rules.filter((other) => other.kind !== "element" || other === rule), attributes: attributesOf[name] ?? [] }]
+      ? [{ className: rule.className, rules: rules.filter((other) => other.kind !== "element" || other === rule), attributes: ownAttributes(rule.className) }]
       : [],
   ),
 );

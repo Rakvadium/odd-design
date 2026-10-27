@@ -63,6 +63,8 @@ Run with NVDA 2026.2, OneCore David, rate 50, in Chrome. The transcripts are in 
 - **Slider hover ring is clipped at the far ends.** This is a side effect of `overflow: hidden`, which the fill technique needs. It's cosmetic. (step 1)
 - **`odd-segmented` has no disabled styling.** `fieldset disabled` stops its radios, but no rule in `choice.css` dims it, so a disabled segmented control looks enabled. (React Choice)
 - **A bare `input.odd-switch` with `disabled` does not dim.** The only dim rule is `.odd-choice:has(:disabled)`, so a switch outside an `odd-choice` label looks enabled while disabled. The Showcase Matrix switch (`stories/Showcase.stories.ts:141`) is one. It is not `disabled` today, but a `disabled` attribute on it would not dim it. (React Choice)
+- **A computed `tone` warns.** `<Badge tone={toneOf[status]}>` gives the `ODD-STATIC-001` warning, the same as `<Button variant={v}>`, though `BadgeTone` already guards the value. Trusting typed wrapper props in the ESLint lowering is a change for every part, not only Badge. (React Badge)
+- **An empty badge passes every checker.** `<span class="odd-badge"></span>` shows only a colored dot, and no rule reports it. A rule that a badge has text needs a new rule kind. (React Badge)
 - **No arrow on tooltips or popovers.** uvs-decks-gg's tooltip has one. An anchored arrow needs anchor functions on a pseudo-element; skipped for now. (step 2)
 - **Uppercase chromes change accessible names.** Chrome exposes CSS `text-transform` in names, so holoterminal's `Publish` button is read as `PUBLISH`. Most screen readers say it normally, but some spell out all-caps words. This predates the build-out. Consider keeping case transforms off controls, or accept and document it. (step 2)
 
@@ -71,6 +73,7 @@ Run with NVDA 2026.2, OneCore David, rate 50, in Chrome. The transcripts are in 
 - **Text on translucent surfaces.** Glass uses `--surface-alpha: 82%`. `tests/css.ts` now evaluates `color-mix()`, so compositing `--surface-fill` over `--background` is within reach. (original survey)
 - **Preferences-layer colors.** `tests/css.ts` only parses flat blocks, so the colors set inside `@media` in `preferences.css` are never checked. (original survey)
 - **The no-hue check on chromes is incomplete.** It misses named colors, `hwb()`, and `lab()`. (original survey)
+- **The `Values` fix has no test.** `Values` in `src/react/part.ts` types a mapped prop with no `enum` rule as `never`. Reverting it to the old conditional type, which gives `unknown`, fails nothing unless a rule is also missing. Pinning it needs a type fixture for a mapped prop with no rule. (React Badge)
 
 ## Housekeeping
 

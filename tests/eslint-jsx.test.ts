@@ -22,6 +22,12 @@ function expectedCodes(source: string, pattern: RegExp): string[] {
 }
 
 const places: Record<string, readonly (readonly [string, number, number, string])[]> = {
+  "badge.tsx": [
+    ["ODD-BADGE-002", 7, 12, 'tone="sucess"'],
+    ["ODD-BADGE-004", 8, 12, "data-variant"],
+    ["ODD-BADGE-003", 9, 33, "data-solid={false}"],
+    ["ODD-BADGE-001", 10, 10, "className"],
+  ],
   "children-prop.tsx": [
     ["ODD-BUTTON-014", 5, 5, "<Button"],
     ["ODD-BUTTON-014", 6, 5, "<button"],

@@ -122,6 +122,12 @@ The plugin checks each Choice part the same way, from its entry of `WRAPPERS`.
 
 So `<Switch type="radio" role="switch">` reports `ODD-CHOICE-002`, and `<Choice aria-disabled="true">` reports `ODD-CHOICE-003`.
 
+### Badge from odd-design/react
+
+The plugin checks `Badge` as a `span` with `odd-badge`, from its entry of `WRAPPERS`. `tone` is read as `data-tone`, and `solid` as `data-solid` with an empty value. `solid={false}` leaves it out. A raw `data-tone` or `data-solid` gives nothing. `Badge` sets these attributes from `tone` and `solid`, so it drops a raw one, and its type rejects one. Every other prop is the attribute with the same name.
+
+So `<Badge tone="sucess">` reports `ODD-BADGE-002`, `<Badge data-tone="sucess">` reports nothing, and `<Badge data-variant="danger">` reports `ODD-BADGE-004`. A computed `tone`, such as `<Badge tone={toneOf[status]}>`, gives the `ODD-STATIC-001` warning, the same as a computed `variant` on `Button`.
+
 ### Other components
 
 The plugin cannot see what another component renders. A component with an `odd-` class, such as `<Link className="odd-button">`, gets one `ODD-STATIC-001` warning on the element and no button rules. An `odd-` class that is not in the registry still reports `ODD-CLASS-001`. `<UI.Button>`, with `UI` a namespace import, counts as another component.

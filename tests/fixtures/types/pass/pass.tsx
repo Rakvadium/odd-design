@@ -1,4 +1,5 @@
 import { useRef, type MouseEvent } from "react";
+import { Badge, type BadgeTone } from "../../../../src/react/badge.tsx";
 import { Button } from "../../../../src/react/button.tsx";
 import { Choice, Segmented, Switch } from "../../../../src/react/choice.tsx";
 import { Field, FieldError, Hint, Input, Label, Select, Textarea } from "../../../../src/react/field.tsx";
@@ -92,6 +93,16 @@ export function Choices({ on, toggle }: { on: boolean; toggle: () => void }) {
         </label>
       </Segmented>
     </>
+  );
+}
+
+const statusTone: Record<"draft" | "legal" | "banned", BadgeTone> = { draft: "neutral", legal: "success", banned: "danger" };
+
+export function StatusBadge({ status, urgent }: { status: keyof typeof statusTone; urgent: boolean }) {
+  return (
+    <Badge tone={statusTone[status]} solid={urgent}>
+      {status}
+    </Badge>
   );
 }
 

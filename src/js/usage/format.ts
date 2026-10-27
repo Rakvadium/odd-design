@@ -1,4 +1,4 @@
-import { APPEARANCE_AXES, ATTRIBUTES, HEADLESS_ALLOWLIST, USAGE } from "./contract.ts";
+import { APPEARANCE_AXES, HEADLESS_ALLOWLIST, USAGE, WRAPPERS } from "./contract.ts";
 
 export const USAGE_CODES = [
   "ODD-CLASS-001",
@@ -23,6 +23,10 @@ export const USAGE_CODES = [
   "ODD-CHOICE-001",
   "ODD-CHOICE-002",
   "ODD-CHOICE-003",
+  "ODD-BADGE-001",
+  "ODD-BADGE-002",
+  "ODD-BADGE-003",
+  "ODD-BADGE-004",
   "ODD-STATIC-001",
   "ODD-STATIC-002",
   "ODD-STATIC-003",
@@ -63,7 +67,9 @@ const variantRule = USAGE.button[1];
 const sizeRule = USAGE.button[2];
 const variantAllowed = enumAllowed(variantRule.values, variantRule.omit);
 const sizeAllowed = enumAllowed(sizeRule.values, sizeRule.omit);
-const buttonAttributes = comma(ATTRIBUTES.button);
+const buttonAttributes = comma([WRAPPERS.Button.props.variant, WRAPPERS.Button.props.size, WRAPPERS.Button.props.iconOnly]);
+const toneRule = USAGE.badge[1];
+const badgeAttributes = comma([WRAPPERS.Badge.props.tone, WRAPPERS.Badge.props.solid]);
 const appearanceAxes = comma(APPEARANCE_AXES);
 const headlessAllowlist = comma(HEADLESS_ALLOWLIST);
 
@@ -241,6 +247,34 @@ export const MESSAGES = {
     "none",
     "remove aria-disabled and use the native disabled attribute on the input, or on the fieldset of a segmented control.",
     "docs/usage/choice.md#odd-choice-003",
+  ),
+  "ODD-BADGE-001": text(
+    "ODD-BADGE-001",
+    "odd-badge belongs on a span. A badge sits in a sentence, a heading, or a button, where a div is not allowed.",
+    "span",
+    "move odd-badge onto a span element.",
+    "docs/usage/badge.md#odd-badge-001",
+  ),
+  "ODD-BADGE-002": text(
+    toneRule.code,
+    "data-tone has a value this badge does not take.",
+    comma(toneRule.values),
+    "set one of the allowed tones, or remove data-tone for a neutral badge.",
+    "docs/usage/badge.md#odd-badge-002",
+  ),
+  "ODD-BADGE-003": text(
+    "ODD-BADGE-003",
+    "data-solid must be empty or true. Any value turns the badge solid, so data-solid=false is solid too.",
+    "empty, true",
+    "remove data-solid for a soft badge, or set it empty or true for a solid one.",
+    "docs/usage/badge.md#odd-badge-003",
+  ),
+  "ODD-BADGE-004": text(
+    "ODD-BADGE-004",
+    "this badge does not take that data attribute.",
+    "the badge attributes, any app data attribute, the appearance axes, and the headless allowlist",
+    `remove the attribute, or correct its name. Badge attributes: ${badgeAttributes}. Appearance axes: ${appearanceAxes}. Headless allowlist: ${headlessAllowlist}.`,
+    "docs/usage/badge.md#odd-badge-004",
   ),
   "ODD-STATIC-001": text(
     "ODD-STATIC-001",

@@ -31,7 +31,7 @@ Install the package.
 bun add odd-design
 ```
 
-The stylesheet, `odd-design/appearance`, `odd-design/enhance`, and `odd-design/palette` need nothing else. Install React 19 when you render `Button`, the Field parts, or the Choice parts. React is an optional peer dependency.
+The stylesheet, `odd-design/appearance`, `odd-design/enhance`, and `odd-design/palette` need nothing else. Install React 19 when you render `Button`, the Field parts, the Choice parts, or `Badge`. React is an optional peer dependency.
 
 ```sh
 bun add react@^19 react-dom@^19
@@ -108,7 +108,7 @@ bun .agents/skills/verify-odd-design/scripts/ctl.ts axe --run a11y    # every st
 
 ## Usage checks
 
-The package ships the button, field, and choice usage contracts and one message per pinned code. Each message names the code, the failure, and the fix. Types, ESLint, and the runtime checker report the same codes. The pages under [docs/usage/](docs/usage/) record the rules. Button codes are in [Button usage rules](docs/usage/button.md). Field codes are in [Field usage rules](docs/usage/field.md). Choice codes are in [Choice usage rules](docs/usage/choice.md). Class and static codes are in [General usage rules](docs/usage/general.md).
+The package ships the button, field, choice, and badge usage contracts and one message per pinned code. Each message names the code, the failure, and the fix. Types, ESLint, and the runtime checker report the same codes. The pages under [docs/usage/](docs/usage/) record the rules. Button codes are in [Button usage rules](docs/usage/button.md). Field codes are in [Field usage rules](docs/usage/field.md). Choice codes are in [Choice usage rules](docs/usage/choice.md). Badge codes are in [Badge usage rules](docs/usage/badge.md). Class and static codes are in [General usage rules](docs/usage/general.md).
 
 ## Add a palette
 
@@ -141,7 +141,7 @@ The five palettes ported from uvs-decks-gg went through the same repair. Their i
 
 ## Add a React part
 
-1. Add the part's `WRAPPERS` row and its `USAGE` rules to `src/js/usage/contract.ts`. Add each new code to `USAGE_CODES` and `MESSAGES` in `src/js/usage/format.ts`.
+1. Add the part's `WRAPPERS` row and its `USAGE` rules to `src/js/usage/contract.ts`. Add each new code to `USAGE_CODES` and `MESSAGES` in `src/js/usage/format.ts`. A class's rules run only when its `USAGE` group has an `element` rule for it. Each data prop in the row needs an `enum` or `boolean-attribute` rule, which types the prop. The row's `props` are also the part's own `data-*` names, which a `system-data` rule allows and its message lists.
 2. Document each code in `docs/usage/<family>.md`.
 3. Write `src/react/<family>.tsx`. A part with a fixed tag needs three declarations. `Contract` types its props from its rules, and `part` renders its row.
 
@@ -153,9 +153,9 @@ The five palettes ported from uvs-decks-gg went through the same repair. Their i
 
 4. Export the module from `src/react/index.ts`, and add the props to `WrapperProps` in `src/react/props.ts`.
 5. Mirror the part's stories in `stories/mirrored/<Family>.stories.ts`.
-6. Add the part's rows to the `markup` table in `tests/react.test.tsx`. Add a `<part>-<rule>.tsx` fail fixture in `tests/fixtures/types/fail/` for each code its props reject, with its `failures` entry. Add the `places` entries for its ESLint fixtures in `tests/eslint-jsx.test.ts` and `tests/eslint-html.test.ts`.
+6. Add the part's rows to the `markup` table in `tests/react.test.tsx`. Add a `<part>-<rule>.tsx` fail fixture in `tests/fixtures/types/fail/` for each code its props reject, with its `failures` entry. Add the `places` entries for its ESLint fixtures in `tests/eslint-jsx.test.ts` and `tests/eslint-html.test.ts`. Add a `<code>.bad.html` and `<code>.good.html` pair in `tests/fixtures/usage/` for each runtime code, with the code in lower case, and list the code in `RUNTIME_CODES` in `tests/usage-check.test.ts`. Pin the mirrored story ids in `tests/stories.test.ts`.
 
-`scripts/build.ts` and `scripts/consumer-smoke.ts` read the `odd-design/react` barrel, so a new part adds no line to either.
+`scripts/build.ts` and `scripts/consumer-smoke.ts` read the `odd-design/react` barrel, so a new part adds no line to either. A new usage page goes in `REQUIRED` in `scripts/consumer-smoke.ts`.
 
 ## Components
 
