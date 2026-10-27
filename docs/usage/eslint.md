@@ -1,6 +1,6 @@
 # Check HTML with ESLint
 
-Add the plugin so ESLint reports a bad button or field in an HTML file or a template. Codes and fixes are in [Button usage rules](button.md), [Field usage rules](field.md), and [General usage rules](general.md).
+Add the plugin so ESLint reports a bad button, field, or choice in an HTML file or a template. Codes and fixes are in [Button usage rules](button.md), [Field usage rules](field.md), [Choice usage rules](choice.md), and [General usage rules](general.md).
 
 ## Add the plugin
 
@@ -109,6 +109,18 @@ The plugin checks each Field part imported from `odd-design/react` as the elemen
 | `FieldError` | `p` with `odd-error` |
 
 Each part adds the words in its `className`. Its `children` are the children, read as on a lowercase element. Every other prop is the attribute with the same name. So `<FieldError id="email-error" hidden>` reports `ODD-FIELD-002`, and `<Input id="owner" aria-disabled="true">` reports `ODD-FIELD-003`.
+
+### The Choice parts from odd-design/react
+
+The plugin checks each Choice part the same way, from its entry of `WRAPPERS`.
+
+| Part | Element |
+| --- | --- |
+| `Choice` | `label` with `odd-choice` |
+| `Switch` | `input` with `odd-switch` |
+| `Segmented` | `fieldset` with `odd-segmented` |
+
+So `<Switch type="radio" role="switch">` reports `ODD-CHOICE-002`, and `<Choice aria-disabled="true">` reports `ODD-CHOICE-003`.
 
 ### Other components
 

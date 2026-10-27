@@ -132,12 +132,12 @@ Each commit ends with `bun run check`. The boxes under a commit name its extra c
 
 ### Commit 5. Docs, smoke, and the verify recipe
 
-- [ ] In `docs/usage/react.md`, add "Build a checkbox, a switch, or a segmented control", three rows in the type-error table, and `ODD-CHOICE-001` in the "not a type error" paragraph.
-- [ ] Add the Choice parts to `docs/usage/eslint.md` and `README.md`, beside Field.
-- [ ] Add `dist/react/choice.js`, `choice.d.ts`, and `docs/usage/choice.md` to `REQUIRED` in `scripts/consumer-smoke.ts`. The clean app renders `<Choice><Switch type="checkbox" role="switch" /> Compact grid</Choice>`. No bad-app line, matching Field.
-- [ ] In `.agents/skills/verify-odd-design/features/forms.md`, replace the sentence that says Choices, Switch, and Segmented appear only in the HTML section, and add a "React Choice" section with the composed URLs `react_components-forms--choices`, `--switch`, and `--segmented`. The `.claude` and `.cursor` copies are links to this file, so check that they show the edit.
-- [ ] Add two follow-ups to `docs/follow-ups.md`. `odd-segmented` has no disabled styling. A bare `input.odd-switch` with `disabled` does not dim, because the only dim rule is `.odd-choice:has(:disabled)`. Neither changes `choice.css` in this PR.
-- [ ] Check. `bun run check` passes, then `bun run build` and `bun scripts/consumer-smoke.ts` pass.
+- [x] In `docs/usage/react.md`, add "Build a checkbox, a switch, or a segmented control", three rows in the type-error table, and `ODD-CHOICE-001` in the "not a type error" paragraph.
+- [x] Add the Choice parts to `docs/usage/eslint.md` and `README.md`, beside Field.
+- [x] Add `dist/react/choice.js`, `choice.d.ts`, and `docs/usage/choice.md` to `REQUIRED` in `scripts/consumer-smoke.ts`. The clean app renders `<Choice><Switch type="checkbox" role="switch" /> Compact grid</Choice>`. No bad-app line, matching Field.
+- [x] In `.agents/skills/verify-odd-design/features/forms.md`, replace the sentence that says Choices, Switch, and Segmented appear only in the HTML section, and add a "React Choice" section with the composed URLs `react_components-forms--choices`, `--switch`, and `--segmented`. The `.claude` and `.cursor` copies are links to this file, so check that they show the edit.
+- [x] Add two follow-ups to `docs/follow-ups.md`. `odd-segmented` has no disabled styling. A bare `input.odd-switch` with `disabled` does not dim, because the only dim rule is `.odd-choice:has(:disabled)`. Neither changes `choice.css` in this PR.
+- [x] Check. `bun run check` passes, then `bun run build` and `bun scripts/consumer-smoke.ts` pass.
 
 ## Verify on the real surface
 
