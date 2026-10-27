@@ -1,5 +1,5 @@
 import type { ComponentProps, CSSProperties, JSX } from "react";
-import { CLASS_REGISTRY, WRAPPERS, type WrapperElement } from "../src/js/usage/contract.ts";
+import { CLASS_REGISTRY, WRAPPERS, type USAGE, type WrapperElement } from "../src/js/usage/contract.ts";
 import type { WrapperProps } from "../src/react/props.ts";
 import { icons } from "./icons.ts";
 
@@ -27,15 +27,23 @@ type TagOf<K extends Component | Tag> = K extends Component
     : never
   : K;
 
-type NativeClass = Exclude<(typeof CLASS_REGISTRY)[number], (typeof WRAPPERS)[Component]["className"]>;
+type WrapperClass<T> = { [C in Component]: T extends TagOf<C> ? (typeof WRAPPERS)[C]["className"] : never }[Component];
+
+type ElementRuled = Extract<(typeof USAGE)[keyof typeof USAGE][number], { kind: "element" }>["className"];
+
+type PinnedWrapperClass = Extract<(typeof WRAPPERS)[Component]["className"], ElementRuled>;
+
+type NativeClass<T> = Exclude<(typeof CLASS_REGISTRY)[number], WrapperClass<T> | PinnedWrapperClass>;
 
 type Unlowerable = "children" | "dangerouslySetInnerHTML" | "ref" | "key" | `on${string}`;
 
 // A controlled value needs an onChange, which a scene cannot carry, and React stays silent on a disabled one.
 type Controlled<T> = ([T] extends ["input" | "textarea" | "select"] ? "value" : never) | ([T] extends ["input"] ? "checked" : never);
 
+type CustomProperty = "--gap";
+
 // React appends px to a bare number and toHtml would not, so a style value is always a string.
-type StoryStyle = { readonly [Name in keyof CSSProperties]?: string };
+type StoryStyle = { readonly [Name in keyof CSSProperties | CustomProperty]?: string };
 
 // A scene is returned from an arrow, where tsc skips excess-property checks, so a dropped prop is typed never rather than omitted.
 type SceneProps<P, T> = {
@@ -45,7 +53,7 @@ type SceneProps<P, T> = {
 type Props<K extends Component | Tag> = K extends Component
   ? SceneProps<PropsOf<K>, TagOf<K>>
   : K extends Tag
-    ? Omit<SceneProps<ComponentProps<K>, K>, "className"> & { readonly className?: NativeClass }
+    ? Omit<SceneProps<ComponentProps<K>, K>, "className"> & { readonly className?: NativeClass<K> }
     : never;
 
 export type Text = string | { readonly icon: keyof typeof icons };

@@ -123,12 +123,12 @@ Each commit ends with `bun run check`. The boxes under a commit name its extra c
 
 ### Commit 4. Mirror Choice in the Storybooks
 
-- [ ] In `stories/mirror.ts`, make `NativeClass` per tag and add the `"--gap"` key to `StoryStyle`, as in Shape. The comment says the rule frees a class with no element rule off its wrapper's tag, not "legend".
-- [ ] Create `stories/mirrored/Choice.stories.ts` with `title: "Components/Forms"` and the exports `Choices`, `Switch`, and `Segmented`, so the ids stay `components-forms--choices`, `--switch`, and `--segmented`. The scenes use `of: "Choice" | "Switch" | "Segmented"`, raw `input`, `legend`, and `label` nodes inside, `defaultChecked` for `checked`, and a leading space in each label's text (`" Deck comments"`). The meta gets a description of the Choice parts, because the React Storybook reads only that file.
-- [ ] Delete the `Choices`, `Switch`, and `Segmented` exports from `stories/Forms.stories.ts`. Slider and Search stay.
-- [ ] Add the three ids to the mirrored-ids pin in `tests/stories.test.ts`.
-- [ ] Measure each story's `aria` literal in the built Firefox Storybook, then paste it. Do not copy the runner's values.
-- [ ] Check. Make three mutations and confirm each fails. Drop `defaultChecked` from `RENAMED`, and the Choices DOM comparison fails. Put `className: "odd-choice"` on a native `label` scene node, and `tsc` fails. Write `"--gp"` in a style, and `tsc` fails.
+- [x] In `stories/mirror.ts`, make `NativeClass` per tag and add the `"--gap"` key to `StoryStyle`, as in Shape. The comment says the rule frees a class with no element rule off its wrapper's tag, not "legend".
+- [x] Create `stories/mirrored/Choice.stories.ts` with `title: "Components/Forms"` and the exports `Choices`, `Switch`, and `Segmented`, so the ids stay `components-forms--choices`, `--switch`, and `--segmented`. The scenes use `of: "Choice" | "Switch" | "Segmented"`, raw `input`, `legend`, and `label` nodes inside, `defaultChecked` for `checked`, and a leading space in each label's text (`" Deck comments"`). The meta gets a description of the Choice parts, because the React Storybook reads only that file.
+- [x] Delete the `Choices`, `Switch`, and `Segmented` exports from `stories/Forms.stories.ts`. Slider and Search stay.
+- [x] Add the three ids to the mirrored-ids pin in `tests/stories.test.ts`.
+- [x] Measure each story's `aria` literal in the built Firefox Storybook, then paste it. Do not copy the runner's values.
+- [x] Check. Make three mutations and confirm each fails. Drop `defaultChecked` from `RENAMED`, and the Choices DOM comparison fails. Put `className: "odd-choice"` on a native `label` scene node, and `tsc` fails. Write `"--gp"` in a style, and `tsc` fails.
 
 ### Commit 5. Docs, smoke, and the verify recipe
 
