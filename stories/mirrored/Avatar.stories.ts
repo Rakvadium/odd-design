@@ -14,7 +14,6 @@ const meta = {
 
 export default meta;
 
-/** A stand-in profile photo, so the story needs no network. */
 const photo = (a: string, b: string) =>
   `data:image/svg+xml,${encodeURIComponent(
     `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40"><defs><linearGradient id="g" x2="1" y2="1"><stop offset="0" stop-color="${a}"/><stop offset="1" stop-color="${b}"/></linearGradient></defs><rect width="40" height="40" fill="url(#g)"/><circle cx="20" cy="16" r="7" fill="#fff" fill-opacity=".85"/><ellipse cx="20" cy="36" rx="13" ry="10" fill="#fff" fill-opacity=".85"/></svg>`,
