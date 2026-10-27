@@ -200,4 +200,3 @@ export type FieldControlRule = (typeof USAGE.fieldControl)[number];
 export type FieldErrorRule = (typeof USAGE.fieldError)[number];
 export type ChoiceRule = (typeof USAGE.choice)[number];
 export type SwitchRule = (typeof USAGE.switch)[number];
-export type SharedRule = (typeof USAGE.shared)[number];

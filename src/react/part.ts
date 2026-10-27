@@ -2,7 +2,7 @@ import { createElement, type ComponentProps, type ReactElement } from "react";
 import type { WRAPPERS } from "../js/usage/contract.ts";
 import type { MESSAGES } from "../js/usage/format.ts";
 
-type Message<Code extends keyof typeof MESSAGES> = (typeof MESSAGES)[Code];
+export type Message<Code extends keyof typeof MESSAGES> = (typeof MESSAGES)[Code];
 
 export type Forbidden<Rule> = {
   [R in Rule as R extends { kind: "forbidden-attribute"; attribute: infer Name extends string } ? Name : never]?: R extends {

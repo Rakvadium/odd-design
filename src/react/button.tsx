@@ -2,9 +2,7 @@
 
 import { createElement, type ComponentProps, type MouseEvent, type ReactElement } from "react";
 import type { APPEARANCE_AXES, ATTRIBUTES, ButtonRule, HEADLESS_ALLOWLIST, VOCABULARY } from "../js/usage/contract.ts";
-import type { MESSAGES } from "../js/usage/format.ts";
-
-type Message<Code extends keyof typeof MESSAGES> = (typeof MESSAGES)[Code];
+import type { Message } from "./part.ts";
 
 type EnumValues<Attribute extends string> = Extract<ButtonRule, { kind: "enum"; attribute: Attribute }>["values"][number];
 

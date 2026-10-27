@@ -4,9 +4,6 @@ import { join } from "node:path";
 const root = join(import.meta.dir, "..");
 const entries = [
   "src/react/index.ts",
-  "src/react/button.tsx",
-  "src/react/choice.tsx",
-  "src/react/field.tsx",
   "src/js/usage/dom.ts",
   "src/js/usage/test-setup.ts",
   "src/js/enhance.ts",
