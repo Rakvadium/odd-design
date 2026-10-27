@@ -40,6 +40,7 @@ const REQUIRED = [
   "dist/eslint/plugin.js",
   "dist/eslint/plugin.d.ts",
   "docs/usage/alert.md",
+  "docs/usage/avatar.md",
   "docs/usage/badge.md",
   "docs/usage/button.md",
   "docs/usage/choice.md",

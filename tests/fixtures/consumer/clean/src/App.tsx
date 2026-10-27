@@ -1,4 +1,4 @@
-import { Alert, AlertTitle, Badge, Button, Choice, Field, Hint, Input, Label, Switch } from "odd-design/react";
+import { Alert, AlertTitle, Avatar, AvatarGroup, Badge, Button, Choice, Field, Hint, Input, Label, Switch } from "odd-design/react";
 
 export function App() {
   return (
@@ -21,6 +21,11 @@ export function App() {
           <p>Three decks lose legality on May 1.</p>
         </div>
       </Alert>
+      <AvatarGroup role="group" aria-label="Collaborators">
+        <Avatar size="sm" role="img" aria-label="Ana Rojas">
+          AR
+        </Avatar>
+      </AvatarGroup>
       <Button variant="primary">Save</Button>
     </>
   );

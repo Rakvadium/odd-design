@@ -134,6 +134,12 @@ The plugin checks `Alert` as a `div` with `odd-alert`, and `AlertTitle` as a `p`
 
 So `<Alert tone="neutral">` reports `ODD-ALERT-002`, `<Alert role="status">` and `<Alert aria-live="polite">` report `ODD-ALERT-003`, `<Alert data-variant="primary">` reports `ODD-ALERT-004`, and `<AlertTitle data-tone="info">` reports `ODD-ALERT-005`. A computed `tone`, such as `<Alert tone={toneOf[state]}>`, gives the `ODD-STATIC-001` warning, the same as a computed `tone` on `Badge`.
 
+### The Avatar parts from odd-design/react
+
+The plugin checks `Avatar` as a `span` with `odd-avatar`, and `AvatarGroup` as a `div` with `odd-avatar-group`, from their entries of `WRAPPERS`. `size` is read as `data-size`. A raw `data-size` on `Avatar` gives nothing. `Avatar` sets that attribute from `size`, so it drops a raw one, and its type rejects one. Every other prop is the attribute with the same name.
+
+So `<Avatar size="md">` reports `ODD-AVATAR-002`, `<Avatar role="presentation">` and `<AvatarGroup aria-label="Team">` report `ODD-AVATAR-003`, `<Avatar role="img">AR</Avatar>` and `<AvatarGroup role="group">` report `ODD-AVATAR-004`, `<Avatar data-tone="info">` reports `ODD-AVATAR-005`, and `<AvatarGroup data-size="sm">` reports `ODD-AVATAR-006`. A computed `aria-label` counts as a name. A computed `size` or `role` gives the `ODD-STATIC-001` warning. The plugin does not read the `img` inside an avatar, so an `img` with no `alt` is left to the accessibility checker.
+
 ### Other components
 
 The plugin cannot see what another component renders. A component with an `odd-` class, such as `<Link className="odd-button">`, gets one `ODD-STATIC-001` warning on the element and no button rules. An `odd-` class that is not in the registry still reports `ODD-CLASS-001`. `<UI.Button>`, with `UI` a namespace import, counts as another component.
