@@ -139,14 +139,14 @@ Each commit ends with `bun run check`. The boxes under a commit name its extra c
 
 ## Verify on the real surface
 
-- [ ] Rebuild both Storybooks, capture the HTML section to `after.json`, and run `bun scripts/capture-stories.ts --diff .verify/avatar/base.json .verify/avatar/after.json`. Pass means `changed` lists only `components-data-display--avatar`, `added` lists only `components-data-display--avatar-fallback`, and nothing else moves.
-- [ ] Run `bun run test:browsers`. Pass means the Firefox and WebKit runs pass and the sweep reports 0 diagnostics.
-- [ ] Drive the composed build per the verify-odd-design skill. Open `react_components-data-display--avatar` and `components-data-display--avatar` in `calm` light, `holoterminal` dark, and one more palette. Save each screenshot and `ariaSnapshot`, and confirm that the two sides look the same. Remeasure the group's left positions.
+- [x] Rebuild both Storybooks, capture the HTML section to `after.json`, and run `bun scripts/capture-stories.ts --diff .verify/avatar/base.json .verify/avatar/after.json`. Pass means `changed` lists only `components-data-display--avatar`, `added` lists only `components-data-display--avatar-fallback`, and nothing else moves. Result: 2 changed (Avatar light and dark, in `dom`, `aria`, and `png`, because the broken image left it), 2 added (Avatar Fallback), nothing else.
+- [x] Run `bun run test:browsers`. Pass means the Firefox and WebKit runs pass and the sweep reports 0 diagnostics. Result: 46 passed, 2 skipped, "56 stories, 0 diagnostics", 0 axe violations.
+- [x] Drive the composed build per the verify-odd-design skill. Open `react_components-data-display--avatar` and `components-data-display--avatar` in `calm` light, `holoterminal` dark, and one more palette. Save each screenshot and `ariaSnapshot`, and confirm that the two sides look the same. Remeasure the group's left positions. Result: `ctl.ts` drives only the HTML dev Storybook, so `.verify/avatar/chrome-pair.ts` drove both sides of the built composed Storybook in Chrome. `calm` light, `holoterminal` dark, and `bubblegum` `sorbet` dark each gave byte-identical screenshots and identical aria. The group sits at `[16, 48, 80, 112]` in calm.
 
 ## Review and open the PR
 
-- [ ] The `cursor grok-4.7` reviewer reads the diff against this plan. A fresh builder fixes each finding that blocks. Other findings go to `docs/follow-ups.md`.
-- [ ] Run `/deslop` and `/no-comments` over the diff.
+- [x] The `cursor grok-4.7` reviewer reads the diff against this plan. A fresh builder fixes each finding that blocks. Other findings go to `docs/follow-ups.md`. Result: 0 blocking, 2 should-fix, 1 nit. The doc findings are fixed. The `isSet` class scan is in `docs/follow-ups.md`.
+- [x] Run `/deslop` and `/no-comments` over the diff. Result: deslop removed nothing. Comment Sicko removed one comment that restated the photo helper.
 - [ ] Open the PR ready with `gh pr create --base main --repo Rakvadium/odd-design`. The title is `feat(react): add Avatar and mirror it in the Storybooks`.
 - [ ] Run `gh pr checks`. The repo has no workflows, so expect "no checks reported". Report the PR as open. Do not merge.
 
