@@ -112,30 +112,30 @@ Each commit ends with `bun run check`. The boxes under a commit name its extra c
 
 ### Commit 1. Add Avatar and AvatarGroup and check them with ODD-AVATAR-001 to 006
 
-- [ ] Add `USAGE.avatar`, `USAGE.avatarGroup`, `AvatarRule`, `AvatarGroupRule`, both `WRAPPERS` rows, the six codes in `USAGE_CODES`, and their `MESSAGES`. Widen `isSet` to `enum` rules.
-- [ ] Write `docs/usage/avatar.md` with one section per code.
-- [ ] Create `src/react/avatar.tsx`. Add the barrel export and the `WrapperProps` lines.
-- [ ] Add the `odd-avatar-001` to `006` bad and good HTML pairs, six `RUNTIME_CODES` lines, and the `places` rows in `tests/eslint-html.test.ts`. Move `odd-avatar` in `odd-class-001.good.html` onto a `span`.
-- [ ] Add a pinned full-message test for `data-size="md"` in `tests/usage-check.test.ts`, as Alert pins its 002 text.
-- [ ] Add `data-size` for Avatar to the CSS-sync list in `tests/usage-contract.test.ts`.
-- [ ] Add type fail fixtures for `size`, `role`, an unnamed `role="img"` avatar, an unnamed group, a group with no `role`, `data-tone` on `Avatar`, `data-size` on `AvatarGroup`, and `data-initials`, each with its `failures` entry. Add `pass.tsx` lines for the `PersonAvatar` and group call sites.
-- [ ] Add `tests/fixtures/usage/jsx/avatar.tsx` and its `places` entry. Add one markup row to `tests/react.test.tsx`.
-- [ ] Check. Revert the `isSet` line, and the 004 fixtures fail. Delete the group's `required-attribute` rule, and the group-role type fixture and the 003 fixture fail. Drop `medium` from the omit list, and the pinned message test fails.
+- [x] Add `USAGE.avatar`, `USAGE.avatarGroup`, `AvatarRule`, `AvatarGroupRule`, both `WRAPPERS` rows, the six codes in `USAGE_CODES`, and their `MESSAGES`. Widen `isSet` to `enum` rules.
+- [x] Write `docs/usage/avatar.md` with one section per code.
+- [x] Create `src/react/avatar.tsx`. Add the barrel export and the `WrapperProps` lines.
+- [x] Add the `odd-avatar-001` to `006` bad and good HTML pairs, six `RUNTIME_CODES` lines, and the `places` rows in `tests/eslint-html.test.ts`. Move `odd-avatar` in `odd-class-001.good.html` onto a `span`.
+- [x] Add a pinned full-message test for `data-size="md"` in `tests/usage-check.test.ts`, as Alert pins its 002 text.
+- [x] Add `data-size` for Avatar to the CSS-sync list in `tests/usage-contract.test.ts`.
+- [x] Add type fail fixtures for `size`, `role`, an unnamed `role="img"` avatar, an unnamed group, a group with no `role`, `data-tone` on `Avatar`, `data-size` on `AvatarGroup`, and `data-initials`, each with its `failures` entry. Add `pass.tsx` lines for the `PersonAvatar` and group call sites.
+- [x] Add `tests/fixtures/usage/jsx/avatar.tsx` and its `places` entry. Add one markup row to `tests/react.test.tsx`.
+- [x] Check. Revert the `isSet` line, and the 004 fixtures fail. Delete the group's `required-attribute` rule, and the group-role type fixture and the 003 fixture fail. Drop `medium` from the omit list, and the pinned message test fails.
 
 ### Commit 2. Mirror Avatar in the Storybooks
 
-- [ ] Create `stories/mirrored/Avatar.stories.ts` with `title: "Components/Data Display"` and the export `Avatar`. The scene is the HTML story minus the broken image. The `photo` helper moves with it. The meta component description carries the story text.
-- [ ] Replace the `Avatar` export in `stories/DataDisplay.stories.ts` with an HTML-only `AvatarFallback` story that holds `#broken-avatar`. Point `e2e/behavior.spec.ts` at it. Add the Avatar id to the mirrored-ids pin in `tests/stories.test.ts`.
-- [ ] Measure the `aria` literal in the built Firefox Storybook, then paste it.
-- [ ] Check. `bunx playwright test e2e/usage.spec.ts --project firefox` passes. Change one label in the `aria` literal and confirm the run fails, then restore it. `bunx playwright test e2e/behavior.spec.ts -g "broken avatar"` passes in Firefox and WebKit.
+- [x] Create `stories/mirrored/Avatar.stories.ts` with `title: "Components/Data Display"` and the export `Avatar`. The scene is the HTML story minus the broken image. The `photo` helper moves with it. The meta component description carries the story text.
+- [x] Replace the `Avatar` export in `stories/DataDisplay.stories.ts` with an HTML-only `AvatarFallback` story that holds `#broken-avatar`. Point `e2e/behavior.spec.ts` at it. Add the Avatar id to the mirrored-ids pin in `tests/stories.test.ts`.
+- [x] Measure the `aria` literal in the built Firefox Storybook, then paste it.
+- [x] Check. `bunx playwright test e2e/usage.spec.ts --project firefox` passes. Change one label in the `aria` literal and confirm the run fails, then restore it. `bunx playwright test e2e/behavior.spec.ts -g "broken avatar"` passes in Firefox and WebKit.
 
 ### Commit 3. Docs, smoke, and the verify recipe
 
-- [ ] In `docs/usage/react.md`, add "Show a person with an avatar" with the image, initials, hidden, group, and `onError` fallback markup, and the type-error rows. Add an Avatar section to `docs/usage/eslint.md`. Fix the Avatar lines in `README.md`.
-- [ ] Add `docs/usage/avatar.md` to `REQUIRED` in `scripts/consumer-smoke.ts`. The clean app renders an `AvatarGroup` with a named `Avatar`.
-- [ ] Update `.agents/skills/verify-odd-design/features/data-display.md` and `interactive.md` for the React Avatar and the new fallback story id.
-- [ ] Add the follow-ups in Appendix D to `docs/follow-ups.md`.
-- [ ] Check. `bun run check`, `bun run build`, and `bun scripts/consumer-smoke.ts` pass.
+- [x] In `docs/usage/react.md`, add "Show a person with an avatar" with the image, initials, hidden, group, and `onError` fallback markup, and the type-error rows. Add an Avatar section to `docs/usage/eslint.md`. Fix the Avatar lines in `README.md`.
+- [x] Add `docs/usage/avatar.md` to `REQUIRED` in `scripts/consumer-smoke.ts`. The clean app renders an `AvatarGroup` with a named `Avatar`.
+- [x] Update `.agents/skills/verify-odd-design/features/data-display.md` and `interactive.md` for the React Avatar and the new fallback story id.
+- [x] Add the follow-ups in Appendix D to `docs/follow-ups.md`.
+- [x] Check. `bun run check`, `bun run build`, and `bun scripts/consumer-smoke.ts` pass.
 
 ## Verify on the real surface
 
