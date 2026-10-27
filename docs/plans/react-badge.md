@@ -114,10 +114,10 @@ Each commit ends with `bun run check`. The boxes under a commit name its extra c
 
 ### Commit 4. Mirror Badge in the Storybooks
 
-- [ ] Create `stories/mirrored/Badge.stories.ts` with `title: "Components/Surfaces"` and the export `Badge`, so the id stays `components-surfaces--badge`. The scene is the same twelve badges, two `odd-row`s of six. The meta description names `Badge`, its tones, and `solid`, because the React Storybook reads only that file.
-- [ ] Delete the `Badge` export from `stories/Surfaces.stories.ts`. Add the id to the mirrored-ids pin in `tests/stories.test.ts`.
-- [ ] Measure the story's `aria` literal in the built Firefox Storybook, then paste it. Do not copy the runner's value.
-- [ ] Check. `bunx playwright test e2e/usage.spec.ts --project firefox` passes. Change one label in the `aria` literal and confirm the run fails, then restore it.
+- [x] Create `stories/mirrored/Badge.stories.ts` with `title: "Components/Surfaces"` and the export `Badge`, so the id stays `components-surfaces--badge`. The scene is the same twelve badges, two `odd-row`s of six. The meta description names `Badge`, its tones, and `solid`, because the React Storybook reads only that file.
+- [x] Delete the `Badge` export from `stories/Surfaces.stories.ts`. Add the id to the mirrored-ids pin in `tests/stories.test.ts`.
+- [x] Measure the story's `aria` literal in the built Firefox Storybook, then paste it. Do not copy the runner's value.
+- [x] Check. `bunx playwright test e2e/usage.spec.ts --project firefox` passes. Change one label in the `aria` literal and confirm the run fails, then restore it.
 
 ### Commit 5. Docs, smoke, and the verify recipe
 

@@ -28,27 +28,6 @@ export const Card: Story = {
   </div>`,
 };
 
-export const Badge: Story = {
-  render: () => /* html */ `<div class="odd-stack">
-    <div class="odd-row">
-      <span class="odd-badge">Neutral</span>
-      <span class="odd-badge" data-tone="primary">Primary</span>
-      <span class="odd-badge" data-tone="success">Legal</span>
-      <span class="odd-badge" data-tone="warning">Rotating</span>
-      <span class="odd-badge" data-tone="danger">Banned</span>
-      <span class="odd-badge" data-tone="info">New set</span>
-    </div>
-    <div class="odd-row">
-      <span class="odd-badge" data-solid>Neutral</span>
-      <span class="odd-badge" data-solid data-tone="primary">Primary</span>
-      <span class="odd-badge" data-solid data-tone="success">Legal</span>
-      <span class="odd-badge" data-solid data-tone="warning">Rotating</span>
-      <span class="odd-badge" data-solid data-tone="danger">Banned</span>
-      <span class="odd-badge" data-solid data-tone="info">New set</span>
-    </div>
-  </div>`,
-};
-
 export const Dialog: Story = {
   parameters: {
     docs: {
