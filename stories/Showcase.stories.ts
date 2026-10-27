@@ -16,10 +16,10 @@ const radioGroup = (name: string, legend: string, values: readonly string[], cur
     ${values.map((v) => `<label><input type="radio" name="${name}" value="${v}" ${v === current ? "checked" : ""}> ${v}</label>`).join("")}
   </fieldset>`;
 
-const deckCard = (title: string, blurb: string, tone: string, status: string, cards: number) => /* html */ `
+const deckCard = (title: string, blurb: string, badge: string, cards: number) => /* html */ `
   <article class="odd-card" data-interactive>
     <div class="odd-row" style="justify-content: space-between">
-      <span class="odd-badge" data-tone="${tone}">${status}</span>
+      ${badge}
       <span class="odd-eyebrow">${cards} cards</span>
     </div>
     <h3 class="odd-card-title"><a class="odd-card-link" href="#">${title}</a></h3>
@@ -76,9 +76,9 @@ export const SampleApp: Story = {
             </fieldset>
           </div>
           <div style="display:grid; gap: var(--space-5); grid-template-columns: repeat(auto-fill, minmax(16rem, 1fr))">
-            ${deckCard("Midnight Control", "Grinds out card advantage, then wins with one big turn.", "success", "Legal", 60)}
-            ${deckCard("Ember Aggro", "Fast, cheap attacks. Wins by turn five or not at all.", "warning", "Rotating soon", 55)}
-            ${deckCard("Tidecaller Ramp", "Ramps into huge late-game threats, protected by counters.", "info", "Draft", 62)}
+            ${deckCard("Midnight Control", "Grinds out card advantage, then wins with one big turn.", /* html */ `<span class="odd-badge" data-tone="success">Legal</span>`, 60)}
+            ${deckCard("Ember Aggro", "Fast, cheap attacks. Wins by turn five or not at all.", /* html */ `<span class="odd-badge" data-tone="warning">Rotating soon</span>`, 55)}
+            ${deckCard("Tidecaller Ramp", "Ramps into huge late-game threats, protected by counters.", /* html */ `<span class="odd-badge" data-tone="info">Draft</span>`, 62)}
           </div>
         </section>
 

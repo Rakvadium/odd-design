@@ -101,16 +101,16 @@ Each commit ends with `bun run check`. The boxes under a commit name its extra c
 
 ### Commit 3. Add Badge and check it with ODD-BADGE-001 to 004
 
-- [ ] Add `USAGE.badge`, `BadgeRule`, `WRAPPERS.Badge`, the four codes in `USAGE_CODES`, and their `MESSAGES`. The 002 message lists the values from the rule. The 004 message lists `WRAPPERS.Badge.props.tone` and `.solid`.
-- [ ] Write `docs/usage/badge.md` with one section per code, in the `choice.md` style, citing the `badge.css` evidence.
-- [ ] Create `src/react/badge.tsx`. Add the barrel export and the `WrapperProps` line.
-- [ ] Add `odd-badge-001` to `004` bad and good HTML pairs, four `RUNTIME_CODES` lines, and the `places` rows in `tests/eslint-html.test.ts`. The good files hold a badge in a `p` and in a `button.odd-button`, all six tones, and app, appearance, and headless data attributes. Move `odd-badge` in `tests/fixtures/usage/odd-class-001.good.html` onto a `span`.
-- [ ] Generalize the Button CSS-sync test to "each wrapper's enum data prop takes exactly the values its stylesheet styles". It asserts the compared list is `data-variant`, `data-size`, and `data-tone`, so it cannot pass empty.
-- [ ] Add type fixtures. `badge-tone.tsx` passes a wrong tone, and its `failures` entry requires all six tone literals. `badge-data-variant.tsx` expects `ODD-BADGE-004`. Add `pass.tsx` lines for the `Record<Status, BadgeTone>` call site and `solid={boolean}`.
-- [ ] Add `tests/fixtures/usage/jsx/badge.tsx` with a correct `Badge`, a wrapper `tone` error, wrapper foreign data, a raw `data-solid={false}`, and a raw `div.odd-badge`, plus its `places` entry.
-- [ ] Add one row to the markup table in `tests/react.test.tsx` with a bare badge, `tone` with `solid` and `className`, and `solid={false}` with an app data attribute, as one exact string.
-- [ ] Rewrite the two computed-tone templates in `DataDisplay.stories.ts` and `Showcase.stories.ts` so each badge is its own `/* html */` literal.
-- [ ] Check. Make three mutations and confirm each fails. Delete the `boolean-attribute` rule, and `tsc` fails. Drop `neutral` from the tones, and the CSS sync and `pass.tsx` fail. Put a computed tone back in the Data Display table, and `bunx eslint stories` warns `ODD-STATIC-001`.
+- [x] Add `USAGE.badge`, `BadgeRule`, `WRAPPERS.Badge`, the four codes in `USAGE_CODES`, and their `MESSAGES`. The 002 message lists the values from the rule. The 004 message lists `WRAPPERS.Badge.props.tone` and `.solid`.
+- [x] Write `docs/usage/badge.md` with one section per code, in the `choice.md` style, citing the `badge.css` evidence.
+- [x] Create `src/react/badge.tsx`. Add the barrel export and the `WrapperProps` line.
+- [x] Add `odd-badge-001` to `004` bad and good HTML pairs, four `RUNTIME_CODES` lines, and the `places` rows in `tests/eslint-html.test.ts`. The good files hold a badge in a `p` and in a `button.odd-button`, all six tones, and app, appearance, and headless data attributes. Move `odd-badge` in `tests/fixtures/usage/odd-class-001.good.html` onto a `span`.
+- [x] Generalize the Button CSS-sync test to "each wrapper's enum data prop takes exactly the values its stylesheet styles". It asserts the compared list is `data-variant`, `data-size`, and `data-tone`, so it cannot pass empty.
+- [x] Add type fixtures. `badge-tone.tsx` passes a wrong tone, and its `failures` entry requires all six tone literals. `badge-data-variant.tsx` expects `ODD-BADGE-004`. Add `pass.tsx` lines for the `Record<Status, BadgeTone>` call site and `solid={boolean}`.
+- [x] Add `tests/fixtures/usage/jsx/badge.tsx` with a correct `Badge`, a wrapper `tone` error, wrapper foreign data, a raw `data-solid={false}`, and a raw `div.odd-badge`, plus its `places` entry.
+- [x] Add one row to the markup table in `tests/react.test.tsx` with a bare badge, `tone` with `solid` and `className`, and `solid={false}` with an app data attribute, as one exact string.
+- [x] Rewrite the two computed-tone templates in `DataDisplay.stories.ts` and `Showcase.stories.ts` so each badge is its own `/* html */` literal.
+- [x] Check. Make three mutations and confirm each fails. Delete the `boolean-attribute` rule, and `tsc` fails. Drop `neutral` from the tones, and the CSS sync and `pass.tsx` fail. Put a computed tone back in the Data Display table, and `bunx eslint stories` warns `ODD-STATIC-001`.
 
 ### Commit 4. Mirror Badge in the Storybooks
 

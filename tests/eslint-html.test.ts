@@ -109,6 +109,24 @@ const places: Record<string, readonly (readonly [string, number, number, string]
     ["ODD-CHOICE-003", 3, 57, "aria-disabled"],
     ["ODD-CHOICE-003", 4, 33, "aria-disabled"],
   ],
+  "odd-badge-001.bad.html": [
+    ["ODD-BADGE-001", 2, 6, "class"],
+    ["ODD-BADGE-001", 3, 4, "class"],
+  ],
+  "odd-badge-002.bad.html": [
+    ["ODD-BADGE-002", 2, 25, "data-tone"],
+    ["ODD-BADGE-002", 3, 25, "data-tone"],
+    ["ODD-BADGE-002", 4, 25, "data-tone"],
+  ],
+  "odd-badge-003.bad.html": [
+    ["ODD-BADGE-003", 2, 25, "data-solid"],
+    ["ODD-BADGE-003", 3, 44, "data-solid"],
+  ],
+  "odd-badge-004.bad.html": [
+    ["ODD-BADGE-004", 2, 25, "data-variant"],
+    ["ODD-BADGE-004", 3, 25, "data-size"],
+    ["ODD-BADGE-004", 4, 25, "data-tnoe"],
+  ],
   "odd-class-001.bad.html": [
     ["ODD-CLASS-001", 2, 6, "class"],
     ["ODD-CLASS-001", 3, 4, "class"],

@@ -4,6 +4,7 @@ import { act, type ReactElement } from "react";
 import { createRoot, type Root } from "react-dom/client";
 import { renderToStaticMarkup } from "react-dom/server";
 import { checkRoot } from "../src/js/usage/dom.ts";
+import { Badge } from "../src/react/badge.tsx";
 import { Button } from "../src/react/button.tsx";
 import { Choice, Segmented, Switch } from "../src/react/choice.tsx";
 import { Field, FieldError, Hint, Input, Label, Select, Textarea } from "../src/react/field.tsx";
@@ -100,6 +101,19 @@ const markup: readonly [string, ReactElement, string][] = [
       </Segmented>
     </>,
     '<label class="odd-choice"><input type="checkbox" checked=""/> Weekly digest</label><label class="odd-choice wide"><input type="checkbox" role="switch" disabled="" class="odd-switch"/> Compact grid</label><fieldset class="odd-segmented"><legend>View</legend><label><input type="radio" name="view" checked=""/> Grid</label></fieldset>',
+  ],
+  [
+    "badge tones and solid",
+    <>
+      <Badge>Draft</Badge>
+      <Badge tone="danger" solid className="wide">
+        Banned
+      </Badge>
+      <Badge tone="success" solid={false} data-testid="status">
+        Legal
+      </Badge>
+    </>,
+    '<span class="odd-badge">Draft</span><span class="odd-badge wide" data-tone="danger" data-solid="">Banned</span><span data-testid="status" class="odd-badge" data-tone="success">Legal</span>',
   ],
 ];
 
@@ -206,6 +220,8 @@ const failures: Record<string, { codes: string[]; text: string[] }> = {
   "choice-aria-disabled": { codes: ["ODD-CHOICE-003"], text: [] },
   "switch-aria-disabled": { codes: ["ODD-CHOICE-003"], text: [] },
   "switch-type": { codes: [], text: ['"checkbox"', '"switch"'] },
+  "badge-tone": { codes: [], text: ['"neutral"', '"primary"', '"success"', '"warning"', '"danger"', '"info"'] },
+  "badge-data-variant": { codes: ["ODD-BADGE-004"], text: [] },
 };
 
 describe("React types", () => {

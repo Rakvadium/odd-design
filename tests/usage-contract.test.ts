@@ -39,23 +39,22 @@ function stylesheet(wrapper: Wrapper): string {
   return wrapper.className.replace(/^odd-/, "");
 }
 
-function enumRule(attribute: string) {
-  const rule = USAGE.button.find((item) => item.kind === "enum" && item.attribute === attribute);
-  if (rule === undefined || rule.kind !== "enum") throw new Error(`missing enum rule for ${attribute}`);
-  return rule;
-}
-
 test("MESSAGES has one message per code, in order", () => {
   expect(Object.keys(MESSAGES)).toEqual([...USAGE_CODES]);
 });
 
-test("css sync compares data-variant and data-size with button.css", () => {
-  const css = read("components/button.css");
-  const variant = enumRule("data-variant");
-  const size = enumRule("data-size");
-  expect(quotedAttr(css, "data-variant")).toEqual([...variant.values].sort());
-  expect(quotedAttr(css, "data-size")).toEqual([...size.values].sort());
-  expect(css.includes(":disabled")).toBe(true);
+test("each wrapper's enum data prop takes exactly the values its stylesheet styles", () => {
+  const compared = mapping.flatMap((wrapper) => {
+    const css = read(`components/${stylesheet(wrapper)}.css`);
+    return Object.values(wrapper.props).flatMap((attribute) =>
+      rulesOf(wrapper.className).flatMap((rule) =>
+        rule.kind === "enum" && rule.attribute === attribute ? [[attribute, [...rule.values].sort(), quotedAttr(css, attribute)]] : [],
+      ),
+    );
+  });
+  expect(compared.map(([attribute]) => attribute)).toEqual(["data-variant", "data-size", "data-tone"]);
+  for (const [attribute, values, styled] of compared) expect([attribute, styled]).toEqual([attribute, values]);
+  expect(read("components/button.css").includes(":disabled")).toBe(true);
 });
 
 test("registry matches every odd- class in src/css", () => {
