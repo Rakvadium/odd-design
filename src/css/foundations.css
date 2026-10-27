@@ -9,6 +9,9 @@
   --text-3xl: clamp(1.875rem, 1.4rem + 2vw, 2.75rem);
   --text-4xl: clamp(2.25rem, 1.5rem + 3.2vw, 3.75rem);
 
+  /* Code and logs. Chromes set the body, heading, and label fonts; this one stays fixed. */
+  --font-mono: "JetBrains Mono Variable", ui-monospace, "Cascadia Mono", Consolas, monospace;
+
   --leading-tight: 1.15;
   --leading-normal: 1.55;
 

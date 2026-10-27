@@ -48,3 +48,8 @@
 @import "./components/separator.css" layer(components);
 @import "./components/avatar.css" layer(components);
 @import "./components/table.css" layer(components);
+@import "./components/estop.css" layer(components);
+@import "./components/stepper.css" layer(components);
+@import "./components/range-field.css" layer(components);
+@import "./components/log.css" layer(components);
+@import "./components/shell.css" layer(components);

@@ -186,21 +186,28 @@ The five palettes ported from uvs-decks-gg went through the same repair. Their i
 | `odd-menu`, `odd-menu-item` | `<div popover role="menu">` | Needs `enhanceMenu`. `menuitemcheckbox`/`menuitemradio` with `aria-checked`; `data-tone="danger"`; disable items with `aria-disabled="true"`, which keeps them reachable. |
 | `odd-tabs` | `role="tablist"`, `tab`, `tabpanel` | Needs `enhanceTabs`. `data-activation="manual"`, `aria-orientation="vertical"`. |
 | `odd-toaster`, `odd-toast` | built by `createToaster()` | A polite live region in the corner; it moves into an open modal dialog so toasts stay live. |
+| `odd-estop` | `<button>` | A big round stop. `aria-pressed="true"` draws it latched; the page sets it and owns any shortcut. Never disable it. |
+| `odd-stepper` | `<div role="group">` with step buttons around `<input type="number">` | Needs `enhanceStepper`. `data-step` counts input steps. Hold repeats; `input` per step, one `change` per press. Disable with `disabled` on the input. |
+| `odd-range-field` | `<div>` holding an `odd-slider`, an `odd-input type="number"`, and an optional unit | `enhanceRangeField` copies min, max, and step from the slider and keeps both in sync. Listen to the slider. A bad number shows an `odd-error` on commit. |
+| `odd-log`, `odd-log-line` | `<div role="log" tabindex="0">` of line `<div>`s, each with an optional `<time>` | Mono, scrolls past 20rem. `data-tone` on a line. Append with `appendLogLine`; `enhanceLog` keeps the newest line in view unless the reader scrolled up. |
+| `odd-shell`, `odd-shell-header`, `odd-shell-status`, `odd-shell-actions`, `odd-shell-main` | `<div>`, `<header>`, `<main>` | A full-height page under a sticky header bar: title, a status slot that takes the free space, and actions. |
+| `odd-grid` | any container, often `<main class="odd-shell-main odd-grid">` | 12 columns. `data-span="1"`–`"12"` on a child, usually an `odd-card`. Under 64rem of grid width, narrow children take half; under 40rem, all take the full row. `--gap` sets the gutter. |
 
 ## Behaviors
 
-Menus, tabs, and toasts have no HTML element yet, so `odd-design/enhance` (`src/js/enhance.ts`) adds them on top of native markup. Each function takes an element and returns a cleanup function. No dependencies. There is no framework, and the React wrapper is optional.
+Menus, tabs, toasts, steppers, range fields, and logs need behavior HTML doesn't have yet, so `odd-design/enhance` (`src/js/enhance.ts`) adds them on top of native markup. Each function takes an element and returns a cleanup function. No dependencies. There is no framework, and the React wrapper is optional.
 
 ```js
 import { enhance, createToaster } from "odd-design/enhance";
 
-enhance();                   // menus, tab sets, select-all tables, and the fallbacks below, under document
+enhance();                   // menus, tab sets, steppers, range fields, logs, select-all tables, and the fallbacks below, under document
 const toaster = createToaster();
 toaster.show({ title: "Deck saved", tone: "success" });
 ```
 
-- `enhanceMenu(menu)`, `enhanceTabs(root)`, `enhanceSelectAll(table)`: one widget each. Call them for elements added after `enhance()`.
+- `enhanceMenu(menu)`, `enhanceTabs(root)`, `enhanceSelectAll(table)`, `enhanceStepper(root)`, `enhanceRangeField(root, { message })`, `enhanceLog(log)`: one widget each. Call them for elements added after `enhance()`.
 - `createToaster({ label, max, parent })`: `show({ title, description, tone, duration, action })` returns `{ dismiss }`.
+- `appendLogLine(log, text, { tone, time, max })`: adds a line as text, with `time` as a `Date` or a string, and drops the oldest lines past `max` (500).
 - `avatarFallback()`: an `.odd-avatar[data-initials]` whose image fails to load shows its initials.
 - `interestForFallback()` and `closedByFallback()`: tooltips and hover cards, and `closedby="any"`, in browsers without them. They do nothing where the browser has the feature.
 - `roving(container, options)`: the shared arrow-key, Home/End, and typeahead helper the widgets use.

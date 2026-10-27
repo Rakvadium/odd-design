@@ -1,0 +1,66 @@
+/*
+ * <button class="odd-estop" type="button" aria-pressed="false">Stop</button>
+ * A large round stop button: a danger-red cap in a warning-yellow collar. It is a plain button, so the
+ * page decides what a press does and owns any keyboard shortcut. Never disable it.
+ * Latched: set aria-pressed="true" while the stop holds and back to "false" after a reset. The cap
+ * then sits pressed in, its rim shadow on top instead of below. Keep the name the same in both
+ * states and show the machine's state as text elsewhere, such as in a role="status" region. Leave
+ * out aria-pressed for a stop that never latches.
+ * The default size is 8rem across. Set inline-size to change it; the button stays round.
+ */
+.odd-estop {
+  --_rim: color-mix(in oklab, var(--danger), black 30%);
+
+  display: inline-grid;
+  place-items: center;
+  inline-size: 8rem;
+  aspect-ratio: 1;
+  padding: var(--space-1);
+  border: 0.5rem solid var(--warning);
+  border-radius: 50%;
+  background-color: var(--danger);
+  color: var(--danger-foreground);
+  box-shadow: inset 0 0 0 3px var(--_rim), inset 0 -0.35rem 0 3px var(--_rim), var(--shadow-control);
+  font: inherit;
+  font-family: var(--font-label);
+  font-size: var(--text-xl);
+  font-weight: 800;
+  line-height: 1.1;
+  text-align: center;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  cursor: pointer;
+  user-select: none;
+  touch-action: manipulation;
+  transition-property: box-shadow, transform;
+  transition-duration: var(--duration-fast);
+  transition-timing-function: var(--ease);
+}
+
+.odd-estop:hover {
+  box-shadow: inset 0 0 0 3px var(--_rim), inset 0 -0.35rem 0 3px var(--_rim), var(--shadow-control-hover);
+}
+
+.odd-estop:active,
+.odd-estop[aria-pressed="true"] {
+  transform: scale(0.95);
+  box-shadow: inset 0 0 0 3px var(--_rim), inset 0 0.5rem 1rem var(--_rim);
+}
+
+.odd-estop:focus-visible {
+  outline: calc(var(--focus-width) + 2px) solid var(--focus-color);
+  outline-offset: 4px;
+}
+
+@media (forced-colors: active) {
+  .odd-estop {
+    border-color: ButtonText;
+  }
+  .odd-estop[aria-pressed="true"] {
+    forced-color-adjust: none;
+    border-color: ButtonText;
+    background-color: Highlight;
+    color: HighlightText;
+    box-shadow: none;
+  }
+}

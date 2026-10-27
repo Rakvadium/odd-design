@@ -1,0 +1,52 @@
+/*
+ * <div class="odd-log" role="log" aria-label="Arm log" tabindex="0">
+ *   <div class="odd-log-line"><time datetime="2026-10-26T14:02:07">14:02:07</time> Connected on COM3</div>
+ *   <div class="odd-log-line" data-tone="warning"><time>14:02:09</time> Warning: wrist near its limit</div>
+ * </div>
+ * A scrolling log in the mono font. role="log" makes it a polite live region, so new lines are read
+ * out; for a fast log, add aria-live="off" and announce what matters some other way. tabindex="0"
+ * lets keyboard users scroll it. data-tone="info|success|warning|danger" tints a line and marks its
+ * start edge; put the level in the text too, since tone is only color. The time is optional.
+ * Append lines with appendLogLine, or add .odd-log-line elements yourself. enhanceLog keeps the
+ * newest line in view unless the reader has scrolled up. The log is at most 20rem tall; set
+ * max-block-size to change that.
+ */
+.odd-log {
+  max-block-size: 20rem;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding-block: var(--space-2);
+  border: var(--border-width) solid var(--edge-control);
+  border-radius: min(var(--radius-surface), var(--space-3));
+  background-color: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+  line-height: 1.45;
+}
+
+.odd-log-line {
+  --_tone: transparent;
+
+  display: flex;
+  gap: var(--space-3);
+  padding: 0.0625rem var(--space-3);
+  border-inline-start: 3px solid var(--_tone);
+  overflow-wrap: anywhere;
+}
+
+.odd-log-line > time {
+  flex: none;
+  color: var(--muted-foreground);
+  font-variant-numeric: tabular-nums;
+}
+
+.odd-log-line[data-tone="info"] { --_tone: var(--info); background-color: var(--tint-info); }
+.odd-log-line[data-tone="success"] { --_tone: var(--success); background-color: var(--tint-success); }
+.odd-log-line[data-tone="warning"] { --_tone: var(--warning); background-color: var(--tint-warning); }
+.odd-log-line[data-tone="danger"] { --_tone: var(--danger); background-color: var(--tint-danger); }
+
+/* Muted text is only contrast-checked on plain surfaces, so a tinted line's time uses the line's color. */
+.odd-log-line[data-tone] > time {
+  color: inherit;
+}

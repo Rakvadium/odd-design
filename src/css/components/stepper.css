@@ -1,0 +1,42 @@
+/*
+ * <div class="odd-field">
+ *   <label class="odd-label" id="base-label" for="base">Base</label>
+ *   <div class="odd-stepper" role="group" aria-labelledby="base-label">
+ *     <button class="odd-button" type="button" data-step="-10">−10</button>
+ *     <button class="odd-button" type="button" data-step="-1">−1</button>
+ *     <input class="odd-input" type="number" id="base" min="-90" max="90" step="1" value="0">
+ *     <button class="odd-button" type="button" data-step="1">+1</button>
+ *     <button class="odd-button" type="button" data-step="10">+10</button>
+ *   </div>
+ * </div>
+ * A number input between step buttons. data-step counts the input's steps, so data-step="10" with
+ * step="0.5" moves by 5. Needs enhanceStepper: a click steps once, a held press repeats, and each
+ * step fires input on the number input, then change when the press ends. Buttons at a limit get
+ * aria-disabled="true". Disable the whole stepper with disabled on the input. Without JS, the
+ * number input still works on its own.
+ */
+.odd-stepper {
+  display: flex;
+  align-items: stretch;
+  gap: var(--space-1);
+}
+
+.odd-stepper > .odd-button {
+  flex: none;
+  min-inline-size: var(--control-height);
+  padding-inline: var(--space-2);
+  font-variant-numeric: tabular-nums;
+}
+
+.odd-stepper > .odd-input {
+  flex: 1 1 5rem;
+  min-inline-size: 4rem;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+  appearance: textfield;
+}
+.odd-stepper > .odd-input::-webkit-inner-spin-button,
+.odd-stepper > .odd-input::-webkit-outer-spin-button {
+  appearance: none;
+  margin: 0;
+}
