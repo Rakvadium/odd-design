@@ -105,40 +105,40 @@ Each commit ends with `bun run check`. The boxes under a commit name its extra c
 
 ### Commit 1. Add Alert and AlertTitle and check them with ODD-ALERT-001 to 005
 
-- [ ] Add `USAGE.alert`, `USAGE.alertTitle`, `AlertRule`, `AlertTitleRule`, both `WRAPPERS` rows, the five codes in `USAGE_CODES`, and their `MESSAGES`. Make `enumAllowed` say "means" for one omit token.
-- [ ] Write `docs/usage/alert.md` with one section per code.
-- [ ] Create `src/react/alert.tsx`. Add the barrel export and the `WrapperProps` lines.
-- [ ] Add the `odd-alert-001` to `005` bad and good HTML pairs, five `RUNTIME_CODES` lines, and the `places` rows in `tests/eslint-html.test.ts`. Move `odd-alert-title` in `odd-class-001.good.html` onto a `p`.
-- [ ] Add `data-tone` for Alert to the CSS-sync list in `tests/usage-contract.test.ts`.
-- [ ] Add type fail fixtures for `tone`, `role`, `data-variant` on `Alert`, and `data-tone` on `AlertTitle`, each with its `failures` entry. Add `pass.tsx` lines for the `Record<State, AlertTone>` call site.
-- [ ] Add `tests/fixtures/usage/jsx/alert.tsx` and its `places` entry. Add one markup row to `tests/react.test.tsx`.
-- [ ] Check. Delete the `aria-live` rule, and the 003 fixture fails. Drop `neutral` from the omit list, and the 002 fixture fails.
+- [x] Add `USAGE.alert`, `USAGE.alertTitle`, `AlertRule`, `AlertTitleRule`, both `WRAPPERS` rows, the five codes in `USAGE_CODES`, and their `MESSAGES`. Make `enumAllowed` say "means" for one omit token.
+- [x] Write `docs/usage/alert.md` with one section per code.
+- [x] Create `src/react/alert.tsx`. Add the barrel export and the `WrapperProps` lines.
+- [x] Add the `odd-alert-001` to `005` bad and good HTML pairs, five `RUNTIME_CODES` lines, and the `places` rows in `tests/eslint-html.test.ts`. Move `odd-alert-title` in `odd-class-001.good.html` onto a `p`.
+- [x] Add `data-tone` for Alert to the CSS-sync list in `tests/usage-contract.test.ts`.
+- [x] Add type fail fixtures for `tone`, `role`, `aria-live`, `data-variant` on `Alert`, and `data-tone` on `AlertTitle`, each with its `failures` entry. `aria-live` has its own fixture, because `alert-role.tsx` already prints `ODD-ALERT-003` and one fixture cannot show which attribute raised it. Add `pass.tsx` lines for the `Record<State, AlertTone>` call site.
+- [x] Add `tests/fixtures/usage/jsx/alert.tsx` and its `places` entry. Add one markup row to `tests/react.test.tsx`.
+- [x] Check. Delete the `aria-live` rule, and the 003 fixture fails. Drop `neutral` from the omit list, and the typecheck fails, because `enumAllowed` needs one omit token. The pinned 002 message test, the `pass` type fixture, and the React entry test fail too. The 002 HTML fixture does not fail.
 
 ### Commit 2. Mirror Alert in the Storybooks
 
-- [ ] Create `stories/mirrored/Alert.stories.ts` with `title: "Components/Feedback"` and the export `Alert`. The scene is the five HTML alerts. The meta component description carries the story text.
-- [ ] Delete the `Alert` export from `stories/Feedback.stories.ts`. Add the id to the mirrored-ids pin in `tests/stories.test.ts`.
-- [ ] Measure the `aria` literal in the built Firefox Storybook, then paste it.
-- [ ] Check. `bunx playwright test e2e/usage.spec.ts --project firefox` passes. Change one label in the `aria` literal and confirm the run fails, then restore it.
+- [x] Create `stories/mirrored/Alert.stories.ts` with `title: "Components/Feedback"` and the export `Alert`. The scene is the five HTML alerts. The meta component description carries the story text.
+- [x] Delete the `Alert` export from `stories/Feedback.stories.ts`. Add the id to the mirrored-ids pin in `tests/stories.test.ts`.
+- [x] Measure the `aria` literal in the built Firefox Storybook, then paste it.
+- [x] Check. `bunx playwright test e2e/usage.spec.ts --project firefox` passes. Change one label in the `aria` literal and confirm the run fails, then restore it.
 
 ### Commit 3. Docs, smoke, and the verify recipe
 
-- [ ] In `docs/usage/react.md`, add "Show a message with an alert" with the icon and body markup, and the type-error rows. Add an Alert section to `docs/usage/eslint.md`. Fix the Alert line in `README.md`.
-- [ ] Add `docs/usage/alert.md` to `REQUIRED` in `scripts/consumer-smoke.ts`. The clean app renders an `Alert` with an icon and a body.
-- [ ] Add one "React Alert" section to `.agents/skills/verify-odd-design/features/feedback.md`.
-- [ ] Add the follow-up in Appendix D to `docs/follow-ups.md`.
-- [ ] Check. `bun run check`, `bun run build`, and `bun scripts/consumer-smoke.ts` pass.
+- [x] In `docs/usage/react.md`, add "Show a message with an alert" with the icon and body markup, and the type-error rows. Add an Alert section to `docs/usage/eslint.md`. Fix the Alert line in `README.md`.
+- [x] Add `docs/usage/alert.md` to `REQUIRED` in `scripts/consumer-smoke.ts`. The clean app renders an `Alert` with an icon and a body.
+- [x] Add one "React Alert" section to `.agents/skills/verify-odd-design/features/feedback.md`.
+- [x] Add the follow-up in Appendix D to `docs/follow-ups.md`.
+- [x] Check. `bun run check`, `bun run build`, and `bun scripts/consumer-smoke.ts` pass.
 
 ## Verify on the real surface
 
-- [ ] Rebuild both Storybooks, capture the HTML section to `after.json`, and run `bun scripts/capture-stories.ts --diff .verify/alert/base.json .verify/alert/after.json`. Pass means `changed` lists at most `components-feedback--alert`, and only in the `dom` field.
-- [ ] Run `bun run test:browsers`. Pass means the Firefox and WebKit runs pass and the sweep reports 0 diagnostics.
-- [ ] Drive the composed build per the verify-odd-design skill. Open `react_components-feedback--alert` and `components-feedback--alert` in `calm` light, `sorbet` dark, and `holoterminal` dark. Save each screenshot and `ariaSnapshot`, and confirm that the two sides look the same.
+- [x] Rebuild both Storybooks, capture the HTML section to `after.json`, and run `bun scripts/capture-stories.ts --diff .verify/alert/base.json .verify/alert/after.json`. Pass means `changed` lists at most `components-feedback--alert`, and only in the `dom` field.
+- [x] Run `bun run test:browsers`. Pass means the Firefox and WebKit runs pass and the sweep reports 0 diagnostics. The first run failed one Firefox AlertDialog backdrop test that then passed 3 of 3 reruns, and the full rerun in `.verify/alert/test-browsers-2.txt` passed clean.
+- [x] Drive the composed build per the verify-odd-design skill. Open `react_components-feedback--alert` and `components-feedback--alert` in `calm` light, `sorbet` dark, and `holoterminal` dark. Save each screenshot and `ariaSnapshot`, and confirm that the two sides look the same.
 
 ## Review and open the PR
 
-- [ ] The `cursor grok-4.7` reviewer reads the diff against this plan. A fresh builder fixes each finding that blocks. Other findings go to `docs/follow-ups.md`.
-- [ ] Run `/deslop` and `/no-comments` over the diff.
+- [x] The `cursor grok-4.7` reviewer reads the diff against this plan. A fresh builder fixes each finding that blocks. Other findings go to `docs/follow-ups.md`.
+- [x] Run `/deslop` and `/no-comments` over the diff.
 - [ ] Open the PR ready with `gh pr create --base main --repo Rakvadium/odd-design`. The title is `feat(react): add Alert and mirror it in the Storybooks`.
 - [ ] Run `gh pr checks`. The repo has no workflows, so expect "no checks reported". Report the PR as open. Do not merge.
 
