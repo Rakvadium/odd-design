@@ -173,6 +173,16 @@ const places: Record<string, readonly (readonly [string, number, number, string]
     ["ODD-AVATAR-005", 3, 26, "data-szie"],
   ],
   "odd-avatar-006.bad.html": [["ODD-AVATAR-006", 2, 71, "data-size"]],
+  "odd-separator-001.bad.html": [["ODD-SEPARATOR-001", 2, 6, "class"]],
+  "odd-separator-002.bad.html": [
+    ["ODD-SEPARATOR-002", 2, 27, "aria-orientation"],
+    ["ODD-SEPARATOR-002", 3, 27, "data-orientation"],
+  ],
+  "odd-separator-003.bad.html": [
+    ["ODD-SEPARATOR-003", 2, 27, "role"],
+    ["ODD-SEPARATOR-003", 3, 27, "aria-hidden"],
+  ],
+  "odd-separator-004.bad.html": [["ODD-SEPARATOR-004", 2, 27, "data-tone"]],
   "odd-class-001.bad.html": [
     ["ODD-CLASS-001", 2, 6, "class"],
     ["ODD-CLASS-001", 3, 4, "class"],

@@ -117,6 +117,13 @@ const places: Record<string, readonly (readonly [string, number, number, string]
     ["ODD-BUTTON-002", 10, 13, 'variant="outline"'],
     ["ODD-BUTTON-003", 11, 13, 'size="md"'],
   ],
+  "separator.tsx": [
+    ["ODD-SEPARATOR-002", 6, 16, 'aria-orientation="verticle"'],
+    ["ODD-SEPARATOR-003", 7, 16, 'role="none"'],
+    ["ODD-SEPARATOR-003", 8, 16, 'aria-hidden="true"'],
+    ["ODD-SEPARATOR-004", 9, 16, "data-tone"],
+    ["ODD-SEPARATOR-001", 10, 10, "className"],
+  ],
   "wrapper.good.tsx": [],
 };
 
