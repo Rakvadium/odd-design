@@ -25,6 +25,12 @@ Preconditions:
 - **Card link.** Run `bun $S goto components-surfaces--card`. The aria tree shows one `link "Ember Aggro"` inside the interactive card. `bun $S eval 'location.href.endsWith("#")'` returns `false`. Then `bun $S click 'article[data-interactive] .odd-muted'` clicks the body text, not the title, and the same eval returns `true`, which proves the whole card is the link's hit area. For a negative control, `goto` again and click `article:not([data-interactive]) .odd-muted`. The eval stays `false`.
 - **Badges.** Run `bun $S goto components-surfaces--badge "palette:sorbet;mode:dark"` and capture `surfaces/badges-sorbet-dark.png`. Read the screenshot. Every badge's text is legible.
 
+## React Badge
+
+Build the composed Storybook and serve it, as in the React Field section of `forms.md`. Open `http://127.0.0.1:6106/?path=/story/react_components-surfaces--badge`. The preview is the Badge story built from `Badge`. It shows a soft row and a solid row of the six tones, the same as `components-surfaces--badge`. Card has no React wrapper, so it appears only in the HTML section.
+
+Run the pair sweep with `bunx playwright test e2e/usage.spec.ts --project firefox`. The Badge pair matches the `aria` literal in `stories/mirrored/Badge.stories.ts`, and the two screenshots are byte-identical.
+
 ## Gotchas
 
 - The dialog's `autofocus` lands on `Close`, not on the first button in DOM order. Assert on the button text, not its position.

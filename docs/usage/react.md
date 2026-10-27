@@ -1,8 +1,8 @@
 # Use the React components
 
-`odd-design/react` exports `Button`, the Field parts, and the Choice parts. Each renders an `odd-` element from typed props. A contract mistake in those props is a TypeScript error that starts with its code, such as `ODD-BUTTON-007`. `Button` lives in `src/react/button.tsx`, the Field parts in `src/react/field.tsx`, and the Choice parts in `src/react/choice.tsx`. Codes and fixes are in [Button usage rules](button.md), [Field usage rules](field.md), and [Choice usage rules](choice.md).
+`odd-design/react` exports `Button`, the Field parts, the Choice parts, and `Badge`. Each renders an `odd-` element from typed props. A contract mistake in those props is a TypeScript error that starts with its code, such as `ODD-BUTTON-007`. `Button` lives in `src/react/button.tsx`, the Field parts in `src/react/field.tsx`, the Choice parts in `src/react/choice.tsx`, and `Badge` in `src/react/badge.tsx`. Codes and fixes are in [Button usage rules](button.md), [Field usage rules](field.md), [Choice usage rules](choice.md), and [Badge usage rules](badge.md).
 
-`button.tsx` starts with `"use client"`, so a React Server Components app can render `Button` from a server component. The Field and Choice parts hold no state and no handlers, so `field.tsx` and `choice.tsx` have no directive.
+`button.tsx` starts with `"use client"`, so a React Server Components app can render `Button` from a server component. The Field parts, the Choice parts, and `Badge` hold no state and no handlers, so `field.tsx`, `choice.tsx`, and `badge.tsx` have no directive.
 
 ## Render a button or a link
 
@@ -133,6 +133,28 @@ The checkbox or radio inside `Choice`, and the `legend` and `label` children of 
 
 Disable a choice with the native `disabled` attribute on the input, or on `Segmented`. `aria-disabled` on any Choice part is a type error. It leaves the input toggling, and the choice does not look disabled.
 
+## Show a status with a badge
+
+```tsx
+import { Badge, type BadgeTone } from "odd-design/react";
+
+<Badge>Draft</Badge>;
+<Badge tone="danger" solid>Banned</Badge>;
+
+const toneOf: Record<Status, BadgeTone> = { draft: "neutral", legal: "success", banned: "danger" };
+<Badge tone={toneOf[deck.status]}>{deck.status}</Badge>;
+```
+
+`Badge` renders a `span` with the class `odd-badge`, plus the words in `className`.
+
+| Prop | What the element gets |
+| --- | --- |
+| `tone` | `data-tone`. It takes `neutral`, `primary`, `success`, `warning`, `danger`, or `info`. Leave it out for a neutral badge. |
+| `solid` | `data-solid` with an empty value. `solid={false}` leaves it out. |
+| Any other prop | The attribute with the same name. |
+
+Use `tone` and `solid`. Passing `data-tone` or `data-solid` yourself is a type error. `BadgeTone` is the type of `tone`, for a map from your data to a tone.
+
 ## Read a type error
 
 The type error names the code and the fix. The table lists what each mistake prints.
@@ -147,14 +169,15 @@ The type error names the code and the fix. The table lists what each mistake pri
 | `hidden` or `aria-hidden` on `FieldError` | `ODD-FIELD-002` |
 | `aria-disabled` on `Input`, `Textarea`, or `Select` | `ODD-FIELD-003` |
 | `aria-disabled` on `Choice`, `Switch`, or `Segmented` | `ODD-CHOICE-003` |
+| A system `data-` attribute the badge does not take, such as `data-variant` | `ODD-BADGE-004` |
 | `Switch` without `type` or `role` | TypeScript's missing property error |
 | A `Switch` `type` other than `checkbox`, or a `role` other than `switch` | The allowed value |
 | `Label` without `htmlFor`, or `Hint` or `FieldError` without `id` | TypeScript's missing property error |
-| A `variant`, `size`, or `aria-current` value outside the contract | The allowed values |
+| A `variant`, `size`, `aria-current`, or `tone` value outside the contract | The allowed values |
 
 TypeScript shortens a long type in an error. Set `noErrorTruncation` in `tsconfig.json` to see the whole message.
 
-Some rules are not type errors. `Button` picks the element from `href`, so you cannot write an anchor without `href` (`ODD-BUTTON-009`) or a button with `href` (`ODD-BUTTON-010`). Those two codes apply to a raw `a` or `button` with the `odd-button` class. Each Field and Choice part picks its own element too, so `ODD-FIELD-001` and `ODD-CHOICE-001` apply only to raw markup. Visible text in an icon-only button (`ODD-BUTTON-014`) and a misspelled `data-` name are not type errors either. The ESLint plugin and the [runtime checker](runtime.md) report each of these.
+Some rules are not type errors. `Button` picks the element from `href`, so you cannot write an anchor without `href` (`ODD-BUTTON-009`) or a button with `href` (`ODD-BUTTON-010`). Those two codes apply to a raw `a` or `button` with the `odd-button` class. Each Field and Choice part and `Badge` picks its own element too, so `ODD-FIELD-001`, `ODD-CHOICE-001`, and `ODD-BADGE-001` apply only to raw markup. `solid` is a boolean, so a `data-solid` value other than empty or `true` (`ODD-BADGE-003`) also applies only to raw markup. Visible text in an icon-only button (`ODD-BUTTON-014`) and a misspelled `data-` name are not type errors either. The ESLint plugin and the [runtime checker](runtime.md) report each of these.
 
 ## Open a dialog or a popover with a command
 

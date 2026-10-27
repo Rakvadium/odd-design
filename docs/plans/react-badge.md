@@ -121,11 +121,11 @@ Each commit ends with `bun run check`. The boxes under a commit name its extra c
 
 ### Commit 5. Docs, smoke, and the verify recipe
 
-- [ ] In `docs/usage/react.md`, add "Show a status with a badge", two rows in the type-error table, and `ODD-BADGE-001` in the "not a type error" paragraph. Add a Badge section to `docs/usage/eslint.md` that states the computed-`tone` warning. Add Badge to the `README.md` component and usage lines.
-- [ ] Close the gaps the `how` pass found in README "Add a React part". Say that a group's rules run only with an `element` rule. Say that own data attributes come from the `WRAPPERS` row. Name the HTML fixture pairs with `RUNTIME_CODES`, the mirrored-ids pin, and the `REQUIRED` line for a new usage page.
-- [ ] Add `docs/usage/badge.md` to `REQUIRED` in `scripts/consumer-smoke.ts`. The clean app renders `<Badge tone="success" solid>`.
-- [ ] Add a "React Badge" section to `.agents/skills/verify-odd-design/features/surfaces.md` with the composed URL `react_components-surfaces--badge`. Check that the `.claude` and `.cursor` links show the edit.
-- [ ] Check. `bun run check`, `bun run build`, and `bun scripts/consumer-smoke.ts` pass.
+- [x] In `docs/usage/react.md`, add "Show a status with a badge", two rows in the type-error table, and `ODD-BADGE-001` in the "not a type error" paragraph. Add a Badge section to `docs/usage/eslint.md` that states the computed-`tone` warning. Add Badge to the `README.md` component and usage lines.
+- [x] Close the gaps the `how` pass found in README "Add a React part". Say that a group's rules run only with an `element` rule. Say that own data attributes come from the `WRAPPERS` row. Name the HTML fixture pairs with `RUNTIME_CODES`, the mirrored-ids pin, and the `REQUIRED` line for a new usage page.
+- [x] Add `docs/usage/badge.md` to `REQUIRED` in `scripts/consumer-smoke.ts`. The clean app renders `<Badge tone="success" solid>`.
+- [x] Add a "React Badge" section to `.agents/skills/verify-odd-design/features/surfaces.md` with the composed URL `react_components-surfaces--badge`. Check that the `.claude` and `.cursor` links show the edit.
+- [x] Check. `bun run check`, `bun run build`, and `bun scripts/consumer-smoke.ts` pass.
 
 ## Verify on the real surface
 
