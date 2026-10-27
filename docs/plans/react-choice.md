@@ -114,12 +114,12 @@ Each commit ends with `bun run check`. The boxes under a commit name its extra c
 
 ### Commit 3. Add the Choice parts
 
-- [ ] Create `src/react/choice.tsx` with `Choice`, `Switch`, and `Segmented`. Add the three `WRAPPERS` rows, the barrel export, three `WrapperProps` lines, and the `scripts/build.ts` entry.
-- [ ] Add type fixtures. `choice-aria-disabled.tsx` and `switch-aria-disabled.tsx` expect `ODD-CHOICE-003`. They are two because `Choice` and `Switch` read different rule groups, and `Segmented` shares `Choice`'s. `switch-type.tsx` passes a wrong `type` and a wrong `role`, and its `failures` entry requires the text `"checkbox"` and `"switch"`, so either prop widening back to `string` fails.
-- [ ] Add Choice call sites to `tests/fixtures/types/pass/pass.tsx`: a controlled switch with `ref`, `disabled` on each part, a bare switch with `aria-label`, and `Segmented disabled`. These catch a false positive, above all a copied Button ban on `disabled`.
-- [ ] Add `tests/fixtures/usage/jsx/choice.tsx` with the three correct parts plus one bad line each for 002 and 003, and its `places` entry. The correct lines report nothing, which proves each row lowers to its element-rule tag and that `type` and `role` reach the lowering.
-- [ ] Add one row to the markup table in `tests/react.test.tsx` with all three parts, as an exact string, then `checkRoot`.
-- [ ] Check. `bun run check` passes.
+- [x] Create `src/react/choice.tsx` with `Choice`, `Switch`, and `Segmented`. Add the three `WRAPPERS` rows, the barrel export, three `WrapperProps` lines, and the `scripts/build.ts` entry.
+- [x] Add type fixtures. `choice-aria-disabled.tsx` and `switch-aria-disabled.tsx` expect `ODD-CHOICE-003`. They are two because `Choice` and `Switch` read different rule groups, and `Segmented` shares `Choice`'s. `switch-type.tsx` passes a wrong `type` and a wrong `role`, and its `failures` entry requires the text `"checkbox"` and `"switch"`, so either prop widening back to `string` fails.
+- [x] Add Choice call sites to `tests/fixtures/types/pass/pass.tsx`: a controlled switch with `ref`, `disabled` on each part, a bare switch with `aria-label`, and `Segmented disabled`. These catch a false positive, above all a copied Button ban on `disabled`.
+- [x] Add `tests/fixtures/usage/jsx/choice.tsx` with the three correct parts plus one bad line each for 002 and 003, and its `places` entry. The correct lines report nothing, which proves each row lowers to its element-rule tag and that `type` and `role` reach the lowering.
+- [x] Add one row to the markup table in `tests/react.test.tsx` with all three parts, as an exact string, then `checkRoot`.
+- [x] Check. `bun run check` passes.
 
 ### Commit 4. Mirror Choice in the Storybooks
 

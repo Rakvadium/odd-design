@@ -5,6 +5,7 @@ import { createRoot, type Root } from "react-dom/client";
 import { renderToStaticMarkup } from "react-dom/server";
 import { checkRoot } from "../src/js/usage/dom.ts";
 import { Button } from "../src/react/button.tsx";
+import { Choice, Segmented, Switch } from "../src/react/choice.tsx";
 import { Field, FieldError, Hint, Input, Label, Select, Textarea } from "../src/react/field.tsx";
 
 Object.assign(globalThis, { IS_REACT_ACT_ENVIRONMENT: true });
@@ -81,6 +82,24 @@ const markup: readonly [string, ReactElement, string][] = [
       </Select>
     </>,
     '<textarea id="notes" disabled="" class="odd-textarea"></textarea><select id="format" class="odd-select wide"><option>Standard</option></select>',
+  ],
+  [
+    "choice, switch, and segmented",
+    <>
+      <Choice>
+        <input type="checkbox" defaultChecked /> Weekly digest
+      </Choice>
+      <Choice className="wide">
+        <Switch type="checkbox" role="switch" disabled /> Compact grid
+      </Choice>
+      <Segmented>
+        <legend>View</legend>
+        <label>
+          <input type="radio" name="view" defaultChecked /> Grid
+        </label>
+      </Segmented>
+    </>,
+    '<label class="odd-choice"><input type="checkbox" checked=""/> Weekly digest</label><label class="odd-choice wide"><input type="checkbox" role="switch" disabled="" class="odd-switch"/> Compact grid</label><fieldset class="odd-segmented"><legend>View</legend><label><input type="radio" name="view" checked=""/> Grid</label></fieldset>',
   ],
 ];
 
@@ -184,6 +203,9 @@ const failures: Record<string, { codes: string[]; text: string[] }> = {
   "raw-data-variant": { codes: [], text: ['"data-variant"'] },
   "field-error-hidden": { codes: ["ODD-FIELD-002"], text: [] },
   "input-aria-disabled": { codes: ["ODD-FIELD-003"], text: [] },
+  "choice-aria-disabled": { codes: ["ODD-CHOICE-003"], text: [] },
+  "switch-aria-disabled": { codes: ["ODD-CHOICE-003"], text: [] },
+  "switch-type": { codes: [], text: ['"checkbox"', '"switch"'] },
 };
 
 describe("React types", () => {

@@ -94,6 +94,9 @@ export const WRAPPERS = {
   Select: { source: "odd-design/react", className: "odd-select", props: {}, element: "select" },
   Hint: { source: "odd-design/react", className: "odd-hint", props: {}, element: "p" },
   FieldError: { source: "odd-design/react", className: "odd-error", props: {}, element: "p" },
+  Choice: { source: "odd-design/react", className: "odd-choice", props: {}, element: "label" },
+  Switch: { source: "odd-design/react", className: "odd-switch", props: {}, element: "input" },
+  Segmented: { source: "odd-design/react", className: "odd-segmented", props: {}, element: "fieldset" },
 } as const satisfies Record<string, Wrapper>;
 
 export const CLASS_REGISTRY = [
