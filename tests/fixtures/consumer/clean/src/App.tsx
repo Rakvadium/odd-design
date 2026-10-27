@@ -1,4 +1,4 @@
-import { Alert, AlertTitle, Avatar, AvatarGroup, Badge, Button, Choice, Field, Hint, Input, Label, Switch } from "odd-design/react";
+import { Alert, AlertTitle, Avatar, AvatarGroup, Badge, Button, Choice, Field, Hint, Input, Label, Separator, Switch } from "odd-design/react";
 
 export function App() {
   return (
@@ -26,6 +26,7 @@ export function App() {
           AR
         </Avatar>
       </AvatarGroup>
+      <Separator />
       <Button variant="primary">Save</Button>
     </>
   );

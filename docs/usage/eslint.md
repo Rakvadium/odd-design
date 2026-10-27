@@ -140,6 +140,12 @@ The plugin checks `Avatar` as a `span` with `odd-avatar`, and `AvatarGroup` as a
 
 So `<Avatar size="md">` reports `ODD-AVATAR-002`, `<Avatar role="presentation">` and `<AvatarGroup aria-label="Team">` report `ODD-AVATAR-003`, `<Avatar role="img">AR</Avatar>` and `<AvatarGroup role="group">` report `ODD-AVATAR-004`, `<Avatar data-tone="info">` reports `ODD-AVATAR-005`, and `<AvatarGroup data-size="sm">` reports `ODD-AVATAR-006`. A computed `aria-label` counts as a name. A computed `size` or `role` gives the `ODD-STATIC-001` warning. The plugin does not read the `img` inside an avatar, so an `img` with no `alt` is left to the accessibility checker.
 
+### Separator from odd-design/react
+
+The plugin checks `Separator` as an `hr` with `odd-separator`, from its entry of `WRAPPERS`. It maps no props, so every prop is the attribute with the same name.
+
+So `<Separator aria-orientation="verticle">` and `<Separator data-orientation="vertical">` report `ODD-SEPARATOR-002`, `<Separator role="none">` and `<Separator aria-hidden="true">` report `ODD-SEPARATOR-003`, and `<Separator data-tone="danger">` reports `ODD-SEPARATOR-004`. A computed `aria-orientation` or `role` gives the `ODD-STATIC-001` warning. The plugin does not read a separator's parent, so a vertical separator outside an `odd-row` passes.
+
 ### Other components
 
 The plugin cannot see what another component renders. A component with an `odd-` class, such as `<Link className="odd-button">`, gets one `ODD-STATIC-001` warning on the element and no button rules. An `odd-` class that is not in the registry still reports `ODD-CLASS-001`. `<UI.Button>`, with `UI` a namespace import, counts as another component.
