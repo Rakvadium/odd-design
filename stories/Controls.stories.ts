@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/html-vite";
-import { enhanceStepper } from "../src/js/enhance.ts";
+import { enhanceRangeField, enhanceStepper } from "../src/js/enhance.ts";
 
 const meta = {
   title: "Components/Controls",
@@ -93,7 +93,7 @@ export const Stepper: Story = {
             <button class="odd-button" type="button" data-step="1">+1</button>
           </div>
         </div>
-        <p class="odd-muted" id="jog-events" aria-live="off">No changes yet</p>
+        <p class="odd-muted" id="jog-events">No changes yet</p>
       </div>`,
       (root) => {
         const events = root.querySelector<HTMLElement>("#jog-events")!;
@@ -102,6 +102,47 @@ export const Stepper: Story = {
           events.textContent = `change: ${input.id} = ${input.value}`;
         });
         root.querySelectorAll<HTMLElement>(".odd-stepper").forEach(enhanceStepper);
+      },
+    ),
+};
+
+export const RangeField: Story = {
+  parameters: {
+    docs: {
+      description: {
+        story:
+          "An `odd-slider` and a number input for one value, synced by `enhanceRangeField`. The number takes `min`, `max`, and `step` from the slider. Type 250 into Speed and press Tab: the slider stays put and an error appears until the number fits. The page listens to the slider only, and typed numbers fire its events too.",
+      },
+    },
+  },
+  render: () =>
+    mount(
+      /* html */ `<div class="odd-stack" style="--gap: var(--space-5); max-inline-size: 30rem">
+        <div class="odd-field">
+          <label class="odd-label" id="speed-label" for="speed">Speed</label>
+          <div class="odd-range-field">
+            <input class="odd-slider" type="range" id="speed" min="0" max="200" step="5" value="40" aria-describedby="speed-hint">
+            <input class="odd-input" type="number" id="speed-number" min="0" max="200" step="5" value="40" aria-labelledby="speed-label speed-unit">
+            <span class="odd-muted" id="speed-unit">mm/s</span>
+          </div>
+          <p class="odd-hint" id="speed-hint">0 to 200, in steps of 5.</p>
+        </div>
+        <div class="odd-field">
+          <label class="odd-label" id="height-label" for="height">Lift height</label>
+          <div class="odd-range-field">
+            <input class="odd-slider" type="range" id="height" min="0" max="250" value="120">
+            <input class="odd-input" type="number" id="height-number" min="0" max="250" value="120" aria-labelledby="height-label">
+          </div>
+        </div>
+        <p class="odd-muted" id="range-events">No changes yet</p>
+      </div>`,
+      (root) => {
+        const events = root.querySelector<HTMLElement>("#range-events")!;
+        root.addEventListener("change", (event) => {
+          const input = event.target as HTMLInputElement;
+          events.textContent = `change: ${input.id} = ${input.value}`;
+        });
+        root.querySelectorAll<HTMLElement>(".odd-range-field").forEach((field) => enhanceRangeField(field));
       },
     ),
 };
