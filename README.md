@@ -187,6 +187,7 @@ The five palettes ported from uvs-decks-gg went through the same repair. Their i
 | `odd-tabs` | `role="tablist"`, `tab`, `tabpanel` | Needs `enhanceTabs`. `data-activation="manual"`, `aria-orientation="vertical"`. |
 | `odd-toaster`, `odd-toast` | built by `createToaster()` | A polite live region in the corner; it moves into an open modal dialog so toasts stay live. |
 | `odd-estop` | `<button>` | A big round stop. `aria-pressed="true"` draws it latched; the page sets it and owns any shortcut. Never disable it. |
+| `odd-stepper` | `<div role="group">` with step buttons around `<input type="number">` | Needs `enhanceStepper`. `data-step` counts input steps. Hold repeats; `input` per step, one `change` per press. Disable with `disabled` on the input. |
 
 ## Behaviors
 
@@ -195,12 +196,12 @@ Menus, tabs, and toasts have no HTML element yet, so `odd-design/enhance` (`src/
 ```js
 import { enhance, createToaster } from "odd-design/enhance";
 
-enhance();                   // menus, tab sets, select-all tables, and the fallbacks below, under document
+enhance();                   // menus, tab sets, steppers, select-all tables, and the fallbacks below, under document
 const toaster = createToaster();
 toaster.show({ title: "Deck saved", tone: "success" });
 ```
 
-- `enhanceMenu(menu)`, `enhanceTabs(root)`, `enhanceSelectAll(table)`: one widget each. Call them for elements added after `enhance()`.
+- `enhanceMenu(menu)`, `enhanceTabs(root)`, `enhanceSelectAll(table)`, `enhanceStepper(root)`: one widget each. Call them for elements added after `enhance()`.
 - `createToaster({ label, max, parent })`: `show({ title, description, tone, duration, action })` returns `{ dismiss }`.
 - `avatarFallback()`: an `.odd-avatar[data-initials]` whose image fails to load shows its initials.
 - `interestForFallback()` and `closedByFallback()`: tooltips and hover cards, and `closedby="any"`, in browsers without them. They do nothing where the browser has the feature.

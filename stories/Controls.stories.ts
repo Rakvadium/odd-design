@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/html-vite";
+import { enhanceStepper } from "../src/js/enhance.ts";
 
 const meta = {
   title: "Components/Controls",
@@ -48,6 +49,59 @@ export const EmergencyStop: Story = {
           stop.setAttribute("aria-pressed", String(latched));
           status.textContent = latched ? "Stopped. Press again to reset." : "Running";
         });
+      },
+    ),
+};
+
+export const Stepper: Story = {
+  parameters: {
+    docs: {
+      description: {
+        story:
+          "`enhanceStepper` steps the number input with its own `stepUp` and `stepDown`, so `min`, `max`, and `step` hold. `data-step` counts steps: on Wrist, `step=\"0.5\"` makes `data-step=\"10\"` move by 5, so its buttons are labelled in degrees. Hold a button to repeat. Each step fires `input`; `change` fires once when the press ends. Buttons at a limit get `aria-disabled`. Gripper is disabled through its input.",
+      },
+    },
+  },
+  render: () =>
+    mount(
+      /* html */ `<div class="odd-stack" style="--gap: var(--space-5); max-inline-size: 26rem">
+        <div class="odd-field">
+          <label class="odd-label" id="jog-base-label" for="jog-base">Base (degrees)</label>
+          <div class="odd-stepper" role="group" aria-labelledby="jog-base-label">
+            <button class="odd-button" type="button" data-step="-10">−10</button>
+            <button class="odd-button" type="button" data-step="-1">−1</button>
+            <input class="odd-input" type="number" id="jog-base" min="-90" max="90" step="1" value="0">
+            <button class="odd-button" type="button" data-step="1">+1</button>
+            <button class="odd-button" type="button" data-step="10">+10</button>
+          </div>
+        </div>
+        <div class="odd-field">
+          <label class="odd-label" id="jog-wrist-label" for="jog-wrist">Wrist (degrees)</label>
+          <div class="odd-stepper" role="group" aria-labelledby="jog-wrist-label">
+            <button class="odd-button" type="button" data-step="-10">−5</button>
+            <button class="odd-button" type="button" data-step="-1">−0.5</button>
+            <input class="odd-input" type="number" id="jog-wrist" min="-45" max="45" step="0.5" value="45">
+            <button class="odd-button" type="button" data-step="1">+0.5</button>
+            <button class="odd-button" type="button" data-step="10">+5</button>
+          </div>
+        </div>
+        <div class="odd-field">
+          <label class="odd-label" id="jog-gripper-label" for="jog-gripper">Gripper (mm)</label>
+          <div class="odd-stepper" role="group" aria-labelledby="jog-gripper-label">
+            <button class="odd-button" type="button" data-step="-1">−1</button>
+            <input class="odd-input" type="number" id="jog-gripper" min="0" max="30" value="12" disabled>
+            <button class="odd-button" type="button" data-step="1">+1</button>
+          </div>
+        </div>
+        <p class="odd-muted" id="jog-events" aria-live="off">No changes yet</p>
+      </div>`,
+      (root) => {
+        const events = root.querySelector<HTMLElement>("#jog-events")!;
+        root.addEventListener("change", (event) => {
+          const input = event.target as HTMLInputElement;
+          events.textContent = `change: ${input.id} = ${input.value}`;
+        });
+        root.querySelectorAll<HTMLElement>(".odd-stepper").forEach(enhanceStepper);
       },
     ),
 };

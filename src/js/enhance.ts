@@ -1,9 +1,11 @@
 import { closedByFallback, interestForFallback } from "./fallbacks.ts";
 import { enhanceMenu } from "./menu.ts";
+import { enhanceStepper } from "./stepper.ts";
 import { enhanceTabs } from "./tabs.ts";
 
 export { closedByFallback, interestForFallback, supportsClosedBy, supportsInterestFor } from "./fallbacks.ts";
 export { enhanceMenu } from "./menu.ts";
+export { enhanceStepper } from "./stepper.ts";
 export { enhanceTabs } from "./tabs.ts";
 export { createToaster, type Toaster, type ToastOptions, type ToastTone } from "./toast.ts";
 export { roving, type RovingOptions } from "./roving.ts";
@@ -71,14 +73,15 @@ export function enhanceSelectAll(table: HTMLTableElement): () => void {
 }
 
 /**
- * Wires every behavior under root: menus (.odd-menu[role="menu"]), tab sets (.odd-tabs), select-all
- * tables, avatar fallbacks, and the interestfor and closedby fallbacks. Elements added later need
+ * Wires every behavior under root: menus (.odd-menu[role="menu"]), tab sets (.odd-tabs), steppers
+ * (.odd-stepper), select-all tables, avatar fallbacks, and the interestfor and closedby fallbacks. Elements added later need
  * their own enhance* call. Returns one cleanup function for everything.
  */
 export function enhance(root: Document | HTMLElement = document): () => void {
   const cleanups = [
     ...[...root.querySelectorAll<HTMLElement>('.odd-menu[role="menu"]')].map(enhanceMenu),
     ...[...root.querySelectorAll<HTMLElement>(".odd-tabs")].map(enhanceTabs),
+    ...[...root.querySelectorAll<HTMLElement>(".odd-stepper")].map(enhanceStepper),
     ...[...root.querySelectorAll<HTMLTableElement>("table:has([data-select-all])")].map(enhanceSelectAll),
     avatarFallback(root),
     interestForFallback(root),
