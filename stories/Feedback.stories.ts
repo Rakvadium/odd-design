@@ -1,44 +1,10 @@
 import type { Meta, StoryObj } from "@storybook/html-vite";
 import { appendLogLine, enhanceLog, type LogTone } from "../src/js/enhance.ts";
-import { icons } from "./icons.ts";
 
 const meta = { title: "Components/Feedback" } satisfies Meta;
 
 export default meta;
 type Story = StoryObj;
-
-export const Alert: Story = {
-  parameters: {
-    docs: {
-      description: {
-        story:
-          "Static alerts need no role. For a message that appears later, insert it into an existing `role=\"status\"` (or `role=\"alert\"` for errors) container so it's announced. Text is `--foreground` on a soft tint in every tone.",
-      },
-    },
-  },
-  render: () => /* html */ `<div class="odd-stack" style="max-inline-size: 40rem">
-    <div class="odd-alert">
-      ${icons.info}
-      <div><p class="odd-alert-title">Drafts are private</p><p>Only you can see a deck until you publish it.</p></div>
-    </div>
-    <div class="odd-alert" data-tone="info">
-      ${icons.info}
-      <div><p class="odd-alert-title">New set available</p><p>“Ember Tide” cards are now in the gallery.</p></div>
-    </div>
-    <div class="odd-alert" data-tone="success">
-      ${icons.check}
-      <div><p class="odd-alert-title">Deck published</p><p>Midnight Control is live on your profile.</p></div>
-    </div>
-    <div class="odd-alert" data-tone="warning">
-      ${icons.warning}
-      <div><p class="odd-alert-title">Rotation is coming</p><p>Three of your decks lose legality on May 1. <a href="#">Review them</a>.</p></div>
-    </div>
-    <div class="odd-alert" data-tone="danger">
-      ${icons.danger}
-      <div><p class="odd-alert-title">Couldn’t save</p><p>You’re offline. Your changes are kept on this device.</p></div>
-    </div>
-  </div>`,
-};
 
 export const Progress: Story = {
   parameters: {
