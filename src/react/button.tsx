@@ -1,31 +1,16 @@
 "use client";
 
 import { createElement, type ComponentProps, type MouseEvent, type ReactElement } from "react";
-import type { APPEARANCE_AXES, ATTRIBUTES, ButtonRule, HEADLESS_ALLOWLIST, VOCABULARY } from "../js/usage/contract.ts";
-import type { Message } from "./part.ts";
+import { WRAPPERS, type ButtonRule } from "../js/usage/contract.ts";
+import { lower, type Contract, type Message, type Values } from "./part.ts";
 
-type EnumValues<Attribute extends string> = Extract<ButtonRule, { kind: "enum"; attribute: Attribute }>["values"][number];
-
-export type ButtonVariant = EnumValues<"data-variant">;
-export type ButtonSize = EnumValues<"data-size">;
+export type ButtonVariant = Values<ButtonRule, "data-variant">;
+export type ButtonSize = Values<ButtonRule, "data-size">;
 export type ButtonCommand = "show-modal" | "close" | "request-close" | "show-popover" | "hide-popover" | "toggle-popover" | `--${string}`;
 
-type ButtonAttribute = (typeof ATTRIBUTES.button)[number];
-
-type OtherSystemData = Exclude<
-  (typeof VOCABULARY)[keyof typeof VOCABULARY][number],
-  ButtonAttribute | (typeof HEADLESS_ALLOWLIST)[number] | (typeof APPEARANCE_AXES)[number]
->;
-
-type ReservedData = { [Name in ButtonAttribute]?: never } & { [Name in OtherSystemData]?: Message<"ODD-BUTTON-015"> };
-
-interface SharedProps extends ReservedData {
-  variant?: ButtonVariant;
-  size?: ButtonSize;
-  iconOnly?: boolean;
-  disabled?: Message<"ODD-BUTTON-007">;
+interface SharedProps extends Contract<"Button", ButtonRule> {
   interestfor?: string;
-  "aria-current"?: EnumValues<"aria-current">;
+  "aria-current"?: Values<ButtonRule, "aria-current">;
 }
 
 export interface LinkProps extends SharedProps, Omit<ComponentProps<"a">, keyof SharedProps | "aria-disabled"> {
@@ -55,14 +40,7 @@ function swallow(event: MouseEvent): void {
 export function Button<const P extends ButtonProps>(props: CurrentOnLink<NamedWhenIconOnly<P>> & ButtonProps): ReactElement;
 export function Button(props: ButtonProps): ReactElement {
   const blocked = props["aria-disabled"] === true || props["aria-disabled"] === "true";
-  const { variant, size, iconOnly, className, onClick, ...attributes } = props;
-  const look = {
-    className: className ? `odd-button ${className}` : "odd-button",
-    "data-variant": variant,
-    "data-size": size,
-    "data-icon-only": iconOnly === true ? "" : undefined,
-    onClick: blocked ? swallow : onClick,
-  };
-  if (attributes.href === undefined) return createElement("button", { ...attributes, type: attributes.type ?? "button", ...look });
-  return createElement("a", { ...attributes, ...look });
+  const attributes = { ...props, onClick: blocked ? swallow : props.onClick };
+  if (attributes.href === undefined) return createElement(WRAPPERS.Button.element.absent, lower("Button", { ...attributes, type: attributes.type ?? "button" }));
+  return createElement(WRAPPERS.Button.element.present, lower("Button", attributes));
 }
