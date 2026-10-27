@@ -51,6 +51,19 @@ export const USAGE = {
     { kind: "forbidden-attribute", code: "ODD-FIELD-002", attribute: "hidden" },
     { kind: "forbidden-attribute", code: "ODD-FIELD-002", attribute: "aria-hidden" },
   ] as const satisfies readonly UsageRule[],
+  choice: [
+    { kind: "element", code: "ODD-CHOICE-001", className: "odd-choice", elements: ["label"] },
+    { kind: "element", code: "ODD-CHOICE-001", className: "odd-segmented", elements: ["fieldset"] },
+    { kind: "forbidden-attribute", code: "ODD-CHOICE-003", attribute: "aria-disabled" },
+  ] as const satisfies readonly UsageRule[],
+  switch: [
+    { kind: "element", code: "ODD-CHOICE-001", className: "odd-switch", elements: ["input"] },
+    { kind: "required-attribute", code: "ODD-CHOICE-002", element: "input", attribute: "type" },
+    { kind: "enum", code: "ODD-CHOICE-002", attribute: "type", values: ["checkbox"], omit: [] },
+    { kind: "required-attribute", code: "ODD-CHOICE-002", element: "input", attribute: "role" },
+    { kind: "enum", code: "ODD-CHOICE-002", attribute: "role", values: ["switch"], omit: [] },
+    { kind: "forbidden-attribute", code: "ODD-CHOICE-003", attribute: "aria-disabled" },
+  ] as const satisfies readonly UsageRule[],
   shared: [
     { kind: "unknown-class", code: "ODD-CLASS-001" },
     { kind: "computed-value", code: "ODD-STATIC-001" },
@@ -182,4 +195,6 @@ export const APPEARANCE_AXES = ["data-chrome", "data-palette", "data-mode"] as c
 export type ButtonRule = (typeof USAGE.button)[number];
 export type FieldControlRule = (typeof USAGE.fieldControl)[number];
 export type FieldErrorRule = (typeof USAGE.fieldError)[number];
+export type ChoiceRule = (typeof USAGE.choice)[number];
+export type SwitchRule = (typeof USAGE.switch)[number];
 export type SharedRule = (typeof USAGE.shared)[number];

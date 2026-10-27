@@ -101,11 +101,11 @@ Each commit ends with `bun run check`. The boxes under a commit name its extra c
 
 ### Commit 1. Check Choice markup with ODD-CHOICE-001 to 003
 
-- [ ] Add the `choice` and `switch` keys to `USAGE`, the `ChoiceRule` and `SwitchRule` types, and the three codes in `USAGE_CODES` and `MESSAGES`. The 001 message lists `odd-choice on label, odd-switch on input, odd-segmented on fieldset`.
-- [ ] Write `docs/usage/choice.md` with one section per code in the `field.md` style.
-- [ ] Add `odd-choice-001` to `003` bad and good HTML pairs, three `RUNTIME_CODES` lines, and three `places` rows in `tests/eslint-html.test.ts`. The 001 good file holds a bare labeled switch and a `fieldset.odd-segmented role="radiogroup"`, so it catches the switch rules leaking into the `choice` key.
-- [ ] Move the three classes in `tests/fixtures/usage/odd-class-001.good.html` onto `label`, `input type="checkbox" role="switch"`, and `fieldset`.
-- [ ] Check. The `eslint-html` story sweep still reports zero findings, which covers Showcase's bare switch, its `data-axis` segmented, and the Overlays choices.
+- [x] Add the `choice` and `switch` keys to `USAGE`, the `ChoiceRule` and `SwitchRule` types, and the three codes in `USAGE_CODES` and `MESSAGES`. The 001 message lists `odd-choice on label, odd-switch on input, odd-segmented on fieldset`.
+- [x] Write `docs/usage/choice.md` with one section per code in the `field.md` style.
+- [x] Add `odd-choice-001` to `003` bad and good HTML pairs, three `RUNTIME_CODES` lines, and three `places` rows in `tests/eslint-html.test.ts`. The 001 good file holds a bare labeled switch and a `fieldset.odd-segmented role="radiogroup"`, so it catches the switch rules leaking into the `choice` key.
+- [x] Move the three classes in `tests/fixtures/usage/odd-class-001.good.html` onto `label`, `input type="checkbox" role="switch"`, and `fieldset`.
+- [x] Check. The `eslint-html` story sweep still reports zero findings, which covers Showcase's bare switch, its `data-axis` segmented, and the Overlays choices.
 
 ### Commit 2. Share the Field part helpers
 
