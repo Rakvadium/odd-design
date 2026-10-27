@@ -1,5 +1,6 @@
-import { useRef, type MouseEvent } from "react";
+import { useRef, useState, type MouseEvent } from "react";
 import { Alert, AlertTitle, type AlertTone } from "../../../../src/react/alert.tsx";
+import { Avatar, AvatarGroup, type AvatarSize } from "../../../../src/react/avatar.tsx";
 import { Badge, type BadgeTone } from "../../../../src/react/badge.tsx";
 import { Button } from "../../../../src/react/button.tsx";
 import { Choice, Segmented, Switch } from "../../../../src/react/choice.tsx";
@@ -141,3 +142,37 @@ export const tracked = (
     Docs
   </Button>
 );
+
+type Person = { name: string; initials: string; photo?: string };
+
+const avatarSize: Record<"row" | "profile", AvatarSize> = { row: "sm", profile: "lg" };
+
+export function PersonAvatar({ person, place }: { person: Person; place: keyof typeof avatarSize }) {
+  const [failed, setFailed] = useState(false);
+  if (person.photo === undefined || failed) {
+    return (
+      <Avatar size={avatarSize[place]} role="img" aria-label={person.name}>
+        {person.initials}
+      </Avatar>
+    );
+  }
+  return (
+    <Avatar size={avatarSize[place]}>
+      <img src={person.photo} alt={person.name} onError={() => setFailed(true)} />
+    </Avatar>
+  );
+}
+
+export function Collaborators({ people }: { people: Person[] }) {
+  return (
+    <>
+      <h3 id="collaborators">Collaborators</h3>
+      <AvatarGroup role="group" aria-labelledby="collaborators">
+        {people.map((person) => (
+          <PersonAvatar key={person.name} person={person} place="row" />
+        ))}
+      </AvatarGroup>
+      <Avatar aria-hidden="true">{people[0]?.initials}</Avatar>
+    </>
+  );
+}

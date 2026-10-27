@@ -5,6 +5,7 @@ import { createRoot, type Root } from "react-dom/client";
 import { renderToStaticMarkup } from "react-dom/server";
 import { checkRoot } from "../src/js/usage/dom.ts";
 import { Alert, AlertTitle } from "../src/react/alert.tsx";
+import { Avatar, AvatarGroup } from "../src/react/avatar.tsx";
 import { Badge } from "../src/react/badge.tsx";
 import { Button } from "../src/react/button.tsx";
 import { Choice, Segmented, Switch } from "../src/react/choice.tsx";
@@ -131,6 +132,18 @@ const markup: readonly [string, ReactElement, string][] = [
     </>,
     '<div class="odd-alert"><p class="odd-alert-title">Drafts are private</p></div><div class="odd-alert wide" data-tone="warning">Rotation is coming</div><div data-testid="notice" class="odd-alert" data-tone="danger"><p class="odd-alert-title">Could not save</p></div>',
   ],
+  [
+    "avatar size and group",
+    <AvatarGroup role="group" aria-label="Collaborators" className="wide">
+      <Avatar size="lg" role="img" aria-label="Mira Okafor">
+        MO
+      </Avatar>
+      <Avatar role="img" aria-label="and 3 more">
+        +3
+      </Avatar>
+    </AvatarGroup>,
+    '<div role="group" aria-label="Collaborators" class="odd-avatar-group wide"><span role="img" aria-label="Mira Okafor" class="odd-avatar" data-size="lg">MO</span><span role="img" aria-label="and 3 more" class="odd-avatar">+3</span></div>',
+  ],
 ];
 
 describe("React markup", () => {
@@ -243,6 +256,14 @@ const failures: Record<string, { codes: string[]; text: string[] }> = {
   "alert-aria-live": { codes: ["ODD-ALERT-003"], text: [] },
   "alert-data-variant": { codes: ["ODD-ALERT-004"], text: [] },
   "alert-title-data-tone": { codes: ["ODD-ALERT-005"], text: [] },
+  "avatar-size": { codes: [], text: ['"sm"', '"lg"'] },
+  "avatar-role": { codes: [], text: ['"img"'] },
+  "avatar-name": { codes: ["ODD-AVATAR-004"], text: [] },
+  "avatar-data-tone": { codes: ["ODD-AVATAR-005"], text: [] },
+  "avatar-data-initials": { codes: [], text: ['"data-initials"'] },
+  "avatar-group-name": { codes: ["ODD-AVATAR-004"], text: [] },
+  "avatar-group-role": { codes: [], text: ["Property 'role' is missing"] },
+  "avatar-group-data-size": { codes: ["ODD-AVATAR-006"], text: [] },
 };
 
 describe("React types", () => {

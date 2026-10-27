@@ -1,4 +1,5 @@
 export * from "./alert.tsx";
+export * from "./avatar.tsx";
 export * from "./badge.tsx";
 export * from "./button.tsx";
 export * from "./choice.tsx";

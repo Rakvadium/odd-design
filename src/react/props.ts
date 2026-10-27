@@ -1,4 +1,5 @@
 import type { AlertProps, AlertTitleProps } from "./alert.tsx";
+import type { AvatarGroupProps, AvatarProps } from "./avatar.tsx";
 import type { BadgeProps } from "./badge.tsx";
 import type { ButtonProps } from "./button.tsx";
 import type { ChoiceProps, SegmentedProps, SwitchProps } from "./choice.tsx";
@@ -19,4 +20,6 @@ export type WrapperProps = {
   Badge: BadgeProps;
   Alert: AlertProps;
   AlertTitle: AlertTitleProps;
+  Avatar: AvatarProps;
+  AvatarGroup: AvatarGroupProps;
 };

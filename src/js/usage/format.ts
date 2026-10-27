@@ -32,6 +32,12 @@ export const USAGE_CODES = [
   "ODD-ALERT-003",
   "ODD-ALERT-004",
   "ODD-ALERT-005",
+  "ODD-AVATAR-001",
+  "ODD-AVATAR-002",
+  "ODD-AVATAR-003",
+  "ODD-AVATAR-004",
+  "ODD-AVATAR-005",
+  "ODD-AVATAR-006",
   "ODD-STATIC-001",
   "ODD-STATIC-002",
   "ODD-STATIC-003",
@@ -81,6 +87,9 @@ const badgeAttributes = comma([WRAPPERS.Badge.props.tone, WRAPPERS.Badge.props.s
 const alertToneRule = USAGE.alert[1];
 const alertToneAllowed = enumAllowed(alertToneRule.values, alertToneRule.omit);
 const alertAttributes = WRAPPERS.Alert.props.tone;
+const avatarSizeRule = USAGE.avatar[1];
+const avatarSizeAllowed = enumAllowed(avatarSizeRule.values, avatarSizeRule.omit);
+const avatarAttributes = WRAPPERS.Avatar.props.size;
 const appearanceAxes = comma(APPEARANCE_AXES);
 const headlessAllowlist = comma(HEADLESS_ALLOWLIST);
 
@@ -321,6 +330,48 @@ export const MESSAGES = {
     "any app data attribute, the appearance axes, and the headless allowlist",
     `remove the attribute. data-tone belongs on the alert. Appearance axes: ${appearanceAxes}. Headless allowlist: ${headlessAllowlist}.`,
     "docs/usage/alert.md#odd-alert-005",
+  ),
+  "ODD-AVATAR-001": text(
+    "ODD-AVATAR-001",
+    "this avatar class is on the wrong element.",
+    "odd-avatar on span, odd-avatar-group on div",
+    "move the class onto its element. An avatar sits inline beside text, where a div is not allowed.",
+    "docs/usage/avatar.md#odd-avatar-001",
+  ),
+  "ODD-AVATAR-002": text(
+    avatarSizeRule.code,
+    "data-size has a value this avatar does not take.",
+    avatarSizeAllowed,
+    "set sm or lg, or remove data-size for the default size.",
+    "docs/usage/avatar.md#odd-avatar-002",
+  ),
+  "ODD-AVATAR-003": text(
+    "ODD-AVATAR-003",
+    "this avatar has the wrong role. An initials avatar is an image, and a group of avatars is a group.",
+    "img on odd-avatar, group on odd-avatar-group, which requires it",
+    "set role=img on an initials avatar and leave it off an image avatar. Set role=group on odd-avatar-group. To hide an avatar, use aria-hidden=true, not a role.",
+    "docs/usage/avatar.md#odd-avatar-003",
+  ),
+  "ODD-AVATAR-004": text(
+    "ODD-AVATAR-004",
+    "an avatar with role=img, or an avatar group, has no accessible name.",
+    "aria-label, aria-labelledby",
+    "add aria-label with the person's name, or aria-labelledby that points at it. Name a group for the set, such as Collaborators.",
+    "docs/usage/avatar.md#odd-avatar-004",
+  ),
+  "ODD-AVATAR-005": text(
+    "ODD-AVATAR-005",
+    "this avatar does not take that data attribute.",
+    "the avatar attribute, any app data attribute, the appearance axes, and the headless allowlist",
+    `remove the attribute, or correct its name. Avatar attributes: ${avatarAttributes}. Appearance axes: ${appearanceAxes}. Headless allowlist: ${headlessAllowlist}.`,
+    "docs/usage/avatar.md#odd-avatar-005",
+  ),
+  "ODD-AVATAR-006": text(
+    "ODD-AVATAR-006",
+    "odd-avatar-group does not take that data attribute.",
+    "any app data attribute, the appearance axes, and the headless allowlist",
+    `remove the attribute. data-size belongs on each avatar. Appearance axes: ${appearanceAxes}. Headless allowlist: ${headlessAllowlist}.`,
+    "docs/usage/avatar.md#odd-avatar-006",
   ),
   "ODD-STATIC-001": text(
     "ODD-STATIC-001",
