@@ -83,25 +83,3 @@ export const AvatarFallback: Story = {
     <span class="odd-avatar" data-size="lg" data-initials="JP" id="broken-avatar"><img src="/missing-avatar.png" alt="Jo Park"></span>
   </div>`,
 };
-
-export const Separator: Story = {
-  render: () => /* html */ `<div class="odd-stack" style="max-inline-size: 32rem">
-    <div class="odd-stack" style="--gap: var(--space-2)">
-      <h3 class="odd-heading">Deck notes</h3>
-      <p class="odd-muted">Mulligan aggressively for an early unit.</p>
-    </div>
-    <hr class="odd-separator">
-    <div class="odd-stack" style="--gap: var(--space-2)">
-      <h3 class="odd-heading">Sideboard</h3>
-      <p class="odd-muted">Bring in the control package against tempo decks.</p>
-    </div>
-    <hr class="odd-separator">
-    <div class="odd-row" style="--gap: var(--space-3); font-size: var(--text-sm)">
-      <a href="#">Edit</a>
-      <hr class="odd-separator" aria-orientation="vertical">
-      <a href="#">Duplicate</a>
-      <hr class="odd-separator" aria-orientation="vertical">
-      <a href="#">Export</a>
-    </div>
-  </div>`,
-};
