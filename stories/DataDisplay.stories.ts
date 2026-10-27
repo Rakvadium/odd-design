@@ -70,42 +70,17 @@ export const Table: Story = {
   },
 };
 
-/** A stand-in profile photo, so the story needs no network. */
-const photo = (a: string, b: string) =>
-  `data:image/svg+xml,${encodeURIComponent(
-    `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40"><defs><linearGradient id="g" x2="1" y2="1"><stop offset="0" stop-color="${a}"/><stop offset="1" stop-color="${b}"/></linearGradient></defs><rect width="40" height="40" fill="url(#g)"/><circle cx="20" cy="16" r="7" fill="#fff" fill-opacity=".85"/><ellipse cx="20" cy="36" rx="13" ry="10" fill="#fff" fill-opacity=".85"/></svg>`,
-  )}`;
-
-export const Avatar: Story = {
+export const AvatarFallback: Story = {
   parameters: {
     docs: {
       description: {
         story:
-          "An image avatar has `alt` text; an initials avatar is `role=\"img\"` with an `aria-label`. With `data-initials`, `avatarFallback` swaps an image that fails to load (Jo Park's) for initials and keeps its name. Next to a visible name, hide the avatar instead so the name isn't read twice. The shape follows the chrome's chip radius.",
+          "With `data-initials`, `avatarFallback` from `odd-design/enhance` swaps an image that fails to load for its initials and keeps its name. It is for markup a page owns. React throws when a script replaces children it rendered, so the React `Avatar` types `data-initials` as `never`; a React app renders the initials itself when the image fails.",
       },
     },
   },
-  render: () => /* html */ `<div class="odd-stack" style="--gap: var(--space-5)">
-    <div class="odd-row">
-      <span class="odd-avatar" data-size="sm" role="img" aria-label="Ana Rojas">AR</span>
-      <span class="odd-avatar" role="img" aria-label="Ana Rojas">AR</span>
-      <span class="odd-avatar" data-size="lg" role="img" aria-label="Ana Rojas">AR</span>
-      <span class="odd-avatar" data-size="lg"><img src="${photo("#8a5cf6", "#f472b6")}" alt="Kai Nakamura"></span>
-      <span class="odd-avatar" data-size="lg" data-initials="JP" id="broken-avatar"><img src="/missing-avatar.png" alt="Jo Park"></span>
-    </div>
-    <div class="odd-avatar-group" role="group" aria-label="Collaborators">
-      <span class="odd-avatar"><img src="${photo("#0ea5e9", "#22c55e")}" alt="Mira Okafor"></span>
-      <span class="odd-avatar" role="img" aria-label="Ana Rojas">AR</span>
-      <span class="odd-avatar"><img src="${photo("#f59e0b", "#ef4444")}" alt="Theo Laurent"></span>
-      <span class="odd-avatar" role="img" aria-label="and 3 more">+3</span>
-    </div>
-    <div class="odd-row" style="--gap: var(--space-3)">
-      <span class="odd-avatar" aria-hidden="true">MO</span>
-      <div>
-        <p style="font-weight: 600">Mira Okafor</p>
-        <p class="odd-muted" style="font-size: var(--text-sm)">Edited Midnight Control · 2 hours ago</p>
-      </div>
-    </div>
+  render: () => /* html */ `<div class="odd-row">
+    <span class="odd-avatar" data-size="lg" data-initials="JP" id="broken-avatar"><img src="/missing-avatar.png" alt="Jo Park"></span>
   </div>`,
 };
 
