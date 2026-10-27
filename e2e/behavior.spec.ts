@@ -290,6 +290,64 @@ test.describe("keyboard widgets", () => {
   });
 });
 
+test.describe("machine controls", () => {
+  test("a held stepper button repeats in whole steps of the input, and the press fires one change", async ({ page }) => {
+    await openStory(page, "components-controls--stepper", "mode:light");
+    const wrist = page.locator("#jog-wrist");
+    await page.evaluate(() => {
+      const log: string[] = ((window as any).__changes = []);
+      document.addEventListener("change", (event) => log.push((event.target as HTMLInputElement).value));
+    });
+    await page.locator(".odd-stepper button", { hasText: "−5" }).click();
+    await expect(wrist).toHaveValue("40");
+    await page.locator(".odd-stepper button", { hasText: "−0.5" }).hover();
+    await page.mouse.down();
+    await page.waitForTimeout(900);
+    await page.mouse.up();
+    const held = Number(await wrist.inputValue());
+    expect(held, "held for 900 ms: one step, then repeats after 400 ms every 100 ms").toBeLessThanOrEqual(38.5);
+    expect(held % 0.5).toBe(0);
+    expect(await page.evaluate(() => (window as any).__changes)).toEqual(["40", String(held)]);
+    await expect(page.locator(".odd-stepper button", { hasText: "+5" })).toHaveAttribute("aria-disabled", "false");
+  });
+
+  test("the log follows new lines until the reader scrolls up", async ({ page }) => {
+    await openStory(page, "components-feedback--log", "mode:light");
+    const log = page.locator("#arm-log");
+    const fromBottom = () => log.evaluate((el) => Math.round(el.scrollHeight - el.scrollTop - el.clientHeight));
+    const add = page.locator("#add-log-line");
+    await add.click();
+    await expect.poll(fromBottom).toBe(0);
+    await log.hover();
+    await page.mouse.wheel(0, -1000);
+    await expect.poll(() => log.evaluate((el) => el.scrollTop)).toBe(0);
+    await add.click();
+    await page.waitForTimeout(100);
+    expect(await log.evaluate((el) => el.scrollTop), "scrolled up, so the log stays put").toBe(0);
+    await log.hover();
+    await page.mouse.wheel(0, 5000);
+    await expect.poll(fromBottom).toBe(0);
+    await add.click();
+    await expect.poll(fromBottom).toBe(0);
+  });
+
+  test("the app grid narrows panels to half, then to one column, by its own width", async ({ page }, testInfo) => {
+    await openStory(page, "components-layout--app-shell", "mode:light");
+    const fractions = () =>
+      page.locator("#shell-grid").evaluate((grid) => {
+        const content = grid.clientWidth - parseFloat(getComputedStyle(grid).paddingLeft) - parseFloat(getComputedStyle(grid).paddingRight);
+        return [...grid.children].map((panel) => Math.round((panel.getBoundingClientRect().width / content) * 100));
+      });
+    expect(await fractions()).toEqual([66, 32, 32, 66]);
+    await shot(page, testInfo, "shell-wide.png", "#storybook-root");
+    await page.setViewportSize({ width: 900, height: 900 });
+    expect(await fractions()).toEqual([66, 49, 49, 66]);
+    await page.setViewportSize({ width: 560, height: 900 });
+    expect(await fractions()).toEqual([100, 100, 100, 100]);
+    await shot(page, testInfo, "shell-narrow.png", "#storybook-root");
+  });
+});
+
 test.describe("engine-specific CSS", () => {
   test("the slider moves by keyboard and its fill follows the thumb", async ({ page }, testInfo) => {
     await openStory(page, "components-forms--slider", "mode:light");

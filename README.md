@@ -195,7 +195,7 @@ The five palettes ported from uvs-decks-gg went through the same repair. Their i
 
 ## Behaviors
 
-Menus, tabs, and toasts have no HTML element yet, so `odd-design/enhance` (`src/js/enhance.ts`) adds them on top of native markup. Each function takes an element and returns a cleanup function. No dependencies. There is no framework, and the React wrapper is optional.
+Menus, tabs, toasts, steppers, range fields, and logs need behavior HTML doesn't have yet, so `odd-design/enhance` (`src/js/enhance.ts`) adds them on top of native markup. Each function takes an element and returns a cleanup function. No dependencies. There is no framework, and the React wrapper is optional.
 
 ```js
 import { enhance, createToaster } from "odd-design/enhance";
