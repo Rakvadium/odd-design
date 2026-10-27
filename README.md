@@ -31,7 +31,7 @@ Install the package.
 bun add odd-design
 ```
 
-The stylesheet, `odd-design/appearance`, `odd-design/enhance`, and `odd-design/palette` need nothing else. Install React 19 when you render `Button`, the Field parts, the Choice parts, `Badge`, or the Alert parts. React is an optional peer dependency.
+The stylesheet, `odd-design/appearance`, `odd-design/enhance`, and `odd-design/palette` need nothing else. Install React 19 when you render `Button`, the Field parts, the Choice parts, `Badge`, the Alert parts, or the Avatar parts. React is an optional peer dependency.
 
 ```sh
 bun add react@^19 react-dom@^19
@@ -108,7 +108,7 @@ bun .agents/skills/verify-odd-design/scripts/ctl.ts axe --run a11y    # every st
 
 ## Usage checks
 
-The package ships the button, field, choice, badge, and alert usage contracts and one message per pinned code. Each message names the code, the failure, and the fix. Types, ESLint, and the runtime checker report the same codes. The pages under [docs/usage/](docs/usage/) record the rules. Button codes are in [Button usage rules](docs/usage/button.md). Field codes are in [Field usage rules](docs/usage/field.md). Choice codes are in [Choice usage rules](docs/usage/choice.md). Badge codes are in [Badge usage rules](docs/usage/badge.md). Alert codes are in [Alert usage rules](docs/usage/alert.md). Class and static codes are in [General usage rules](docs/usage/general.md).
+The package ships the button, field, choice, badge, alert, and avatar usage contracts and one message per pinned code. Each message names the code, the failure, and the fix. Types, ESLint, and the runtime checker report the same codes. The pages under [docs/usage/](docs/usage/) record the rules. Button codes are in [Button usage rules](docs/usage/button.md). Field codes are in [Field usage rules](docs/usage/field.md). Choice codes are in [Choice usage rules](docs/usage/choice.md). Badge codes are in [Badge usage rules](docs/usage/badge.md). Alert codes are in [Alert usage rules](docs/usage/alert.md). Avatar codes are in [Avatar usage rules](docs/usage/avatar.md). Class and static codes are in [General usage rules](docs/usage/general.md).
 
 ## Add a palette
 
@@ -174,7 +174,7 @@ The five palettes ported from uvs-decks-gg went through the same repair. Their i
 | `odd-progress`, `odd-meter`, `odd-stat` | `<progress>`, `<meter>` | A meter with `low`/`high`/`optimum` colors itself by range. Always show the value as text too. |
 | `odd-skeleton` | `<div aria-hidden>` | Put `aria-busy` and "Loading" text on the region. `data-shape="avatar"`. |
 | `odd-separator` | `<hr>` | `aria-orientation="vertical"` inside a row. |
-| `odd-avatar`, `odd-avatar-group` | `<span>` with `<img alt>` or `role="img"` initials | `data-size`. |
+| `odd-avatar`, `odd-avatar-group` | `<span>` with `<img alt>` or `role="img"` initials, `<div role="group">` with a name | `data-size` on each avatar. |
 | `odd-table-wrap`, `odd-table`, `odd-table-sort` | `<table>` | The wrapper scrolls and is focusable. `data-numeric`, `aria-sort`, and a row checkbox tints the row. |
 | `odd-slider` | `<input type="range">` | The filled track follows the thumb with no JS where scroll-driven animations exist. |
 | `odd-search` | `<search>` with `<input type="search">` | Visually hidden label, leading icon. |
@@ -208,6 +208,6 @@ toaster.show({ title: "Deck saved", tone: "success" });
 - `enhanceMenu(menu)`, `enhanceTabs(root)`, `enhanceSelectAll(table)`, `enhanceStepper(root)`, `enhanceRangeField(root, { message })`, `enhanceLog(log)`: one widget each. Call them for elements added after `enhance()`.
 - `createToaster({ label, max, parent })`: `show({ title, description, tone, duration, action })` returns `{ dismiss }`.
 - `appendLogLine(log, text, { tone, time, max })`: adds a line as text, with `time` as a `Date` or a string, and drops the oldest lines past `max` (500).
-- `avatarFallback()`: an `.odd-avatar[data-initials]` whose image fails to load shows its initials.
+- `avatarFallback()`: an `.odd-avatar[data-initials]` whose image fails to load shows its initials. It replaces the avatar's children, so use it on markup the page owns, not on a React `Avatar`.
 - `interestForFallback()` and `closedByFallback()`: tooltips and hover cards, and `closedby="any"`, in browsers without them. They do nothing where the browser has the feature.
 - `roving(container, options)`: the shared arrow-key, Home/End, and typeahead helper the widgets use.

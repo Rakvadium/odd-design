@@ -150,6 +150,29 @@ const places: Record<string, readonly (readonly [string, number, number, string]
     ["ODD-ALERT-005", 2, 28, "data-tone"],
     ["ODD-ALERT-005", 3, 28, "data-variant"],
   ],
+  "odd-avatar-001.bad.html": [
+    ["ODD-AVATAR-001", 2, 6, "class"],
+    ["ODD-AVATAR-001", 3, 7, "class"],
+  ],
+  "odd-avatar-002.bad.html": [
+    ["ODD-AVATAR-002", 2, 26, "data-size"],
+    ["ODD-AVATAR-002", 3, 26, "data-size"],
+  ],
+  "odd-avatar-003.bad.html": [
+    ["ODD-AVATAR-003", 2, 26, "role"],
+    ["ODD-AVATAR-003", 3, 1, "<div"],
+    ["ODD-AVATAR-003", 4, 31, "role"],
+  ],
+  "odd-avatar-004.bad.html": [
+    ["ODD-AVATAR-004", 2, 1, "<span"],
+    ["ODD-AVATAR-004", 3, 1, "<span"],
+    ["ODD-AVATAR-004", 4, 1, "<div"],
+  ],
+  "odd-avatar-005.bad.html": [
+    ["ODD-AVATAR-005", 2, 26, "data-tone"],
+    ["ODD-AVATAR-005", 3, 26, "data-szie"],
+  ],
+  "odd-avatar-006.bad.html": [["ODD-AVATAR-006", 2, 71, "data-size"]],
   "odd-class-001.bad.html": [
     ["ODD-CLASS-001", 2, 6, "class"],
     ["ODD-CLASS-001", 3, 4, "class"],

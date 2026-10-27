@@ -282,7 +282,7 @@ test.describe("keyboard widgets", () => {
   });
 
   test("a broken avatar image falls back to its initials and keeps its name", async ({ page }) => {
-    await openStory(page, "components-data-display--avatar", "mode:light");
+    await openStory(page, "components-data-display--avatar-fallback", "mode:light");
     const avatar = page.locator("#broken-avatar");
     await expect(avatar).toHaveText("JP");
     await expect(avatar).toHaveAttribute("role", "img");

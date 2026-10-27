@@ -12,7 +12,7 @@ Data display components present content: the `.odd-table` inside a focusable, sc
 
 ## How to get to it (user POV)
 
-- In Storybook, open **Components → Data Display**, which has Table, Avatar, and Separator.
+- In Storybook, open **Components → Data Display**, which has Table, Avatar Fallback, Separator, and Avatar. Avatar sorts last because it loads from `stories/mirrored/`.
 
 ## Driving it with ctl.ts
 
@@ -25,6 +25,12 @@ Preconditions:
 - **Avatar names.** Run `bun $S goto components-data-display--avatar` and `bun $S aria data/avatar.aria.txt`. It shows `image "Ana Rojas"`, `image "Kai Nakamura"`, `group "Collaborators"`, and `image "and 3 more"`. The `MO` avatar beside "Mira Okafor" is absent.
 - **Avatar shape and group.** Capture `data/avatar-calm.png` with `chrome:calm` and `data/avatar-holo.png` with `chrome:holoterminal`. Read both: the avatars are round, then nearly square. In the group, every avatar's initials are fully visible. `bun $S eval '[...document.querySelectorAll(".odd-avatar-group > .odd-avatar")].map(a => Math.round(a.getBoundingClientRect().left))'` steps evenly (`[16, 48, 80, 112]` in calm).
 - **Separator.** Run `bun $S goto components-data-display--separator` and `bun $S aria data/separator.aria.txt`. It lists four `separator` entries, two of them between the links `Edit`, `Duplicate`, and `Export`.
+
+## React Avatar
+
+Build the composed Storybook and serve it, as in the React Field section of `forms.md`. Open `http://127.0.0.1:6106/?path=/story/react_components-data-display--avatar`. The preview is the Avatar story built from `Avatar` and `AvatarGroup`, the same as `components-data-display--avatar`. Table and Separator have no React wrappers, so they appear only in the HTML section. The broken-image fallback is HTML-only too, as **Avatar Fallback**, because `avatarFallback` replaces children React rendered.
+
+Run the pair sweep with `bunx playwright test e2e/usage.spec.ts --project firefox`. The Avatar pair matches the `aria` literal in `stories/mirrored/Avatar.stories.ts`, and the two screenshots are byte-identical.
 
 ## Gotchas
 

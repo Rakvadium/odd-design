@@ -81,6 +81,20 @@ export const USAGE = {
     { kind: "element", code: "ODD-ALERT-001", className: "odd-alert-title", elements: ["p"] },
     { kind: "system-data", code: "ODD-ALERT-005" },
   ] as const satisfies readonly UsageRule[],
+  avatar: [
+    { kind: "element", code: "ODD-AVATAR-001", className: "odd-avatar", elements: ["span"] },
+    { kind: "enum", code: "ODD-AVATAR-002", attribute: "data-size", values: ["sm", "lg"], omit: ["md", "medium"] },
+    { kind: "enum", code: "ODD-AVATAR-003", attribute: "role", values: ["img"], omit: [] },
+    { kind: "accessible-name", code: "ODD-AVATAR-004", attribute: "role", names: ["aria-label", "aria-labelledby"] },
+    { kind: "system-data", code: "ODD-AVATAR-005" },
+  ] as const satisfies readonly UsageRule[],
+  avatarGroup: [
+    { kind: "element", code: "ODD-AVATAR-001", className: "odd-avatar-group", elements: ["div"] },
+    { kind: "required-attribute", code: "ODD-AVATAR-003", element: "div", attribute: "role" },
+    { kind: "enum", code: "ODD-AVATAR-003", attribute: "role", values: ["group"], omit: [] },
+    { kind: "accessible-name", code: "ODD-AVATAR-004", attribute: "role", names: ["aria-label", "aria-labelledby"] },
+    { kind: "system-data", code: "ODD-AVATAR-006" },
+  ] as const satisfies readonly UsageRule[],
   shared: [
     { kind: "unknown-class", code: "ODD-CLASS-001" },
     { kind: "computed-value", code: "ODD-STATIC-001" },
@@ -117,6 +131,8 @@ export const WRAPPERS = {
   Badge: { source: "odd-design/react", className: "odd-badge", props: { tone: "data-tone", solid: "data-solid" }, element: "span" },
   Alert: { source: "odd-design/react", className: "odd-alert", props: { tone: "data-tone" }, element: "div" },
   AlertTitle: { source: "odd-design/react", className: "odd-alert-title", props: {}, element: "p" },
+  Avatar: { source: "odd-design/react", className: "odd-avatar", props: { size: "data-size" }, element: "span" },
+  AvatarGroup: { source: "odd-design/react", className: "odd-avatar-group", props: {}, element: "div" },
 } as const satisfies Record<string, Wrapper>;
 
 export const CLASS_REGISTRY = [
@@ -235,3 +251,5 @@ export type SwitchRule = (typeof USAGE.switch)[number];
 export type BadgeRule = (typeof USAGE.badge)[number];
 export type AlertRule = (typeof USAGE.alert)[number];
 export type AlertTitleRule = (typeof USAGE.alertTitle)[number];
+export type AvatarRule = (typeof USAGE.avatar)[number];
+export type AvatarGroupRule = (typeof USAGE.avatarGroup)[number];

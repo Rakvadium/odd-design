@@ -30,6 +30,15 @@ const places: Record<string, readonly (readonly [string, number, number, string]
     ["ODD-ALERT-005", 12, 17, "data-tone"],
     ["ODD-ALERT-001", 13, 11, "className"],
   ],
+  "avatar.tsx": [
+    ["ODD-AVATAR-002", 8, 13, 'size="md"'],
+    ["ODD-AVATAR-003", 9, 13, 'role="presentation"'],
+    ["ODD-AVATAR-004", 10, 5, '<Avatar role="img">'],
+    ["ODD-AVATAR-005", 11, 13, "data-tone"],
+    ["ODD-AVATAR-006", 12, 49, "data-size"],
+    ["ODD-AVATAR-004", 13, 5, "<AvatarGroup"],
+    ["ODD-AVATAR-001", 14, 10, "className"],
+  ],
   "badge.tsx": [
     ["ODD-BADGE-002", 7, 12, 'tone="sucess"'],
     ["ODD-BADGE-004", 8, 12, "data-variant"],

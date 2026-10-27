@@ -37,6 +37,12 @@ const RUNTIME_CODES = [
   "ODD-ALERT-003",
   "ODD-ALERT-004",
   "ODD-ALERT-005",
+  "ODD-AVATAR-001",
+  "ODD-AVATAR-002",
+  "ODD-AVATAR-003",
+  "ODD-AVATAR-004",
+  "ODD-AVATAR-005",
+  "ODD-AVATAR-006",
   "ODD-CLASS-001",
 ];
 
@@ -76,6 +82,12 @@ test("every runtime code has a bad fixture that names it and a good fixture that
 test("data-tone neutral on an alert says to remove the attribute", () => {
   expect(diagnose(`<div class="odd-alert" data-tone="neutral">Saved</div>`).map((diagnostic) => diagnostic.message)).toEqual([
     "ODD-ALERT-002: data-tone has a value this alert does not take. Allowed values: info, success, warning, danger. neutral means remove the attribute. Fix: set one of the allowed tones, or remove data-tone for a neutral alert. docs/usage/alert.md#odd-alert-002 Found neutral. Did you mean to remove data-tone?",
+  ]);
+});
+
+test("data-size md on an avatar says to remove the attribute", () => {
+  expect(diagnose(`<span class="odd-avatar" data-size="md" aria-hidden="true">AR</span>`).map((diagnostic) => diagnostic.message)).toEqual([
+    "ODD-AVATAR-002: data-size has a value this avatar does not take. Allowed values: sm, lg. md and medium mean remove the attribute. Fix: set sm or lg, or remove data-size for the default size. docs/usage/avatar.md#odd-avatar-002 Found md. Did you mean to remove data-size?",
   ]);
 });
 

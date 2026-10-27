@@ -1,8 +1,8 @@
 # Use the React components
 
-`odd-design/react` exports `Button`, the Field parts, the Choice parts, `Badge`, and the Alert parts. Each renders an `odd-` element from typed props. A contract mistake in those props is a TypeScript error that starts with its code, such as `ODD-BUTTON-007`. `Button` lives in `src/react/button.tsx`, the Field parts in `src/react/field.tsx`, the Choice parts in `src/react/choice.tsx`, `Badge` in `src/react/badge.tsx`, and the Alert parts in `src/react/alert.tsx`. Codes and fixes are in [Button usage rules](button.md), [Field usage rules](field.md), [Choice usage rules](choice.md), [Badge usage rules](badge.md), and [Alert usage rules](alert.md).
+`odd-design/react` exports `Button`, the Field parts, the Choice parts, `Badge`, the Alert parts, and the Avatar parts. Each renders an `odd-` element from typed props. A contract mistake in those props is a TypeScript error that starts with its code, such as `ODD-BUTTON-007`. `Button` lives in `src/react/button.tsx`, the Field parts in `src/react/field.tsx`, the Choice parts in `src/react/choice.tsx`, `Badge` in `src/react/badge.tsx`, the Alert parts in `src/react/alert.tsx`, and the Avatar parts in `src/react/avatar.tsx`. Codes and fixes are in [Button usage rules](button.md), [Field usage rules](field.md), [Choice usage rules](choice.md), [Badge usage rules](badge.md), [Alert usage rules](alert.md), and [Avatar usage rules](avatar.md).
 
-`button.tsx` starts with `"use client"`, so a React Server Components app can render `Button` from a server component. The Field parts, the Choice parts, `Badge`, and the Alert parts hold no state and no handlers, so `field.tsx`, `choice.tsx`, `badge.tsx`, and `alert.tsx` have no directive.
+`button.tsx` starts with `"use client"`, so a React Server Components app can render `Button` from a server component. The Field parts, the Choice parts, `Badge`, the Alert parts, and the Avatar parts hold no state and no handlers, so `field.tsx`, `choice.tsx`, `badge.tsx`, `alert.tsx`, and `avatar.tsx` have no directive.
 
 ## Render a button or a link
 
@@ -189,6 +189,55 @@ const toneOf: Record<SaveState, AlertTone> = { saved: "success", offline: "dange
 
 `AlertTone` is the type of `tone`. It has no `neutral` and no `primary`. Leaving `tone` out is the neutral tint, and `tone="neutral"` is a type error. Passing `data-tone` yourself is a type error, and `Alert` drops the raw attribute. `role` or `aria-live` on `Alert` is a type error (`ODD-ALERT-003`). A static alert needs no role. For a message that appears later, keep an empty `role="status"` element on the page, or `role="alert"` for an error, and render the alert inside it, as in the second example. A system `data-` attribute on `AlertTitle`, such as `data-tone`, is a type error (`ODD-ALERT-005`). A computed `tone`, such as `<Alert tone={toneOf[state]}>`, gives the `ODD-STATIC-001` warning, the same as a computed `tone` on `Badge`.
 
+## Show a person with an avatar
+
+```tsx
+import { Avatar, AvatarGroup, type AvatarSize } from "odd-design/react";
+
+<Avatar size="lg">
+  <img src={kai.photo} alt="Kai Nakamura" />
+</Avatar>;
+<Avatar role="img" aria-label="Ana Rojas">AR</Avatar>;
+<p>
+  <Avatar aria-hidden="true">MO</Avatar> Mira Okafor
+</p>;
+
+<AvatarGroup role="group" aria-label="Collaborators">
+  {people.map((person) => (
+    <PersonAvatar key={person.id} person={person} />
+  ))}
+</AvatarGroup>;
+
+function PersonAvatar({ person }: { person: Person }) {
+  const [failed, setFailed] = useState(false);
+  if (person.photo === undefined || failed) {
+    return (
+      <Avatar role="img" aria-label={person.name}>
+        {person.initials}
+      </Avatar>
+    );
+  }
+  return (
+    <Avatar>
+      <img src={person.photo} alt={person.name} onError={() => setFailed(true)} />
+    </Avatar>
+  );
+}
+```
+
+`Avatar` renders a `span` with the class `odd-avatar`. `AvatarGroup` renders a `div` with the class `odd-avatar-group`. The image, the initials, and the name stay yours. An image avatar's `img` has `alt`. An initials avatar is `role="img"` with an `aria-label`. Next to a visible name, hide the avatar with `aria-hidden="true"`.
+
+| Prop | What the element gets |
+| --- | --- |
+| `size` on `Avatar` | `data-size`. It takes `sm` or `lg`. Leave it out for the default size. |
+| `role` on `Avatar` | `role`. It takes only `img`. |
+| `role` on `AvatarGroup` | `role`. It is required and takes only `group`. |
+| Any other prop | The attribute with the same name. |
+
+`AvatarSize` is the type of `size`. `size="md"` is a type error. Passing `data-size` yourself is a type error, and `Avatar` drops the raw attribute. `role="img"` on `Avatar` with no `aria-label` and no `aria-labelledby` is a type error (`ODD-AVATAR-004`), and so is an `AvatarGroup` with neither. `data-size` on `AvatarGroup` is a type error (`ODD-AVATAR-006`). Put `size` on each `Avatar`.
+
+`data-initials` on `Avatar` is a type error. `avatarFallback` from `odd-design/enhance` swaps a failed image for those initials by replacing the avatar's children, and React throws on its next render of children a script replaced. Render the initials yourself when the image's `onError` fires, as `PersonAvatar` does. A computed `size`, such as `<Avatar size={sizeOf[place]}>`, gives the `ODD-STATIC-001` warning, the same as a computed `tone` on `Badge`.
+
 ## Read a type error
 
 The type error names the code and the fix. The table lists what each mistake prints.
@@ -207,14 +256,18 @@ The type error names the code and the fix. The table lists what each mistake pri
 | `role` or `aria-live` on `Alert` | `ODD-ALERT-003` |
 | A system `data-` attribute the alert does not take, such as `data-variant` | `ODD-ALERT-004` |
 | A system `data-` attribute on `AlertTitle`, such as `data-tone` | `ODD-ALERT-005` |
-| `Switch` without `type` or `role` | TypeScript's missing property error |
-| A `Switch` `type` other than `checkbox`, or a `role` other than `switch` | The allowed value |
+| `role="img"` on `Avatar`, or an `AvatarGroup`, with no `aria-label` and no `aria-labelledby` | `ODD-AVATAR-004` |
+| A system `data-` attribute the avatar does not take, such as `data-tone` | `ODD-AVATAR-005` |
+| A system `data-` attribute on `AvatarGroup`, such as `data-size` | `ODD-AVATAR-006` |
+| `data-initials` on `Avatar` | `Types of property '"data-initials"' are incompatible` |
+| `Switch` without `type` or `role`, or `AvatarGroup` without `role` | TypeScript's missing property error |
+| A `Switch` `type` other than `checkbox`, a `Switch` `role` other than `switch`, or an `Avatar` or `AvatarGroup` `role` other than `img` or `group` | The allowed value |
 | `Label` without `htmlFor`, or `Hint` or `FieldError` without `id` | TypeScript's missing property error |
 | A `variant`, `size`, `aria-current`, or `tone` value outside the contract | The allowed values |
 
 TypeScript shortens a long type in an error. Set `noErrorTruncation` in `tsconfig.json` to see the whole message.
 
-Some rules are not type errors. `Button` picks the element from `href`, so you cannot write an anchor without `href` (`ODD-BUTTON-009`) or a button with `href` (`ODD-BUTTON-010`). Those two codes apply to a raw `a` or `button` with the `odd-button` class. Each Field and Choice part, `Badge`, and each Alert part picks its own element too, so `ODD-FIELD-001`, `ODD-CHOICE-001`, `ODD-BADGE-001`, and `ODD-ALERT-001` apply only to raw markup. Visible text in an icon-only button (`ODD-BUTTON-014`) and a misspelled `data-` name are not type errors either. The ESLint plugin and the [runtime checker](runtime.md) report each of these.
+Some rules are not type errors. `Button` picks the element from `href`, so you cannot write an anchor without `href` (`ODD-BUTTON-009`) or a button with `href` (`ODD-BUTTON-010`). Those two codes apply to a raw `a` or `button` with the `odd-button` class. Each Field and Choice part, `Badge`, each Alert part, and each Avatar part picks its own element too, so `ODD-FIELD-001`, `ODD-CHOICE-001`, `ODD-BADGE-001`, `ODD-ALERT-001`, and `ODD-AVATAR-001` apply only to raw markup. Visible text in an icon-only button (`ODD-BUTTON-014`) and a misspelled `data-` name are not type errors either. The ESLint plugin and the [runtime checker](runtime.md) report each of these.
 
 ## Open a dialog or a popover with a command
 

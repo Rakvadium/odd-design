@@ -110,7 +110,7 @@ function isSet(scope: Scope, name: string): boolean {
   if (attribute === undefined || isComputed(attribute.value)) return false;
   const value = attribute.value;
   return scope.components.some((component) =>
-    component.rules.some((rule) => rule.kind === "boolean-attribute" && rule.attribute === name && rule.values.includes(value)),
+    component.rules.some((rule) => (rule.kind === "boolean-attribute" || rule.kind === "enum") && rule.attribute === name && rule.values.includes(value)),
   );
 }
 

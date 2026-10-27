@@ -1,6 +1,6 @@
 # Interactive
 
-Patterns HTML has no element for, enhanced by `src/js/enhance.ts` on top of native markup. `enhanceMenu` gives a `.odd-menu` popover the menu keyboard. `enhanceTabs` runs the ARIA tabs pattern on `.odd-tabs`. `createToaster` manages a live region of `.odd-toast` messages. The same module carries the small helpers proven on other stories: `enhanceSelectAll` on the Table story, and `avatarFallback` on the Avatar story.
+Patterns HTML has no element for, enhanced by `src/js/enhance.ts` on top of native markup. `enhanceMenu` gives a `.odd-menu` popover the menu keyboard. `enhanceTabs` runs the ARIA tabs pattern on `.odd-tabs`. `createToaster` manages a live region of `.odd-toast` messages. The same module carries the small helpers proven on other stories: `enhanceSelectAll` on the Table story, and `avatarFallback` on the Avatar fallback story.
 
 ## Sub-features
 
@@ -16,7 +16,7 @@ Patterns HTML has no element for, enhanced by `src/js/enhance.ts` on top of nati
 ## How to get to it (user POV)
 
 - In Storybook, open **Components → Interactive**, which has Menu, Tabs, and Toast.
-- Select-all is on **Components → Data Display → Table**, and the avatar fallback is on **Avatar**.
+- Select-all is on **Components → Data Display → Table**, and the avatar fallback is on **Avatar Fallback**.
 
 ## Driving it with ctl.ts
 
@@ -31,7 +31,7 @@ Preconditions:
 - **Toasts.** Run `bun $S goto components-interactive--toast "mode:light"` and click `[data-toast=saved]`, `[data-toast=undo]`, and `[data-toast=error]`. Three `.odd-toast` exist. Capture `interactive/toasts.png`. Run `bun $S hover '.odd-toast'` and wait 7 s (`wait 5000`, then `wait 2000`). All three remain. Then `bun $S hover '[data-toast=saved]'` and wait 7 s again. Only `Couldn’t sync` remains. On a fresh story, click `[data-toast=undo]`, then `.odd-toast .odd-button --text Undo`. Only `Card restored` remains. Click its `button[aria-label^="Dismiss"]`, and no toasts remain.
 - **Toast over a modal.** Click `button[commandfor="toast-settings"]`, wait 300, click `#toast-settings [data-toast=saved]`, and wait 600. `aria` shows `region "Notifications"` with `button "Dismiss: Deck saved"` inside the dialog's tree. Click that Dismiss button. The toast is gone, and `#toast-settings` is still open. Press Escape. `.odd-toaster`'s parent is `BODY`, and it is still `:popover-open`.
 - **Select-all.** Run `bun $S goto components-data-display--table`. The header checkbox is `indeterminate` (Ember Aggro starts checked). Click `[data-select-all]`. All four rows are checked, and the header is checked and not mixed. Uncheck `Select Tidecaller`. The header is mixed. Click the header twice. All rows are checked, then all are cleared.
-- **Avatar fallback.** Run `bun $S goto components-data-display--avatar`. `#broken-avatar` has text `JP`, `role="img"`, `aria-label="Jo Park"`, and no `<img>`.
+- **Avatar fallback.** Run `bun $S goto components-data-display--avatar-fallback`. `#broken-avatar` has text `JP`, `role="img"`, `aria-label="Jo Park"`, and no `<img>`.
 
 ## Gotchas
 
