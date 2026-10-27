@@ -96,8 +96,8 @@ Each commit ends with `bun run check`. The boxes under a commit name its extra c
 
 ### Commit 2. Type a mapped prop with no rule as never
 
-- [ ] Change `Values` in `src/react/part.ts` to the indexed access in Shape.
-- [ ] Check. `bun run check` passes. A fresh `tsc -p tests/fixtures/types/fail --noErrorTruncation` output equals `fail-before.txt`.
+- [x] Change `Values` in `src/react/part.ts` to the indexed access in Shape.
+- [x] Check. `bun run check` passes. A fresh `tsc -p tests/fixtures/types/fail --noErrorTruncation` output equals `fail-before.txt`.
 
 ### Commit 3. Add Badge and check it with ODD-BADGE-001 to 004
 

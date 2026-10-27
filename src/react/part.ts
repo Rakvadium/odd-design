@@ -10,7 +10,7 @@ type Own<N extends Name> = Lowered<N>[keyof Lowered<N>];
 
 export type Message<Code extends keyof typeof MESSAGES> = (typeof MESSAGES)[Code];
 
-export type Values<Rule, Attribute> = Extract<Rule, { kind: "enum"; attribute: Attribute }> extends { values: readonly (infer Value)[] } ? Value : never;
+export type Values<Rule, Attribute> = Extract<Rule, { kind: "enum"; attribute: Attribute; values: readonly string[] }>["values"][number];
 
 type DataProps<N extends Name, Rule> = {
   -readonly [Prop in keyof Lowered<N>]?: [Extract<Rule, { kind: "boolean-attribute"; attribute: Lowered<N>[Prop] }>] extends [never]
