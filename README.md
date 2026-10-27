@@ -189,6 +189,7 @@ The five palettes ported from uvs-decks-gg went through the same repair. Their i
 | `odd-estop` | `<button>` | A big round stop. `aria-pressed="true"` draws it latched; the page sets it and owns any shortcut. Never disable it. |
 | `odd-stepper` | `<div role="group">` with step buttons around `<input type="number">` | Needs `enhanceStepper`. `data-step` counts input steps. Hold repeats; `input` per step, one `change` per press. Disable with `disabled` on the input. |
 | `odd-range-field` | `<div>` holding an `odd-slider`, an `odd-input type="number"`, and an optional unit | `enhanceRangeField` copies min, max, and step from the slider and keeps both in sync. Listen to the slider. A bad number shows an `odd-error` on commit. |
+| `odd-log`, `odd-log-line` | `<div role="log" tabindex="0">` of line `<div>`s, each with an optional `<time>` | Mono, scrolls past 20rem. `data-tone` on a line. Append with `appendLogLine`; `enhanceLog` keeps the newest line in view unless the reader scrolled up. |
 
 ## Behaviors
 
@@ -197,13 +198,14 @@ Menus, tabs, and toasts have no HTML element yet, so `odd-design/enhance` (`src/
 ```js
 import { enhance, createToaster } from "odd-design/enhance";
 
-enhance();                   // menus, tab sets, steppers, range fields, select-all tables, and the fallbacks below, under document
+enhance();                   // menus, tab sets, steppers, range fields, logs, select-all tables, and the fallbacks below, under document
 const toaster = createToaster();
 toaster.show({ title: "Deck saved", tone: "success" });
 ```
 
-- `enhanceMenu(menu)`, `enhanceTabs(root)`, `enhanceSelectAll(table)`, `enhanceStepper(root)`, `enhanceRangeField(root, { message })`: one widget each. Call them for elements added after `enhance()`.
+- `enhanceMenu(menu)`, `enhanceTabs(root)`, `enhanceSelectAll(table)`, `enhanceStepper(root)`, `enhanceRangeField(root, { message })`, `enhanceLog(log)`: one widget each. Call them for elements added after `enhance()`.
 - `createToaster({ label, max, parent })`: `show({ title, description, tone, duration, action })` returns `{ dismiss }`.
+- `appendLogLine(log, text, { tone, time, max })`: adds a line as text, with `time` as a `Date` or a string, and drops the oldest lines past `max` (500).
 - `avatarFallback()`: an `.odd-avatar[data-initials]` whose image fails to load shows its initials.
 - `interestForFallback()` and `closedByFallback()`: tooltips and hover cards, and `closedby="any"`, in browsers without them. They do nothing where the browser has the feature.
 - `roving(container, options)`: the shared arrow-key, Home/End, and typeahead helper the widgets use.

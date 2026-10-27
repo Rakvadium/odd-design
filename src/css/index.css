@@ -51,3 +51,4 @@
 @import "./components/estop.css" layer(components);
 @import "./components/stepper.css" layer(components);
 @import "./components/range-field.css" layer(components);
+@import "./components/log.css" layer(components);
