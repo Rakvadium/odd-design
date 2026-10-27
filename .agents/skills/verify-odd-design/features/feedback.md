@@ -26,6 +26,12 @@ Preconditions:
 - **Reduced motion.** Run `bun $S emulate prefers-reduced-motion=reduce`, `bun $S goto components-feedback--skeleton`, and `bun $S eval 'getComputedStyle(document.querySelector(".odd-skeleton")).animationDuration'`, which returns `"0s"`. On `components-feedback--progress`, the same read on `#sync` returns `"0s"`. Clear with `bun $S emulate`. Without emulation the skeleton reads `"1.6s"`.
 - **Skeleton semantics.** Run `bun $S goto components-feedback--skeleton` and `bun $S aria feedback/skeleton.aria.txt`. The tree has the text `Loading decks…` and nothing from the skeleton cards.
 
+## React Alert
+
+Build the composed Storybook and serve it, as in the React Field section of `forms.md`. Open `http://127.0.0.1:6106/?path=/story/react_components-feedback--alert`. The preview is the Alert story built from `Alert` and `AlertTitle`. It shows the neutral alert and the four tones, the same as `components-feedback--alert`. Progress, Skeleton, and Log have no React wrappers, so they appear only in the HTML section.
+
+Run the pair sweep with `bunx playwright test e2e/usage.spec.ts --project firefox`. The Alert pair matches the `aria` literal in `stories/mirrored/Alert.stories.ts`, and the two screenshots are byte-identical.
+
 ## Gotchas
 
 - `mode:system` renders dark in the headless browser. Pass `mode:light` or `mode:dark` explicitly when the proof depends on the mode.

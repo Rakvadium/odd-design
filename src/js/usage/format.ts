@@ -27,6 +27,11 @@ export const USAGE_CODES = [
   "ODD-BADGE-002",
   "ODD-BADGE-003",
   "ODD-BADGE-004",
+  "ODD-ALERT-001",
+  "ODD-ALERT-002",
+  "ODD-ALERT-003",
+  "ODD-ALERT-004",
+  "ODD-ALERT-005",
   "ODD-STATIC-001",
   "ODD-STATIC-002",
   "ODD-STATIC-003",
@@ -56,11 +61,14 @@ function and<const T extends readonly [string, ...string[]]>(items: T): Join<T, 
   return items.join(" and ") as Join<T, " and ">;
 }
 
+type EnumAllowed<V extends readonly string[], O extends readonly string[]> =
+  `${Join<V, ", ">}. ${Join<O, " and ">} ${O extends readonly [string] ? "means" : "mean"} remove the attribute`;
+
 function enumAllowed<const V extends readonly [string, ...string[]], const O extends readonly [string, ...string[]]>(
   values: V,
   omit: O,
-): `${Join<V, ", ">}. ${Join<O, " and ">} mean remove the attribute` {
-  return `${comma(values)}. ${and(omit)} mean remove the attribute`;
+): EnumAllowed<V, O> {
+  return `${comma(values)}. ${and(omit)} ${omit.length === 1 ? "means" : "mean"} remove the attribute` as EnumAllowed<V, O>;
 }
 
 const variantRule = USAGE.button[1];
@@ -70,6 +78,9 @@ const sizeAllowed = enumAllowed(sizeRule.values, sizeRule.omit);
 const buttonAttributes = comma([WRAPPERS.Button.props.variant, WRAPPERS.Button.props.size, WRAPPERS.Button.props.iconOnly]);
 const toneRule = USAGE.badge[1];
 const badgeAttributes = comma([WRAPPERS.Badge.props.tone, WRAPPERS.Badge.props.solid]);
+const alertToneRule = USAGE.alert[1];
+const alertToneAllowed = enumAllowed(alertToneRule.values, alertToneRule.omit);
+const alertAttributes = WRAPPERS.Alert.props.tone;
 const appearanceAxes = comma(APPEARANCE_AXES);
 const headlessAllowlist = comma(HEADLESS_ALLOWLIST);
 
@@ -275,6 +286,41 @@ export const MESSAGES = {
     "the badge attributes, any app data attribute, the appearance axes, and the headless allowlist",
     `remove the attribute, or correct its name. Badge attributes: ${badgeAttributes}. Appearance axes: ${appearanceAxes}. Headless allowlist: ${headlessAllowlist}.`,
     "docs/usage/badge.md#odd-badge-004",
+  ),
+  "ODD-ALERT-001": text(
+    "ODD-ALERT-001",
+    "this alert class is on the wrong element.",
+    "odd-alert on div, odd-alert-title on p",
+    "move the class onto its element.",
+    "docs/usage/alert.md#odd-alert-001",
+  ),
+  "ODD-ALERT-002": text(
+    alertToneRule.code,
+    "data-tone has a value this alert does not take.",
+    alertToneAllowed,
+    "set one of the allowed tones, or remove data-tone for a neutral alert.",
+    "docs/usage/alert.md#odd-alert-002",
+  ),
+  "ODD-ALERT-003": text(
+    "ODD-ALERT-003",
+    "role and aria-live are forbidden on odd-alert. Screen readers announce a live region that was already on the page, not one that arrives with the alert.",
+    "none",
+    "remove role and aria-live. For a message that appears later, put role=status or role=alert on an empty container that is already on the page, and insert the alert into it.",
+    "docs/usage/alert.md#odd-alert-003",
+  ),
+  "ODD-ALERT-004": text(
+    "ODD-ALERT-004",
+    "this alert does not take that data attribute.",
+    "the alert attribute, any app data attribute, the appearance axes, and the headless allowlist",
+    `remove the attribute, or correct its name. Alert attributes: ${alertAttributes}. Appearance axes: ${appearanceAxes}. Headless allowlist: ${headlessAllowlist}.`,
+    "docs/usage/alert.md#odd-alert-004",
+  ),
+  "ODD-ALERT-005": text(
+    "ODD-ALERT-005",
+    "odd-alert-title does not take that data attribute.",
+    "any app data attribute, the appearance axes, and the headless allowlist",
+    `remove the attribute. data-tone belongs on the alert. Appearance axes: ${appearanceAxes}. Headless allowlist: ${headlessAllowlist}.`,
+    "docs/usage/alert.md#odd-alert-005",
   ),
   "ODD-STATIC-001": text(
     "ODD-STATIC-001",

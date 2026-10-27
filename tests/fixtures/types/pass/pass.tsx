@@ -1,4 +1,5 @@
 import { useRef, type MouseEvent } from "react";
+import { Alert, AlertTitle, type AlertTone } from "../../../../src/react/alert.tsx";
 import { Badge, type BadgeTone } from "../../../../src/react/badge.tsx";
 import { Button } from "../../../../src/react/button.tsx";
 import { Choice, Segmented, Switch } from "../../../../src/react/choice.tsx";
@@ -97,6 +98,20 @@ export function Choices({ on, toggle }: { on: boolean; toggle: () => void }) {
 }
 
 const statusTone: Record<"draft" | "legal" | "banned", BadgeTone> = { draft: "neutral", legal: "success", banned: "danger" };
+
+const noticeTone: Record<"saved" | "offline", AlertTone> = { saved: "success", offline: "danger" };
+
+export function Notice({ kind }: { kind: keyof typeof noticeTone }) {
+  return (
+    <Alert tone={noticeTone[kind]}>
+      <svg aria-hidden="true" />
+      <div>
+        <AlertTitle>{kind}</AlertTitle>
+        <p>Kept on this device.</p>
+      </div>
+    </Alert>
+  );
+}
 
 export function StatusBadge({ status, urgent }: { status: keyof typeof statusTone; urgent: boolean }) {
   return (

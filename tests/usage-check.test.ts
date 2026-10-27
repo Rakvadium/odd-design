@@ -32,6 +32,11 @@ const RUNTIME_CODES = [
   "ODD-BADGE-002",
   "ODD-BADGE-003",
   "ODD-BADGE-004",
+  "ODD-ALERT-001",
+  "ODD-ALERT-002",
+  "ODD-ALERT-003",
+  "ODD-ALERT-004",
+  "ODD-ALERT-005",
   "ODD-CLASS-001",
 ];
 
@@ -66,6 +71,12 @@ test("every runtime code has a bad fixture that names it and a good fixture that
   const noisy = byKind("good").filter((code) => expectedCodes(fixture(`${code.toLowerCase()}.good.html`)).length > 0);
   expect(unnamed).toEqual([]);
   expect(noisy).toEqual([]);
+});
+
+test("data-tone neutral on an alert says to remove the attribute", () => {
+  expect(diagnose(`<div class="odd-alert" data-tone="neutral">Saved</div>`).map((diagnostic) => diagnostic.message)).toEqual([
+    "ODD-ALERT-002: data-tone has a value this alert does not take. Allowed values: info, success, warning, danger. neutral means remove the attribute. Fix: set one of the allowed tones, or remove data-tone for a neutral alert. docs/usage/alert.md#odd-alert-002 Found neutral. Did you mean to remove data-tone?",
+  ]);
 });
 
 test("data-variant outline says to remove the attribute", () => {

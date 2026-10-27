@@ -1,8 +1,8 @@
 # Use the React components
 
-`odd-design/react` exports `Button`, the Field parts, the Choice parts, and `Badge`. Each renders an `odd-` element from typed props. A contract mistake in those props is a TypeScript error that starts with its code, such as `ODD-BUTTON-007`. `Button` lives in `src/react/button.tsx`, the Field parts in `src/react/field.tsx`, the Choice parts in `src/react/choice.tsx`, and `Badge` in `src/react/badge.tsx`. Codes and fixes are in [Button usage rules](button.md), [Field usage rules](field.md), [Choice usage rules](choice.md), and [Badge usage rules](badge.md).
+`odd-design/react` exports `Button`, the Field parts, the Choice parts, `Badge`, and the Alert parts. Each renders an `odd-` element from typed props. A contract mistake in those props is a TypeScript error that starts with its code, such as `ODD-BUTTON-007`. `Button` lives in `src/react/button.tsx`, the Field parts in `src/react/field.tsx`, the Choice parts in `src/react/choice.tsx`, `Badge` in `src/react/badge.tsx`, and the Alert parts in `src/react/alert.tsx`. Codes and fixes are in [Button usage rules](button.md), [Field usage rules](field.md), [Choice usage rules](choice.md), [Badge usage rules](badge.md), and [Alert usage rules](alert.md).
 
-`button.tsx` starts with `"use client"`, so a React Server Components app can render `Button` from a server component. The Field parts, the Choice parts, and `Badge` hold no state and no handlers, so `field.tsx`, `choice.tsx`, and `badge.tsx` have no directive.
+`button.tsx` starts with `"use client"`, so a React Server Components app can render `Button` from a server component. The Field parts, the Choice parts, `Badge`, and the Alert parts hold no state and no handlers, so `field.tsx`, `choice.tsx`, `badge.tsx`, and `alert.tsx` have no directive.
 
 ## Render a button or a link
 
@@ -155,6 +155,40 @@ const toneOf: Record<Status, BadgeTone> = { draft: "neutral", legal: "success", 
 
 Use `tone` and `solid`. Passing `data-tone` or `data-solid` yourself is a type error, and `Badge` drops the raw attribute. A `solid` that is not a boolean, such as `solid="false"`, is a type error too. Without types, it renders `data-solid="false"`, which is solid, and ESLint and the runtime checker report `ODD-BADGE-003`. `BadgeTone` is the type of `tone`, for a map from your data to a tone.
 
+## Show a message with an alert
+
+```tsx
+import { Alert, AlertTitle, type AlertTone } from "odd-design/react";
+
+<Alert tone="warning">
+  <WarningIcon aria-hidden="true" />
+  <div>
+    <AlertTitle>Rotation is coming</AlertTitle>
+    <p>Three of your decks lose legality on May 1.</p>
+  </div>
+</Alert>;
+
+const toneOf: Record<SaveState, AlertTone> = { saved: "success", offline: "danger" };
+<div role="status">
+  {state && (
+    <Alert tone={toneOf[state]}>
+      <div>
+        <AlertTitle>{titles[state]}</AlertTitle>
+      </div>
+    </Alert>
+  )}
+</div>;
+```
+
+`Alert` renders a `div` with the class `odd-alert`. `AlertTitle` renders a `p` with the class `odd-alert-title`. The icon and the body stay yours. Put the icon `svg` first and one body `div` after it, with the title and the text inside, the same way the HTML story does. Each other direct child becomes a column beside the icon, so a title followed by bare text puts the text beside the title. No checker reports that.
+
+| Prop | What the element gets |
+| --- | --- |
+| `tone` on `Alert` | `data-tone`. It takes `info`, `success`, `warning`, or `danger`. Leave it out for the neutral tint. |
+| Any other prop | The attribute with the same name. |
+
+`AlertTone` is the type of `tone`. It has no `neutral` and no `primary`. Leaving `tone` out is the neutral tint, and `tone="neutral"` is a type error. Passing `data-tone` yourself is a type error, and `Alert` drops the raw attribute. `role` or `aria-live` on `Alert` is a type error (`ODD-ALERT-003`). A static alert needs no role. For a message that appears later, keep an empty `role="status"` element on the page, or `role="alert"` for an error, and render the alert inside it, as in the second example. A system `data-` attribute on `AlertTitle`, such as `data-tone`, is a type error (`ODD-ALERT-005`). A computed `tone`, such as `<Alert tone={toneOf[state]}>`, gives the `ODD-STATIC-001` warning, the same as a computed `tone` on `Badge`.
+
 ## Read a type error
 
 The type error names the code and the fix. The table lists what each mistake prints.
@@ -170,6 +204,9 @@ The type error names the code and the fix. The table lists what each mistake pri
 | `aria-disabled` on `Input`, `Textarea`, or `Select` | `ODD-FIELD-003` |
 | `aria-disabled` on `Choice`, `Switch`, or `Segmented` | `ODD-CHOICE-003` |
 | A system `data-` attribute the badge does not take, such as `data-variant` | `ODD-BADGE-004` |
+| `role` or `aria-live` on `Alert` | `ODD-ALERT-003` |
+| A system `data-` attribute the alert does not take, such as `data-variant` | `ODD-ALERT-004` |
+| A system `data-` attribute on `AlertTitle`, such as `data-tone` | `ODD-ALERT-005` |
 | `Switch` without `type` or `role` | TypeScript's missing property error |
 | A `Switch` `type` other than `checkbox`, or a `role` other than `switch` | The allowed value |
 | `Label` without `htmlFor`, or `Hint` or `FieldError` without `id` | TypeScript's missing property error |
@@ -177,7 +214,7 @@ The type error names the code and the fix. The table lists what each mistake pri
 
 TypeScript shortens a long type in an error. Set `noErrorTruncation` in `tsconfig.json` to see the whole message.
 
-Some rules are not type errors. `Button` picks the element from `href`, so you cannot write an anchor without `href` (`ODD-BUTTON-009`) or a button with `href` (`ODD-BUTTON-010`). Those two codes apply to a raw `a` or `button` with the `odd-button` class. Each Field and Choice part and `Badge` picks its own element too, so `ODD-FIELD-001`, `ODD-CHOICE-001`, and `ODD-BADGE-001` apply only to raw markup. Visible text in an icon-only button (`ODD-BUTTON-014`) and a misspelled `data-` name are not type errors either. The ESLint plugin and the [runtime checker](runtime.md) report each of these.
+Some rules are not type errors. `Button` picks the element from `href`, so you cannot write an anchor without `href` (`ODD-BUTTON-009`) or a button with `href` (`ODD-BUTTON-010`). Those two codes apply to a raw `a` or `button` with the `odd-button` class. Each Field and Choice part, `Badge`, and each Alert part picks its own element too, so `ODD-FIELD-001`, `ODD-CHOICE-001`, `ODD-BADGE-001`, and `ODD-ALERT-001` apply only to raw markup. Visible text in an icon-only button (`ODD-BUTTON-014`) and a misspelled `data-` name are not type errors either. The ESLint plugin and the [runtime checker](runtime.md) report each of these.
 
 ## Open a dialog or a popover with a command
 

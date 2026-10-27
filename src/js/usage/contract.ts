@@ -70,6 +70,17 @@ export const USAGE = {
     { kind: "boolean-attribute", code: "ODD-BADGE-003", attribute: "data-solid", values: ["", "true"] },
     { kind: "system-data", code: "ODD-BADGE-004" },
   ] as const satisfies readonly UsageRule[],
+  alert: [
+    { kind: "element", code: "ODD-ALERT-001", className: "odd-alert", elements: ["div"] },
+    { kind: "enum", code: "ODD-ALERT-002", attribute: "data-tone", values: ["info", "success", "warning", "danger"], omit: ["neutral"] },
+    { kind: "forbidden-attribute", code: "ODD-ALERT-003", attribute: "role" },
+    { kind: "forbidden-attribute", code: "ODD-ALERT-003", attribute: "aria-live" },
+    { kind: "system-data", code: "ODD-ALERT-004" },
+  ] as const satisfies readonly UsageRule[],
+  alertTitle: [
+    { kind: "element", code: "ODD-ALERT-001", className: "odd-alert-title", elements: ["p"] },
+    { kind: "system-data", code: "ODD-ALERT-005" },
+  ] as const satisfies readonly UsageRule[],
   shared: [
     { kind: "unknown-class", code: "ODD-CLASS-001" },
     { kind: "computed-value", code: "ODD-STATIC-001" },
@@ -104,6 +115,8 @@ export const WRAPPERS = {
   Switch: { source: "odd-design/react", className: "odd-switch", props: {}, element: "input" },
   Segmented: { source: "odd-design/react", className: "odd-segmented", props: {}, element: "fieldset" },
   Badge: { source: "odd-design/react", className: "odd-badge", props: { tone: "data-tone", solid: "data-solid" }, element: "span" },
+  Alert: { source: "odd-design/react", className: "odd-alert", props: { tone: "data-tone" }, element: "div" },
+  AlertTitle: { source: "odd-design/react", className: "odd-alert-title", props: {}, element: "p" },
 } as const satisfies Record<string, Wrapper>;
 
 export const CLASS_REGISTRY = [
@@ -220,3 +233,5 @@ export type FieldErrorRule = (typeof USAGE.fieldError)[number];
 export type ChoiceRule = (typeof USAGE.choice)[number];
 export type SwitchRule = (typeof USAGE.switch)[number];
 export type BadgeRule = (typeof USAGE.badge)[number];
+export type AlertRule = (typeof USAGE.alert)[number];
+export type AlertTitleRule = (typeof USAGE.alertTitle)[number];
