@@ -4,6 +4,7 @@ import { act, type ReactElement } from "react";
 import { createRoot, type Root } from "react-dom/client";
 import { renderToStaticMarkup } from "react-dom/server";
 import { checkRoot } from "../src/js/usage/dom.ts";
+import { Alert, AlertTitle } from "../src/react/alert.tsx";
 import { Badge } from "../src/react/badge.tsx";
 import { Button } from "../src/react/button.tsx";
 import { Choice, Segmented, Switch } from "../src/react/choice.tsx";
@@ -115,6 +116,21 @@ const markup: readonly [string, ReactElement, string][] = [
     </>,
     '<span class="odd-badge">Draft</span><span class="odd-badge wide" data-tone="danger" data-solid="">Banned</span><span data-testid="status" class="odd-badge" data-tone="success">Legal</span>',
   ],
+  [
+    "alert tone and title",
+    <>
+      <Alert>
+        <AlertTitle>Drafts are private</AlertTitle>
+      </Alert>
+      <Alert tone="warning" className="wide">
+        Rotation is coming
+      </Alert>
+      <Alert tone="danger" data-testid="notice">
+        <AlertTitle>Could not save</AlertTitle>
+      </Alert>
+    </>,
+    '<div class="odd-alert"><p class="odd-alert-title">Drafts are private</p></div><div class="odd-alert wide" data-tone="warning">Rotation is coming</div><div data-testid="notice" class="odd-alert" data-tone="danger"><p class="odd-alert-title">Could not save</p></div>',
+  ],
 ];
 
 describe("React markup", () => {
@@ -222,6 +238,11 @@ const failures: Record<string, { codes: string[]; text: string[] }> = {
   "switch-type": { codes: [], text: ['"checkbox"', '"switch"'] },
   "badge-tone": { codes: [], text: ['"neutral"', '"primary"', '"success"', '"warning"', '"danger"', '"info"'] },
   "badge-data-variant": { codes: ["ODD-BADGE-004"], text: [] },
+  "alert-tone": { codes: [], text: ['"info"', '"success"', '"warning"', '"danger"'] },
+  "alert-role": { codes: ["ODD-ALERT-003"], text: [] },
+  "alert-aria-live": { codes: ["ODD-ALERT-003"], text: [] },
+  "alert-data-variant": { codes: ["ODD-ALERT-004"], text: [] },
+  "alert-title-data-tone": { codes: ["ODD-ALERT-005"], text: [] },
 };
 
 describe("React types", () => {

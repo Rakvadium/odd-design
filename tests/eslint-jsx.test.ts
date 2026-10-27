@@ -22,6 +22,14 @@ function expectedCodes(source: string, pattern: RegExp): string[] {
 }
 
 const places: Record<string, readonly (readonly [string, number, number, string])[]> = {
+  "alert.tsx": [
+    ["ODD-ALERT-002", 8, 12, 'tone="neutral"'],
+    ["ODD-ALERT-003", 9, 12, 'role="status"'],
+    ["ODD-ALERT-003", 10, 12, 'aria-live="polite"'],
+    ["ODD-ALERT-004", 11, 12, "data-variant"],
+    ["ODD-ALERT-005", 12, 17, "data-tone"],
+    ["ODD-ALERT-001", 13, 11, "className"],
+  ],
   "badge.tsx": [
     ["ODD-BADGE-002", 7, 12, 'tone="sucess"'],
     ["ODD-BADGE-004", 8, 12, "data-variant"],

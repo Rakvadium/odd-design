@@ -127,6 +127,29 @@ const places: Record<string, readonly (readonly [string, number, number, string]
     ["ODD-BADGE-004", 3, 25, "data-size"],
     ["ODD-BADGE-004", 4, 25, "data-tnoe"],
   ],
+  "odd-alert-001.bad.html": [
+    ["ODD-ALERT-001", 2, 7, "class"],
+    ["ODD-ALERT-001", 3, 6, "class"],
+  ],
+  "odd-alert-002.bad.html": [
+    ["ODD-ALERT-002", 2, 24, "data-tone"],
+    ["ODD-ALERT-002", 3, 24, "data-tone"],
+    ["ODD-ALERT-002", 4, 24, "data-tone"],
+  ],
+  "odd-alert-003.bad.html": [
+    ["ODD-ALERT-003", 2, 24, "role"],
+    ["ODD-ALERT-003", 3, 24, "role"],
+    ["ODD-ALERT-003", 4, 24, "aria-live"],
+  ],
+  "odd-alert-004.bad.html": [
+    ["ODD-ALERT-004", 2, 24, "data-variant"],
+    ["ODD-ALERT-004", 3, 24, "data-size"],
+    ["ODD-ALERT-004", 4, 24, "data-tnoe"],
+  ],
+  "odd-alert-005.bad.html": [
+    ["ODD-ALERT-005", 2, 28, "data-tone"],
+    ["ODD-ALERT-005", 3, 28, "data-variant"],
+  ],
   "odd-class-001.bad.html": [
     ["ODD-CLASS-001", 2, 6, "class"],
     ["ODD-CLASS-001", 3, 4, "class"],
