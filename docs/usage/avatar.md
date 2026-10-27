@@ -20,7 +20,7 @@ An avatar is named in one of three ways. An image avatar's `img` has `alt`. An i
 
 Fails when `odd-avatar` is not on a `span`, or `odd-avatar-group` is not on a `div`.
 
-An avatar sits inline, beside a name in a sentence, a table cell, or a button, where a `div` is not allowed. The group holds the avatars and is a block of its own.
+An avatar sits inline, beside a name in a sentence or inside a button, where a `div` is not allowed. The group holds the avatars and is a block of its own.
 
 | Class | Element |
 | --- | --- |
@@ -47,7 +47,7 @@ Set `role="img"` on an initials avatar and leave it off an image avatar. To hide
 
 ## ODD-AVATAR-004
 
-Fails when an `odd-avatar` with `role="img"`, or an `odd-avatar-group` with `role="group"`, has no `aria-label` or `aria-labelledby`.
+Fails when an `odd-avatar` with `role="img"`, or an `odd-avatar-group` with `role="group"`, has no non-empty `aria-label` or `aria-labelledby`. A blank name such as `aria-label=" "` fails too.
 
 An image role with no name is read as an unnamed image, and the initials inside it are not read. A group with no name is read as a group with no hint of who is in it.
 
