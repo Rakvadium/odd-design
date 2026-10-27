@@ -163,10 +163,6 @@ export const CLASS_REGISTRY = [
   "odd-visually-hidden",
 ] as const;
 
-export const ATTRIBUTES = {
-  button: ["data-variant", "data-size", "data-icon-only"],
-} as const;
-
 export const VOCABULARY = {
   alert: ["data-tone"],
   avatar: ["data-size"],

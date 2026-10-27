@@ -2,7 +2,7 @@ import { expect, test } from "bun:test";
 import { readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
-import { ATTRIBUTES, CLASS_REGISTRY, USAGE, VOCABULARY, type UsageRule } from "../src/js/usage/contract.ts";
+import { CLASS_REGISTRY, USAGE, VOCABULARY, WRAPPERS, type UsageRule, type Wrapper } from "../src/js/usage/contract.ts";
 import { MESSAGES, USAGE_CODES, message, type UsageCode } from "../src/js/usage/format.ts";
 import { read } from "./css.ts";
 
@@ -25,6 +25,18 @@ function cssFiles(dir: string): string[] {
     if (entry.isDirectory()) return cssFiles(full);
     return entry.name.endsWith(".css") ? [full] : [];
   });
+}
+
+const wrappers: readonly Wrapper[] = Object.values(WRAPPERS);
+const mapping = wrappers.filter((wrapper) => Object.keys(wrapper.props).length > 0);
+
+function rulesOf(className: string): readonly UsageRule[] {
+  const rules: readonly (readonly UsageRule[])[] = Object.values(USAGE);
+  return rules.find((group) => group.some((rule) => rule.kind === "element" && rule.className === className)) ?? [];
+}
+
+function stylesheet(wrapper: Wrapper): string {
+  return wrapper.className.replace(/^odd-/, "");
 }
 
 function enumRule(attribute: string) {
@@ -114,9 +126,20 @@ test("vocabulary matches the data attributes in each component stylesheet", () =
     const found = dataAttributes(read(`components/${component}.css`)).join(" ");
     expect([component, listed]).toEqual([component, found]);
   }
-  const buttonVocabulary: readonly string[] = VOCABULARY.button;
-  const missingButton = [...ATTRIBUTES.button].filter((name) => !buttonVocabulary.includes(name));
-  expect(missingButton).toEqual([]);
+  const vocabulary: Record<string, readonly string[]> = VOCABULARY;
+  const unstyled = mapping.flatMap((wrapper) =>
+    Object.values(wrapper.props).filter((attribute) => !(vocabulary[stylesheet(wrapper)] ?? []).includes(attribute)),
+  );
+  expect(unstyled).toEqual([]);
+});
+
+test("a system-data message names every attribute its class's wrapper maps", () => {
+  const unnamed = mapping.flatMap((wrapper) =>
+    rulesOf(wrapper.className).flatMap((rule) =>
+      rule.kind === "system-data" ? Object.values(wrapper.props).filter((attribute) => !MESSAGES[rule.code].includes(attribute)) : [],
+    ),
+  );
+  expect(unnamed).toEqual([]);
 });
 
 test("a found value loses its double quotes before it enters the message", () => {

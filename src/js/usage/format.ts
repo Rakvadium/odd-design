@@ -1,4 +1,4 @@
-import { APPEARANCE_AXES, ATTRIBUTES, HEADLESS_ALLOWLIST, USAGE } from "./contract.ts";
+import { APPEARANCE_AXES, HEADLESS_ALLOWLIST, USAGE, WRAPPERS } from "./contract.ts";
 
 export const USAGE_CODES = [
   "ODD-CLASS-001",
@@ -63,7 +63,7 @@ const variantRule = USAGE.button[1];
 const sizeRule = USAGE.button[2];
 const variantAllowed = enumAllowed(variantRule.values, variantRule.omit);
 const sizeAllowed = enumAllowed(sizeRule.values, sizeRule.omit);
-const buttonAttributes = comma(ATTRIBUTES.button);
+const buttonAttributes = comma([WRAPPERS.Button.props.variant, WRAPPERS.Button.props.size, WRAPPERS.Button.props.iconOnly]);
 const appearanceAxes = comma(APPEARANCE_AXES);
 const headlessAllowlist = comma(HEADLESS_ALLOWLIST);
 

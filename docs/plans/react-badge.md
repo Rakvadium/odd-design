@@ -90,9 +90,9 @@ Each commit ends with `bun run check`. The boxes under a commit name its extra c
 
 ### Commit 1. Derive own data attributes from WRAPPERS
 
-- [ ] Delete `ATTRIBUTES` from `contract.ts`. `check.ts` reads a class's own attributes from the `WRAPPERS` row with the same `className`. `format.ts` builds Button's 015 attribute list from `WRAPPERS.Button.props`.
-- [ ] In `usage-contract.test.ts`, replace the `ATTRIBUTES.button` subset line with "every wrapper-mapped attribute is in its stylesheet's vocabulary". Add "a system-data message names every attribute its class's wrapper maps".
-- [ ] Check. `bun run check` passes with every Button fixture unchanged.
+- [x] Delete `ATTRIBUTES` from `contract.ts`. `check.ts` reads a class's own attributes from the `WRAPPERS` row with the same `className`. `format.ts` builds Button's 015 attribute list from `WRAPPERS.Button.props`.
+- [x] In `usage-contract.test.ts`, replace the `ATTRIBUTES.button` subset line with "every wrapper-mapped attribute is in its stylesheet's vocabulary". Add "a system-data message names every attribute its class's wrapper maps".
+- [x] Check. `bun run check` passes with every Button fixture unchanged.
 
 ### Commit 2. Type a mapped prop with no rule as never
 
