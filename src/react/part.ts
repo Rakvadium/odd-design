@@ -1,39 +1,73 @@
 import { createElement, type ComponentProps, type ReactElement } from "react";
-import type { WRAPPERS } from "../js/usage/contract.ts";
+import { WRAPPERS, type APPEARANCE_AXES, type HEADLESS_ALLOWLIST, type VOCABULARY, type Wrapper } from "../js/usage/contract.ts";
 import type { MESSAGES } from "../js/usage/format.ts";
 
-type Message<Code extends keyof typeof MESSAGES> = (typeof MESSAGES)[Code];
+type Name = keyof typeof WRAPPERS;
 
-export type Forbidden<Rule> = {
-  [R in Rule as R extends { kind: "forbidden-attribute"; attribute: infer Name extends string } ? Name : never]?: R extends {
+type Lowered<N extends Name> = (typeof WRAPPERS)[N]["props"];
+
+type Own<N extends Name> = Lowered<N>[keyof Lowered<N>];
+
+export type Message<Code extends keyof typeof MESSAGES> = (typeof MESSAGES)[Code];
+
+export type Values<Rule, Attribute> = Extract<Rule, { kind: "enum"; attribute: Attribute }> extends { values: readonly (infer Value)[] } ? Value : never;
+
+type DataProps<N extends Name, Rule> = {
+  -readonly [Prop in keyof Lowered<N>]?: [Extract<Rule, { kind: "boolean-attribute"; attribute: Lowered<N>[Prop] }>] extends [never]
+    ? Values<Rule, Lowered<N>[Prop]>
+    : boolean;
+};
+
+type RawData<N extends Name> = { [Attribute in Own<N> & string]?: never };
+
+type SystemData = Exclude<(typeof VOCABULARY)[keyof typeof VOCABULARY][number], (typeof HEADLESS_ALLOWLIST)[number] | (typeof APPEARANCE_AXES)[number]>;
+
+type ForeignData<N extends Name, Rule> = [Extract<Rule, { kind: "system-data" }>] extends [never]
+  ? {}
+  : Extract<Rule, { kind: "system-data" }> extends { code: infer Code extends keyof typeof MESSAGES }
+    ? { [Attribute in Exclude<SystemData, Own<N>>]?: Message<Code> }
+    : never;
+
+type Forbidden<Rule> = {
+  [R in Rule as R extends { kind: "forbidden-attribute"; attribute: infer A extends string } ? A : never]?: R extends {
     code: infer Code extends keyof typeof MESSAGES;
   }
     ? Message<Code>
     : never;
 };
 
-export type Pinned<Rule> = {
-  [R in Rule as R extends { kind: "required-attribute"; attribute: infer Name extends string } ? Name : never]: R extends {
-    attribute: infer Name extends string;
+type Pinned<N extends Name, Rule> = {
+  [R in Rule as R extends { kind: "required-attribute"; element: (typeof WRAPPERS)[N]["element"]; attribute: infer A extends string } ? A : never]: R extends {
+    attribute: infer A extends string;
   }
-    ? Extract<Rule, { kind: "enum"; attribute: Name }> extends { values: readonly (infer Value)[] }
-      ? Value
-      : never
+    ? Values<Rule, A>
     : never;
 };
 
-type FixedTagWrapper<Name extends keyof typeof WRAPPERS> = (typeof WRAPPERS)[Name]["element"] extends string ? Name : never;
+export type Contract<N extends Name, Rule> = DataProps<N, Rule> & RawData<N> & ForeignData<N, Rule> & Forbidden<Rule> & Pinned<N, Rule>;
 
-export type Part = { [Name in keyof typeof WRAPPERS]: FixedTagWrapper<Name> }[keyof typeof WRAPPERS];
+type Part = { [N in Name]: (typeof WRAPPERS)[N]["element"] extends string ? N : never }[Name];
 
-type Tag<Name extends Part> = (typeof WRAPPERS)[Name]["element"];
+type Tag<N extends Part> = (typeof WRAPPERS)[N]["element"];
 
-export type Native<Name extends Part, Replaced extends PropertyKey = never> = Omit<ComponentProps<Tag<Name>>, Replaced>;
+export type Native<N extends Part, Replaced extends PropertyKey = never> = Omit<ComponentProps<Tag<N>>, Replaced>;
 
-export function part<Name extends Part>(name: Name, tag: Tag<Name>, base: (typeof WRAPPERS)[Name]["className"]) {
+export function lower(name: Name, props: Record<string, unknown>): Record<string, unknown> {
+  const wrapper: Wrapper = WRAPPERS[name];
+  const { className, ...attributes } = props;
+  const data: Record<string, unknown> = {};
+  for (const [prop, attribute] of Object.entries(wrapper.props)) {
+    const value = attributes[prop];
+    data[attribute] = value === true ? "" : value === false ? undefined : value;
+    delete attributes[prop];
+  }
+  return { ...attributes, className: className ? `${wrapper.className} ${className}` : wrapper.className, ...data };
+}
+
+export function part<N extends Part>(name: N) {
+  const tag: string = WRAPPERS[name].element;
   function render(props: { className?: string | undefined }): ReactElement {
-    const { className, ...attributes } = props;
-    return createElement(tag, { ...attributes, className: className ? `${base} ${className}` : base });
+    return createElement(tag, lower(name, props));
   }
   return Object.assign(render, { displayName: name });
 }

@@ -1,6 +1,7 @@
 import { copyFileSync, mkdtempSync, mkdirSync, readdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { basename, dirname, join } from "node:path";
+import { WRAPPERS } from "../src/js/usage/contract.ts";
 
 const root = join(import.meta.dir, "..");
 const fixtures = join(root, "tests/fixtures/consumer");
@@ -21,15 +22,11 @@ const HOOK_TESTS = [
   "afterEach fails a React test that never calls flush",
 ];
 
+const REACT_EXPORTS = Object.keys(WRAPPERS).sort().join();
+
 const REQUIRED = [
   "dist/react/index.js",
   "dist/react/index.d.ts",
-  "dist/react/button.js",
-  "dist/react/button.d.ts",
-  "dist/react/choice.js",
-  "dist/react/choice.d.ts",
-  "dist/react/field.js",
-  "dist/react/field.d.ts",
   "dist/js/usage/dom.js",
   "dist/js/usage/dom.d.ts",
   "dist/js/usage/test-setup.js",
@@ -284,6 +281,12 @@ try {
   console.log(rules.output.trim());
   if (rules.status !== 0) fail(rules.output);
   if (rules.output.trim() !== "[ 'usage', 'usage-incomplete', 'disable-reason' ]") fail(rules.output);
+
+  const parts = run(["node", "-e", "import('odd-design/react').then(m => console.log(Object.keys(m).sort().join()))"], app);
+  console.log("react exports:");
+  console.log(parts.output.trim());
+  if (parts.status !== 0) fail(parts.output);
+  if (parts.output.trim() !== REACT_EXPORTS) fail(parts.output);
 
   installVariant(app, "bad");
   checkTypes(app, "bad", BAD_TYPE);

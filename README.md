@@ -139,6 +139,24 @@ The five palettes ported from uvs-decks-gg went through the same repair. Their i
 2. Add the id to `CHROMES` and import the file in `index.css`.
 3. Run `bun test`, then check **Showcase → Matrix** in Storybook.
 
+## Add a React part
+
+1. Add the part's `WRAPPERS` row and its `USAGE` rules to `src/js/usage/contract.ts`. Add each new code to `USAGE_CODES` and `MESSAGES` in `src/js/usage/format.ts`.
+2. Document each code in `docs/usage/<family>.md`.
+3. Write `src/react/<family>.tsx`. A part with a fixed tag needs three declarations. `Contract` types its props from its rules, and `part` renders its row.
+
+   ```tsx
+   interface BadgeContract extends Contract<"Badge", BadgeRule> {}
+   export interface BadgeProps extends BadgeContract, Native<"Badge", keyof BadgeContract> {}
+   export const Badge: (props: BadgeProps) => ReactElement = part("Badge");
+   ```
+
+4. Export the module from `src/react/index.ts`, and add the props to `WrapperProps` in `src/react/props.ts`.
+5. Mirror the part's stories in `stories/mirrored/<Family>.stories.ts`.
+6. Add the part's rows to the `markup` table in `tests/react.test.tsx`. Add a `<part>-<rule>.tsx` fail fixture in `tests/fixtures/types/fail/` for each code its props reject, with its `failures` entry. Add the `places` entries for its ESLint fixtures in `tests/eslint-jsx.test.ts` and `tests/eslint-html.test.ts`.
+
+`scripts/build.ts` and `scripts/consumer-smoke.ts` read the `odd-design/react` barrel, so a new part adds no line to either.
+
 ## Components
 
 | Class | Element | Notes |
