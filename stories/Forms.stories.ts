@@ -16,39 +16,6 @@ const meta = {
 export default meta;
 type Story = StoryObj;
 
-export const Choices: Story = {
-  render: () => /* html */ `<div class="odd-stack">
-    <fieldset class="odd-stack" style="--gap: var(--space-2); border: 0; padding: 0; margin: 0">
-      <legend class="odd-label" style="margin-block-end: var(--space-2)">Notifications</legend>
-      <label class="odd-choice"><input type="checkbox" checked> Deck comments</label>
-      <label class="odd-choice"><input type="checkbox"> Weekly digest</label>
-      <label class="odd-choice"><input type="checkbox" disabled> Partner offers (unavailable)</label>
-    </fieldset>
-    <fieldset class="odd-stack" style="--gap: var(--space-2); border: 0; padding: 0; margin: 0">
-      <legend class="odd-label" style="margin-block-end: var(--space-2)">Visibility</legend>
-      <label class="odd-choice"><input type="radio" name="vis" checked> Public</label>
-      <label class="odd-choice"><input type="radio" name="vis"> Unlisted</label>
-      <label class="odd-choice"><input type="radio" name="vis"> Private</label>
-    </fieldset>
-  </div>`,
-};
-
-export const Switch: Story = {
-  render: () => /* html */ `<div class="odd-stack" style="--gap: var(--space-3)">
-    <label class="odd-choice"><input type="checkbox" role="switch" class="odd-switch" checked> Show card prices</label>
-    <label class="odd-choice"><input type="checkbox" role="switch" class="odd-switch"> Compact grid</label>
-  </div>`,
-};
-
-export const Segmented: Story = {
-  render: () => /* html */ `<fieldset class="odd-segmented">
-    <legend>View</legend>
-    <label><input type="radio" name="view" checked> Grid</label>
-    <label><input type="radio" name="view"> List</label>
-    <label><input type="radio" name="view"> Stats</label>
-  </fieldset>`,
-};
-
 export const Slider: Story = {
   parameters: {
     docs: {

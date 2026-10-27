@@ -43,9 +43,19 @@ bun scripts/storybooks.ts storybook-static
 bun e2e/serve.ts storybook-static 6106
 ```
 
-Open `http://127.0.0.1:6106/?path=/story/react_components-forms--text-fields`. The preview is the React TextFields story, built from `Field`, `Label`, `Input`, `Textarea`, `Hint`, and `FieldError`. The React Select story is `react_components-forms--select`. Choices, Switch, Segmented, Slider, and Search have no React wrapper, so they appear only in the HTML section.
+Open `http://127.0.0.1:6106/?path=/story/react_components-forms--text-fields`. The preview is the React TextFields story, built from `Field`, `Label`, `Input`, `Textarea`, `Hint`, and `FieldError`. The React Select story is `react_components-forms--select`. The Choice stories are under React Choice below. Slider and Search have no React wrapper, so they appear only in the HTML section.
 
-Run the pair sweep with `bunx playwright test e2e/usage.spec.ts --project firefox`. A pass prints the story count and `0 diagnostics`. For each Field story, both sides then match the `aria` literal in `stories/mirrored/Field.stories.ts`, and the two screenshots are byte-identical.
+Run the pair sweep with `bunx playwright test e2e/usage.spec.ts --project firefox`. A pass prints the story count and `0 diagnostics`. For each Field and Choice story, both sides then match the `aria` literal in its file under `stories/mirrored/`, and the two screenshots are byte-identical.
+
+## React Choice
+
+Use the same composed build. These stories are built from `Choice`, `Switch`, and `Segmented`.
+
+- **Choices.** Open `http://127.0.0.1:6106/?path=/story/react_components-forms--choices`. Click the "Weekly digest" text and its box checks. Click "Partner offers (unavailable)" and nothing changes.
+- **Switch.** Open `http://127.0.0.1:6106/?path=/story/react_components-forms--switch`. Click "Compact grid" and the accessibility tree shows `switch "Compact grid" [checked]`.
+- **Segmented.** Open `http://127.0.0.1:6106/?path=/story/react_components-forms--segmented`. Focus Grid and press the right arrow. List becomes checked.
+
+The pair sweep above also checks these three stories against the `aria` literals in `stories/mirrored/Choice.stories.ts`.
 
 ## Gotchas
 

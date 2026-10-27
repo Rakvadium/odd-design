@@ -1,8 +1,8 @@
 # Use the React components
 
-`odd-design/react` exports `Button` and the Field parts. Each renders an `odd-` element from typed props. A contract mistake in those props is a TypeScript error that starts with its code, such as `ODD-BUTTON-007`. `Button` lives in `src/react/button.tsx`, and the Field parts live in `src/react/field.tsx`. Codes and fixes are in [Button usage rules](button.md) and [Field usage rules](field.md).
+`odd-design/react` exports `Button`, the Field parts, and the Choice parts. Each renders an `odd-` element from typed props. A contract mistake in those props is a TypeScript error that starts with its code, such as `ODD-BUTTON-007`. `Button` lives in `src/react/button.tsx`, the Field parts in `src/react/field.tsx`, and the Choice parts in `src/react/choice.tsx`. Codes and fixes are in [Button usage rules](button.md), [Field usage rules](field.md), and [Choice usage rules](choice.md).
 
-`button.tsx` starts with `"use client"`, so a React Server Components app can render `Button` from a server component. The Field parts hold no state and no handlers, so `field.tsx` has no directive.
+`button.tsx` starts with `"use client"`, so a React Server Components app can render `Button` from a server component. The Field and Choice parts hold no state and no handlers, so `field.tsx` and `choice.tsx` have no directive.
 
 ## Render a button or a link
 
@@ -99,6 +99,40 @@ A field control is the reverse of `Button`. Set `disabled` on `Input`, `Textarea
 
 `aria-disabled` on a field control is a type error. It leaves the control editable, and the control does not look disabled.
 
+## Build a checkbox, a switch, or a segmented control
+
+```tsx
+import { Choice, Segmented, Switch } from "odd-design/react";
+
+<Choice>
+  <input type="checkbox" defaultChecked /> Weekly digest
+</Choice>;
+<Choice>
+  <Switch type="checkbox" role="switch" /> Compact grid
+</Choice>;
+<Segmented>
+  <legend>View</legend>
+  <label>
+    <input type="radio" name="view" defaultChecked /> Grid
+  </label>
+  <label>
+    <input type="radio" name="view" /> List
+  </label>
+</Segmented>;
+```
+
+Each part renders one element with its class, plus the words in `className`. Every other prop goes to the element as is. The ESLint plugin reads each part as the same element.
+
+| Part | Element | Required prop |
+| --- | --- | --- |
+| `Choice` | `label.odd-choice` | |
+| `Switch` | `input.odd-switch` | `type="checkbox"` and `role="switch"` |
+| `Segmented` | `fieldset.odd-segmented` | |
+
+The checkbox or radio inside `Choice`, and the `legend` and `label` children of `Segmented`, are plain elements. `Switch` takes `type` and `role` from you, as the HTML does, so the element ESLint reads is the element React renders. A `Switch` outside a `Choice` needs an `aria-label`. Start a choice with `defaultChecked`, or control it with `checked` and `onChange`.
+
+Disable a choice with the native `disabled` attribute on the input, or on `Segmented`. `aria-disabled` on any Choice part is a type error. It leaves the input toggling, and the choice does not look disabled.
+
 ## Read a type error
 
 The type error names the code and the fix. The table lists what each mistake prints.
@@ -112,12 +146,15 @@ The type error names the code and the fix. The table lists what each mistake pri
 | A system `data-` attribute the button does not take, such as `data-tone` | `ODD-BUTTON-015` |
 | `hidden` or `aria-hidden` on `FieldError` | `ODD-FIELD-002` |
 | `aria-disabled` on `Input`, `Textarea`, or `Select` | `ODD-FIELD-003` |
+| `aria-disabled` on `Choice`, `Switch`, or `Segmented` | `ODD-CHOICE-003` |
+| `Switch` without `type` or `role` | TypeScript's missing property error |
+| A `Switch` `type` other than `checkbox`, or a `role` other than `switch` | The allowed value |
 | `Label` without `htmlFor`, or `Hint` or `FieldError` without `id` | TypeScript's missing property error |
 | A `variant`, `size`, or `aria-current` value outside the contract | The allowed values |
 
 TypeScript shortens a long type in an error. Set `noErrorTruncation` in `tsconfig.json` to see the whole message.
 
-Some rules are not type errors. `Button` picks the element from `href`, so you cannot write an anchor without `href` (`ODD-BUTTON-009`) or a button with `href` (`ODD-BUTTON-010`). Those two codes apply to a raw `a` or `button` with the `odd-button` class. Each Field part picks its own element too, so `ODD-FIELD-001` applies only to raw markup. Visible text in an icon-only button (`ODD-BUTTON-014`) and a misspelled `data-` name are not type errors either. The ESLint plugin and the [runtime checker](runtime.md) report each of these.
+Some rules are not type errors. `Button` picks the element from `href`, so you cannot write an anchor without `href` (`ODD-BUTTON-009`) or a button with `href` (`ODD-BUTTON-010`). Those two codes apply to a raw `a` or `button` with the `odd-button` class. Each Field and Choice part picks its own element too, so `ODD-FIELD-001` and `ODD-CHOICE-001` apply only to raw markup. Visible text in an icon-only button (`ODD-BUTTON-014`) and a misspelled `data-` name are not type errors either. The ESLint plugin and the [runtime checker](runtime.md) report each of these.
 
 ## Open a dialog or a popover with a command
 

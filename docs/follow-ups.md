@@ -61,6 +61,8 @@ Run with NVDA 2026.2, OneCore David, rate 50, in Chrome. The transcripts are in 
 - **`color-mix(in oklch)` can walk the hue wheel.** The tints and the alert icon moved to `oklab` for this reason. `odd-button` hover still mixes `--_bg` and `--_fg` in oklch. Audit every remaining oklch mix of two different hues. (step 1)
 - **Bar fills are not contrast-tested against their rail.** For example, the light-mode warning fill on `--track` is low contrast. The rule is "always show the value as text," and nothing enforces it. (step 1)
 - **Slider hover ring is clipped at the far ends.** This is a side effect of `overflow: hidden`, which the fill technique needs. It's cosmetic. (step 1)
+- **`odd-segmented` has no disabled styling.** `fieldset disabled` stops its radios, but no rule in `choice.css` dims it, so a disabled segmented control looks enabled. (React Choice)
+- **A bare `input.odd-switch` with `disabled` does not dim.** The only dim rule is `.odd-choice:has(:disabled)`, so a switch outside an `odd-choice` label looks enabled while disabled. The Showcase Matrix switch (`stories/Showcase.stories.ts:141`) is one. It is not `disabled` today, but a `disabled` attribute on it would not dim it. (React Choice)
 - **No arrow on tooltips or popovers.** uvs-decks-gg's tooltip has one. An anchored arrow needs anchor functions on a pseudo-element; skipped for now. (step 2)
 - **Uppercase chromes change accessible names.** Chrome exposes CSS `text-transform` in names, so holoterminal's `Publish` button is read as `PUBLISH`. Most screen readers say it normally, but some spell out all-caps words. This predates the build-out. Consider keeping case transforms off controls, or accept and document it. (step 2)
 

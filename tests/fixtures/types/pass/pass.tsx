@@ -1,5 +1,6 @@
 import { useRef, type MouseEvent } from "react";
 import { Button } from "../../../../src/react/button.tsx";
+import { Choice, Segmented, Switch } from "../../../../src/react/choice.tsx";
 import { Field, FieldError, Hint, Input, Label, Select, Textarea } from "../../../../src/react/field.tsx";
 
 function save(event: MouseEvent<HTMLButtonElement>): void {
@@ -66,6 +67,30 @@ export function Fields({ error }: { error: string | undefined }) {
         <option value="standard">Standard</option>
       </Select>
       <Input type="search" aria-label="Search cards" />
+    </>
+  );
+}
+
+export function Choices({ on, toggle }: { on: boolean; toggle: () => void }) {
+  const ref = useRef<HTMLInputElement>(null);
+  return (
+    <>
+      <Choice className="wide">
+        <input type="checkbox" defaultChecked disabled /> Partner offers
+      </Choice>
+      <Choice>
+        <input type="radio" name="vis" value="public" /> Public
+      </Choice>
+      <Choice>
+        <Switch type="checkbox" role="switch" ref={ref} checked={on} onChange={toggle} disabled /> Compact grid
+      </Choice>
+      <Switch type="checkbox" role="switch" defaultChecked aria-label="Public" />
+      <Segmented disabled>
+        <legend>View</legend>
+        <label>
+          <input type="radio" name="view" defaultChecked /> Grid
+        </label>
+      </Segmented>
     </>
   );
 }

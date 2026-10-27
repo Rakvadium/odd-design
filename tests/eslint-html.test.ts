@@ -93,6 +93,22 @@ const places: Record<string, readonly (readonly [string, number, number, string]
     ["ODD-FIELD-003", 3, 43, "aria-disabled"],
     ["ODD-FIELD-003", 4, 40, "aria-disabled"],
   ],
+  "odd-choice-001.bad.html": [
+    ["ODD-CHOICE-001", 2, 6, "class"],
+    ["ODD-CHOICE-001", 3, 7, "class"],
+    ["ODD-CHOICE-001", 4, 6, "class"],
+  ],
+  "odd-choice-002.bad.html": [
+    ["ODD-CHOICE-002", 2, 1, "<input"],
+    ["ODD-CHOICE-002", 3, 1, "<input"],
+    ["ODD-CHOICE-002", 4, 27, "type"],
+    ["ODD-CHOICE-002", 5, 43, "role"],
+  ],
+  "odd-choice-003.bad.html": [
+    ["ODD-CHOICE-003", 2, 27, "aria-disabled"],
+    ["ODD-CHOICE-003", 3, 57, "aria-disabled"],
+    ["ODD-CHOICE-003", 4, 33, "aria-disabled"],
+  ],
   "odd-class-001.bad.html": [
     ["ODD-CLASS-001", 2, 6, "class"],
     ["ODD-CLASS-001", 3, 4, "class"],
