@@ -45,6 +45,7 @@ const REQUIRED = [
   "docs/usage/button.md",
   "docs/usage/card.md",
   "docs/usage/choice.md",
+  "docs/usage/disclosure.md",
   "docs/usage/eslint.md",
   "docs/usage/field.md",
   "docs/usage/general.md",

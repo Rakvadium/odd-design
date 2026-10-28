@@ -11,7 +11,7 @@ The surface components are cards (`.odd-card`, where `data-interactive` plus `.o
 
 ## How to get to it (user POV)
 
-- In Storybook, open **Components → Surfaces**, which has Dialog, Disclosure, Badge, and Card. Badge and Card sort last because they load from `stories/mirrored/`.
+- In Storybook, open **Components → Surfaces**, which has Dialog, Badge, Card, and Disclosure. Badge, Card, and Disclosure sort after Dialog because they load from `stories/mirrored/`.
 
 ## Driving it with ctl.ts
 
@@ -27,13 +27,17 @@ Preconditions:
 
 ## React Badge
 
-Build the composed Storybook and serve it, as in the React Field section of `forms.md`. Open `http://127.0.0.1:6106/?path=/story/react_components-surfaces--badge`. The preview is the Badge story built from `Badge`. It shows a soft row and a solid row of the six tones, the same as `components-surfaces--badge`. Dialog and Disclosure have no React wrappers, so they appear only in the HTML section.
+Build the composed Storybook and serve it, as in the React Field section of `forms.md`. Open `http://127.0.0.1:6106/?path=/story/react_components-surfaces--badge`. The preview is the Badge story built from `Badge`. It shows a soft row and a solid row of the six tones, the same as `components-surfaces--badge`. Dialog has no React wrapper, so it appears only in the HTML section.
 
 Run the pair sweep with `bunx playwright test e2e/usage.spec.ts --project firefox`. The Badge pair matches the `aria` literal in `stories/mirrored/Badge.stories.ts`, and the two screenshots are byte-identical.
 
 ## React Card
 
 In the same composed Storybook, open `http://127.0.0.1:6106/?path=/story/react_components-surfaces--card`. The preview is the Card story built from `Card`, `CardLink`, `CardFooter`, and `Badge`, the same as `components-surfaces--card`. The pair sweep matches the `aria` literal in `stories/mirrored/Card.stories.ts`, which has one link, "Ember Aggro", inside the interactive card's level-3 heading. The two screenshots are byte-identical. The Card link recipe above works on the React side too.
+
+## React Disclosure
+
+In the same composed Storybook, open `http://127.0.0.1:6106/?path=/story/react_components-surfaces--disclosure`. The preview is the Disclosure story built from `Disclosure` with native `summary` and `div` children, the same as `components-surfaces--disclosure`. The pair sweep matches the `aria` literal in `stories/mirrored/Disclosure.stories.ts`, three groups with the first open, and the two screenshots are byte-identical. The Disclosure exclusive recipe above works on the React side too.
 
 ## Gotchas
 

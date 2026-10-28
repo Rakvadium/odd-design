@@ -158,6 +158,12 @@ The plugin checks `Card` as an `article` with `odd-card`, `CardLink` as an `a` w
 
 So `<Card interactive>` with no `CardLink`, a `CardLink` in a `Card` without `interactive`, and a second link or button in an interactive card report `ODD-CARD-003`. `<Card onClick={open} tabIndex={0}>` reports `ODD-CARD-004` twice. `<CardLink>` without `href` reports `ODD-CARD-005`. `<Card data-tone="success">` reports `ODD-CARD-006`, and `data-span` passes. `<CardLink href="#" data-interactive>` and `<CardFooter data-tone="warning">` report `ODD-CARD-007`. A raw `<section className="odd-card">` gets the same card rules. The check stops at a nested card. A child component, such as `<Card interactive><DeckTitle /></Card>`, hides what it renders, so a missing link stays quiet and a second control still reports. A computed `interactive` gives the `ODD-STATIC-001` warning. The plugin does not read a card's parent, so a `CardLink` outside any card passes.
 
+### Disclosure from odd-design/react
+
+The plugin checks `Disclosure` as a `details` with `odd-disclosure`, from its entry of `WRAPPERS`. Every prop is the attribute with the same name. The plugin reads the disclosure's direct children, and the children of a fragment count as direct.
+
+So a `Disclosure` whose question is a `div` or a `button`, or whose `summary` sits inside a `div`, reports `ODD-DISCLOSURE-002`. A `summary` placed after the answer passes. A raw `<div className="odd-disclosure">` reports `ODD-DISCLOSURE-001` alone. `<Disclosure data-tone="info">` reports `ODD-DISCLOSURE-003`, and `data-state` passes. A child component, such as `<Disclosure><FaqQuestion /><div>No.</div></Disclosure>`, or an expression child hides what it renders, so a missing summary stays quiet. A spread gives the `ODD-STATIC-001` warning. With no written children, `ODD-DISCLOSURE-002` then stays quiet, because the spread may hold `children`. Written children win over the spread, so `<Disclosure {...props}><div>Question</div></Disclosure>` still reports `ODD-DISCLOSURE-002`. A computed `open` gives no warning, so `open={open}` with `onToggle` passes.
+
 ### Other components
 
 The plugin cannot see what another component renders. A component with an `odd-` class, such as `<Link className="odd-button">`, gets one `ODD-STATIC-001` warning on the element and no button rules. An `odd-` class that is not in the registry still reports `ODD-CLASS-001`. `<UI.Button>`, with `UI` a namespace import, counts as another component.

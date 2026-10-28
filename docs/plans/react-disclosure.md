@@ -131,11 +131,11 @@ Each commit ends with `bun run check`. The boxes under a commit name its extra c
 
 ### Commit 3. Docs, smoke, and the verify recipe
 
-- [ ] In `docs/usage/react.md`, add a section on building a disclosure with the `onToggle` sync and the shared-id clear, the type-error row for 003, Disclosure in the "not type errors" paragraph (001, 002), and `disclosure.tsx` in the directive paragraph. Add a Disclosure section to `docs/usage/eslint.md`. Update the README install sentence, the usage-contract list, and the component row.
-- [ ] Add `docs/usage/disclosure.md` to `REQUIRED` in `scripts/consumer-smoke.ts`. The clean app renders a `Disclosure`.
-- [ ] Update `.agents/skills/verify-odd-design/features/surfaces.md`, which says Disclosure has no React wrapper, and its sidebar-order line.
-- [ ] Add the follow-ups in Appendix D to `docs/follow-ups.md`.
-- [ ] Check. `bun run check`, `bun run build`, and `bun scripts/consumer-smoke.ts` pass.
+- [x] In `docs/usage/react.md`, add a section on building a disclosure with the `onToggle` sync and the shared-id clear, the type-error row for 003, Disclosure in the "not type errors" paragraph (001, 002), and `disclosure.tsx` in the directive paragraph. Add a Disclosure section to `docs/usage/eslint.md`. Update the README install sentence, the usage-contract list, and the component row.
+- [x] Add `docs/usage/disclosure.md` to `REQUIRED` in `scripts/consumer-smoke.ts`. The clean app renders a `Disclosure`.
+- [x] Update `.agents/skills/verify-odd-design/features/surfaces.md`, which says Disclosure has no React wrapper, and its sidebar-order line.
+- [x] Add the follow-ups in Appendix D to `docs/follow-ups.md`.
+- [x] Check. `bun run check`, `bun run build`, and `bun scripts/consumer-smoke.ts` pass. Result: `bun run check` passes 510 tests. The build exits 0. The smoke exits 0, with zero clean-app findings in types, ESLint, and vitest, and `Disclosure` in the packed React exports.
 
 ## Verify on the real surface
 

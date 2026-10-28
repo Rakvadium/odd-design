@@ -1,8 +1,8 @@
 # Use the React components
 
-`odd-design/react` exports `Button`, the Field parts, the Choice parts, `Badge`, the Alert parts, the Avatar parts, `Separator`, `Skeleton`, and the Card parts. Each renders an `odd-` element from typed props. A contract mistake in those props is a TypeScript error that starts with its code, such as `ODD-BUTTON-007`. `Button` lives in `src/react/button.tsx`, the Field parts in `src/react/field.tsx`, the Choice parts in `src/react/choice.tsx`, `Badge` in `src/react/badge.tsx`, the Alert parts in `src/react/alert.tsx`, the Avatar parts in `src/react/avatar.tsx`, `Separator` in `src/react/separator.tsx`, `Skeleton` in `src/react/skeleton.tsx`, and the Card parts in `src/react/card.tsx`. Codes and fixes are in [Button usage rules](button.md), [Field usage rules](field.md), [Choice usage rules](choice.md), [Badge usage rules](badge.md), [Alert usage rules](alert.md), [Avatar usage rules](avatar.md), [Separator usage rules](separator.md), [Skeleton usage rules](skeleton.md), and [Card usage rules](card.md).
+`odd-design/react` exports `Button`, the Field parts, the Choice parts, `Badge`, the Alert parts, the Avatar parts, `Separator`, `Skeleton`, the Card parts, and `Disclosure`. Each renders an `odd-` element from typed props. A contract mistake in those props is a TypeScript error that starts with its code, such as `ODD-BUTTON-007`. `Button` lives in `src/react/button.tsx`, the Field parts in `src/react/field.tsx`, the Choice parts in `src/react/choice.tsx`, `Badge` in `src/react/badge.tsx`, the Alert parts in `src/react/alert.tsx`, the Avatar parts in `src/react/avatar.tsx`, `Separator` in `src/react/separator.tsx`, `Skeleton` in `src/react/skeleton.tsx`, the Card parts in `src/react/card.tsx`, and `Disclosure` in `src/react/disclosure.tsx`. Codes and fixes are in [Button usage rules](button.md), [Field usage rules](field.md), [Choice usage rules](choice.md), [Badge usage rules](badge.md), [Alert usage rules](alert.md), [Avatar usage rules](avatar.md), [Separator usage rules](separator.md), [Skeleton usage rules](skeleton.md), [Card usage rules](card.md), and [Disclosure usage rules](disclosure.md).
 
-`button.tsx` starts with `"use client"`, so a React Server Components app can render `Button` from a server component. The Field parts, the Choice parts, `Badge`, the Alert parts, the Avatar parts, `Separator`, `Skeleton`, and the Card parts hold no state and no handlers, so `field.tsx`, `choice.tsx`, `badge.tsx`, `alert.tsx`, `avatar.tsx`, `separator.tsx`, `skeleton.tsx`, and `card.tsx` have no directive.
+`button.tsx` starts with `"use client"`, so a React Server Components app can render `Button` from a server component. The Field parts, the Choice parts, `Badge`, the Alert parts, the Avatar parts, `Separator`, `Skeleton`, the Card parts, and `Disclosure` hold no state and no handlers, so `field.tsx`, `choice.tsx`, `badge.tsx`, `alert.tsx`, `avatar.tsx`, `separator.tsx`, `skeleton.tsx`, `card.tsx`, and `disclosure.tsx` have no directive. A component that holds the disclosure's state puts the directive in its own file.
 
 ## Render a button or a link
 
@@ -292,6 +292,43 @@ import { Badge, Card, CardFooter, CardLink } from "odd-design/react";
 
 An interactive card holds exactly one link or button, its `CardLink`. A second control sits under the stretched link and takes no click, so put it outside the card. A `CardLink` in a card without `interactive` does not stretch and loses its focus outline. ESLint and the runtime checker report both as `ODD-CARD-003`. They cannot see inside another component, so a missing link in `<Card interactive><DeckTitle /></Card>` passes. `onClick` and `tabIndex` on `Card` are type errors (`ODD-CARD-004`), because the card itself is not a control. `data-span` places a card in an `odd-grid`, and other system `data-` attributes on `Card` are type errors (`ODD-CARD-006`). For a named panel or a plain box, write a raw `section` or `div` with the class `odd-card`. ESLint checks it the same way.
 
+## Build a disclosure
+
+```tsx
+import { Disclosure } from "odd-design/react";
+
+<Disclosure name="faq" open>
+  <summary>Does it need JavaScript?</summary>
+  <div>No. Sharing a name makes the group exclusive.</div>
+</Disclosure>;
+```
+
+`Disclosure` renders a `details` with the class `odd-disclosure`. Write the question as a `summary` directly inside it, and the answer as one element after it, such as a `div`, a `p`, or a `pre`. `open`, `name`, and `onToggle` are the native `details` props. Every disclosure that shares a `name` joins one exclusive group, so opening one closes the others with no script. Start at most one item of a group open. When two start open, WebKit closes both, and Firefox and Chromium keep the first.
+
+A literal `open` sets only the first state. The browser owns every toggle after that. To read or drive the state from React, sync each item from its own `onToggle`.
+
+```tsx
+"use client";
+import { useState } from "react";
+import { Disclosure } from "odd-design/react";
+
+export function FaqItem({ question, answer }: { question: string; answer: string }) {
+  const [open, setOpen] = useState(false);
+  return (
+    <Disclosure name="faq" open={open} onToggle={(event) => setOpen(event.newState === "open")}>
+      <summary>{question}</summary>
+      <div>{answer}</div>
+    </Disclosure>
+  );
+}
+```
+
+`event.newState === "open"` covers both directions, so the state also turns `false` when the user collapses the item. A list that keeps one shared open id must clear it on `"closed"` with a functional update, such as `setOpenId((current) => (current === id ? null : current))`. A handler that sets the id only on `"open"` leaves the prop `true` after the user collapses the item. A computed `open` with no `onToggle` goes stale after the first click, and React cannot reopen that item.
+
+`open={false}` leaves the attribute off, and `open={true}` writes `open=""`. A string `open` is a type error. In raw HTML, `open="false"` still opens the panel, and no checker reports it.
+
+A disclosure with no direct `summary` child shows the browser's own Details label, and the question sits hidden in the closed answer. A `summary` inside a `div`, or a `div` or `button` used as the trigger, reports `ODD-DISCLOSURE-002` in ESLint and the runtime checker. ESLint cannot see a summary that comes from another component or an expression, so it stays quiet. Keep the summary's text non-empty, and keep links and buttons out of it. An empty summary takes its name from the answer, and a link in the summary follows its `href` and leaves the panel closed. Do not set `aria-expanded` on the summary. The browser reports the state, and a written `aria-expanded="false"` stays `false` after a click opens the panel. System `data-` attributes on `Disclosure`, such as `data-tone`, are type errors (`ODD-DISCLOSURE-003`).
+
 ## Read a type error
 
 The type error names the code and the fix. The table lists what each mistake prints.
@@ -323,6 +360,7 @@ The type error names the code and the fix. The table lists what each mistake pri
 | `onClick` or `tabIndex` on `Card` | `ODD-CARD-004` |
 | A system `data-` attribute on `Card` other than `data-span`, such as `data-tone` | `ODD-CARD-006` |
 | A system `data-` attribute on `CardLink` or `CardFooter`, such as `data-interactive` | `ODD-CARD-007` |
+| A system `data-` attribute on `Disclosure`, such as `data-tone` | `ODD-DISCLOSURE-003` |
 | `Switch` without `type` or `role`, `AvatarGroup` without `role`, `Skeleton` without `aria-hidden`, or `CardLink` without `href` | TypeScript's missing property error |
 | A `Switch` `type` other than `checkbox`, a `Switch` `role` other than `switch`, an `Avatar` or `AvatarGroup` `role` other than `img` or `group`, a `Separator` `role` other than `separator`, or a `Skeleton` `aria-hidden` other than `"true"` | The allowed value |
 | `Label` without `htmlFor`, or `Hint` or `FieldError` without `id` | TypeScript's missing property error |
@@ -330,7 +368,7 @@ The type error names the code and the fix. The table lists what each mistake pri
 
 TypeScript shortens a long type in an error. Set `noErrorTruncation` in `tsconfig.json` to see the whole message.
 
-Some rules are not type errors. `Button` picks the element from `href`, so you cannot write an anchor without `href` (`ODD-BUTTON-009`) or a button with `href` (`ODD-BUTTON-010`). Those two codes apply to a raw `a` or `button` with the `odd-button` class. Each Field and Choice part, `Badge`, each Alert part, each Avatar part, `Separator`, `Skeleton`, and each Card part picks its own element too, so `ODD-FIELD-001`, `ODD-CHOICE-001`, `ODD-BADGE-001`, `ODD-ALERT-001`, `ODD-AVATAR-001`, `ODD-SEPARATOR-001`, `ODD-SKELETON-001`, and `ODD-CARD-001` apply only to raw markup. Visible text in an icon-only button (`ODD-BUTTON-014`), the links and buttons in a card (`ODD-CARD-003`), and a misspelled `data-` name are not type errors either. The ESLint plugin and the [runtime checker](runtime.md) report each of these.
+Some rules are not type errors. `Button` picks the element from `href`, so you cannot write an anchor without `href` (`ODD-BUTTON-009`) or a button with `href` (`ODD-BUTTON-010`). Those two codes apply to a raw `a` or `button` with the `odd-button` class. Each Field and Choice part, `Badge`, each Alert part, each Avatar part, `Separator`, `Skeleton`, each Card part, and `Disclosure` picks its own element too, so `ODD-FIELD-001`, `ODD-CHOICE-001`, `ODD-BADGE-001`, `ODD-ALERT-001`, `ODD-AVATAR-001`, `ODD-SEPARATOR-001`, `ODD-SKELETON-001`, `ODD-CARD-001`, and `ODD-DISCLOSURE-001` apply only to raw markup. Visible text in an icon-only button (`ODD-BUTTON-014`), the links and buttons in a card (`ODD-CARD-003`), the summary of a disclosure (`ODD-DISCLOSURE-002`), and a misspelled `data-` name are not type errors either. The ESLint plugin and the [runtime checker](runtime.md) report each of these.
 
 ## Open a dialog or a popover with a command
 
