@@ -117,14 +117,14 @@ Each commit ends with `bun run check`. The boxes under a commit name its extra c
 
 ## Verify on the real surface
 
-- [ ] Rebuild both Storybooks, capture the HTML section to `after.json`, and run `bun scripts/capture-stories.ts --diff .verify/skeleton/base.json .verify/skeleton/after.json`. Pass means `changed` lists only `components-feedback--skeleton`, with no `png` or `aria` change, and nothing else moves.
-- [ ] Run `bun run test:browsers`. Pass means the Firefox and WebKit runs pass and the sweep reports 0 diagnostics.
-- [ ] Drive the composed build per the verify-odd-design skill. Open `react_components-feedback--skeleton` and `components-feedback--skeleton` in `calm` light, `holoterminal` dark, and one more palette. Save each screenshot and `ariaSnapshot`, and confirm that the two sides look the same, the avatar block keeps 1:1 proportions, and the tree reads only "Loading decks…".
+- [x] Rebuild both Storybooks, capture the HTML section to `after.json`, and run `bun scripts/capture-stories.ts --diff .verify/skeleton/base.json .verify/skeleton/after.json`. Pass means `changed` lists only `components-feedback--skeleton`, with no `png` or `aria` change, and nothing else moves. Result: 2 changed (Skeleton light and dark, `dom` only), 0 removed, 0 added.
+- [x] Run `bun run test:browsers`. Pass means the Firefox and WebKit runs pass and the sweep reports 0 diagnostics. Result: 46 passed, 2 skipped. "58 stories, 0 diagnostics". 0 axe violations in Firefox and WebKit, both modes.
+- [x] Drive the composed build per the verify-odd-design skill. Open `react_components-feedback--skeleton` and `components-feedback--skeleton` in `calm` light, `holoterminal` dark, and one more palette. Save each screenshot and `ariaSnapshot`, and confirm that the two sides look the same, the avatar block keeps 1:1 proportions, and the tree reads only "Loading decks…". Result: `.verify/skeleton/chrome-pair.ts` drove both sides of the built composed Storybook in Chrome. `calm` light, `holoterminal` dark, and `bubblegum` `sorbet` dark each gave byte-identical screenshots and the aria tree `- text: Loading decks…`. 12 of 12 blocks hidden, `aria-busy` true, avatar 40x40, 38x38, and 42x42.
 
 ## Review and open the PR
 
-- [ ] The `cursor grok-4.7` reviewer reads the diff against this plan. A fresh builder fixes each finding that blocks. Other findings go to `docs/follow-ups.md`.
-- [ ] Run `/deslop` and `/no-comments` over the diff.
+- [x] The `cursor grok-4.7` reviewer reads the diff against this plan. A fresh builder fixes each finding that blocks. Other findings go to `docs/follow-ups.md`. Result: the `cursor grok-4.7` reviewer found 0 blocking issues. It found two non-blocking issues, the "square" wording and the untested omit suggestion. A fresh builder fixed both. The five-token `and` join is in `docs/follow-ups.md`.
+- [x] Run `/deslop` and `/no-comments` over the diff. Result: /deslop removed nothing. The code has no defensive checks, casts, or nesting to flatten, and the prose has no long dashes or mid-sentence colons. /no-comments kept the `children` JSDoc, which defines the public prop, and the fixtures' `expect:` lines, which tests parse. It deleted 0 comments. A fresh builder applied Comment Sicko's rules by hand, because its brief allowed no subagents.
 - [ ] Open the PR ready with `gh pr create --base main --repo Rakvadium/odd-design`. The title is `feat(react): add Skeleton and mirror it in the Storybooks`.
 - [ ] Run `gh pr checks`. The repo has no workflows, so expect "no checks reported". Report the PR as open. Do not merge.
 
