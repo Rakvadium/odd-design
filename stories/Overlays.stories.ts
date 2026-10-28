@@ -16,37 +16,6 @@ const meta = {
 export default meta;
 type Story = StoryObj;
 
-const filters = (id: string) => /* html */ `<div class="odd-popover" id="${id}" popover role="dialog" aria-labelledby="${id}-title">
-      <div class="odd-stack" style="--gap: var(--space-3)">
-        <p class="odd-eyebrow" id="${id}-title">Filter decks</p>
-        <label class="odd-choice"><input type="checkbox" checked> Legal only</label>
-        <label class="odd-choice"><input type="checkbox"> Has sideboard</label>
-        <label class="odd-choice"><input type="checkbox"> Edited this week</label>
-        <hr class="odd-separator">
-        <div class="odd-row" style="justify-content: flex-end; --gap: var(--space-2)">
-          <button class="odd-button" data-size="sm" data-variant="ghost" commandfor="${id}" command="hide-popover">Cancel</button>
-          <button class="odd-button" data-size="sm" data-variant="primary" commandfor="${id}" command="hide-popover">Apply</button>
-        </div>
-      </div>
-    </div>`;
-
-export const Popover: Story = {
-  parameters: {
-    docs: {
-      description: {
-        story:
-          "`command=\"toggle-popover\"` opens it; Escape, a click outside, or a `hide-popover` button closes it and returns focus. The invoker exposes its expanded state. The right-hand trigger sits at the edge, so its popover flips to stay on screen.",
-      },
-    },
-  },
-  render: () => /* html */ `<div class="odd-row" style="justify-content: space-between">
-    <button class="odd-button" commandfor="filters" command="toggle-popover">${icons.filter} Filters</button>
-    ${filters("filters")}
-    <button class="odd-button" commandfor="filters-end" command="toggle-popover">${icons.filter} Filters</button>
-    ${filters("filters-end")}
-  </div>`,
-};
-
 export const Tooltip: Story = {
   parameters: {
     docs: {

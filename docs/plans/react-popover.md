@@ -151,11 +151,11 @@ Each commit ends with `bun run check`. The boxes under a commit name its extra c
 
 ### Commit 2. Mirror Popover in the Storybooks
 
-- [ ] Create `stories/mirrored/Popover.stories.ts` with the scene and the meta description. Remove `Popover` and `filters` from `stories/Overlays.stories.ts`.
-- [ ] Pin `components-overlays--popover` in `tests/stories.test.ts`.
-- [ ] Loop the popover test in `e2e/behavior.spec.ts` over `html` and `react`.
-- [ ] Measure the `aria` literal in the built Firefox Storybook, then paste it.
-- [ ] Check. `bunx playwright test e2e/usage.spec.ts e2e/behavior.spec.ts --project firefox` passes with 0 diagnostics. With the part rendering `section`, the React runs fail and the HTML runs pass.
+- [x] Create `stories/mirrored/Popover.stories.ts` with the scene and the meta description. Remove `Popover` and `filters` from `stories/Overlays.stories.ts`. Result: the planned scene, with `filters` returning a `Popover` node and `trigger` a `Button` node. The meta description carries the old story description: the browser owns the top layer, Escape, a click outside, focus return, and the expanded state, and the end popover flips. `stories/Overlays.stories.ts` keeps its `icons` import for the other stories.
+- [x] Pin `components-overlays--popover` in `tests/stories.test.ts`. Result: the pin ends with `components-overlays--popover`, and the test title names Popover. The story passes the HTML-equals-React and `checkRoot` loops.
+- [x] Loop the popover test in `e2e/behavior.spec.ts` over `html` and `react`. Result: one loop over `html` and `react`, with the screenshots named per side.
+- [x] Measure the `aria` literal in the built Firefox Storybook, then paste it. Result: both sides give the planned literal, two `button "Filters"` lines (`.verify/popover/build/aria-c2.txt`).
+- [x] Check. `bunx playwright test e2e/usage.spec.ts e2e/behavior.spec.ts --project firefox` passes with 0 diagnostics. With the part rendering `section`, the React runs fail and the HTML runs pass. Result: `bun run check` passes 596 tests (`.verify/popover/build/check-c2.txt`). Firefox passes 27 of 27, with "66 stories, 0 diagnostics" (`browsers-c2-firefox.txt`), run from `build/pw.config.ts` against `build/sb-c2` on port 6231. With the part rendering `section` (`build/section.patch`), the usage sweep fails with two ODD-POPOVER-001 findings, both on the React side, and the HTML behavior run passes (`browsers-c2-section.txt`). `bun test tests/stories.test.ts` then fails `Popover html matches react` and the React `checkRoot` run (`stories-c2-section.txt`). Deviation: the React behavior run passes with `section`. A `section` with `role="dialog"` anchors, closes on Escape, returns focus, and flips the same as a `div`, so the anchor test cannot tell them apart. The runtime checker and the parity test are what catch the wrong tag.
 
 ### Commit 3. Docs, smoke, and the verify recipe
 

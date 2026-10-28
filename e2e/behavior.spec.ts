@@ -117,30 +117,32 @@ test.describe("tooltips and hover cards (interestfor)", () => {
 });
 
 test.describe("popovers and dialogs", () => {
-  test("a popover anchors under its invoker and flips at the viewport edge", async ({ page }, testInfo) => {
-    await openStory(page, "components-overlays--popover", "mode:light");
-    await note(page, testInfo, "anchor positioning", `CSS.supports("position-area: block-end")`);
-    // Opened from the keyboard: focus return is for keyboard users, and WebKit, like Safari,
-    // doesn't focus a button when it's clicked.
-    const opener = 'button[commandfor="filters"][command="toggle-popover"]';
-    await page.locator(opener).focus();
-    await page.keyboard.press("Enter");
-    await waitOpen(page, "#filters");
-    const button = await rect(page, opener);
-    const pop = await rect(page, "#filters");
-    expect(Math.abs(pop.left - button.left), "aligned to the button's start edge").toBeLessThan(2);
-    expect(Math.abs(pop.top - button.bottom - 8), "8px below the button").toBeLessThan(1.5);
-    await shot(page, testInfo, "popover-open.png");
-    await page.keyboard.press("Escape");
-    await expect(page.locator(opener)).toBeFocused();
-    const endOpener = 'button[commandfor="filters-end"][command="toggle-popover"]';
-    await page.locator(endOpener).click();
-    await waitOpen(page, "#filters-end");
-    const end = await rect(page, endOpener);
-    const flipped = await rect(page, "#filters-end");
-    expect(Math.abs(flipped.right - end.right), "flipped to align with the button's end edge").toBeLessThan(2);
-    await shot(page, testInfo, "popover-flipped.png");
-  });
+  for (const storybook of ["html", "react"] as const) {
+    test(`a popover anchors under its invoker and flips at the viewport edge (${storybook})`, async ({ page }, testInfo) => {
+      await openStory(page, "components-overlays--popover", "mode:light", "", storybook);
+      await note(page, testInfo, "anchor positioning", `CSS.supports("position-area: block-end")`);
+      // Opened from the keyboard: focus return is for keyboard users, and WebKit, like Safari,
+      // doesn't focus a button when it's clicked.
+      const opener = 'button[commandfor="filters"][command="toggle-popover"]';
+      await page.locator(opener).focus();
+      await page.keyboard.press("Enter");
+      await waitOpen(page, "#filters");
+      const button = await rect(page, opener);
+      const pop = await rect(page, "#filters");
+      expect(Math.abs(pop.left - button.left), "aligned to the button's start edge").toBeLessThan(2);
+      expect(Math.abs(pop.top - button.bottom - 8), "8px below the button").toBeLessThan(1.5);
+      await shot(page, testInfo, `popover-open-${storybook}.png`);
+      await page.keyboard.press("Escape");
+      await expect(page.locator(opener)).toBeFocused();
+      const endOpener = 'button[commandfor="filters-end"][command="toggle-popover"]';
+      await page.locator(endOpener).click();
+      await waitOpen(page, "#filters-end");
+      const end = await rect(page, endOpener);
+      const flipped = await rect(page, "#filters-end");
+      expect(Math.abs(flipped.right - end.right), "flipped to align with the button's end edge").toBeLessThan(2);
+      await shot(page, testInfo, `popover-flipped-${storybook}.png`);
+    });
+  }
 
   test("a dialog with closedby=any closes on a backdrop click", async ({ page }, testInfo) => {
     await openStory(page, "components-surfaces--dialog", "mode:light");
