@@ -359,23 +359,25 @@ test.describe("machine controls", () => {
 });
 
 test.describe("engine-specific CSS", () => {
-  test("the slider moves by keyboard and its fill follows the thumb", async ({ page }, testInfo) => {
-    await openStory(page, "components-forms--slider", "mode:light");
-    await shot(page, testInfo, "slider-before.png", ".odd-stack");
-    await page.locator("#copies").focus();
-    await page.keyboard.press("ArrowLeft");
-    await page.keyboard.press("ArrowLeft");
-    await expect(page.locator("#copies")).toHaveValue("1");
-    await expect(page.locator("#copies-value")).toHaveText("1 of 4");
-    // Where the fill's scroll timeline runs (--_on is 1), its progress must match the value exactly.
-    // Where it doesn't, nothing may be filled: a partial fill would misstate the value.
-    const fill = await page
-      .locator("#card-size")
-      .evaluate((el) => ({ on: Number(getComputedStyle(el).getPropertyValue("--_on")), progress: Number(getComputedStyle(el).getPropertyValue("--_progress")) }));
-    testInfo.annotations.push({ type: "path", description: `slider fill: ${fill.on ? "scroll timeline" : testInfo.project.name === "firefox" ? "::-moz-range-progress" : "plain track"}` });
-    if (fill.on) expect(fill.progress).toBeCloseTo(0.65, 2);
-    await shot(page, testInfo, "slider-after.png", ".odd-stack");
-  });
+  for (const storybook of ["html", "react"] as const) {
+    test(`the slider moves by keyboard and its fill follows the thumb (${storybook})`, async ({ page }, testInfo) => {
+      await openStory(page, "components-forms--slider", "mode:light", "", storybook);
+      await shot(page, testInfo, "slider-before.png", ".odd-stack");
+      const copies = page.locator("#copies");
+      const readout = page.locator("#copies-value");
+      await copies.focus();
+      await page.keyboard.press("ArrowLeft");
+      await page.keyboard.press("ArrowLeft");
+      await expect(copies).toHaveValue("1");
+      await expect(readout).toHaveText("1 of 4");
+      const fill = await page
+        .locator("#card-size")
+        .evaluate((el) => ({ timelineRuns: Number(getComputedStyle(el).getPropertyValue("--_on")) === 1, progress: Number(getComputedStyle(el).getPropertyValue("--_progress")) }));
+      testInfo.annotations.push({ type: "path", description: `slider fill: ${fill.timelineRuns ? "scroll timeline" : testInfo.project.name === "firefox" ? "::-moz-range-progress" : "plain track"}` });
+      if (fill.timelineRuns) expect(fill.progress).toBeCloseTo(0.65, 2);
+      await shot(page, testInfo, "slider-after.png", ".odd-stack");
+    });
+  }
 
   test("progress and meter bars render, including in forced colors", async ({ page }, testInfo) => {
     await openStory(page, "components-feedback--progress", "mode:light");

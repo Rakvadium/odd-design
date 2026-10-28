@@ -6,7 +6,7 @@ const meta = {
     docs: {
       description: {
         component:
-          "`Field`, `Label`, `Input`, `Textarea`, `Select`, `Hint`, and `FieldError` from `odd-design/react`. Each renders one native element with its `odd-*` class. Wire the label with `htmlFor` and the hint or error with `aria-describedby`, and set a starting value with `defaultValue`.",
+          "`Field`, `Label`, `Input`, `Textarea`, `Select`, `Hint`, and `FieldError` from `odd-design/react`. Each renders one native element with its `odd-*` class. Wire the label with `htmlFor` and the hint or error with `aria-describedby`, and set a starting value with `defaultValue`. Invalid styling uses `:user-invalid`, so a field only turns red after the user has interacted with it. The select upgrades to a fully styled picker where `appearance: base-select` is supported.",
       },
     },
   },
