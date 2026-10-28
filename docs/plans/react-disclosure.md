@@ -124,10 +124,10 @@ Each commit ends with `bun run check`. The boxes under a commit name its extra c
 
 ### Commit 2. Mirror Disclosure in the Storybooks
 
-- [ ] Create `stories/mirrored/Disclosure.stories.ts` with `title: "Components/Surfaces"` and the export `Disclosure`. The meta component description carries the story text.
-- [ ] Remove the `Disclosure` export from `stories/Surfaces.stories.ts`. Add the id to the mirrored-ids pin in `tests/stories.test.ts`.
-- [ ] Measure the `aria` literal in the built Firefox Storybook, then paste it.
-- [ ] Check. `bunx playwright test e2e/usage.spec.ts --project firefox` passes with 0 diagnostics.
+- [x] Create `stories/mirrored/Disclosure.stories.ts` with `title: "Components/Surfaces"` and the export `Disclosure`. The meta component description carries the story text.
+- [x] Remove the `Disclosure` export from `stories/Surfaces.stories.ts`. Add the id to the mirrored-ids pin in `tests/stories.test.ts`.
+- [x] Measure the `aria` literal in the built Firefox Storybook, then paste it. Result: in the built Firefox Storybook, the HTML and React sides give the planned tree, with U+2019 in the first question, and it equals the pasted literal. With one word changed in the literal, the sweep fails on that line.
+- [x] Check. `bunx playwright test e2e/usage.spec.ts --project firefox` passes with 0 diagnostics. Result: `bun run check` passes 510 tests. `usage.spec.ts` passes 2 of 2 with "60 stories, 0 diagnostics".
 
 ### Commit 3. Docs, smoke, and the verify recipe
 
