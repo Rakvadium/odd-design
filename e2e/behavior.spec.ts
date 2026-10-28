@@ -245,35 +245,35 @@ test.describe("keyboard widgets", () => {
     });
   }
 
-  test("a toast shown over a modal dialog is clickable and the list comes home after", async ({ page }) => {
-    await openStory(page, "components-interactive--toast", "mode:light");
-    await page.locator('button[commandfor="toast-settings"][command="show-modal"]').click();
-    await page.waitForTimeout(300);
-    await page.locator("#toast-settings [data-toast=saved]").click();
-    await expect(page.locator("#toast-settings .odd-toast"), "the toast shows inside the modal").toHaveCount(1);
-    const dismiss = page.locator('.odd-toast button[aria-label^="Dismiss"]');
-    await expect(dismiss).toBeVisible();
-    await dismiss.click();
-    await expect(page.locator(".odd-toast")).toHaveCount(0);
-    expect(await isOpen(page, "#toast-settings"), "the dialog stays open").toBe(true);
-    await page.keyboard.press("Escape");
-    await expect(page.locator(".odd-toaster"), "the stand-in is gone").toHaveCount(1);
-    await expect(page.locator(".odd-toaster > ol"), "the region holds the list again").toHaveCount(1);
-  });
+  for (const storybook of ["html", "react"] as const) {
+    test(`a toast shown over a modal dialog is clickable and the list comes home after (${storybook})`, async ({ page }) => {
+      await openStory(page, "components-interactive--toast", "mode:light", "", storybook);
+      await page.locator('button[commandfor="toast-settings"][command="show-modal"]').click();
+      await page.waitForTimeout(300);
+      await page.locator("#toast-settings [data-toast=saved]").click();
+      await expect(page.locator("#toast-settings .odd-toast"), "the toast shows inside the modal").toHaveCount(1);
+      const dismiss = page.locator('.odd-toast button[aria-label^="Dismiss"]');
+      await expect(dismiss).toBeVisible();
+      await dismiss.click();
+      await expect(page.locator(".odd-toast")).toHaveCount(0);
+      expect(await isOpen(page, "#toast-settings"), "the dialog stays open").toBe(true);
+      await page.keyboard.press("Escape");
+      await expect(page.locator(".odd-toaster"), "the stand-in is gone").toHaveCount(1);
+      await expect(page.locator(".odd-toaster > ol"), "the region holds the list again").toHaveCount(1);
+    });
 
-  // NVDA read the old markup as "Deck savedMidnight Control, version 15. Dismiss: Deck saved": the
-  // title ran into the description and the Dismiss button's name was part of the announcement.
-  test("a toast is announced as one sentence, without its buttons", async ({ page }) => {
-    await openStory(page, "components-interactive--toast", "mode:light");
-    await page.getByRole("button", { name: "Save deck" }).click();
-    await expect(page.locator(".odd-toast")).toHaveCount(1);
-    const live = page.locator('.odd-toaster [aria-live="polite"]');
-    await expect(live).toHaveCount(1);
-    await expect(live).toHaveText("Deck saved. Midnight Control, version 15.");
-    await expect(live.locator("button")).toHaveCount(0);
-    await page.locator('.odd-toast button[aria-label^="Dismiss"]').click();
-    await expect(live).toHaveText("");
-  });
+    test(`a toast is announced as one sentence, without its buttons (${storybook})`, async ({ page }) => {
+      await openStory(page, "components-interactive--toast", "mode:light", "", storybook);
+      await page.getByRole("button", { name: "Save deck" }).click();
+      await expect(page.locator(".odd-toast")).toHaveCount(1);
+      const live = page.locator('.odd-toaster [aria-live="polite"]');
+      await expect(live).toHaveCount(1);
+      await expect(live).toHaveText("Deck saved. Midnight Control, version 15.");
+      await expect(live.locator("button")).toHaveCount(0);
+      await page.locator('.odd-toast button[aria-label^="Dismiss"]').click();
+      await expect(live).toHaveText("");
+    });
+  }
 
   test("select-all checks every row, shows mixed, and clears", async ({ page }) => {
     await openStory(page, "components-data-display--table", "mode:light");

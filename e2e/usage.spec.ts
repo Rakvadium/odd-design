@@ -207,24 +207,26 @@ test("usage and mirror: every story in both Storybooks, each pair, the Playgroun
     await comparePair(`playground [${args}]`, htmlSide, reactSide, findings, testInfo);
   }
 
-  await openStory(page, "components-interactive--toast");
   const triggers = [
     ["saved", "Save deck"],
     ["undo", "Remove card"],
     ["error", "Fail to sync"],
   ] as const;
-  for (const [kind, name] of triggers) {
-    await page.getByRole("button", { name, exact: true }).click();
-    await expect(page.locator(".odd-toast").last()).toBeVisible();
-    for (const line of await problemsIn(page, ".odd-toaster")) findings.push(`components-interactive--toast [toast ${kind}] ${line}`);
-  }
-  await expect(page.getByRole("button", { name: "Undo" })).toBeVisible();
-  await expect(page.locator('.odd-toast button[aria-label^="Dismiss"]')).toHaveCount(3);
+  for (const storybook of ["html", "react"] as const) {
+    await openStory(page, "components-interactive--toast", "", "", storybook);
+    for (const [kind, name] of triggers) {
+      await page.getByRole("button", { name, exact: true }).click();
+      await expect(page.locator(".odd-toast").last()).toBeVisible();
+      for (const line of await problemsIn(page, "#storybook-root .odd-toaster")) findings.push(`components-interactive--toast [${storybook} toast ${kind}] ${line}`);
+    }
+    await expect(page.getByRole("button", { name: "Undo" })).toBeVisible();
+    await expect(page.locator('.odd-toast button[aria-label^="Dismiss"]')).toHaveCount(3);
 
-  await page.locator('button[commandfor="toast-settings"][command="show-modal"]').click();
-  await page.locator("#toast-settings [data-toast=saved]").click();
-  await expect(page.locator('.odd-toast button[aria-label="Dismiss: Deck saved"]').last()).toBeVisible();
-  for (const line of await problemsIn(page, ".odd-toaster")) findings.push(`components-interactive--toast [toast saved inside settings] ${line}`);
+    await page.locator('button[commandfor="toast-settings"][command="show-modal"]').click();
+    await page.locator("#toast-settings [data-toast=saved]").click();
+    await expect(page.locator('.odd-toast button[aria-label="Dismiss: Deck saved"]').last()).toBeVisible();
+    for (const line of await problemsIn(page, "#toast-settings .odd-toaster")) findings.push(`components-interactive--toast [${storybook} toast saved inside settings] ${line}`);
+  }
 
   console.log(`[${testInfo.project.name}] ${checked} stories, ${findings.length} diagnostics`);
   await testInfo.attach("usage-summary.json", {

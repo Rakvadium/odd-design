@@ -179,11 +179,11 @@ Each commit ends with `bun run check`. The boxes under a commit name its extra c
 
 ### Commit 3. Mirror Toast in the Storybooks
 
-- [ ] Create `stories/mirrored/Toast.stories.ts` with the scene, the `play`, and the meta description. Remove `Toast`, the `createToaster` import, and the module-level `toaster` from `stories/Interactive.stories.ts`.
-- [ ] Queue `enhanceToaster` in the HTML preview's mirrored `render`. Pin the id in `tests/stories.test.ts`.
-- [ ] Run both toast tests in `e2e/behavior.spec.ts` and the toast block in `e2e/usage.spec.ts` once per Storybook.
-- [ ] Measure the `aria` literal in the built Firefox Storybook, then paste it.
-- [ ] Check. `bunx playwright test e2e/usage.spec.ts e2e/behavior.spec.ts --project firefox` passes with 0 diagnostics. With the part's layout effect removed, the React runs fail and the HTML runs pass.
+- [x] Create `stories/mirrored/Toast.stories.ts` with the scene, the `play`, and the meta description. Remove `Toast`, the `createToaster` import, and the module-level `toaster` from `stories/Interactive.stories.ts`. Result: the planned scene, with the four `Button` triggers, the native Settings dialog, and `Toaster` last. The `play` assigns one of three option sets to each `[data-toast]` button's `onclick`. Commit 1 had already removed `createToaster` and the module-level `toaster`, so this commit removes the story and the `enhanceToaster` and `toast` imports.
+- [x] Queue `enhanceToaster` in the HTML preview's mirrored `render`. Pin the id in `tests/stories.test.ts`. Result: the existing microtask wires `.odd-tabs` and then `.odd-toaster` under `canvasElement`. The pin ends with `components-interactive--toast`, and the story passes the HTML-equals-React and `checkRoot` loops.
+- [x] Run both toast tests in `e2e/behavior.spec.ts` and the toast block in `e2e/usage.spec.ts` once per Storybook. Result: both behavior tests sit in a loop over `html` and `react`. The usage block opens each side and reads `#storybook-root .odd-toaster`, then `#toast-settings .odd-toaster` once the modal is open.
+- [x] Measure the `aria` literal in the built Firefox Storybook, then paste it. Result: both sides give the planned literal, four buttons and `region "Notifications"` with an empty `list` (`.verify/toast/build/aria-c3.txt`).
+- [x] Check. `bunx playwright test e2e/usage.spec.ts e2e/behavior.spec.ts --project firefox` passes with 0 diagnostics. With the part's layout effect removed, the React runs fail and the HTML runs pass. Result: `bun run check` passes 580 tests. Firefox passes 26 of 26, with "65 stories, 0 diagnostics" (`.verify/toast/build/browsers-c3-firefox.txt`). With the layout effect removed, both React behavior runs fail at "the toast shows inside the modal" and at the first toast, the usage sweep fails the React literal with the region lines missing, and both HTML runs pass (`browsers-c3-no-effect.txt`).
 
 ### Commit 4. Docs, smoke, and the verify recipes
 

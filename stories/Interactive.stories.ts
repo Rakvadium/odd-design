@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/html-vite";
-import { enhanceMenu, enhanceToaster, toast } from "../src/js/enhance.ts";
+import { enhanceMenu } from "../src/js/enhance.ts";
 import { icons } from "./icons.ts";
 
 const meta = {
@@ -66,48 +66,6 @@ export const Menu: Story = {
           const item = (event.target as Element).closest(".odd-menu-item");
           const label = [...(item?.childNodes ?? [])].filter((n) => n.nodeType === Node.TEXT_NODE).map((n) => n.textContent).join("");
           if (item) log.textContent = `Chose “${label.trim()}”`;
-        });
-      },
-    ),
-};
-
-export const Toast: Story = {
-  parameters: {
-    docs: {
-      description: {
-        story:
-          "A `section.odd-toaster` with `popover=\"manual\"` and an `aria-label`, wired by `enhanceToaster`, is the one polite live region per page, and `toast()` shows a toast on it. Toasts pause while hovered or focused, keep at most three, and leave after six seconds. The danger toast stays until dismissed. Save inside Settings shows a toast above the open modal dialog.",
-      },
-    },
-  },
-  render: () =>
-    mount(
-      /* html */ `<div class="odd-row">
-        <button class="odd-button" data-toast="saved">Save deck</button>
-        <button class="odd-button" data-toast="undo">Remove card</button>
-        <button class="odd-button" data-toast="error" data-variant="danger">Fail to sync</button>
-        <button class="odd-button" commandfor="toast-settings" command="show-modal">Settings…</button>
-      </div>
-      <dialog class="odd-dialog" id="toast-settings" aria-labelledby="toast-settings-title" closedby="any">
-        <div class="odd-dialog-body">
-          <h2 class="odd-dialog-title" id="toast-settings-title">Deck settings</h2>
-          <p class="odd-muted">Saving here shows a toast while this dialog stays open.</p>
-          <div class="odd-dialog-actions">
-            <button class="odd-button" commandfor="toast-settings" command="close">Close</button>
-            <button class="odd-button" data-variant="primary" data-toast="saved">Save</button>
-          </div>
-        </div>
-      </dialog>
-      <section class="odd-toaster" popover="manual" aria-label="Notifications"></section>`,
-      (root) => {
-        enhanceToaster(root.querySelector<HTMLElement>(".odd-toaster")!);
-        root.addEventListener("click", (event) => {
-          const kind = (event.target as Element).closest<HTMLElement>("[data-toast]")?.dataset.toast;
-          if (kind === "saved") toast({ title: "Deck saved", description: "Midnight Control, version 15.", tone: "success" });
-          if (kind === "undo")
-            toast({ title: "Removed “Ember Drake”", action: { label: "Undo", onClick: () => toast({ title: "Card restored", tone: "info" }) } });
-          if (kind === "error")
-            toast({ title: "Couldn’t sync", description: "Check your connection. Your changes are safe on this device.", tone: "danger", duration: Infinity });
         });
       },
     ),
