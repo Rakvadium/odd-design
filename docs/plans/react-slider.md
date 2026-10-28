@@ -150,7 +150,7 @@ Each item is the default the build uses. Each one can be reversed after review.
 
 ## Capture the baseline (no source change)
 
-- [ ] Build both Storybooks at `6b6c6ee` and capture the HTML section to `.verify/slider/base.json` with `bun scripts/capture-stories.ts`.
+- [x] Build both Storybooks at `6b6c6ee` and capture the HTML section to `.verify/slider/base.json` with `bun scripts/capture-stories.ts`. Result: built at `195f38d`, whose only change from `6b6c6ee` is this plan. 86 captures, served with `e2e/serve.ts` (`.verify/slider/base.json`, `build/shots-base/`).
 
 ## Build
 
@@ -158,49 +158,49 @@ Each commit ends with `bun run check`.
 
 ### Commit 1. Add Slider and check it with ODD-SLIDER-001 to 004
 
-- [ ] Add `USAGE.slider`, `SliderRule`, the `Slider` row, the four codes in `USAGE_CODES`, and their `MESSAGES`.
-- [ ] Write `docs/usage/slider.md` with one section per code.
-- [ ] Create `src/react/slider.tsx`. Add the barrel export and the `WrapperProps` line.
-- [ ] Add the `odd-slider-001` to `004` bad and good HTML pairs, the `RUNTIME_CODES` lines, and the `places` rows in `tests/eslint-html.test.ts`. Replace the bare `div.odd-slider` in `odd-class-001.good.html` with `input.odd-slider type="range"`.
-- [ ] Add type fail fixtures for `type="text"`, `aria-disabled`, and `data-tone` on `Slider`, with their `failures` entries. Add a controlled `Slider` with an `output` readout to `pass.tsx`.
-- [ ] Add `tests/fixtures/usage/jsx/slider.tsx` and its `places` entry. Cover a `div` with the class, a missing and a wrong `type`, a computed `type` (silent), `aria-disabled`, `data-tone`, and a clean part.
-- [ ] Add one markup row to `tests/react.test.tsx`.
-- [ ] Check. Delete each new rule row one at a time, and each fails a test.
+- [x] Add `USAGE.slider`, `SliderRule`, the `Slider` row, the four codes in `USAGE_CODES`, and their `MESSAGES`. Result: five rows as planned, after `search`. The messages name `input` for 001 and `type range` for 002, and 004 lists the appearance axes and the headless allowlist, as Search's 005 does.
+- [x] Write `docs/usage/slider.md` with one section per code. Result: one section per code, with the labeled range input as the base shape.
+- [x] Create `src/react/slider.tsx`. Add the barrel export and the `WrapperProps` line. Result: the README's three declarations, no `"use client"`. A `Slider` with no `type` is TypeScript's missing property error (TS2741, probed).
+- [x] Add the `odd-slider-001` to `004` bad and good HTML pairs, the `RUNTIME_CODES` lines, and the `places` rows in `tests/eslint-html.test.ts`. Replace the bare `div.odd-slider` in `odd-class-001.good.html` with `input.odd-slider type="range"`. Result: the 001 bad page has a `div` and an `output` with the class, and the 002 bad page a missing `type` and `type="number"`. Each bad line reports at its attribute or tag in ESLint.
+- [x] Add type fail fixtures for `type="text"`, `aria-disabled`, and `data-tone` on `Slider`, with their `failures` entries. Add a controlled `Slider` with an `output` readout to `pass.tsx`. Result: `slider-type` prints `"range"`, `slider-aria-disabled` prints ODD-SLIDER-003, and `slider-data-tone` prints ODD-SLIDER-004. `pass.tsx` gains `CopiesField`, a controlled `Slider` with an `output`.
+- [x] Add `tests/fixtures/usage/jsx/slider.tsx` and its `places` entry. Cover a `div` with the class, a missing and a wrong `type`, a computed `type` (the `ODD-STATIC-001` warning), `aria-disabled`, `data-tone`, and a clean part. Result: nine lines, six diagnostics at their places. Deviation: a computed `type` is not silent. A rule reads `type`, so `type={kind}` gives the `ODD-STATIC-001` warning, as a computed `tone` on `Badge` does (`check.ts:218`). The fixture pins that warning, and the docs say so.
+- [x] Add one markup row to `tests/react.test.tsx`. Result: a disabled `Slider` with `defaultValue` renders `<input type="range" … class="odd-slider wide" value="7"/>`, which the runtime checker accepts.
+- [x] Check. Delete each new rule row one at a time, and each fails a test. Result: `bun run check` passes 553 tests. Each of the five row deletions fails at least the HTML places, the JSX places, and its bad fixture, and the 002, 003, and 004 rows also fail the type fixtures (`.verify/slider/build/mutations-c1.txt`, from `build/mutate.ts slider`).
 
 ### Commit 2. Add Meter and Progress and check them with ODD-METER-001 to 003
 
-- [ ] Add `USAGE.meter`, `MeterRule`, the two rows, the three codes, and their `MESSAGES`.
-- [ ] Map `odd-progress` to `meter` in `stylesheet()` and extend the enum pin.
-- [ ] Write `docs/usage/meter.md` with one section per code and the native stat shape.
-- [ ] Create `src/react/meter.tsx`. Add the barrel export and the two `WrapperProps` lines.
-- [ ] Add the `odd-meter-001` to `003` pairs, `RUNTIME_CODES`, and HTML `places`. The 001 bad page has `div.odd-meter`, `progress.odd-meter`, and `div.odd-progress`. Replace the bare `div.odd-meter` and `div.odd-progress` in `odd-class-001.good.html`.
-- [ ] Add type fail fixtures for `tone="primary"` on `Meter` and `data-size` on `Progress`. Add a toned `Meter` and an indeterminate `Progress` to `pass.tsx`.
-- [ ] Add `tests/fixtures/usage/jsx/meter.tsx` and its `places` entry. Cover the raw-class misuses, a bad tone, a computed tone (silent), `data-size`, and clean parts.
-- [ ] Add markup rows for a toned `Meter` and an indeterminate `Progress` with no `value` attribute.
-- [ ] Check. Delete each new rule row and the `stylesheet()` mapping one at a time, and each fails a test.
+- [x] Add `USAGE.meter`, `MeterRule`, the two rows, the three codes, and their `MESSAGES`. Result: four rows as planned. METER-002's allowed text comes from `enumAllowed`, so it names the four tones and says primary and neutral mean remove the attribute. METER-003 names `data-tone`.
+- [x] Map `odd-progress` to `meter` in `stylesheet()` and extend the enum pin. Result: `stylesheet()` returns `meter` for `odd-progress`, and the pin ends with two more `data-tone` entries.
+- [x] Write `docs/usage/meter.md` with one section per code and the native stat shape. Result: one section per code, plus the stat shape with its bare `label`, `odd-stat-value`, and direct bar.
+- [x] Create `src/react/meter.tsx`. Add the barrel export and the two `WrapperProps` lines. Result: `MeterTone`, `Meter`, and `Progress` from the planned declarations, no `"use client"`.
+- [x] Add the `odd-meter-001` to `003` pairs, `RUNTIME_CODES`, and HTML `places`. The 001 bad page has `div.odd-meter`, `progress.odd-meter`, and `div.odd-progress`. Replace the bare `div.odd-meter` and `div.odd-progress` in `odd-class-001.good.html`. Result: the 001 bad page has the three planned misuses. The 002 bad page has `primary`, `neutral`, and a misspelled tone, and the 003 page `data-size` and `data-variant`. `odd-class-001.good.html` writes a `meter` and a `progress`.
+- [x] Add type fail fixtures for `tone="primary"` on `Meter` and `data-size` on `Progress`. Add a toned `Meter` and an indeterminate `Progress` to `pass.tsx`. Result: `meter-tone` prints the four tone literals, and `progress-data-size` prints ODD-METER-003. `pass.tsx` gains `DeckMix`, with a tone from a `Record` of `MeterTone | undefined`, a range-colored `Meter`, and both `Progress` states.
+- [x] Add `tests/fixtures/usage/jsx/meter.tsx` and its `places` entry. Cover the raw-class misuses, a bad tone, a computed tone (the `ODD-STATIC-001` warning), `data-size`, and clean parts. Result: fourteen lines, seven diagnostics at their places. Deviation: as for the slider, `tone={typeTone}` gives the `ODD-STATIC-001` warning, which the fixture pins. A raw `data-tone` on `Meter` gives nothing in ESLint (probed), as on `Badge`.
+- [x] Add markup rows for a toned `Meter` and an indeterminate `Progress` with no `value` attribute. Result: `<Meter tone="info">` renders `data-tone="info"`, and `<Progress>` renders `<progress … class="odd-progress"></progress>` with no `value`.
+- [x] Check. Delete each new rule row and the `stylesheet()` mapping one at a time, and each fails a test. Result: `bun run check` passes 562 tests. Deleting the METER-003 row fails the places, the bad fixture, and the type fixtures. Deleting any of the other three rows shifts `USAGE.meter[2]`, which `format.ts` reads for METER-002, so `format.ts` throws on import. A second pass therefore made each of those rows inert in place: each element row swapped to its sibling, and the enum aimed at an unread attribute. Each fails the HTML and JSX places and the enum pin, and the enum also fails the type fixtures. Dropping the mapping fails the enum pin and the vocabulary test (`.verify/slider/build/mutations-c2.txt`).
 
 ### Commit 3. Mirror Slider and Progress in the Storybooks
 
-- [ ] Create `stories/mirrored/Slider.stories.ts` with `title: "Components/Forms"`, export `Slider`, the scene from `Field`, `Label`, `Slider`, `Hint`, and the native `output`, and the `play`. Delete `stories/Forms.stories.ts` and move its component paragraph to the Field meta.
-- [ ] Create `stories/mirrored/Meter.stories.ts` with `title: "Components/Feedback"` and export `Progress`. Remove `Progress` from `stories/Feedback.stories.ts`.
-- [ ] Pin both ids in `tests/stories.test.ts`.
-- [ ] Measure both `aria` literals in the built Firefox Storybook, then paste them.
-- [ ] Add the probe to the slider test in `e2e/behavior.spec.ts` and run it on both Storybooks.
-- [ ] Check. `bunx playwright test e2e/usage.spec.ts e2e/behavior.spec.ts --project firefox` passes with 0 diagnostics.
+- [x] Create `stories/mirrored/Slider.stories.ts` with `title: "Components/Forms"`, export `Slider`, the scene from `Field`, `Label`, `Slider`, `Hint`, and the native `output`, and the `play`. Delete `stories/Forms.stories.ts` and move its component paragraph to the Field meta. Result: the scene is the planned `Field`, `Label`, `Slider`, `Hint`, and native `output`, with `defaultValue` on each `Slider`. The story-level text moves into the meta's component description, because `mirrored()` owns `parameters`. The `play` assigns `slider.oninput`. The Field meta gains the `:user-invalid` and `base-select` sentences.
+- [x] Create `stories/mirrored/Meter.stories.ts` with `title: "Components/Feedback"` and export `Progress`. Remove `Progress` from `stories/Feedback.stories.ts`. Result: a local `stat()` builds each native `odd-stat` row, and the storage meters map from one table. `Feedback.stories.ts` keeps `Log`.
+- [x] Pin both ids in `tests/stories.test.ts`. Result: the catalog test pins `components-forms--slider` and `components-feedback--progress`. Both pass the HTML-equals-React and `checkRoot` loops with no React warnings.
+- [x] Measure both `aria` literals in the built Firefox Storybook, then paste them. Result: the HTML and React sides give identical `ariaSnapshot()` trees in Firefox. The Slider tree equals the base design's guess. The Progress tree names each bar and shows no value (`.verify/slider/build/aria-c3.txt`).
+- [x] Add the probe to the slider test in `e2e/behavior.spec.ts` and run it on both Storybooks. Deviation: no probe. `openStory` waits until Storybook's `__STORYBOOK_PREVIEW__.currentRender.phase` is past `playing`, so `play` has returned before the test starts. Result: the test presses ArrowLeft twice and expects `1 of 4`. With `play` removed, all four runs fail there, with the readout still at `3 of 4` (`.verify/slider/build/fix2-no-play.txt`). An earlier version of the test, with the probe's fill steps still in it, passed with a `play` delayed by 1.5s and failed with the old wait on `#storybook-root`.
+- [x] Check. `bunx playwright test e2e/usage.spec.ts e2e/behavior.spec.ts --project firefox` passes with 0 diagnostics. Result: `bun run check` passes 566 tests. Firefox passes 24 of 24 with "64 stories, 0 diagnostics", and both slider runs pass (`.verify/slider/build/browsers-c3-firefox.txt`).
 
 ### Commit 4. Docs, smoke, and the verify recipes
 
-- [ ] In `docs/usage/react.md`, add "Build a slider" and "Show progress or a measurement", the type-error rows, and the 001 codes in the "not type errors" paragraph. Add Slider and Meter sections to `docs/usage/eslint.md`. Update the README install sentence, the usage-contract list, and the component rows.
-- [ ] Add both pages to `REQUIRED` in `scripts/consumer-smoke.ts`. The clean app renders a `Slider` and a `Meter`.
-- [ ] Update `.agents/skills/verify-odd-design/features/forms.md` and `feedback.md`: the React sections, the readout wait, and the measured sidebar order.
-- [ ] In `docs/follow-ups.md`, drop the unmirrored-Slider line and add the follow-ups in Appendix D.
-- [ ] Check. `bun run check`, `bun run build`, and `bun scripts/consumer-smoke.ts` pass.
+- [x] In `docs/usage/react.md`, add "Build a slider" and "Show progress or a measurement", the type-error rows, and the 001 codes in the "not type errors" paragraph. Add Slider and Meter sections to `docs/usage/eslint.md`. Update the README install sentence, the usage-contract list, and the component rows. Result: "Build a slider" teaches the required `type`, a controlled `Slider` with an `output`, and `disabled`. "Show progress or a measurement" teaches both `Progress` states, `tone` and `MeterTone`, range colors with no tone, and the native stat row. The table gains the SLIDER-003, SLIDER-004, and METER-003 rows and the `Slider` type rows. Both 001 codes join the raw-markup list.
+- [x] Add both pages to `REQUIRED` in `scripts/consumer-smoke.ts`. The clean app renders a `Slider` and a `Meter`. Result: the clean app renders a `Slider` in a `Field` and a `Meter` in an `odd-stat`.
+- [x] Update `.agents/skills/verify-odd-design/features/forms.md` and `feedback.md`: the React sections, the readout wait, and the measured sidebar order. Result: the slider recipe waits until `#copies` has an `oninput` function, and both files gain a React section. The measured order is Choices, Switch, Segmented, Text Fields, Select, Search, Slider in Forms, and Log, Alert, Progress, Skeleton in Feedback, in `index.json` and the composed sidebar. A `ctl.ts` run of the slider recipe saw the function on the first read, `--_progress` equal to each value, and `1 of 4` with progress 0 after two ArrowLefts (`.verify/slider/build/ctl-evidence/`).
+- [x] In `docs/follow-ups.md`, drop the unmirrored-Slider line and add the follow-ups in Appendix D. Result: four lines, from Appendix D.
+- [x] Check. `bun run check`, `bun run build`, and `bun scripts/consumer-smoke.ts` pass. Result: `bun run check` passes 566 tests, the build exits 0, and the smoke reports zero for its types, ESLint, and Vitest runs (`.verify/slider/build/smoke-c4.txt`).
 
 ## Verify on the real surface
 
-- [ ] Rebuild both Storybooks, capture to `after.json`, and diff against `base.json`. Pass means `changed` lists only the Slider and Progress stories, with no `png` or `aria` change.
-- [ ] Run `bun run test:browsers`. Pass means Firefox and WebKit pass, 0 diagnostics, and 0 axe violations.
-- [ ] Drive the composed build per the verify-odd-design skill. Open both sides of the Slider and Progress stories in `calm` light, `holoterminal` dark, and one more palette. Confirm matching screenshots and aria, and that ArrowLeft moves the readout on both sides.
+- [x] Rebuild both Storybooks, capture to `after.json`, and diff against `base.json`. Pass means `changed` lists only the Slider and Progress stories, with no `png` or `aria` change. Result: built with `bun scripts/storybooks.ts .verify/slider/build/sb` at `6a28f96`. 86 captures. The diff reports 4 changed (Slider and Progress, light and dark, `dom` only), 0 removed, 0 added. The `oninput` attribute is gone, the inline styles lost their spaces, and `Waiting…` moved into a nested `span.odd-muted` (`.verify/slider/build/capture-diff.txt`, `dom-diff.txt`).
+- [x] Run `bun run test:browsers`. Pass means Firefox and WebKit pass, 0 diagnostics, and 0 axe violations. Result: 50 passed, 2 skipped. "64 stories, 0 diagnostics". 0 axe violations in 58 runs per engine and mode, in Firefox and WebKit (`.verify/slider/build/browsers-tip.txt`).
+- [x] Drive the composed build per the verify-odd-design skill. Open both sides of the Slider and Progress stories in `calm` light, `holoterminal` dark, and one more palette. Confirm matching screenshots and aria, and that ArrowLeft moves the readout on both sides. Result: `.verify/slider/build/chrome-pair.ts` drove the built composed Storybook in Chrome in `calm` light, `holoterminal` dark, and `bubblegum` `sorbet` dark. The manager lists both React stories. In each appearance the two sides give byte-identical screenshots, before and after two ArrowLefts, and the same aria tree. The value reaches 1 and `#copies-value` reads `1 of 4` on both sides, and a rerun matched. Slider shots allow animations, because disabling them cancels the scroll-driven fill. The first run, with the fill cancelled, differed after ArrowLeft in `calm` light only, and that did not recur (`.verify/slider/build/chrome/`, `chrome-pair.txt`).
 
 ## Review and open the PR
 
