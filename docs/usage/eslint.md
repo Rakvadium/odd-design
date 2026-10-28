@@ -204,6 +204,16 @@ So `<Popover id="filters">` with no `popover`, `<Popover popover="manual">`, and
 
 A valueless `popover` in JSX reads as `""`, which passes. React drops `popover={true}` and warns, so the rendered `div` has no `popover`. On `Popover`, TypeScript rejects it, and the [runtime checker](runtime.md) reports `ODD-POPOVER-002` on the rendered page.
 
+### Dialog from odd-design/react
+
+The plugin checks `Dialog` as a `dialog` with `odd-dialog`, and `DialogActions` as a `div` with `odd-dialog-actions`, from their entries of `WRAPPERS`. Every prop is the attribute with the same name, so `role`, `closedby`, `open`, and the names are read as written. The body and the title have no part, so the plugin checks the `odd-dialog-body` and `odd-dialog-title` classes where you write them.
+
+So `<Dialog id="delete-deck">` with no name, and `<Dialog aria-label="">`, report `ODD-DIALOG-002`. `<Dialog role="dialog" aria-label="Appearance">` reports `ODD-DIALOG-003`, `<Dialog aria-label="Appearance" open>` reports `ODD-DIALOG-004`, and `<Dialog aria-label="Appearance" closedby="none">` reports `ODD-DIALOG-005`. `<Dialog aria-label="Appearance" data-tone="danger">` reports `ODD-DIALOG-007`, and `<DialogActions data-variant="danger">` reports `ODD-DIALOG-008`. A raw `<div className="odd-dialog">` reports `ODD-DIALOG-001`. A spread gives the `ODD-STATIC-001` warning, and `ODD-DIALOG-002` then stays quiet, because the spread may hold a name.
+
+The name rule is the `element` form of `accessible-name`. The `attribute` form reports a set attribute, such as `role`, with no name. The `element` form reports the element with no name, whatever it holds. Both count a computed name as present and a blank one as absent.
+
+`<Dialog role="alertdialog" aria-label="Discard changes?" closedby="any">` reports `ODD-DIALOG-006` on `closedby`. That rule is the `forbidden-value` kind: one value of an attribute is wrong when another attribute holds a given value. It stays quiet when either value is computed.
+
 ### Other components
 
 The plugin cannot see what another component renders. A component with an `odd-` class, such as `<Link className="odd-button">`, gets one `ODD-STATIC-001` warning on the element and no button rules. An `odd-` class that is not in the registry still reports `ODD-CLASS-001`. `<UI.Button>`, with `UI` a namespace import, counts as another component.

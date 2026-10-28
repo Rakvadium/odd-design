@@ -12,7 +12,8 @@ let session: Session = { mode: "prod" };
 export function toUsageNode(element: Element): UsageNode {
   return {
     tag: element.localName,
-    attributes: Array.from(element.attributes, ({ name, value }) => ({ name, value })),
+    // showModal() writes open, so on a modal dialog it is the browser's state, not the markup's.
+    attributes: Array.from(element.attributes, ({ name, value }) => ({ name, value })).filter(({ name }) => name !== "open" || !element.matches("dialog:modal")),
     children: Array.from(element.childNodes).flatMap((child): UsageNode["children"] => {
       if (child.nodeType === Node.ELEMENT_NODE) return [toUsageNode(child as Element)];
       if (child.nodeType === Node.TEXT_NODE) return [(child as Text).data];

@@ -5,6 +5,7 @@ import { Badge, type BadgeTone } from "../../../../src/react/badge.tsx";
 import { Button } from "../../../../src/react/button.tsx";
 import { Card, CardFooter, CardLink } from "../../../../src/react/card.tsx";
 import { Choice, Segmented, Switch } from "../../../../src/react/choice.tsx";
+import { Dialog, DialogActions } from "../../../../src/react/dialog.tsx";
 import { Disclosure } from "../../../../src/react/disclosure.tsx";
 import { Field, FieldError, Hint, Input, Label, Select, Textarea } from "../../../../src/react/field.tsx";
 import { Meter, Progress, type MeterTone } from "../../../../src/react/meter.tsx";
@@ -342,6 +343,29 @@ export function DeckFilters({ label }: { label: string }) {
       </Popover>
       <Popover id="notes" popover="auto" role="dialog" aria-label={label} />
       <Popover id="rules" popover="">Banned cards are marked.</Popover>
+    </>
+  );
+}
+
+export function DeleteDeck({ title, onDelete }: { title: string; onDelete: () => void }) {
+  const dialog = useRef<HTMLDialogElement>(null);
+  return (
+    <>
+      <Button variant="danger" commandfor="delete-deck" command="show-modal">Delete deck…</Button>
+      <Dialog ref={dialog} id="delete-deck" aria-labelledby="delete-deck-title" closedby="any" onClose={() => dialog.current?.returnValue === "delete" && onDelete()} className="wide" data-testid="delete" data-side="end">
+        <form className="odd-dialog-body" method="dialog">
+          <h2 className="odd-dialog-title" id="delete-deck-title">{title}</h2>
+          <DialogActions>
+            <Button commandfor="delete-deck" command="request-close">Close</Button>
+            <Button type="submit" value="delete" variant="danger">Delete</Button>
+          </DialogActions>
+        </form>
+      </Dialog>
+      <Dialog role="alertdialog" aria-label={title} closedby="closerequest" onCancel={(event) => event.preventDefault()}>
+        <div className="odd-dialog-body">
+          <DialogActions data-testid="actions" />
+        </div>
+      </Dialog>
     </>
   );
 }

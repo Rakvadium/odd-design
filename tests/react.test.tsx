@@ -11,6 +11,7 @@ import { Badge } from "../src/react/badge.tsx";
 import { Button } from "../src/react/button.tsx";
 import { Card, CardFooter, CardLink } from "../src/react/card.tsx";
 import { Choice, Segmented, Switch } from "../src/react/choice.tsx";
+import { Dialog, DialogActions } from "../src/react/dialog.tsx";
 import { Disclosure } from "../src/react/disclosure.tsx";
 import { Field, FieldError, Hint, Input, Label, Select, Textarea } from "../src/react/field.tsx";
 import { Meter, Progress } from "../src/react/meter.tsx";
@@ -241,6 +242,14 @@ const markup: readonly [string, ReactElement, string][] = [
       <p id="filters-title">Filter decks</p>
     </Popover>,
     '<div id="filters" popover="auto" role="dialog" aria-labelledby="filters-title" class="odd-popover wide"><p id="filters-title">Filter decks</p></div>',
+  ],
+  [
+    "dialog around its actions",
+    <Dialog id="confirm" aria-labelledby="confirm-title" closedby="any" className="wide">
+      <h2 id="confirm-title">Delete deck?</h2>
+      <DialogActions className="end" />
+    </Dialog>,
+    '<dialog id="confirm" aria-labelledby="confirm-title" closedby="any" class="odd-dialog wide"><h2 id="confirm-title">Delete deck?</h2><div class="odd-dialog-actions end"></div></dialog>',
   ],
 ];
 
@@ -503,6 +512,13 @@ const failures: Record<string, { codes: string[]; text: string[] }> = {
   "popover-name-without-role": { codes: ["ODD-POPOVER-005"], text: [] },
   "popover-name": { codes: ["ODD-POPOVER-004"], text: [] },
   "popover-data-tone": { codes: ["ODD-POPOVER-006"], text: [] },
+  "dialog-name": { codes: [], text: ["Property '\"aria-labelledby\"' is missing"] },
+  "dialog-role": { codes: [], text: ['"alertdialog"'] },
+  "dialog-open": { codes: ["ODD-DIALOG-004"], text: [] },
+  "dialog-closedby": { codes: [], text: ['"any" | "closerequest" | undefined'] },
+  "dialog-alert-closedby": { codes: [], text: ["'\"any\"' is not assignable to type '\"closerequest\"'"] },
+  "dialog-data-tone": { codes: ["ODD-DIALOG-007"], text: [] },
+  "dialog-actions-data-tone": { codes: ["ODD-DIALOG-008"], text: [] },
 };
 
 describe("React types", () => {

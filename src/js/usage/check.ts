@@ -252,12 +252,20 @@ function apply(rule: UsageRule, scope: Scope): Diagnostic[] {
       const attribute = find(node, rule.attribute);
       return tag === rule.element && attribute !== undefined ? [diagnose(rule.code, attribute)] : [];
     }
+    case "forbidden-value": {
+      const attribute = find(node, rule.attribute);
+      return attribute?.value === rule.value && holds(node, rule.when.attribute, rule.when.value) === true
+        ? [diagnose(rule.code, attribute, { found: `${rule.attribute}=${rule.value} with ${rule.when.attribute}=${rule.when.value}` })]
+        : [];
+    }
     case "enum-on-element": {
       const attribute = find(node, rule.attribute);
       return tag !== undefined && tag !== rule.element && attribute !== undefined ? [diagnose(rule.code, attribute, { found: tag })] : [];
     }
-    case "accessible-name":
-      return isSet(scope, rule.attribute) && !hasUnknownAttributes(node) && !rule.names.some((name) => hasName(node, name)) ? [diagnose(rule.code)] : [];
+    case "accessible-name": {
+      const needed = "element" in rule ? tag === rule.element : isSet(scope, rule.attribute);
+      return needed && !hasUnknownAttributes(node) && !rule.names.some((name) => hasName(node, name)) ? [diagnose(rule.code)] : [];
+    }
     case "name-requires": {
       const name = rule.names.find((candidate) => hasName(node, candidate));
       return name !== undefined && find(node, rule.attribute) === undefined && !hasUnknownAttributes(node)

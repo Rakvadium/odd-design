@@ -110,27 +110,3 @@ export const Sheet: Story = {
     ${sheet("sheet-bottom", "bottom", "Filters")}
   </div>`,
 };
-
-export const AlertDialog: Story = {
-  parameters: {
-    docs: {
-      description: {
-        story:
-          "`role=\"alertdialog\"` for a decision the user must make. It leaves out `closedby=\"any\"`, so a click outside doesn't dismiss it, but Escape still cancels. Focus starts on the safe choice.",
-      },
-    },
-  },
-  render: () => /* html */ `<div>
-    <button class="odd-button" data-variant="danger" commandfor="discard" command="show-modal">Discard changes…</button>
-    <dialog class="odd-dialog" id="discard" role="alertdialog" aria-labelledby="discard-title" aria-describedby="discard-desc">
-      <div class="odd-dialog-body">
-        <h2 class="odd-dialog-title" id="discard-title">Discard unsaved changes?</h2>
-        <p class="odd-muted" id="discard-desc">You’ve edited 6 cards since your last save. Discarding can’t be undone.</p>
-        <div class="odd-dialog-actions">
-          <button class="odd-button" commandfor="discard" command="close" autofocus>Keep editing</button>
-          <button class="odd-button" data-variant="danger" commandfor="discard" command="close">Discard</button>
-        </div>
-      </div>
-    </dialog>
-  </div>`,
-};
