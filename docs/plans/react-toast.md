@@ -204,8 +204,8 @@ Each commit ends with `bun run check`. The boxes under a commit name its extra c
 
 - [x] The `cursor grok-4.7` reviewer reads the diff against this plan. A fresh builder fixes each finding that blocks. Other findings go to `docs/follow-ups.md`. Result: the reviewer probed `toast.ts` in Firefox, WebKit, and Chromium and found no behavior defect, including nested modals, a modal that closes during the 150 ms wait, and `stop()` under a stand-in. It found two blocking false claims in the text. The ODD-TOAST-002 message said `enhanceToaster` throws with no `popover`, and the README and `react.md` said an open modal shows toasts already on screen. A fresh builder fixed both. The empty home region beside the stand-in, and `bun test` not seeing the rehome or the pause, went to `docs/follow-ups.md`.
 - [x] Run `/deslop` and `/no-comments` over the diff. Result: Comment Sicko deleted four comments, including the `toast.ts` module header and the NVDA history above the announcement test. Its two MUST KILL flags were rejected. A `newestToaster()` helper for the `Map` order would have one caller, and renaming the list does not carry the reason the listeners sit on it. For `/deslop`, the lead read the diff and found nothing to remove.
-- [ ] Open the PR ready with `gh pr create --base main --repo Rakvadium/odd-design`. The title is `feat(react): add Toaster and mirror Toast in the Storybooks`.
-- [ ] Run `gh pr checks`. The repo has no workflows, so expect "no checks reported". Report the PR as open. Do not merge.
+- [x] Open the PR ready with `gh pr create --base main --repo Rakvadium/odd-design`. The title is `feat(react): add Toaster and mirror Toast in the Storybooks`. Result: opened ready as #34.
+- [x] Run `gh pr checks`. The repo has no workflows, so expect "no checks reported". Report the PR as open. Do not merge. Result: the repo has no workflows, so gh pr checks reports no checks. The PR is open and not merged.
 
 ## Throughput checkpoint
 
@@ -253,7 +253,7 @@ These files are local scratch under the gitignored `.verify/toast/` folder of th
 ## Appendix D. Risks and follow-ups
 
 - **`createToaster` is gone.** An outside HTML caller, if one exists, must write the section and call `enhanceToaster`.
-- **The stand-in is new to screen readers on each modal open.** NVDA checks it once before the PR. VoiceOver is unchecked.
+- **The stand-in is new to screen readers on each modal open.** It still needs the NVDA `toast-over-modal` scenario. The run before the PR did not finish because the desktop left the headed page hidden overnight, so `ctl.ts goto` never returned. VoiceOver is unchecked.
 - **Changing `aria-label` on a mounted `Toaster` while a modal is open** leaves the stand-in with the old name until the next rehome.
 - **Toasts already showing when a modal opens still go inert** until the next `toast()`. This is the existing follow-up, unchanged.
 - **`data-tone="neutral"` is written but styles nothing.** Omitting it matches the CSS.

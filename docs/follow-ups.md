@@ -118,7 +118,7 @@ Run with NVDA 2026.2, OneCore David, rate 50, in Chrome. The transcripts are in 
 - **An `aborted` phase ends the `openStory` wait without an error.** (React Slider)
 - **`e2e/story.ts` imports `Renderer` from the private `storybook/internal/types`.** A local type would survive a Storybook bump. (React Slider)
 - **`createToaster` is gone.** An HTML caller outside this repo, if one exists, must write the `section.odd-toaster` and call `enhanceToaster`. (React Toast)
-- **The stand-in region is new to screen readers on each modal open.** NVDA is checked once before the PR. VoiceOver is unchecked. (React Toast)
+- **The stand-in region is new to screen readers on each modal open.** It still needs the NVDA `toast-over-modal` scenario. The run before the PR did not finish because the desktop left the headed page hidden overnight, so `ctl.ts goto` never returned. VoiceOver is unchecked. (React Toast)
 - **Changing `aria-label` on a mounted `Toaster` while a modal is open** leaves the stand-in with the old name until the next rehome. (React Toast)
 - **The empty home region stays open beside the stand-in.** While a modal is open, the original section is still `:popover-open` with its `aria-label` and no children, so a second, empty Notifications region sits outside the dialog until it closes. (React Toast)
 - **`bun test` cannot see the rehome or the pause.** `tests/setup/happy-dom.ts` stubs `showPopover` and `hidePopover`, so unit tests stay green with the stand-in move or the pause listeners deleted. `e2e/behavior.spec.ts` covers only a toast shown while the modal is open. (React Toast)
