@@ -1,8 +1,8 @@
 # Use the React components
 
-`odd-design/react` exports `Button`, the Field parts, the Choice parts, `Badge`, the Alert parts, the Avatar parts, `Separator`, `Skeleton`, the Card parts, `Disclosure`, `Tabs`, and `Search`. Each renders an `odd-` element from typed props. A contract mistake in those props is a TypeScript error that starts with its code, such as `ODD-BUTTON-007`. `Button` lives in `src/react/button.tsx`, the Field parts in `src/react/field.tsx`, the Choice parts in `src/react/choice.tsx`, `Badge` in `src/react/badge.tsx`, the Alert parts in `src/react/alert.tsx`, the Avatar parts in `src/react/avatar.tsx`, `Separator` in `src/react/separator.tsx`, `Skeleton` in `src/react/skeleton.tsx`, the Card parts in `src/react/card.tsx`, `Disclosure` in `src/react/disclosure.tsx`, `Tabs` in `src/react/tabs.tsx`, and `Search` in `src/react/search.tsx`. Codes and fixes are in [Button usage rules](button.md), [Field usage rules](field.md), [Choice usage rules](choice.md), [Badge usage rules](badge.md), [Alert usage rules](alert.md), [Avatar usage rules](avatar.md), [Separator usage rules](separator.md), [Skeleton usage rules](skeleton.md), [Card usage rules](card.md), [Disclosure usage rules](disclosure.md), [Tabs usage rules](tabs.md), and [Search usage rules](search.md).
+`odd-design/react` exports `Button`, the Field parts, the Choice parts, `Badge`, the Alert parts, the Avatar parts, `Separator`, `Skeleton`, the Card parts, `Disclosure`, `Tabs`, `Search`, `Slider`, `Meter`, and `Progress`. Each renders an `odd-` element from typed props. A contract mistake in those props is a TypeScript error that starts with its code, such as `ODD-BUTTON-007`. `Button` lives in `src/react/button.tsx`, the Field parts in `src/react/field.tsx`, the Choice parts in `src/react/choice.tsx`, `Badge` in `src/react/badge.tsx`, the Alert parts in `src/react/alert.tsx`, the Avatar parts in `src/react/avatar.tsx`, `Separator` in `src/react/separator.tsx`, `Skeleton` in `src/react/skeleton.tsx`, the Card parts in `src/react/card.tsx`, `Disclosure` in `src/react/disclosure.tsx`, `Tabs` in `src/react/tabs.tsx`, `Search` in `src/react/search.tsx`, `Slider` in `src/react/slider.tsx`, and `Meter` and `Progress` in `src/react/meter.tsx`. Codes and fixes are in [Button usage rules](button.md), [Field usage rules](field.md), [Choice usage rules](choice.md), [Badge usage rules](badge.md), [Alert usage rules](alert.md), [Avatar usage rules](avatar.md), [Separator usage rules](separator.md), [Skeleton usage rules](skeleton.md), [Card usage rules](card.md), [Disclosure usage rules](disclosure.md), [Tabs usage rules](tabs.md), [Search usage rules](search.md), [Slider usage rules](slider.md), and [Meter usage rules](meter.md).
 
-`button.tsx` and `tabs.tsx` start with `"use client"`, so a React Server Components app can render `Button` and `Tabs` from a server component. `Tabs` wires its set in a layout effect. The Field parts, the Choice parts, `Badge`, the Alert parts, the Avatar parts, `Separator`, `Skeleton`, the Card parts, `Disclosure`, and `Search` hold no state and no handlers, so `field.tsx`, `choice.tsx`, `badge.tsx`, `alert.tsx`, `avatar.tsx`, `separator.tsx`, `skeleton.tsx`, `card.tsx`, `disclosure.tsx`, and `search.tsx` have no directive. A component that holds the disclosure's state puts the directive in its own file.
+`button.tsx` and `tabs.tsx` start with `"use client"`, so a React Server Components app can render `Button` and `Tabs` from a server component. `Tabs` wires its set in a layout effect. The Field parts, the Choice parts, `Badge`, the Alert parts, the Avatar parts, `Separator`, `Skeleton`, the Card parts, `Disclosure`, `Search`, `Slider`, `Meter`, and `Progress` hold no state and no handlers, so `field.tsx`, `choice.tsx`, `badge.tsx`, `alert.tsx`, `avatar.tsx`, `separator.tsx`, `skeleton.tsx`, `card.tsx`, `disclosure.tsx`, `search.tsx`, `slider.tsx`, and `meter.tsx` have no directive. A component that holds the disclosure's state puts the directive in its own file.
 
 ## Render a button or a link
 
@@ -425,6 +425,66 @@ To submit on Enter, put a `form` around `Search`. Enter in the input fires the f
 
 The CSS's own shape, `<search><form className="odd-search">`, also works and is checked the same way. Its form submits on Enter, and the page navigates unless `onSubmit` calls `preventDefault`.
 
+## Build a slider
+
+```tsx
+"use client";
+import { useState } from "react";
+import { Field, Hint, Label, Slider } from "odd-design/react";
+
+export function CopiesField() {
+  const [copies, setCopies] = useState(3);
+  return (
+    <Field>
+      <Label htmlFor="copies">Copies per card</Label>
+      <output className="odd-stat-value" htmlFor="copies">{copies} of 4</output>
+      <Slider
+        type="range"
+        id="copies"
+        min={1}
+        max={4}
+        value={copies}
+        onChange={(event) => setCopies(event.currentTarget.valueAsNumber)}
+        aria-describedby="copies-hint"
+      />
+      <Hint id="copies-hint">Most formats allow up to 4.</Hint>
+    </Field>
+  );
+}
+```
+
+`Slider` renders an `input` with the class `odd-slider`. It takes `type="range"` from you, as `Switch` takes `type="checkbox"`, so the element ESLint reads is the element React renders. A `Slider` without `type` is TypeScript's missing property error, and another `type` prints `"range"`. Every other prop goes to the input: `min`, `max`, `step`, `value` with `onChange`, or `defaultValue`. The arrow keys, Page Up and Page Down, and Home and End come from the browser.
+
+Show the value as text when it matters, as the `output` above does. WebKit draws no filled track, so the thumb and that text are what show the value there. Disable a slider with `disabled`. `aria-disabled` on `Slider` is a type error (`ODD-SLIDER-003`), because the thumb still moves and the slider does not look disabled. A system `data-` attribute on `Slider`, such as `data-tone`, is a type error (`ODD-SLIDER-004`). A computed `type`, such as `type={kind}`, gives the `ODD-STATIC-001` warning.
+
+## Show progress or a measurement
+
+```tsx
+import { Meter, Progress, type MeterTone } from "odd-design/react";
+
+<Progress id="import" value={40} max={100} aria-label="Importing decks" />;
+<Progress id="sync" aria-label="Syncing collection" />;
+
+<div className="odd-stat">
+  <label htmlFor="actions">Actions</label>
+  <span className="odd-stat-value">22 <span className="odd-muted">(37%)</span></span>
+  <Meter id="actions" min={0} max={60} value={22} tone="info" />
+</div>;
+
+<Meter id="store-high" value={0.93} low={0.6} high={0.85} optimum={0} aria-label="Exports" />;
+```
+
+`Progress` renders a `progress` with the class `odd-progress`, for a task. Leave out `value` for an indeterminate bar. `Meter` renders a `meter` with the class `odd-meter`, for a measurement in a known range. Name each bar with a `label` or `aria-label`, and show the value as text too.
+
+| Prop | What the element gets |
+| --- | --- |
+| `tone` | `data-tone`. It takes `success`, `warning`, `danger`, or `info`. Leave it out for the default bar. |
+| Any other prop | The attribute with the same name, such as `value`, `max`, `low`, `high`, and `optimum`. |
+
+`MeterTone` is the type of `tone`, for both bars. It has no `primary` and no `neutral`, and either one is a type error. Passing `data-tone` yourself is a type error, and the part drops the raw attribute. A system `data-` attribute other than `data-tone`, such as `data-size`, is a type error (`ODD-METER-003`). With `low` or `high`, a `Meter` colors itself by range, so give it no `tone`. No checker reads the two together yet. A computed `tone`, such as `<Meter tone={toneOf[kind]}>`, gives the `ODD-STATIC-001` warning, the same as a computed `tone` on `Badge`.
+
+The stat row has no part. Write `div.odd-stat` with a bare `label`, an `odd-stat-value` on a `span` or an `output`, and the bar, as above. `Label` adds `odd-label` and is not the stat's label. Keep the bar a direct child of `odd-stat`, so it spans the whole row.
+
 ## Read a type error
 
 The type error names the code and the fix. The table lists what each mistake prints.
@@ -462,14 +522,17 @@ The type error names the code and the fix. The table lists what each mistake pri
 | `defaultValue` on `Tabs` | `not assignable to type 'undefined'` |
 | `onSubmit` or `onsubmit` on `Search` | `ODD-SEARCH-004` |
 | A system `data-` attribute on `Search`, such as `data-tone` | `ODD-SEARCH-005` |
-| `Switch` without `type` or `role`, `AvatarGroup` without `role`, `Skeleton` without `aria-hidden`, or `CardLink` without `href` | TypeScript's missing property error |
-| A `Switch` `type` other than `checkbox`, a `Switch` `role` other than `switch`, an `Avatar` or `AvatarGroup` `role` other than `img` or `group`, a `Separator` `role` other than `separator`, or a `Skeleton` `aria-hidden` other than `"true"` | The allowed value |
+| `aria-disabled` on `Slider` | `ODD-SLIDER-003` |
+| A system `data-` attribute on `Slider`, such as `data-tone` | `ODD-SLIDER-004` |
+| A system `data-` attribute on `Meter` or `Progress` other than `data-tone`, such as `data-size` | `ODD-METER-003` |
+| `Switch` without `type` or `role`, `Slider` without `type`, `AvatarGroup` without `role`, `Skeleton` without `aria-hidden`, or `CardLink` without `href` | TypeScript's missing property error |
+| A `Switch` `type` other than `checkbox`, a `Switch` `role` other than `switch`, a `Slider` `type` other than `range`, an `Avatar` or `AvatarGroup` `role` other than `img` or `group`, a `Separator` `role` other than `separator`, or a `Skeleton` `aria-hidden` other than `"true"` | The allowed value |
 | `Label` without `htmlFor`, or `Hint` or `FieldError` without `id` | TypeScript's missing property error |
 | A `variant`, `size`, `aria-current`, `tone`, `aria-orientation`, or `shape` value outside the contract | The allowed values |
 
 TypeScript shortens a long type in an error. Set `noErrorTruncation` in `tsconfig.json` to see the whole message.
 
-Some rules are not type errors. `Button` picks the element from `href`, so you cannot write an anchor without `href` (`ODD-BUTTON-009`) or a button with `href` (`ODD-BUTTON-010`). Those two codes apply to a raw `a` or `button` with the `odd-button` class. Each Field and Choice part, `Badge`, each Alert part, each Avatar part, `Separator`, `Skeleton`, each Card part, `Disclosure`, `Tabs`, and `Search` picks its own element too, so `ODD-FIELD-001`, `ODD-CHOICE-001`, `ODD-BADGE-001`, `ODD-ALERT-001`, `ODD-AVATAR-001`, `ODD-SEPARATOR-001`, `ODD-SKELETON-001`, `ODD-CARD-001`, `ODD-DISCLOSURE-001`, `ODD-TABS-001`, and `ODD-SEARCH-001` apply only to raw markup. Visible text in an icon-only button (`ODD-BUTTON-014`), the links and buttons in a card (`ODD-CARD-003`), the summary of a disclosure (`ODD-DISCLOSURE-002`), the tablist of a tab set (`ODD-TABS-002`), the tabs in a tab set (`ODD-TABS-004`), the input and the icon of a search (`ODD-SEARCH-002` and `ODD-SEARCH-003`), and a misspelled `data-` name are not type errors either. The ESLint plugin and the [runtime checker](runtime.md) report each of these.
+Some rules are not type errors. `Button` picks the element from `href`, so you cannot write an anchor without `href` (`ODD-BUTTON-009`) or a button with `href` (`ODD-BUTTON-010`). Those two codes apply to a raw `a` or `button` with the `odd-button` class. Each Field and Choice part, `Badge`, each Alert part, each Avatar part, `Separator`, `Skeleton`, each Card part, `Disclosure`, `Tabs`, `Search`, `Slider`, `Meter`, and `Progress` picks its own element too, so `ODD-FIELD-001`, `ODD-CHOICE-001`, `ODD-BADGE-001`, `ODD-ALERT-001`, `ODD-AVATAR-001`, `ODD-SEPARATOR-001`, `ODD-SKELETON-001`, `ODD-CARD-001`, `ODD-DISCLOSURE-001`, `ODD-TABS-001`, `ODD-SEARCH-001`, `ODD-SLIDER-001`, and `ODD-METER-001` apply only to raw markup. Visible text in an icon-only button (`ODD-BUTTON-014`), the links and buttons in a card (`ODD-CARD-003`), the summary of a disclosure (`ODD-DISCLOSURE-002`), the tablist of a tab set (`ODD-TABS-002`), the tabs in a tab set (`ODD-TABS-004`), the input and the icon of a search (`ODD-SEARCH-002` and `ODD-SEARCH-003`), and a misspelled `data-` name are not type errors either. The ESLint plugin and the [runtime checker](runtime.md) report each of these.
 
 ## Open a dialog or a popover with a command
 

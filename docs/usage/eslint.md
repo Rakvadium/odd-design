@@ -176,6 +176,18 @@ The plugin checks `Search` as a `search` with `odd-search`, from its entry of `W
 
 So a `Search` whose `Input` sits inside a `div` or a `form`, a raw `input` with no `odd-input`, or an `Input` with `type="text"` reports `ODD-SEARCH-002`. A `Search` with no `svg`, with its `svg` inside a `span`, or with an `svg` that lacks `aria-hidden="true"` reports `ODD-SEARCH-003`. A bare `aria-hidden` reads as empty, so it reports too. `<Search onSubmit={submit}>` reports `ODD-SEARCH-004`. A raw `<div className="odd-search">` reports `ODD-SEARCH-001` alone, and `<search><form className="odd-search">` is checked like `Search`. `<Search data-tone="info">` reports `ODD-SEARCH-005`. A child component, such as an icon from an icon library, or an expression child hides what it renders, so `ODD-SEARCH-002` and `ODD-SEARCH-003` both stay quiet on that search. A computed `className` or `type` on the input, a computed `aria-hidden` on the icon, or a spread that leaves the attribute out also stays quiet. A computed `className` still reports when the input's `type` is missing or not `search`.
 
+### Slider from odd-design/react
+
+The plugin checks `Slider` as an `input` with `odd-slider`, from its entry of `WRAPPERS`. Every prop is the attribute with the same name, so `type` is read as written.
+
+So `<Slider>` with no `type`, `<Slider type="number">`, and a raw `<input className="odd-slider">` with no `type` report `ODD-SLIDER-002`. `<Slider type="range" aria-disabled="true">` reports `ODD-SLIDER-003`, and `<Slider type="range" data-tone="info">` reports `ODD-SLIDER-004`. A raw `<div className="odd-slider">` reports `ODD-SLIDER-001`. A computed `type`, such as `type={kind}`, gives the `ODD-STATIC-001` warning.
+
+### Meter and Progress from odd-design/react
+
+The plugin checks `Meter` as a `meter` with `odd-meter`, and `Progress` as a `progress` with `odd-progress`, from their entries of `WRAPPERS`. `tone` is read as `data-tone`. A raw `data-tone` gives nothing. Both parts set that attribute from `tone`, so they drop a raw one, and their types reject one. Every other prop is the attribute with the same name.
+
+So `<Meter tone="primary">` reports `ODD-METER-002`, and so does a raw `<progress className="odd-progress" data-tone="neutral">`. `<Progress data-size="sm">` reports `ODD-METER-003`. A raw `<div className="odd-progress">` or `<progress className="odd-meter">` reports `ODD-METER-001`. A computed `tone`, such as `<Meter tone={toneOf[kind]}>`, gives the `ODD-STATIC-001` warning, the same as a computed `tone` on `Badge`. The plugin does not read `low` and `high` beside `tone`, or the `odd-stat` around a bar.
+
 ### Other components
 
 The plugin cannot see what another component renders. A component with an `odd-` class, such as `<Link className="odd-button">`, gets one `ODD-STATIC-001` warning on the element and no button rules. An `odd-` class that is not in the registry still reports `ODD-CLASS-001`. `<UI.Button>`, with `UI` a namespace import, counts as another component.
