@@ -251,6 +251,22 @@ export const USAGE = {
     { kind: "forbidden-attribute", code: "ODD-MENU-007", attribute: "disabled" },
     { kind: "system-data", code: "ODD-MENU-004" },
   ] as const satisfies readonly UsageRule[],
+  tableWrap: [
+    { kind: "element", code: "ODD-TABLE-001", className: "odd-table-wrap", elements: ["div"] },
+    { kind: "enum", code: "ODD-TABLE-002", attribute: "role", values: ["region"], omit: [] },
+    { kind: "name-requires", code: "ODD-TABLE-002", attribute: "role", names: ["tabindex", "tabIndex", "aria-label", "aria-labelledby"] },
+    { kind: "accessible-name", code: "ODD-TABLE-003", attribute: "role", names: ["aria-label", "aria-labelledby"] },
+    { kind: "system-data", code: "ODD-TABLE-004" },
+  ] as const satisfies readonly UsageRule[],
+  table: [
+    { kind: "element", code: "ODD-TABLE-001", className: "odd-table", elements: ["table"] },
+    { kind: "system-data", code: "ODD-TABLE-004" },
+  ] as const satisfies readonly UsageRule[],
+  tableSort: [
+    { kind: "element", code: "ODD-TABLE-001", className: "odd-table-sort", elements: ["button"] },
+    { kind: "forbidden-attribute", code: "ODD-TABLE-005", attribute: "aria-sort" },
+    { kind: "system-data", code: "ODD-TABLE-004" },
+  ] as const satisfies readonly UsageRule[],
   shared: [
     { kind: "unknown-class", code: "ODD-CLASS-001" },
     { kind: "computed-value", code: "ODD-STATIC-001" },
@@ -309,6 +325,9 @@ export const WRAPPERS = {
   SheetFooter: { source: "odd-design/react", className: "odd-sheet-footer", props: {}, element: "div" },
   Menu: { source: "odd-design/react", className: "odd-menu", props: {}, element: "div" },
   MenuItem: { source: "odd-design/react", className: "odd-menu-item", props: { tone: "data-tone" }, element: "button" },
+  TableWrap: { source: "odd-design/react", className: "odd-table-wrap", props: {}, element: "div" },
+  Table: { source: "odd-design/react", className: "odd-table", props: {}, element: "table" },
+  TableSort: { source: "odd-design/react", className: "odd-table-sort", props: {}, element: "button" },
 } as const satisfies Record<string, Wrapper>;
 
 export const CLASS_REGISTRY = [
@@ -447,3 +466,6 @@ export type SheetRule = (typeof USAGE.sheet)[number];
 export type SheetPartRule = (typeof USAGE.sheetPart)[number];
 export type MenuRule = (typeof USAGE.menu)[number];
 export type MenuItemRule = (typeof USAGE.menuItem)[number];
+export type TableWrapRule = (typeof USAGE.tableWrap)[number];
+export type TableRule = (typeof USAGE.table)[number];
+export type TableSortRule = (typeof USAGE.tableSort)[number];

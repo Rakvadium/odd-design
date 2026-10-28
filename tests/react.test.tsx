@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, test } from "bun:test";
 import { fileURLToPath } from "node:url";
-import { act, StrictMode, type ReactElement } from "react";
+import { act, StrictMode, useState, type ReactElement } from "react";
 import { createRoot, type Root } from "react-dom/client";
 import { renderToStaticMarkup } from "react-dom/server";
 import { enhance, enhanceTabs, toast } from "../src/js/enhance.ts";
@@ -22,6 +22,7 @@ import { Separator } from "../src/react/separator.tsx";
 import { Sheet, SheetFooter, SheetHeader } from "../src/react/sheet.tsx";
 import { Skeleton } from "../src/react/skeleton.tsx";
 import { Slider } from "../src/react/slider.tsx";
+import { Table, TableSort, TableWrap } from "../src/react/table.tsx";
 import { Tabs } from "../src/react/tabs.tsx";
 import { Toaster } from "../src/react/toast.tsx";
 
@@ -274,6 +275,23 @@ const markup: readonly [string, ReactElement, string][] = [
     </Sheet>,
     '<dialog id="filters" aria-labelledby="filters-title" closedby="any" class="odd-sheet wide" data-side="start"><div class="odd-sheet-header"><h2 class="odd-dialog-title" id="filters-title">Filters</h2></div><div class="odd-sheet-body"></div><div class="odd-sheet-footer end"></div></dialog>',
   ],
+  [
+    "table in its scroll region with a sortable header",
+    <TableWrap tabIndex={0} role="region" aria-labelledby="decks-caption">
+      <Table>
+        <caption id="decks-caption">Your decks</caption>
+        <thead>
+          <tr>
+            <th scope="col" aria-sort="ascending">
+              <TableSort>Deck</TableSort>
+            </th>
+          </tr>
+        </thead>
+        <tbody />
+      </Table>
+    </TableWrap>,
+    '<div tabindex="0" role="region" aria-labelledby="decks-caption" class="odd-table-wrap"><table class="odd-table"><caption id="decks-caption">Your decks</caption><thead><tr><th scope="col" aria-sort="ascending"><button class="odd-table-sort">Deck</button></th></tr></thead><tbody></tbody></table></div>',
+  ],
 ];
 
 describe("React markup", () => {
@@ -459,6 +477,77 @@ describe("Menu", () => {
   });
 });
 
+describe("Table", () => {
+  test("select-all reaches React onChange once per changed row under StrictMode beside an app's enhance(), resyncs after React changes the rows, and finds a header box rendered after mount", async () => {
+    const host = document.createElement("div");
+    document.body.append(host);
+    const root = createRoot(host);
+    mounted = root;
+    const changed: string[] = [];
+    function SelectAll() {
+      const [generation, setGeneration] = useState(0);
+      return (
+        <th>
+          <input key={generation} type="checkbox" data-select-all aria-label="Select all decks" />
+          <button type="button" onClick={() => setGeneration(1)}>
+            Replace
+          </button>
+        </th>
+      );
+    }
+    function Decks() {
+      const [selected, setSelected] = useState<readonly string[]>(["b"]);
+      const toggle = (id: string) => {
+        changed.push(id);
+        setSelected((ids) => (ids.includes(id) ? ids.filter((each) => each !== id) : [...ids, id]));
+      };
+      return (
+        <>
+          <button type="button" onClick={() => setSelected([])}>
+            Clear
+          </button>
+          <Table>
+            <thead>
+              <tr>
+                <SelectAll />
+              </tr>
+            </thead>
+            <tbody>
+              {["a", "b", "c"].map((id) => (
+                <tr key={id}>
+                  <td>
+                    <input type="checkbox" aria-label={id} checked={selected.includes(id)} onChange={() => toggle(id)} />
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </Table>
+        </>
+      );
+    }
+    await act(async () =>
+      root.render(
+        <StrictMode>
+          <Decks />
+        </StrictMode>,
+      ),
+    );
+    const unwire = enhance(document);
+    const all = () => host.querySelector<HTMLInputElement>("[data-select-all]")!;
+    const press = (label: string) => act(async () => [...host.querySelectorAll("button")].find((button) => button.textContent === label)!.click());
+    const state = () => [[...host.querySelectorAll<HTMLInputElement>("tbody input")].map((row) => row.checked), all().indeterminate ? "mixed" : all().checked ? "checked" : "unchecked"];
+    expect(state()).toEqual([[false, true, false], "mixed"]);
+    await act(async () => all().click());
+    expect([changed, ...state()]).toEqual([["a", "c"], [true, true, true], "checked"]);
+    await press("Clear");
+    expect(state()).toEqual([[false, false, false], "unchecked"]);
+    await press("Replace");
+    await act(async () => all().click());
+    expect([changed, ...state()]).toEqual([["a", "c", "a", "b", "c"], [true, true, true], "checked"]);
+    unwire();
+  });
+});
+
 describe("Toaster", () => {
   test("wires itself once under StrictMode, beside an app's enhance(), and until it unmounts", async () => {
     const host = document.createElement("div");
@@ -586,6 +675,12 @@ const failures: Record<string, { codes: string[]; text: string[] }> = {
   "menu-item-role": { codes: [], text: ["Property 'role' is missing"] },
   "menu-item-tone": { codes: [], text: ["'\"info\"' is not assignable to type '\"danger\"'"] },
   "menu-item-disabled": { codes: ["ODD-MENU-007"], text: [] },
+  "table-wrap-tabindex": { codes: ["ODD-TABLE-002"], text: [] },
+  "table-wrap-name": { codes: ["ODD-TABLE-003"], text: [] },
+  "table-wrap-role": { codes: [], text: ['"region"'] },
+  "table-data-numeric": { codes: ["ODD-TABLE-004"], text: [] },
+  "table-sort-aria-sort": { codes: ["ODD-TABLE-005"], text: [] },
+  "table-sort-data-numeric": { codes: ["ODD-TABLE-004"], text: [] },
   "sheet-name": { codes: [], text: ["Property '\"aria-labelledby\"' is missing"] },
   "sheet-side": { codes: [], text: ['"bottom" | "start" | "top" | undefined'] },
   "sheet-data-side": { codes: [], text: ["not assignable to type 'undefined'"] },

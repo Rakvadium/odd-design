@@ -47,28 +47,28 @@ export function avatarFallback(root: Document | HTMLElement = document): () => v
 /**
  * Table select-all: <th><input type="checkbox" data-select-all aria-label="Select all decks"></th>
  * Checking it checks every row; checking rows updates it to checked, unchecked, or mixed.
- * Rows it changes fire a bubbling change event, as if the user had clicked them.
+ * It clicks each row it changes, so the row fires click, input, and change as if the user had
+ * clicked it, and React's onChange sees it. The header box is looked up on every change, so one
+ * mounted or replaced later is found.
  */
 export function enhanceSelectAll(table: HTMLTableElement): () => void {
-  const all = table.querySelector<HTMLInputElement>('thead input[type="checkbox"][data-select-all]');
-  if (!all) return () => {};
+  const header = () => table.querySelector<HTMLInputElement>('thead input[type="checkbox"][data-select-all]');
   const rows = () => [...table.querySelectorAll<HTMLInputElement>('tbody input[type="checkbox"]:not(:disabled)')];
 
   const sync = () => {
+    const all = header();
+    if (!all) return;
     const list = rows();
     const checked = list.filter((c) => c.checked).length;
     all.checked = list.length > 0 && checked === list.length;
     all.indeterminate = checked > 0 && checked < list.length;
   };
   const onChange = (event: Event) => {
-    if (event.target === all) {
+    const all = header();
+    if (all && event.target === all) {
       // Read once: each row's change event re-enters this handler and re-syncs `all` mid-loop.
       const checked = all.checked;
-      for (const row of rows()) {
-        if (row.checked === checked) continue;
-        row.checked = checked;
-        row.dispatchEvent(new Event("change", { bubbles: true }));
-      }
+      for (const row of rows()) if (row.checked !== checked) row.click();
     }
     sync();
   };
