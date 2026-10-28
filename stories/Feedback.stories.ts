@@ -74,15 +74,15 @@ export const Skeleton: Story = {
     <span class="odd-visually-hidden">Loading decks…</span>
     ${/* html */ `<article class="odd-card" aria-hidden="true">
       <div class="odd-row">
-        <div class="odd-skeleton" data-shape="avatar"></div>
+        <div class="odd-skeleton" aria-hidden="true" data-shape="avatar"></div>
         <div class="odd-stack" style="--gap: var(--space-2); flex: 1">
-          <div class="odd-skeleton" style="inline-size: 70%"></div>
-          <div class="odd-skeleton" style="inline-size: 40%; block-size: 0.75em"></div>
+          <div class="odd-skeleton" aria-hidden="true" style="inline-size: 70%"></div>
+          <div class="odd-skeleton" aria-hidden="true" style="inline-size: 40%; block-size: 0.75em"></div>
         </div>
       </div>
-      <div class="odd-skeleton" style="block-size: 5rem; border-radius: var(--radius-surface)"></div>
-      <div class="odd-skeleton" style="inline-size: 90%"></div>
-      <div class="odd-skeleton" style="inline-size: 60%"></div>
+      <div class="odd-skeleton" aria-hidden="true" style="block-size: 5rem; border-radius: var(--radius-surface)"></div>
+      <div class="odd-skeleton" aria-hidden="true" style="inline-size: 90%"></div>
+      <div class="odd-skeleton" aria-hidden="true" style="inline-size: 60%"></div>
     </article>`.repeat(2)}
   </div>`,
 };

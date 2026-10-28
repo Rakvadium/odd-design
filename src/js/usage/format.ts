@@ -42,6 +42,11 @@ export const USAGE_CODES = [
   "ODD-SEPARATOR-002",
   "ODD-SEPARATOR-003",
   "ODD-SEPARATOR-004",
+  "ODD-SKELETON-001",
+  "ODD-SKELETON-002",
+  "ODD-SKELETON-003",
+  "ODD-SKELETON-004",
+  "ODD-SKELETON-005",
   "ODD-STATIC-001",
   "ODD-STATIC-002",
   "ODD-STATIC-003",
@@ -94,6 +99,9 @@ const alertAttributes = WRAPPERS.Alert.props.tone;
 const avatarSizeRule = USAGE.avatar[1];
 const avatarSizeAllowed = enumAllowed(avatarSizeRule.values, avatarSizeRule.omit);
 const avatarAttributes = WRAPPERS.Avatar.props.size;
+const shapeRule = USAGE.skeleton[1];
+const shapeAllowed = enumAllowed(shapeRule.values, shapeRule.omit);
+const skeletonAttributes = WRAPPERS.Skeleton.props.shape;
 const appearanceAxes = comma(APPEARANCE_AXES);
 const headlessAllowlist = comma(HEADLESS_ALLOWLIST);
 
@@ -404,6 +412,41 @@ export const MESSAGES = {
     "any app data attribute, the appearance axes, and the headless allowlist",
     `remove the attribute. A separator takes aria-orientation and no system data attribute. Appearance axes: ${appearanceAxes}. Headless allowlist: ${headlessAllowlist}, except data-orientation, which is ODD-SEPARATOR-002.`,
     "docs/usage/separator.md#odd-separator-004",
+  ),
+  "ODD-SKELETON-001": text(
+    "ODD-SKELETON-001",
+    "odd-skeleton is on the wrong element.",
+    "div",
+    "move the class onto a div. For a button that is working, set aria-busy on the button instead of drawing a skeleton inside it.",
+    "docs/usage/skeleton.md#odd-skeleton-001",
+  ),
+  "ODD-SKELETON-002": text(
+    shapeRule.code,
+    "data-shape has a value skeleton.css does not draw.",
+    shapeAllowed,
+    "remove data-shape for a line or a block and size it with inline-size and block-size, or set avatar for a square the size of a default avatar. A circle or circular block is avatar.",
+    "docs/usage/skeleton.md#odd-skeleton-002",
+  ),
+  "ODD-SKELETON-003": text(
+    "ODD-SKELETON-003",
+    "a skeleton block needs aria-hidden=true. A bare aria-hidden is empty, and an empty value does not hide the block.",
+    "true",
+    "set aria-hidden=true on every odd-skeleton, even inside a hidden card.",
+    "docs/usage/skeleton.md#odd-skeleton-003",
+  ),
+  "ODD-SKELETON-004": text(
+    "ODD-SKELETON-004",
+    "a skeleton block carries loading text, aria-busy, a role, or a name. aria-hidden hides all of them, so nothing says the region is loading.",
+    "an empty block with no aria-busy, role, aria-label, or aria-labelledby",
+    "empty the block and remove aria-busy, role, aria-label, and aria-labelledby. Set aria-busy=true on the region that is filling in, and put the loading text in an odd-visually-hidden span inside that region.",
+    "docs/usage/skeleton.md#odd-skeleton-004",
+  ),
+  "ODD-SKELETON-005": text(
+    "ODD-SKELETON-005",
+    "odd-skeleton does not take that data attribute.",
+    "the skeleton attribute, any app data attribute, the appearance axes, and the headless allowlist",
+    `remove the attribute, or correct its name. Skeleton attributes: ${skeletonAttributes}. skeleton.css draws one avatar size, so data-size does nothing. Appearance axes: ${appearanceAxes}. Headless allowlist: ${headlessAllowlist}.`,
+    "docs/usage/skeleton.md#odd-skeleton-005",
   ),
   "ODD-STATIC-001": text(
     "ODD-STATIC-001",

@@ -183,6 +183,28 @@ const places: Record<string, readonly (readonly [string, number, number, string]
     ["ODD-SEPARATOR-003", 3, 27, "aria-hidden"],
   ],
   "odd-separator-004.bad.html": [["ODD-SEPARATOR-004", 2, 27, "data-tone"]],
+  "odd-skeleton-001.bad.html": [["ODD-SKELETON-001", 2, 7, "class"]],
+  "odd-skeleton-002.bad.html": [
+    ["ODD-SKELETON-002", 2, 46, "data-shape"],
+    ["ODD-SKELETON-002", 3, 46, "data-shape"],
+  ],
+  "odd-skeleton-003.bad.html": [
+    ["ODD-SKELETON-003", 2, 1, "<div"],
+    ["ODD-SKELETON-003", 3, 27, "aria-hidden"],
+    ["ODD-SKELETON-003", 4, 27, "aria-hidden"],
+  ],
+  "odd-skeleton-004.bad.html": [
+    ["ODD-SKELETON-004", 2, 1, "<div"],
+    ["ODD-SKELETON-004", 3, 46, "aria-busy"],
+    ["ODD-SKELETON-004", 4, 1, "<div"],
+    ["ODD-SKELETON-004", 4, 46, "role"],
+    ["ODD-SKELETON-004", 5, 46, "aria-label"],
+    ["ODD-SKELETON-004", 6, 46, "aria-labelledby"],
+  ],
+  "odd-skeleton-005.bad.html": [
+    ["ODD-SKELETON-005", 2, 66, "data-size"],
+    ["ODD-SKELETON-005", 3, 46, "data-shap"],
+  ],
   "odd-class-001.bad.html": [
     ["ODD-CLASS-001", 2, 6, "class"],
     ["ODD-CLASS-001", 3, 4, "class"],

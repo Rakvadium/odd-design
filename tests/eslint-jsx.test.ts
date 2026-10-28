@@ -124,6 +124,15 @@ const places: Record<string, readonly (readonly [string, number, number, string]
     ["ODD-SEPARATOR-004", 9, 16, "data-tone"],
     ["ODD-SEPARATOR-001", 10, 10, "className"],
   ],
+  "skeleton.tsx": [
+    ["ODD-SKELETON-002", 6, 34, 'shape="circle"'],
+    ["ODD-SKELETON-003", 7, 5, "<Skeleton />"],
+    ["ODD-SKELETON-003", 8, 15, "aria-hidden"],
+    ["ODD-SKELETON-004", 9, 5, '<Skeleton aria-hidden="true">'],
+    ["ODD-SKELETON-004", 10, 34, 'aria-busy="true"'],
+    ["ODD-SKELETON-005", 11, 34, "data-size"],
+    ["ODD-SKELETON-001", 12, 11, "className"],
+  ],
   "wrapper.good.tsx": [],
 };
 

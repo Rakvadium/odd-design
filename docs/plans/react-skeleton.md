@@ -84,7 +84,7 @@ Each item is the default the build uses. Each one can be reversed after review.
 
 ## Capture the baseline (no source change)
 
-- [ ] Build both Storybooks from `0a2847c` with `bun scripts/storybooks.ts .verify/skeleton/base-sb`, serve the build, and capture the HTML section with `bun scripts/capture-stories.ts <url>/html .verify/skeleton/base.json .verify/skeleton/base-shots`.
+- [x] Build both Storybooks from `0a2847c` with `bun scripts/storybooks.ts .verify/skeleton/base-sb`, serve the build, and capture the HTML section with `bun scripts/capture-stories.ts <url>/html .verify/skeleton/base.json .verify/skeleton/base-shots`. Result: 86 captures in `base.json`.
 
 ## Build
 
@@ -92,13 +92,13 @@ Each commit ends with `bun run check`. The boxes under a commit name its extra c
 
 ### Commit 1. Add Skeleton and check it with ODD-SKELETON-001 to 005
 
-- [ ] Add `USAGE.skeleton`, `SkeletonRule`, the `WRAPPERS` row, the five codes in `USAGE_CODES`, and their `MESSAGES`. Add `"data-shape"` to the CSS-sync list.
-- [ ] Write `docs/usage/skeleton.md` with one section per code.
-- [ ] Create `src/react/skeleton.tsx`. Add the barrel export and the `WrapperProps` line.
-- [ ] Add the `odd-skeleton-001` to `005` bad and good HTML pairs, five `RUNTIME_CODES` lines, and the `places` rows in `tests/eslint-html.test.ts`. Add `aria-hidden="true"` to the skeleton in `odd-class-001.good.html`.
-- [ ] Add type fail fixtures for `shape`, a missing `aria-hidden`, text children, `aria-busy`, and `data-size`, each with its `failures` entry. Add `pass.tsx` lines.
-- [ ] Add `tests/fixtures/usage/jsx/skeleton.tsx`, including the bare `aria-hidden` line, and its `places` entry. Add one markup row to `tests/react.test.tsx`.
-- [ ] Check. Delete the `children` line and each rule row after the `element` row, one at a time, and the fixtures that name each fail.
+- [x] Add `USAGE.skeleton`, `SkeletonRule`, the `WRAPPERS` row, the five codes in `USAGE_CODES`, and their `MESSAGES`. Add `"data-shape"` to the CSS-sync list.
+- [x] Write `docs/usage/skeleton.md` with one section per code.
+- [x] Create `src/react/skeleton.tsx`. Add the barrel export and the `WrapperProps` line.
+- [x] Add the `odd-skeleton-001` to `005` bad and good HTML pairs, five `RUNTIME_CODES` lines, and the `places` rows in `tests/eslint-html.test.ts`. Add `aria-hidden="true"` to the skeleton in `odd-class-001.good.html`.
+- [x] Add type fail fixtures for `shape`, a missing `aria-hidden`, text children, `aria-busy`, and `data-size`, each with its `failures` entry. Add `pass.tsx` lines.
+- [x] Add `tests/fixtures/usage/jsx/skeleton.tsx`, including the bare `aria-hidden` line, and its `places` entry. Add one markup row to `tests/react.test.tsx`.
+- [x] Check. Delete the `children` line and each rule row after the `element` row, one at a time, and the fixtures that name each fail. Result: `bun run check` passes 479 tests. Each deletion fails. `children` fails the type fixtures. The `data-shape` row breaks `tsc` and the `format.ts` import. Each other row fails 2 to 6 tests. The HTML Skeleton story gains `aria-hidden="true"` on its blocks here, because 003 flags them before commit 2 moves the story.
 
 ### Commit 2. Mirror Skeleton in the Storybooks
 
