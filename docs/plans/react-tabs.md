@@ -69,7 +69,7 @@ The failures below were measured at the base in Chromium, Firefox, and WebKit (`
 | `ODD-TABS-001` | `tabs`, `element` on `div` | `odd-tabs` is on another tag | The documented markup and the part's tag. It also makes the group live | Not a type error. The part renders the tag |
 | `ODD-TABS-002` | `tabs`, `required-child` with a new `role` match (`element: "div"`, `role: "tablist"`) | The `div` has no direct child with `role="tablist"` | `.odd-tabs > [role="tablist"]`. A wrapped tablist loses its track. It renders `display: block`, with no padding and a transparent background, 1280px wide in place of 214px | Not a type error. Children are `ReactNode` |
 | `ODD-TABS-003` | `tabs`, `forbidden-attribute` on `aria-orientation` and on `data-activation` | Either attribute is on the root | `data-activation="manual"` on the root still chooses on ArrowRight. `aria-orientation` on the root leaves one grid column, and the tabs do not stack | Each name is typed as the 003 message |
-| `ODD-TABS-004` | `tabs`, new kind `role-descendant` (`role: "tab"`, `elements: ["button"]`, `attribute: "aria-controls"`) | A `role="tab"` inside the set is not a `button`, or has no `aria-controls` | With no `aria-controls`, every panel stays visible after a click. A `div` tab in manual mode is not chosen by Enter or Space, because the click comes from the native button | Not a type error |
+| `ODD-TABS-004` | `tabs`, new kind `role-descendant` (`role: "tab"`, `elements: ["button"]`, `attribute: "aria-controls"`) | A `role="tab"` inside the set is not a `button`, or has no `aria-controls` | With no `aria-controls`, choosing a tab shows and hides no panel, so the panels keep the `hidden` they started with. A `div` tab in manual mode is not chosen by Enter or Space, because the click comes from the native button | Not a type error |
 | `ODD-TABS-005` | `tabs`, `system-data` | A foreign system `data-*`, such as `data-tone` | Every port has it. `data-tone` passes every checker on a tab set today | Each foreign name is the 005 message |
 
 The `required-child` role match counts a child with a computed role, or a spread and no role, as unknown, and stays silent. `role-descendant` walks `descendants()` and stops at nested component classes, so an inner tab set reports only its own tabs. A spread on a tab silences the missing-attribute half. Both 002 and 004 report on the `odd-tabs` host, as 002 on Disclosure and Card's `stretched-link` do. `html.ts` `readChild` keeps no spans for a child, so a diagnostic placed on a descendant would have no location.
@@ -160,44 +160,44 @@ Each commit ends with `bun run check`. The boxes under a commit name its extra c
 
 ### Commit 1. Add Tabs and check it with ODD-TABS-001 to 005
 
-- [ ] Make `enhanceTabs` idempotent per root with the hold count, and store nothing when the root has no tablist.
-- [ ] Add the `required-child` role match and the `role-descendant` kind with its `apply` case, the unknown-role silence, the spread silence, and the nested-set stop. Add the contract-test lines.
-- [ ] Add `USAGE.tabs`, `TabsRule`, the `WRAPPERS` row, the five codes in `USAGE_CODES`, and their `MESSAGES`.
-- [ ] Write `docs/usage/tabs.md` with one section per code.
-- [ ] Create `src/react/tabs.tsx`. Add the barrel export and the `WrapperProps` line.
-- [ ] Add the `odd-tabs-001` to `005` bad and good HTML pairs, the `RUNTIME_CODES` lines, and the `places` rows in `tests/eslint-html.test.ts`. Give `odd-class-001.good.html` a direct tablist.
-- [ ] Add type fail fixtures for `aria-orientation`, `data-tone`, and `defaultValue` on `Tabs`, with their `failures` entries. Add `pass.tsx` lines for a vertical manual set with `ref`, `id`, `className`, and a disabled tab.
-- [ ] Add `tests/fixtures/usage/jsx/tabs.tsx` and its `places` entry. It covers a wrapped tablist, a computed role, a spread child, a `div` tab, a tab with no `aria-controls`, a nested set, and the 003 and 005 attributes.
-- [ ] Add one markup row and one behavior test to `tests/react.test.tsx`. The test mounts `Tabs` under `StrictMode`, calls `enhance(document)`, presses ArrowRight, and expects one move. It then runs the app's cleanup and presses again, and expects a second move.
-- [ ] Check. Delete each new rule row, the unknown-role silence, the spread silence, the nested-set stop, and the empty-root guard, one at a time, and each fails a test. Make `enhanceTabs` wire on every call, and make any cleanup unwire, and each fails the behavior test.
+- [x] Make `enhanceTabs` idempotent per root with the hold count, and store nothing when the root has no tablist.
+- [x] Add the `required-child` role match and the `role-descendant` kind with its `apply` case, the unknown-role silence, the spread silence, and the nested-set stop. Add the contract-test lines.
+- [x] Add `USAGE.tabs`, `TabsRule`, the `WRAPPERS` row, the five codes in `USAGE_CODES`, and their `MESSAGES`.
+- [x] Write `docs/usage/tabs.md` with one section per code.
+- [x] Create `src/react/tabs.tsx`. Add the barrel export and the `WrapperProps` line.
+- [x] Add the `odd-tabs-001` to `005` bad and good HTML pairs, the `RUNTIME_CODES` lines, and the `places` rows in `tests/eslint-html.test.ts`. Give `odd-class-001.good.html` a direct tablist.
+- [x] Add type fail fixtures for `aria-orientation`, `data-tone`, and `defaultValue` on `Tabs`, with their `failures` entries. Add `pass.tsx` lines for a vertical manual set with `ref`, `id`, `className`, and a disabled tab.
+- [x] Add `tests/fixtures/usage/jsx/tabs.tsx` and its `places` entry. It covers a wrapped tablist, a computed role, a spread child, a `div` tab, a tab with no `aria-controls`, a nested set, and the 003 and 005 attributes.
+- [x] Add one markup row and one behavior test to `tests/react.test.tsx`. The test mounts `Tabs` under `StrictMode`, calls `enhance(document)`, presses ArrowRight, and expects one move. It then runs the app's cleanup and presses again, and expects a second move.
+- [x] Check. Delete each new rule row, the unknown-role silence, the spread silence, the nested-set stop, and the empty-root guard, one at a time, and each fails a test. Make `enhanceTabs` wire on every call, and make any cleanup unwire, and each fails the behavior test. Result: `bun run check` passes 526 tests. Each of the six row deletions fails at least the HTML places, its bad fixture, or the JSX places, and the two 003 and 005 rows also fail their type fixtures. The unknown-role and spread silences each fail the JSX places. The nested-set stop fails `odd-tabs-004.bad.html` and both places tables. The empty-root guard fails its own test. Wiring on every call and unwiring on any cleanup each fail the StrictMode and `enhance()` test.
 
 ### Commit 2. Mirror Tabs in the Storybooks
 
-- [ ] Create `stories/mirrored/Tabs.stories.ts` with `title: "Components/Interactive"` and the export `Tabs`. The meta component description carries the story text.
-- [ ] Remove the `Tabs` export and the `enhanceTabs` import from `stories/Interactive.stories.ts`. Add the id to the mirrored-ids pin in `tests/stories.test.ts`.
-- [ ] Queue `enhanceTabs` in the HTML preview's mirrored `render`.
-- [ ] Run the tabs test in `e2e/behavior.spec.ts` once per Storybook. It first waits for `#tab-s5` to have `tabindex="-1"`, which only `enhanceTabs` writes.
-- [ ] Measure the `aria` literal in the built Firefox Storybook, then paste it.
-- [ ] Check. `bunx playwright test e2e/usage.spec.ts e2e/behavior.spec.ts --project firefox` passes with 0 diagnostics. With the part's self-enhancement removed, the React run of the tabs test fails.
+- [x] Create `stories/mirrored/Tabs.stories.ts` with `title: "Components/Interactive"` and the export `Tabs`. The meta component description carries the story text.
+- [x] Remove the `Tabs` export and the `enhanceTabs` import from `stories/Interactive.stories.ts`. Add the id to the mirrored-ids pin in `tests/stories.test.ts`.
+- [x] Queue `enhanceTabs` in the HTML preview's mirrored `render`.
+- [x] Run the tabs test in `e2e/behavior.spec.ts` once per Storybook. It first waits for `#tab-s5` to have `tabindex="-1"`, which only `enhanceTabs` writes.
+- [x] Measure the `aria` literal in the built Firefox Storybook, then paste it.
+- [x] Check. `bunx playwright test e2e/usage.spec.ts e2e/behavior.spec.ts --project firefox` passes with 0 diagnostics. With the part's self-enhancement removed, the React run of the tabs test fails. Result: 23 of 23 pass, with "61 stories, 0 diagnostics". With the layout effect removed, the React run fails at "enhanceTabs ran" and the HTML run passes. The measured Firefox `aria` tree equals the planned literal on both sides.
 
 ### Commit 3. Docs, smoke, and the verify recipe
 
-- [ ] In `docs/usage/react.md`, add a section on building tabs with the `odd-tab-change` read and the `click()` drive, the type-error rows for 003 and 005 and `defaultValue`, Tabs in the "not type errors" paragraph (001, 002, 004), and `tabs.tsx` in the directive paragraph. Add a Tabs section to `docs/usage/eslint.md`. Update the README install sentence, the usage-contract list, the component row, and the Behaviors note on `enhance()`.
-- [ ] Add `docs/usage/tabs.md` to `REQUIRED` in `scripts/consumer-smoke.ts`, and check that `dist/react/tabs.js` starts with `"use client"` as `button.js` does. The clean app renders a `Tabs`.
-- [ ] Update `.agents/skills/verify-odd-design/features/interactive.md` with a React Tabs section and its new sidebar-order line.
-- [ ] Add the follow-ups in Appendix D to `docs/follow-ups.md`.
-- [ ] Check. `bun run check`, `bun run build`, and `bun scripts/consumer-smoke.ts` pass.
+- [x] In `docs/usage/react.md`, add a section on building tabs with the `odd-tab-change` read and the `click()` drive, the type-error rows for 003 and 005 and `defaultValue`, Tabs in the "not type errors" paragraph (001, 002, 004), and `tabs.tsx` in the directive paragraph. Add a Tabs section to `docs/usage/eslint.md`. Update the README install sentence, the usage-contract list, the component row, and the Behaviors note on `enhance()`.
+- [x] Add `docs/usage/tabs.md` to `REQUIRED` in `scripts/consumer-smoke.ts`, and check that `dist/react/tabs.js` starts with `"use client"` as `button.js` does. The clean app renders a `Tabs`.
+- [x] Update `.agents/skills/verify-odd-design/features/interactive.md` with a React Tabs section and its new sidebar-order line.
+- [x] Add the follow-ups in Appendix D to `docs/follow-ups.md`.
+- [x] Check. `bun run check`, `bun run build`, and `bun scripts/consumer-smoke.ts` pass. Result: at the branch tip, `bun run check` passes 528 tests, the build exits 0, and the smoke exits 0. The smoke reads `"use client"` first in both `button.js` and `tabs.js`. With the directive removed from the built `tabs.js`, the smoke exits 1.
 
 ## Verify on the real surface
 
-- [ ] Rebuild both Storybooks, capture the HTML section to `after.json`, and run `bun scripts/capture-stories.ts --diff .verify/tabs/base.json .verify/tabs/after.json`. Pass means `changed` lists only `components-interactive--tabs`, with no `png` or `aria` change.
-- [ ] Run `bun run test:browsers`. Pass means the Firefox and WebKit runs pass, the sweep reports 0 diagnostics, and axe reports 0 violations.
-- [ ] Drive the composed build per the verify-odd-design skill. Open `react_components-interactive--tabs` and `components-interactive--tabs` in `calm` light, `holoterminal` dark, and one more palette. Save each screenshot and `ariaSnapshot`. Confirm that the two sides look the same, that ArrowRight from Cards selects Stats and shows its panel, and that in the Season set ArrowRight then Enter selects Season 6 on both sides.
+- [x] Rebuild both Storybooks, capture the HTML section to `after.json`, and run `bun scripts/capture-stories.ts --diff .verify/tabs/base.json .verify/tabs/after.json`. Pass means `changed` lists only `components-interactive--tabs`, with no `png` or `aria` change. Result: 2 changed (Tabs light and dark, `dom` only), 0 removed, 0 added. The story lost the old `mount()` wrapper `div`, and the inline `style` lost its spaces. The rest of the markup is identical, including the `tabindex` values `enhanceTabs` writes.
+- [x] Run `bun run test:browsers`. Pass means the Firefox and WebKit runs pass, the sweep reports 0 diagnostics, and axe reports 0 violations. Result: 48 passed, 2 skipped, at the branch tip. "61 stories, 0 diagnostics". 0 axe violations in Firefox and WebKit, both modes.
+- [x] Drive the composed build per the verify-odd-design skill. Open `react_components-interactive--tabs` and `components-interactive--tabs` in `calm` light, `holoterminal` dark, and one more palette. Save each screenshot and `ariaSnapshot`. Confirm that the two sides look the same, that ArrowRight from Cards selects Stats and shows its panel, and that in the Season set ArrowRight then Enter selects Season 6 on both sides. Result: `.verify/tabs/chrome-pair.ts` drove both sides of the built composed Storybook in Chrome, 8 loads per side in each of `calm` light, `holoterminal` dark, and `bubblegum` `sorbet` dark. The manager lists `react_components-interactive--tabs`. All 48 loads give Stats selected with only its panel shown, and then Season 6 selected with its panel shown. The aria trees are identical. The before screenshots are byte-identical. The after screenshots are byte-identical once the tab color transitions end, and before that they differ by at most 1 of 255 even between two HTML loads.
 
 ## Review and open the PR
 
-- [ ] The `cursor grok-4.7` reviewer reads the diff against this plan. A fresh builder fixes each finding that blocks. Other findings go to `docs/follow-ups.md`.
-- [ ] Run `/deslop` and `/no-comments` over the diff.
+- [x] The `cursor grok-4.7` reviewer reads the diff against this plan. A fresh builder fixes each finding that blocks. Other findings go to `docs/follow-ups.md`. Result: no blocking findings, and five that do not block. A fresh builder fixed four, each with a test that fails without it where code changed. The 004 message no longer says every panel stays visible. The docs now say a spread hides only the missing `aria-controls`. `enhanceTabs` wires a replaced tablist under a live hold, so decision 4 still holds for HTML callers. A `div` tab with a spread now has a fixture. A multiline `<Tabs {...props}>` that reports 002 went to `docs/follow-ups.md`, because Disclosure shares the guard.
+- [x] Run `/deslop` and `/no-comments` over the diff. Result: Comment Sicko cut two comments that restated the code and a caller list from the `enhanceTabs` doc. Its flag to move the preview's one-line microtask into a named helper was rejected, because a helper with one caller adds a layer. `/deslop` found nothing else to remove.
 - [ ] Open the PR ready with `gh pr create --base main --repo Rakvadium/odd-design`. The title is `feat(react): add Tabs and mirror it in the Storybooks`.
 - [ ] Run `gh pr checks`. The repo has no workflows, so expect "no checks reported". Report the PR as open. Do not merge.
 
