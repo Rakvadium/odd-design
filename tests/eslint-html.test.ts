@@ -271,6 +271,43 @@ const places: Record<string, readonly (readonly [string, number, number, string]
     ["ODD-POPOVER-006", 2, 41, "data-tone"],
     ["ODD-POPOVER-006", 3, 41, "data-size"],
   ],
+  "odd-dialog-001.bad.html": [
+    ["ODD-DIALOG-001", 2, 6, "class"],
+    ["ODD-DIALOG-001", 3, 10, "class"],
+    ["ODD-DIALOG-001", 4, 4, "class"],
+    ["ODD-DIALOG-001", 5, 4, "class"],
+  ],
+  "odd-dialog-002.bad.html": [
+    ["ODD-DIALOG-002", 2, 1, "<dialog"],
+    ["ODD-DIALOG-002", 3, 1, "<dialog"],
+    ["ODD-DIALOG-002", 4, 1, "<dialog"],
+  ],
+  "odd-dialog-003.bad.html": [
+    ["ODD-DIALOG-003", 2, 28, "role"],
+    ["ODD-DIALOG-003", 3, 28, "role"],
+    ["ODD-DIALOG-003", 4, 28, "role"],
+  ],
+  "odd-dialog-004.bad.html": [
+    ["ODD-DIALOG-004", 2, 52, "open"],
+    ["ODD-DIALOG-004", 3, 52, "open"],
+  ],
+  "odd-dialog-005.bad.html": [
+    ["ODD-DIALOG-005", 2, 52, "closedby"],
+    ["ODD-DIALOG-005", 3, 52, "closedby"],
+  ],
+  "odd-dialog-006.bad.html": [
+    ["ODD-DIALOG-006", 2, 77, "closedby"],
+    ["ODD-DIALOG-006", 3, 28, "closedby"],
+  ],
+  "odd-dialog-007.bad.html": [
+    ["ODD-DIALOG-007", 2, 52, "data-tone"],
+    ["ODD-DIALOG-007", 3, 52, "data-size"],
+  ],
+  "odd-dialog-008.bad.html": [
+    ["ODD-DIALOG-008", 2, 30, "data-tone"],
+    ["ODD-DIALOG-008", 3, 30, "data-size"],
+    ["ODD-DIALOG-008", 4, 33, "data-variant"],
+  ],
   "odd-disclosure-001.bad.html": [
     ["ODD-DISCLOSURE-001", 2, 6, "class"],
     ["ODD-DISCLOSURE-001", 3, 10, "class"],

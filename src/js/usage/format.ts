@@ -84,6 +84,14 @@ export const USAGE_CODES = [
   "ODD-POPOVER-004",
   "ODD-POPOVER-005",
   "ODD-POPOVER-006",
+  "ODD-DIALOG-001",
+  "ODD-DIALOG-002",
+  "ODD-DIALOG-003",
+  "ODD-DIALOG-004",
+  "ODD-DIALOG-005",
+  "ODD-DIALOG-006",
+  "ODD-DIALOG-007",
+  "ODD-DIALOG-008",
   "ODD-STATIC-001",
   "ODD-STATIC-002",
   "ODD-STATIC-003",
@@ -143,6 +151,8 @@ const cardAttributes = WRAPPERS.Card.props.interactive;
 const meterToneRule = USAGE.meter[2];
 const meterToneAllowed = enumAllowed(meterToneRule.values, meterToneRule.omit);
 const meterAttributes = WRAPPERS.Meter.props.tone;
+const dialogRoleRule = USAGE.dialog[2];
+const dialogRoleAllowed = enumAllowed(dialogRoleRule.values, dialogRoleRule.omit);
 const appearanceAxes = comma(APPEARANCE_AXES);
 const headlessAllowlist = comma(HEADLESS_ALLOWLIST);
 
@@ -747,6 +757,62 @@ export const MESSAGES = {
     "any app data attribute, the appearance axes, and the headless allowlist",
     `remove the attribute. popover.css reads no data attributes, so data-tone and data-size change nothing. Appearance axes: ${appearanceAxes}. Headless allowlist: ${headlessAllowlist}.`,
     "docs/usage/popover.md#odd-popover-006",
+  ),
+  "ODD-DIALOG-001": text(
+    "ODD-DIALOG-001",
+    "this dialog class is on the wrong element. odd-dialog on a div is never hidden. It sits in the page at opacity 0 and its buttons still take focus. A p ends before its first heading, so a title inside p.odd-dialog-body renders outside the body. A title that is not a heading drops out of heading navigation.",
+    "odd-dialog on dialog, odd-dialog-body on div, form, odd-dialog-title on h1, h2, h3, h4, h5, h6, odd-dialog-actions on div",
+    "put odd-dialog on a dialog element, the body class on a div or a form, and the title class on a heading. In React, use Dialog and DialogActions.",
+    "docs/usage/dialog.md#odd-dialog-001",
+  ),
+  "ODD-DIALOG-002": text(
+    "ODD-DIALOG-002",
+    "this dialog has no name, so a screen reader announces only dialog when it opens. A heading inside does not name it.",
+    "aria-labelledby or aria-label",
+    "give the odd-dialog-title an id and point aria-labelledby at it, or set aria-label.",
+    "docs/usage/dialog.md#odd-dialog-002",
+  ),
+  "ODD-DIALOG-003": text(
+    "ODD-DIALOG-003",
+    "role on odd-dialog is alertdialog or nothing. A dialog element is already a dialog, and another role announces it as something else.",
+    dialogRoleAllowed,
+    "remove role, or set role=alertdialog for a decision the user must make.",
+    "docs/usage/dialog.md#odd-dialog-003",
+  ),
+  "ODD-DIALOG-004": text(
+    "ODD-DIALOG-004",
+    "odd-dialog takes no open attribute. open shows the dialog without showModal, so the page behind it stays live and Escape does nothing. In React, open never calls showModal and goes stale once the browser closes the dialog.",
+    "no open attribute",
+    "open it from a button with commandfor and command=show-modal, or call showModal() on a ref. Read the close from onClose.",
+    "docs/usage/dialog.md#odd-dialog-004",
+  ),
+  "ODD-DIALOG-005": text(
+    "ODD-DIALOG-005",
+    "closedby on odd-dialog is any, closerequest, or nothing. closedby=none stops Escape from closing the dialog, so only a button can close it.",
+    "any, closerequest, or no closedby",
+    "remove closedby so Escape and the buttons close the dialog, or write closedby=any so a click outside also closes it.",
+    "docs/usage/dialog.md#odd-dialog-005",
+  ),
+  "ODD-DIALOG-006": text(
+    "ODD-DIALOG-006",
+    "this dialog has closedby=any with role=alertdialog, so a stray click outside dismisses the decision.",
+    "closerequest or no closedby with role=alertdialog",
+    "remove closedby so only Escape and the buttons close the alert dialog.",
+    "docs/usage/dialog.md#odd-dialog-006",
+  ),
+  "ODD-DIALOG-007": text(
+    "ODD-DIALOG-007",
+    "this dialog does not take that data attribute.",
+    "any app data attribute, the appearance axes, and the headless allowlist",
+    `remove the attribute. dialog.css reads no data attributes, so data-tone and data-size change nothing. Appearance axes: ${appearanceAxes}. Headless allowlist: ${headlessAllowlist}.`,
+    "docs/usage/dialog.md#odd-dialog-007",
+  ),
+  "ODD-DIALOG-008": text(
+    "ODD-DIALOG-008",
+    "odd-dialog-body, odd-dialog-title, and odd-dialog-actions do not take that data attribute.",
+    "any app data attribute, the appearance axes, and the headless allowlist",
+    `remove the attribute. dialog.css reads no data attributes. Appearance axes: ${appearanceAxes}. Headless allowlist: ${headlessAllowlist}.`,
+    "docs/usage/dialog.md#odd-dialog-008",
   ),
   "ODD-STATIC-001": text(
     "ODD-STATIC-001",

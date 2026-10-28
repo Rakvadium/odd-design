@@ -31,8 +31,8 @@ export const Toast = {
           ],
         },
         {
-          of: "dialog",
-          props: { className: "odd-dialog", id: "toast-settings", "aria-labelledby": "toast-settings-title", closedby: "any" },
+          of: "Dialog",
+          props: { id: "toast-settings", "aria-labelledby": "toast-settings-title", closedby: "any" },
           children: [
             {
               of: "div",
@@ -41,8 +41,7 @@ export const Toast = {
                 { of: "h2", props: { className: "odd-dialog-title", id: "toast-settings-title" }, children: ["Deck settings"] },
                 { of: "p", props: { className: "odd-muted" }, children: ["Saving here shows a toast while this dialog stays open."] },
                 {
-                  of: "div",
-                  props: { className: "odd-dialog-actions" },
+                  of: "DialogActions",
                   children: [
                     { of: "Button", props: { commandfor: "toast-settings", command: "close" }, children: ["Close"] },
                     { of: "Button", props: { variant: "primary", "data-toast": "saved" }, children: ["Save"] },

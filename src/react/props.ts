@@ -4,6 +4,7 @@ import type { BadgeProps } from "./badge.tsx";
 import type { ButtonProps } from "./button.tsx";
 import type { CardFooterProps, CardLinkProps, CardProps } from "./card.tsx";
 import type { ChoiceProps, SegmentedProps, SwitchProps } from "./choice.tsx";
+import type { DialogActionsProps, DialogProps } from "./dialog.tsx";
 import type { DisclosureProps } from "./disclosure.tsx";
 import type { FieldErrorProps, FieldProps, HintProps, InputProps, LabelProps, SelectProps, TextareaProps } from "./field.tsx";
 import type { MeterProps, ProgressProps } from "./meter.tsx";
@@ -45,4 +46,6 @@ export type WrapperProps = {
   Progress: ProgressProps;
   Toaster: ToasterProps;
   Popover: PopoverProps;
+  Dialog: DialogProps;
+  DialogActions: DialogActionsProps;
 };
