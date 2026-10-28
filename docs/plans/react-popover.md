@@ -174,8 +174,8 @@ Each commit ends with `bun run check`. The boxes under a commit name its extra c
 
 - [x] The `cursor grok-4.7` reviewer reads the diff against this plan. A fresh builder fixes each finding that blocks. Other findings go to `docs/follow-ups.md`. Result: the reviewer found no behavior defect, and no false positive on tooltip, hover card, menu, or toaster markup. It measured three false sentences in the messages. A hint stays open when a manual popover opens, `AUTO` is the auto state, and a `span` or `button` can hold a button. A fresh builder corrected them in `41821a6`. A `title` name, and the type holes for a blank name and a `"dialog" | undefined` role, went to `docs/follow-ups.md` (`.verify/popover/review/review.md`).
 - [x] Run `/deslop` and `/no-comments` over the diff. Result: Comment Sicko deleted nothing. The one prose comment in scope, the WebKit focus note in the behavior test, is a browser quirk, and the `expect:` lines are test input. For `/deslop`, the lead read the diff and found nothing to remove.
-- [ ] Open the PR ready with `gh pr create --base main --repo Rakvadium/odd-design`. The title is `feat(react): add Popover and mirror it in the Storybooks`.
-- [ ] Run `gh pr checks`. The repo has no workflows, so expect "no checks reported". Report the PR as open. Do not merge.
+- [x] Open the PR ready with `gh pr create --base main --repo Rakvadium/odd-design`. The title is `feat(react): add Popover and mirror it in the Storybooks`. Result: opened ready as #35.
+- [x] Run `gh pr checks`. The repo has no workflows, so expect "no checks reported". Report the PR as open. Do not merge. Result: the repo has no workflows, so gh pr checks reports no checks. The PR is open and not merged.
 
 ## Throughput checkpoint
 
