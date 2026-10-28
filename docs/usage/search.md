@@ -26,7 +26,7 @@ Fails when a search has no direct child with `odd-input` and `type="search"`.
 
 `search.css` pads only a direct `.odd-input` to clear the icon. An input wrapped in a `div` keeps its normal padding, so the icon covers the first letters. A raw `input` with no class has no field styles at all. A `form` between the `search.odd-search` and the input unstyles the input and leaves the icon unsized. An input with another `type` is a `textbox`, not a `searchbox`, and `search.css` restyles the clear button only on `type="search"`.
 
-Make the input an `Input` with `type="search"`, or an `input` with `odd-input` and `type="search"`, directly inside `odd-search`. To submit, put the `form` around the search. When the input, its class, or its `type` comes from a component, an expression, or a spread, ESLint cannot see it and stays silent. The runtime checker still reads the rendered page.
+Make the input an `Input` with `type="search"`, or an `input` with `odd-input` and `type="search"`, directly inside `odd-search`. To submit, put the `form` around the search. When the input, its class, or its `type` comes from a component, an expression, or a spread, ESLint cannot see it and stays silent. A class from an expression still reports when the `type` is missing or not `search`. The runtime checker still reads the rendered page.
 
 ## ODD-SEARCH-003
 
@@ -34,7 +34,7 @@ Fails when a search has no direct `svg` child with `aria-hidden="true"`.
 
 The input always keeps room for the icon. With no icon, the text starts after an empty gap. An icon wrapped in a `span` or a `button` is neither placed nor sized. An `svg` without `aria-hidden="true"` is read out as an image in Chromium and Firefox.
 
-Put the magnifier `svg`, with `aria-hidden="true"`, directly inside `odd-search` before the input. In JSX, write `aria-hidden="true"`. ESLint reads a bare `aria-hidden` as empty, as in HTML, and reports it. An icon component that renders an `svg`, such as one from an icon library, counts. ESLint cannot see inside it, or read an `aria-hidden` that comes from an expression or a spread, and stays silent.
+Put the magnifier `svg`, with `aria-hidden="true"`, directly inside `odd-search` before the input. In JSX, write `aria-hidden="true"`. ESLint reads a bare `aria-hidden` as empty, as in HTML, and reports it. An icon component that renders an `svg`, such as one from an icon library, counts. ESLint cannot see inside it, or read an `aria-hidden` that comes from an expression or a spread, and stays silent. Any component child, such as an icon from an icon library, also silences `ODD-SEARCH-002` in ESLint, because ESLint cannot see what it renders. The runtime checker still reads the rendered page.
 
 ## ODD-SEARCH-004
 

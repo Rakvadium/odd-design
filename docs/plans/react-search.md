@@ -182,7 +182,7 @@ Each commit ends with `bun run check`. The boxes under a commit name its extra c
 
 ## Review and open the PR
 
-- [ ] The `cursor grok-4.7` reviewer reads the diff against this plan. A fresh builder fixes each finding that blocks. Other findings go to `docs/follow-ups.md`.
+- [ ] The `cursor grok-4.7` reviewer reads the diff against this plan. A fresh builder fixes each finding that blocks. Other findings go to `docs/follow-ups.md`. Result: the one blocking finding, a computed `class` hiding `ODD-SEARCH-002` after the pair already failed, is fixed in `requiredChildFindings`. Two lines of `tests/fixtures/usage/jsx/search.tsx` pin it and fail without the fix. The icon component's silence on `ODD-SEARCH-002` is now in `docs/usage/search.md`.
 - [ ] Run `/deslop` and `/no-comments` over the diff.
 - [ ] Open the PR ready with `gh pr create --base main --repo Rakvadium/odd-design`. The title is `feat(react): add Search and mirror it in the Storybooks`.
 - [ ] Run `gh pr checks`. The repo has no workflows, so expect "no checks reported". Report the PR as open. Do not merge.
