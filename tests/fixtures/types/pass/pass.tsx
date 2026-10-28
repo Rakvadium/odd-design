@@ -9,6 +9,7 @@ import { Dialog, DialogActions } from "../../../../src/react/dialog.tsx";
 import { Disclosure } from "../../../../src/react/disclosure.tsx";
 import { Field, FieldError, Hint, Input, Label, Select, Textarea } from "../../../../src/react/field.tsx";
 import { Menu, MenuItem } from "../../../../src/react/menu.tsx";
+import { Table, TableSort, TableWrap } from "../../../../src/react/table.tsx";
 import { Meter, Progress, type MeterTone } from "../../../../src/react/meter.tsx";
 import { Popover } from "../../../../src/react/popover.tsx";
 import { Search } from "../../../../src/react/search.tsx";
@@ -408,6 +409,50 @@ export function DeckMenu({ label, onRename }: { label: string; onRename: () => v
         <MenuItem role="menuitem" tone="danger" onClick={() => menu.current?.hidePopover()}>Delete deck</MenuItem>
       </Menu>
       <Menu popover="" role="menu" aria-label={label} />
+    </>
+  );
+}
+
+export function DeckTable({ decks }: { decks: readonly { id: string; name: string; cards: number }[] }) {
+  const table = useRef<HTMLTableElement>(null);
+  const [selected, setSelected] = useState<readonly string[]>([]);
+  return (
+    <>
+      <TableWrap tabIndex={0} role="region" aria-labelledby="decks-caption" className="wide" data-testid="decks">
+        <Table ref={table} data-testid="table">
+          <caption id="decks-caption">Your decks</caption>
+          <thead>
+            <tr>
+              <th scope="col">
+                <input type="checkbox" data-select-all aria-label="Select all decks" />
+              </th>
+              <th scope="col" aria-sort="ascending">
+                <TableSort type="button" onClick={() => table.current?.focus()} data-col="name">Deck</TableSort>
+              </th>
+              <th scope="col" data-numeric>
+                <TableSort>Cards</TableSort>
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            {decks.map((deck) => (
+              <tr key={deck.id}>
+                <td>
+                  <input type="checkbox" aria-label={`Select ${deck.name}`} checked={selected.includes(deck.id)} onChange={() => setSelected((ids) => (ids.includes(deck.id) ? ids.filter((id) => id !== deck.id) : [...ids, deck.id]))} />
+                </td>
+                <th scope="row">{deck.name}</th>
+                <td data-numeric>{deck.cards}</td>
+              </tr>
+            ))}
+          </tbody>
+        </Table>
+      </TableWrap>
+      <TableWrap>
+        <Table>
+          <tbody />
+        </Table>
+      </TableWrap>
+      <TableWrap tabIndex={0} role="region" aria-label="Archived decks" />
     </>
   );
 }

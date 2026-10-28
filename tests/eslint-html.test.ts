@@ -433,6 +433,30 @@ const places: Record<string, readonly (readonly [string, number, number, string]
   "odd-menu-007.bad.html": [
     ["ODD-MENU-007", 3, 49, "disabled"],
   ],
+  "odd-table-001.bad.html": [
+    ["ODD-TABLE-001", 2, 7, "class"],
+    ["ODD-TABLE-001", 3, 6, "class"],
+    ["ODD-TABLE-001", 4, 41, "class"],
+    ["ODD-TABLE-001", 5, 38, "class"],
+  ],
+  "odd-table-002.bad.html": [
+    ["ODD-TABLE-002", 2, 29, "tabindex"],
+    ["ODD-TABLE-002", 3, 29, "aria-labelledby"],
+    ["ODD-TABLE-002", 4, 42, "role"],
+  ],
+  "odd-table-003.bad.html": [
+    ["ODD-TABLE-003", 2, 1, "<div"],
+    ["ODD-TABLE-003", 3, 1, "<div"],
+  ],
+  "odd-table-004.bad.html": [
+    ["ODD-TABLE-004", 2, 29, "data-numeric"],
+    ["ODD-TABLE-004", 3, 26, "data-numeric"],
+    ["ODD-TABLE-004", 4, 26, "data-tone"],
+    ["ODD-TABLE-004", 5, 66, "data-numeric"],
+  ],
+  "odd-table-005.bad.html": [
+    ["ODD-TABLE-005", 2, 66, "aria-sort"],
+  ],
   "odd-class-001.bad.html": [
     ["ODD-CLASS-001", 2, 6, "class"],
     ["ODD-CLASS-001", 3, 4, "class"],

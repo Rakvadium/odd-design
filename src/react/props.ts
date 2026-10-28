@@ -15,6 +15,7 @@ import type { SeparatorProps } from "./separator.tsx";
 import type { SheetFooterProps, SheetHeaderProps, SheetProps } from "./sheet.tsx";
 import type { SkeletonProps } from "./skeleton.tsx";
 import type { SliderProps } from "./slider.tsx";
+import type { TableProps, TableSortProps, TableWrapProps } from "./table.tsx";
 import type { TabsProps } from "./tabs.tsx";
 import type { ToasterProps } from "./toast.tsx";
 
@@ -55,4 +56,7 @@ export type WrapperProps = {
   SheetFooter: SheetFooterProps;
   Menu: MenuProps;
   MenuItem: MenuItemProps;
+  TableWrap: TableWrapProps;
+  Table: TableProps;
+  TableSort: TableSortProps;
 };

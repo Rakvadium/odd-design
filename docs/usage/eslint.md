@@ -212,6 +212,12 @@ The plugin checks `Menu` as a `div` with `odd-menu`, and `MenuItem` as a `button
 
 `<Menu popover="auto" aria-label="Deck actions">` with no `role` and `<Menu popover="auto" role="listbox">` report `ODD-MENU-002`. `<Menu popover="auto" role="menu">` with no name, or with `aria-label=" "`, reports `ODD-MENU-003`. `data-tone="danger"` on `Menu` and `data-size="sm"` on `MenuItem` report `ODD-MENU-004`. `<MenuItem>` with no `role` and `<MenuItem role="option">` report `ODD-MENU-005`. `<MenuItem role="menuitem" tone="info">` reports `ODD-MENU-006`, and `<MenuItem role="menuitem" disabled>` reports `ODD-MENU-007`. A raw `<p className="odd-menu">` or `<div className="odd-menu-item">` reports `ODD-MENU-001`. A computed `tone` gives the `ODD-STATIC-001` warning. A spread on `Menu` gives that warning too, and the `popover`, `role`, and name rules then stay quiet, because the spread may hold them.
 
+### Table from odd-design/react
+
+The plugin checks `TableWrap` as a `div` with `odd-table-wrap`, `Table` as a `table` with `odd-table`, and `TableSort` as a `button` with `odd-table-sort`, from their entries of `WRAPPERS`. Every prop is the attribute with the same name, and `tabIndex` counts as `tabindex`. The caption, the sections, the rows, the cells, and the checkboxes have no part.
+
+So `<TableWrap tabIndex={0}>` or `<TableWrap aria-label="Your decks">` with no `role`, and `<TableWrap role="group">` with a name, report `ODD-TABLE-002`. `<TableWrap role="region">` with no name, or with `aria-label=" "`, reports `ODD-TABLE-003`. A bare `<TableWrap>` passes. `data-numeric` on `TableWrap`, `Table`, or `TableSort` reports `ODD-TABLE-004`, written or computed. `<TableSort aria-sort="ascending">` reports `ODD-TABLE-005`. A raw `<p className="odd-table-wrap">` or `<a className="odd-table-sort">` reports `ODD-TABLE-001`. A computed `role` or a spread on `TableWrap` gives the `ODD-STATIC-001` warning, and the region rules then stay quiet. The plugin does not read the `th` around a `TableSort`.
+
 ### Dialog from odd-design/react
 
 The plugin checks `Dialog` as a `dialog` with `odd-dialog`, and `DialogActions` as a `div` with `odd-dialog-actions`, from their entries of `WRAPPERS`. Every prop is the attribute with the same name, so `role`, `closedby`, `open`, and the names are read as written. The body and the title have no part, so the plugin checks the `odd-dialog-body` and `odd-dialog-title` classes where you write them.

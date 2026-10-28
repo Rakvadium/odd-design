@@ -163,6 +163,16 @@ const places: Record<string, readonly (readonly [string, number, number, string]
     ["ODD-MENU-007", 17, 31, "disabled"],
     ["ODD-STATIC-001", 18, 31, "tone={tone}"],
   ],
+  "table.tsx": [
+    ["ODD-STATIC-001", 8, 16, "{...props}"],
+    ["ODD-TABLE-001", 9, 11, "className"],
+    ["ODD-TABLE-002", 10, 16, "tabIndex={0}"],
+    ["ODD-TABLE-002", 11, 29, 'role="group"'],
+    ["ODD-TABLE-003", 12, 5, "<TableWrap"],
+    ["ODD-TABLE-004", 13, 12, 'data-numeric=""'],
+    ["ODD-TABLE-004", 14, 16, 'data-numeric=""'],
+    ["ODD-TABLE-005", 15, 16, 'aria-sort="ascending"'],
+  ],
   "meter.tsx": [
     ["ODD-METER-001", 10, 10, "className"],
     ["ODD-METER-001", 11, 15, "className"],

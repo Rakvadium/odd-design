@@ -50,9 +50,9 @@ type Pinned<N extends Name, Rule> = {
     : never;
 };
 
-type Names<Rule> = Extract<Rule, { kind: "accessible-name" }> extends { names: readonly (infer Each extends string)[] } ? Each : never;
+type NameKeys<Rule, Kind> = Extract<Rule, { kind: Kind; names: readonly string[] }>["names"][number];
 
-export type Named<Rule> = { [Each in Names<Rule>]: { [Key in Each]: string } }[Names<Rule>];
+export type Named<Rule> = { [Each in NameKeys<Rule, "accessible-name">]: { [Key in Each]: string } }[NameKeys<Rule, "accessible-name">];
 
 export type Exclusive<Rule> =
   Extract<Rule, { kind: "forbidden-value" }> extends {
@@ -65,6 +65,18 @@ export type Exclusive<Rule> =
         | { [Key in W]?: Exclude<Values<Rule, W>, X> }
       )
     : {};
+
+type Given<Keys extends string> = { [Each in Keys]: { [Key in Each]: NonNullable<unknown> } }[Keys];
+
+type CodeOf<Rule, Kind> = Extract<Rule, { kind: Kind; code: keyof typeof MESSAGES }>["code"];
+
+export type RoleWithName<P, Rule> = P extends { role: Values<Rule, "role"> }
+  ? [P] extends [Given<NameKeys<Rule, "accessible-name">>]
+    ? P
+    : Message<CodeOf<Rule, "accessible-name">>
+  : P extends Given<NameKeys<Rule, "name-requires">>
+    ? Message<CodeOf<Rule, "name-requires">>
+    : P;
 
 export type Contract<N extends Name, Rule> = DataProps<N, Rule> & RawData<N> & ForeignData<N, Rule> & Forbidden<N, Rule> & Pinned<N, Rule>;
 
