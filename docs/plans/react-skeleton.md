@@ -102,10 +102,10 @@ Each commit ends with `bun run check`. The boxes under a commit name its extra c
 
 ### Commit 2. Mirror Skeleton in the Storybooks
 
-- [ ] Create `stories/mirrored/Skeleton.stories.ts` with `title: "Components/Feedback"` and the export `Skeleton`. The scene is the HTML story with `aria-hidden="true"` on every block. The meta component description carries the story text.
-- [ ] Remove the `Skeleton` export from `stories/Feedback.stories.ts`. Add the id to the mirrored-ids pin in `tests/stories.test.ts`.
-- [ ] Measure the `aria` literal in the built Firefox Storybook, then paste it.
-- [ ] Check. `bunx playwright test e2e/usage.spec.ts --project firefox` and the reduced-motion test in `e2e/behavior.spec.ts` pass.
+- [x] Create `stories/mirrored/Skeleton.stories.ts` with `title: "Components/Feedback"` and the export `Skeleton`. The scene is the HTML story with `aria-hidden="true"` on every block. The meta component description carries the story text.
+- [x] Remove the `Skeleton` export from `stories/Feedback.stories.ts`. Add the id to the mirrored-ids pin in `tests/stories.test.ts`.
+- [x] Measure the `aria` literal in the built Firefox Storybook, then paste it. Result: `- text: Loading decks…` on both sides in Firefox and WebKit, with 12 of 12 blocks hidden and byte-identical screenshots per engine.
+- [x] Check. `bunx playwright test e2e/usage.spec.ts --project firefox` and the reduced-motion test in `e2e/behavior.spec.ts` pass. Result: `bun run check` passes 481 tests. `usage.spec.ts` passes 2 of 2 with "58 stories, 0 diagnostics". The reduced-motion test passes.
 
 ### Commit 3. Docs, smoke, and the verify recipe
 
