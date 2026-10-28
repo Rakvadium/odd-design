@@ -144,28 +144,31 @@ test.describe("popovers and dialogs", () => {
     });
   }
 
-  test("a dialog with closedby=any closes on a backdrop click", async ({ page }, testInfo) => {
-    await openStory(page, "components-surfaces--dialog", "mode:light");
-    await note(page, testInfo, "closedby", `"closedBy" in HTMLDialogElement.prototype`);
-    await page.locator('button[commandfor="confirm-delete"][command="show-modal"]').click();
-    await waitOpen(page, "#confirm-delete");
-    await expect(page.locator("#confirm-delete button", { hasText: "Close" })).toBeFocused();
-    await page.mouse.click(10, 10);
-    await waitOpen(page, "#confirm-delete", false);
-  });
+  for (const storybook of ["html", "react"] as const) {
+    test(`a dialog with closedby=any closes on a backdrop click (${storybook})`, async ({ page }, testInfo) => {
+      await openStory(page, "components-surfaces--dialog", "mode:light", "", storybook);
+      await note(page, testInfo, "closedby", `"closedBy" in HTMLDialogElement.prototype`);
+      await page.locator('button[commandfor="confirm-delete"][command="show-modal"]').click();
+      await waitOpen(page, "#confirm-delete");
+      await expect(page.locator("#confirm-delete button", { hasText: "Close" })).toBeFocused();
+      await page.mouse.click(10, 10);
+      await waitOpen(page, "#confirm-delete", false);
+    });
 
-  test("an alert dialog ignores backdrop clicks but closes on Escape", async ({ page }) => {
-    await openStory(page, "components-overlays--alert-dialog", "mode:light");
-    await page.locator('button[commandfor="discard"][command="show-modal"]').focus();
-    await page.keyboard.press("Enter");
-    await waitOpen(page, "#discard");
-    await page.mouse.click(10, 10);
-    await page.waitForTimeout(400);
-    expect(await isOpen(page, "#discard")).toBe(true);
-    await page.keyboard.press("Escape");
-    await waitOpen(page, "#discard", false);
-    await expect(page.locator('button[commandfor="discard"][command="show-modal"]')).toBeFocused();
-  });
+    test(`an alert dialog ignores backdrop clicks but closes on Escape (${storybook})`, async ({ page }) => {
+      await openStory(page, "components-overlays--alert-dialog", "mode:light", "", storybook);
+      await page.locator('button[commandfor="discard"][command="show-modal"]').focus();
+      await page.keyboard.press("Enter");
+      await waitOpen(page, "#discard");
+      await expect(page.locator("#discard button", { hasText: "Keep editing" })).toBeFocused();
+      await page.mouse.click(10, 10);
+      await page.waitForTimeout(400);
+      expect(await isOpen(page, "#discard")).toBe(true);
+      await page.keyboard.press("Escape");
+      await waitOpen(page, "#discard", false);
+      await expect(page.locator('button[commandfor="discard"][command="show-modal"]')).toBeFocused();
+    });
+  }
 
   test("sheets fill the edge they slide in from", async ({ page }, testInfo) => {
     await openStory(page, "components-overlays--sheet", "mode:light");

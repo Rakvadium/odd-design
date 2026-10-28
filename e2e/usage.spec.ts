@@ -225,7 +225,7 @@ test("usage and mirror: every story in both Storybooks, each pair, the Playgroun
     await page.locator('button[commandfor="toast-settings"][command="show-modal"]').click();
     await page.locator("#toast-settings [data-toast=saved]").click();
     await expect(page.locator('.odd-toast button[aria-label="Dismiss: Deck saved"]').last()).toBeVisible();
-    for (const line of await problemsIn(page, "#toast-settings .odd-toaster")) findings.push(`components-interactive--toast [${storybook} toast saved inside settings] ${line}`);
+    for (const line of await problemsIn(page, "#toast-settings")) findings.push(`components-interactive--toast [${storybook} toast saved inside settings] ${line}`);
   }
 
   console.log(`[${testInfo.project.name}] ${checked} stories, ${findings.length} diagnostics`);
