@@ -1,8 +1,8 @@
 # Use the React components
 
-`odd-design/react` exports `Button`, the Field parts, the Choice parts, `Badge`, the Alert parts, the Avatar parts, and `Separator`. Each renders an `odd-` element from typed props. A contract mistake in those props is a TypeScript error that starts with its code, such as `ODD-BUTTON-007`. `Button` lives in `src/react/button.tsx`, the Field parts in `src/react/field.tsx`, the Choice parts in `src/react/choice.tsx`, `Badge` in `src/react/badge.tsx`, the Alert parts in `src/react/alert.tsx`, the Avatar parts in `src/react/avatar.tsx`, and `Separator` in `src/react/separator.tsx`. Codes and fixes are in [Button usage rules](button.md), [Field usage rules](field.md), [Choice usage rules](choice.md), [Badge usage rules](badge.md), [Alert usage rules](alert.md), [Avatar usage rules](avatar.md), and [Separator usage rules](separator.md).
+`odd-design/react` exports `Button`, the Field parts, the Choice parts, `Badge`, the Alert parts, the Avatar parts, `Separator`, and `Skeleton`. Each renders an `odd-` element from typed props. A contract mistake in those props is a TypeScript error that starts with its code, such as `ODD-BUTTON-007`. `Button` lives in `src/react/button.tsx`, the Field parts in `src/react/field.tsx`, the Choice parts in `src/react/choice.tsx`, `Badge` in `src/react/badge.tsx`, the Alert parts in `src/react/alert.tsx`, the Avatar parts in `src/react/avatar.tsx`, `Separator` in `src/react/separator.tsx`, and `Skeleton` in `src/react/skeleton.tsx`. Codes and fixes are in [Button usage rules](button.md), [Field usage rules](field.md), [Choice usage rules](choice.md), [Badge usage rules](badge.md), [Alert usage rules](alert.md), [Avatar usage rules](avatar.md), [Separator usage rules](separator.md), and [Skeleton usage rules](skeleton.md).
 
-`button.tsx` starts with `"use client"`, so a React Server Components app can render `Button` from a server component. The Field parts, the Choice parts, `Badge`, the Alert parts, the Avatar parts, and `Separator` hold no state and no handlers, so `field.tsx`, `choice.tsx`, `badge.tsx`, `alert.tsx`, `avatar.tsx`, and `separator.tsx` have no directive.
+`button.tsx` starts with `"use client"`, so a React Server Components app can render `Button` from a server component. The Field parts, the Choice parts, `Badge`, the Alert parts, the Avatar parts, `Separator`, and `Skeleton` hold no state and no handlers, so `field.tsx`, `choice.tsx`, `badge.tsx`, `alert.tsx`, `avatar.tsx`, `separator.tsx`, and `skeleton.tsx` have no directive.
 
 ## Render a button or a link
 
@@ -255,6 +255,22 @@ import { Separator } from "odd-design/react";
 
 `Separator` takes no children, because React throws on an `hr` with children. Put a label beside it. `role` takes only `separator`, and `aria-hidden` is a type error (`ODD-SEPARATOR-003`). For a line that means nothing, draw a border on the container instead. `data-orientation` is a type error (`ODD-SEPARATOR-002`), because the stylesheet does not read it. A computed `aria-orientation`, such as `<Separator aria-orientation={orientation}>`, gives the `ODD-STATIC-001` warning, the same as a computed `role` on `Avatar`.
 
+## Hold the place of loading content
+
+```tsx
+import { Skeleton } from "odd-design/react";
+
+<div aria-busy="true">
+  <span className="odd-visually-hidden">Loading decks…</span>
+  <Skeleton aria-hidden="true" shape="avatar" />
+  <Skeleton aria-hidden="true" style={{ inlineSize: "60%" }} />
+</div>;
+```
+
+`Skeleton` renders a `div` with the class `odd-skeleton`, a block that pulses while content loads. Pass `aria-hidden="true"` on every block, as on the element. It is a required prop, and it takes only the string `"true"`. `aria-hidden={true}` and a bare `aria-hidden` are type errors, because ESLint reads the bare form as empty, and an empty value hides nothing. Leaving `shape` out draws a bar 1em tall. `shape="avatar"` draws a square the size of a default avatar. Size each block with `inlineSize` and `blockSize` in `style`.
+
+The block is hidden, so it cannot say that the page is loading. Set `aria-busy="true"` on the region that is filling in, and put the loading words in an `odd-visually-hidden` span inside it. Remove the blocks, the span, and `aria-busy` when the content arrives. No checker reads the region, so a block with no busy region beside it passes. Children, `aria-busy`, `role`, `aria-label`, and `aria-labelledby` on `Skeleton` are type errors (`ODD-SKELETON-004`). A computed `shape`, such as `<Skeleton shape={shapeOf[kind]}>`, gives the `ODD-STATIC-001` warning, the same as a computed `size` on `Avatar`.
+
 ## Read a type error
 
 The type error names the code and the fix. The table lists what each mistake prints.
@@ -281,14 +297,16 @@ The type error names the code and the fix. The table lists what each mistake pri
 | `aria-hidden` on `Separator` | `ODD-SEPARATOR-003` |
 | A system `data-` attribute on `Separator`, such as `data-tone` | `ODD-SEPARATOR-004` |
 | Children on `Separator` | `the expected type of 'children' is 'undefined'` |
-| `Switch` without `type` or `role`, or `AvatarGroup` without `role` | TypeScript's missing property error |
-| A `Switch` `type` other than `checkbox`, a `Switch` `role` other than `switch`, an `Avatar` or `AvatarGroup` `role` other than `img` or `group`, or a `Separator` `role` other than `separator` | The allowed value |
+| Children, `aria-busy`, `role`, `aria-label`, or `aria-labelledby` on `Skeleton` | `ODD-SKELETON-004` |
+| A system `data-` attribute on `Skeleton`, such as `data-size` | `ODD-SKELETON-005` |
+| `Switch` without `type` or `role`, `AvatarGroup` without `role`, or `Skeleton` without `aria-hidden` | TypeScript's missing property error |
+| A `Switch` `type` other than `checkbox`, a `Switch` `role` other than `switch`, an `Avatar` or `AvatarGroup` `role` other than `img` or `group`, a `Separator` `role` other than `separator`, or a `Skeleton` `aria-hidden` other than `"true"` | The allowed value |
 | `Label` without `htmlFor`, or `Hint` or `FieldError` without `id` | TypeScript's missing property error |
-| A `variant`, `size`, `aria-current`, `tone`, or `aria-orientation` value outside the contract | The allowed values |
+| A `variant`, `size`, `aria-current`, `tone`, `aria-orientation`, or `shape` value outside the contract | The allowed values |
 
 TypeScript shortens a long type in an error. Set `noErrorTruncation` in `tsconfig.json` to see the whole message.
 
-Some rules are not type errors. `Button` picks the element from `href`, so you cannot write an anchor without `href` (`ODD-BUTTON-009`) or a button with `href` (`ODD-BUTTON-010`). Those two codes apply to a raw `a` or `button` with the `odd-button` class. Each Field and Choice part, `Badge`, each Alert part, each Avatar part, and `Separator` picks its own element too, so `ODD-FIELD-001`, `ODD-CHOICE-001`, `ODD-BADGE-001`, `ODD-ALERT-001`, `ODD-AVATAR-001`, and `ODD-SEPARATOR-001` apply only to raw markup. Visible text in an icon-only button (`ODD-BUTTON-014`) and a misspelled `data-` name are not type errors either. The ESLint plugin and the [runtime checker](runtime.md) report each of these.
+Some rules are not type errors. `Button` picks the element from `href`, so you cannot write an anchor without `href` (`ODD-BUTTON-009`) or a button with `href` (`ODD-BUTTON-010`). Those two codes apply to a raw `a` or `button` with the `odd-button` class. Each Field and Choice part, `Badge`, each Alert part, each Avatar part, `Separator`, and `Skeleton` picks its own element too, so `ODD-FIELD-001`, `ODD-CHOICE-001`, `ODD-BADGE-001`, `ODD-ALERT-001`, `ODD-AVATAR-001`, `ODD-SEPARATOR-001`, and `ODD-SKELETON-001` apply only to raw markup. Visible text in an icon-only button (`ODD-BUTTON-014`) and a misspelled `data-` name are not type errors either. The ESLint plugin and the [runtime checker](runtime.md) report each of these.
 
 ## Open a dialog or a popover with a command
 

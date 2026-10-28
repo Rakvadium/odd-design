@@ -109,11 +109,11 @@ Each commit ends with `bun run check`. The boxes under a commit name its extra c
 
 ### Commit 3. Docs, smoke, and the verify recipe
 
-- [ ] In `docs/usage/react.md`, add a section on holding the place of loading content, the type-error rows, and Skeleton in the "not type errors" paragraph. Add a Skeleton section to `docs/usage/eslint.md`. Fix the README row to `<div aria-hidden="true">` and add Skeleton to the part list.
-- [ ] Add `docs/usage/skeleton.md` to `REQUIRED` in `scripts/consumer-smoke.ts`. The clean app renders a `Skeleton`.
-- [ ] Update `.agents/skills/verify-odd-design/features/feedback.md` for the React Skeleton.
-- [ ] Add the follow-ups in Appendix D to `docs/follow-ups.md`.
-- [ ] Check. `bun run check`, `bun run build`, and `bun scripts/consumer-smoke.ts` pass.
+- [x] In `docs/usage/react.md`, add a section on holding the place of loading content, the type-error rows, and Skeleton in the "not type errors" paragraph. Add a Skeleton section to `docs/usage/eslint.md`. Fix the README row to `<div aria-hidden="true">` and add Skeleton to the part list.
+- [x] Add `docs/usage/skeleton.md` to `REQUIRED` in `scripts/consumer-smoke.ts`. The clean app renders a `Skeleton`.
+- [x] Update `.agents/skills/verify-odd-design/features/feedback.md` for the React Skeleton.
+- [x] Add the follow-ups in Appendix D to `docs/follow-ups.md`.
+- [x] Check. `bun run check`, `bun run build`, and `bun scripts/consumer-smoke.ts` pass. Result: `bun run check` passes 481 tests. The build exits 0. The smoke exits 0, with zero clean-app findings in types, ESLint, and vitest, and `Skeleton` in the packed React exports.
 
 ## Verify on the real surface
 

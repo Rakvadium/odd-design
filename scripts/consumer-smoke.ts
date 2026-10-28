@@ -50,6 +50,7 @@ const REQUIRED = [
   "docs/usage/react.md",
   "docs/usage/runtime.md",
   "docs/usage/separator.md",
+  "docs/usage/skeleton.md",
   "src/css/index.css",
   "src/js/appearance.ts",
   "src/js/enhance.ts",
