@@ -8,6 +8,7 @@ import type { DisclosureProps } from "./disclosure.tsx";
 import type { FieldErrorProps, FieldProps, HintProps, InputProps, LabelProps, SelectProps, TextareaProps } from "./field.tsx";
 import type { SeparatorProps } from "./separator.tsx";
 import type { SkeletonProps } from "./skeleton.tsx";
+import type { TabsProps } from "./tabs.tsx";
 
 export type WrapperProps = {
   Button: ButtonProps;
@@ -32,4 +33,5 @@ export type WrapperProps = {
   CardLink: CardLinkProps;
   CardFooter: CardFooterProps;
   Disclosure: DisclosureProps;
+  Tabs: TabsProps;
 };

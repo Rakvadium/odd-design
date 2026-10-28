@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/html-vite";
-import { createToaster, enhanceMenu, enhanceTabs, type Toaster } from "../src/js/enhance.ts";
+import { createToaster, enhanceMenu, type Toaster } from "../src/js/enhance.ts";
 import { icons } from "./icons.ts";
 
 const meta = {
@@ -68,43 +68,6 @@ export const Menu: Story = {
           if (item) log.textContent = `Chose “${label.trim()}”`;
         });
       },
-    ),
-};
-
-export const Tabs: Story = {
-  parameters: {
-    docs: {
-      description: {
-        story:
-          "The ARIA tabs pattern, enhanced by `enhanceTabs`: one tab stop, arrows and Home/End move between tabs, and the panel follows. The second set uses `data-activation=\"manual\"`, so arrows only move focus and Enter or Space chooses.",
-      },
-    },
-  },
-  render: () =>
-    mount(
-      /* html */ `<div class="odd-stack" style="--gap: var(--space-8); max-inline-size: 40rem">
-        <div class="odd-tabs" id="deck-tabs">
-          <div role="tablist" aria-label="Deck view">
-            <button role="tab" id="tab-cards" aria-controls="panel-cards" aria-selected="true">Cards</button>
-            <button role="tab" id="tab-stats" aria-controls="panel-stats" aria-selected="false">Stats</button>
-            <button role="tab" id="tab-notes" aria-controls="panel-notes" aria-selected="false">Notes</button>
-          </div>
-          <div role="tabpanel" id="panel-cards" aria-labelledby="tab-cards"><p>60 cards across 24 units, 22 actions, and 14 assets.</p></div>
-          <div role="tabpanel" id="panel-stats" aria-labelledby="tab-stats" hidden><p>Average cost 2.4. Curve peaks at 3.</p></div>
-          <div role="tabpanel" id="panel-notes" aria-labelledby="tab-notes" hidden><p>Mulligan aggressively for an early unit. <a href="#">Edit notes</a></p></div>
-        </div>
-        <div class="odd-tabs" id="manual-tabs">
-          <div role="tablist" aria-label="Season" data-activation="manual">
-            <button role="tab" id="tab-s7" aria-controls="panel-s7" aria-selected="true">Season 7</button>
-            <button role="tab" id="tab-s6" aria-controls="panel-s6" aria-selected="false">Season 6</button>
-            <button role="tab" id="tab-s5" aria-controls="panel-s5" aria-selected="false" disabled>Season 5</button>
-          </div>
-          <div role="tabpanel" id="panel-s7" aria-labelledby="tab-s7"><p>Current season. Rotation on May 1.</p></div>
-          <div role="tabpanel" id="panel-s6" aria-labelledby="tab-s6" hidden><p>Archived results.</p></div>
-          <div role="tabpanel" id="panel-s5" aria-labelledby="tab-s5" hidden><p>Not imported yet.</p></div>
-        </div>
-      </div>`,
-      (root) => root.querySelectorAll<HTMLElement>(".odd-tabs").forEach(enhanceTabs),
     ),
 };
 

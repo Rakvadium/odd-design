@@ -15,7 +15,7 @@ Patterns HTML has no element for, enhanced by `src/js/enhance.ts` on top of nati
 
 ## How to get to it (user POV)
 
-- In Storybook, open **Components → Interactive**, which has Menu, Tabs, and Toast.
+- In Storybook, open **Components → Interactive**, which has Menu, Toast, and Tabs. Tabs sorts last because it loads from `stories/mirrored/`.
 - Select-all is on **Components → Data Display → Table**, and the avatar fallback is on **Avatar Fallback**.
 
 ## Driving it with ctl.ts
@@ -32,6 +32,12 @@ Preconditions:
 - **Toast over a modal.** Click `button[commandfor="toast-settings"]`, wait 300, click `#toast-settings [data-toast=saved]`, and wait 600. `aria` shows `region "Notifications"` with `button "Dismiss: Deck saved"` inside the dialog's tree. Click that Dismiss button. The toast is gone, and `#toast-settings` is still open. Press Escape. `.odd-toaster`'s parent is `BODY`, and it is still `:popover-open`.
 - **Select-all.** Run `bun $S goto components-data-display--table`. The header checkbox is `indeterminate` (Ember Aggro starts checked). Click `[data-select-all]`. All four rows are checked, and the header is checked and not mixed. Uncheck `Select Tidecaller`. The header is mixed. Click the header twice. All rows are checked, then all are cleared.
 - **Avatar fallback.** Run `bun $S goto components-data-display--avatar-fallback`. `#broken-avatar` has text `JP`, `role="img"`, `aria-label="Jo Park"`, and no `<img>`.
+
+## React Tabs
+
+Build the composed Storybook and serve it, as in the React Field section of `forms.md`. Open `http://127.0.0.1:6106/?path=/story/react_components-interactive--tabs`. The preview is the Tabs story built from two `Tabs` parts with native tablist, `button`, and panel children, with the same ids and text as `components-interactive--tabs`. `Tabs` wires itself, so the two Tabs recipes above work on the React side too.
+
+Run the pair sweep with `bunx playwright test e2e/usage.spec.ts --project firefox`. The Tabs pair matches the `aria` literal in `stories/mirrored/Tabs.stories.ts`, and the two screenshots are byte-identical. `bunx playwright test e2e/behavior.spec.ts --project firefox -g tabs` runs the tabs test once per Storybook. It first waits for `#tab-s5` to have `tabindex="-1"`, which only `enhanceTabs` writes, so a part that does not wire itself fails there.
 
 ## Gotchas
 

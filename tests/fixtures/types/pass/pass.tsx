@@ -9,6 +9,7 @@ import { Disclosure } from "../../../../src/react/disclosure.tsx";
 import { Field, FieldError, Hint, Input, Label, Select, Textarea } from "../../../../src/react/field.tsx";
 import { Separator } from "../../../../src/react/separator.tsx";
 import { Skeleton } from "../../../../src/react/skeleton.tsx";
+import { Tabs } from "../../../../src/react/tabs.tsx";
 
 function save(event: MouseEvent<HTMLButtonElement>): void {
   event.currentTarget.blur();
@@ -226,5 +227,27 @@ export function FaqItem({ question, answer }: { question: string; answer: string
       <summary>{question}</summary>
       <div>{answer}</div>
     </Disclosure>
+  );
+}
+
+export function SeasonTabs() {
+  const tabs = useRef<HTMLDivElement>(null);
+  return (
+    <Tabs ref={tabs} id="season-tabs" className="seasons" data-testid="seasons" data-state="ready">
+      <div role="tablist" aria-label="Season" aria-orientation="vertical" data-activation="manual">
+        <button role="tab" id="tab-s7" aria-controls="panel-s7" aria-selected="true">
+          Season 7
+        </button>
+        <button role="tab" id="tab-s5" aria-controls="panel-s5" aria-selected="false" disabled>
+          Season 5
+        </button>
+      </div>
+      <div role="tabpanel" id="panel-s7" aria-labelledby="tab-s7">
+        Current season.
+      </div>
+      <div role="tabpanel" id="panel-s5" aria-labelledby="tab-s5" hidden>
+        Not imported yet.
+      </div>
+    </Tabs>
   );
 }

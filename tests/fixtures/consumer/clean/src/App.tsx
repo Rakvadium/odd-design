@@ -1,4 +1,4 @@
-import { Alert, AlertTitle, Avatar, AvatarGroup, Badge, Button, Card, CardFooter, CardLink, Choice, Disclosure, Field, Hint, Input, Label, Separator, Skeleton, Switch } from "odd-design/react";
+import { Alert, AlertTitle, Avatar, AvatarGroup, Badge, Button, Card, CardFooter, CardLink, Choice, Disclosure, Field, Hint, Input, Label, Separator, Skeleton, Switch, Tabs } from "odd-design/react";
 
 export function App() {
   return (
@@ -41,6 +41,16 @@ export function App() {
         <summary>Does it need JavaScript?</summary>
         <div>No.</div>
       </Disclosure>
+      <Tabs>
+        <div role="tablist" aria-label="Deck view">
+          <button role="tab" id="tab-cards" aria-controls="panel-cards" aria-selected="true">
+            Cards
+          </button>
+        </div>
+        <div role="tabpanel" id="panel-cards" aria-labelledby="tab-cards">
+          60 cards
+        </div>
+      </Tabs>
       <Button variant="primary">Save</Button>
     </>
   );

@@ -170,9 +170,26 @@ function requiredChildFindings(rule: Extract<UsageRule, { kind: "required-child"
   if (tag !== rule.element) return [];
   if (node.children.length === 0 && hasUnknownAttributes(node)) return [];
   const elements = node.children.filter((child) => typeof child !== "string");
-  if (elements.some((child) => !isComputed(child) && child.tag === rule.child)) return [];
-  if (elements.some((child) => isComputed(child) || isComputed(child.tag))) return [];
-  return [diagnose(rule.code, undefined, { found: `no ${rule.child} child` })];
+  const matches = (child: UsageNode) => ("child" in rule ? child.tag === rule.child : find(child, "role")?.value === rule.role);
+  const unknown = (child: UsageNode) => isComputed(child.tag) || ("role" in rule && hasUnknownRole(child));
+  if (elements.some((child) => !isComputed(child) && matches(child))) return [];
+  if (elements.some((child) => isComputed(child) || unknown(child))) return [];
+  return [diagnose(rule.code, undefined, { found: `no ${"child" in rule ? rule.child : rule.role} child` })];
+}
+
+function hasUnknownRole(node: UsageNode): boolean {
+  const role = find(node, "role");
+  return role === undefined ? hasUnknownAttributes(node) : isComputed(role.value);
+}
+
+function roleDescendantFindings(rule: Extract<UsageRule, { kind: "role-descendant" }>, scope: Scope): Diagnostic[] {
+  const { found } = descendants(scope.node, scope.components.map((component) => component.className));
+  return found.flatMap((node) => {
+    if (find(node, "role")?.value !== rule.role) return [];
+    if (typeof node.tag === "string" && !rule.elements.includes(node.tag)) return [diagnose(rule.code, undefined, { found: `${rule.role} on ${node.tag}` })];
+    if (find(node, rule.attribute) === undefined && !hasUnknownAttributes(node)) return [diagnose(rule.code, undefined, { found: `${rule.role} without ${rule.attribute}` })];
+    return [];
+  });
 }
 
 function valueReadAttributes(scope: Scope): Set<string> {
@@ -243,6 +260,8 @@ function apply(rule: UsageRule, scope: Scope): Diagnostic[] {
       return stretchedLinkFindings(rule, scope);
     case "required-child":
       return requiredChildFindings(rule, scope);
+    case "role-descendant":
+      return roleDescendantFindings(rule, scope);
     case "unknown-class":
       return scope.words
         .filter((word) => word.startsWith("odd-") && !registry.includes(word))

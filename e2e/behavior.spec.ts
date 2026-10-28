@@ -217,23 +217,33 @@ test.describe("keyboard widgets", () => {
     expect(await isOpen(page, "#deck-actions")).toBe(false);
   });
 
-  test("tabs follow the arrow keys, and manual tabs wait for Enter", async ({ page }) => {
-    await openStory(page, "components-interactive--tabs", "mode:light");
-    await page.locator("#tab-cards").focus();
-    await page.keyboard.press("ArrowRight");
-    await expect(page.locator("#tab-stats")).toHaveAttribute("aria-selected", "true");
-    await expect(page.locator("#panel-stats")).toBeVisible();
-    await page.keyboard.press("End");
-    await page.keyboard.press("ArrowRight");
-    await expect(page.locator("#tab-cards")).toBeFocused();
-    await page.locator("#tab-s7").focus();
-    await page.keyboard.press("ArrowRight");
-    await expect(page.locator("#tab-s6")).toBeFocused();
-    await expect(page.locator("#tab-s7")).toHaveAttribute("aria-selected", "true");
-    await page.keyboard.press("Enter");
-    await expect(page.locator("#tab-s6")).toHaveAttribute("aria-selected", "true");
-    await expect(page.locator("#panel-s6")).toBeVisible();
-  });
+  for (const storybook of ["html", "react"] as const) {
+    test(`tabs follow the arrow keys, and manual tabs wait for Enter (${storybook})`, async ({ page }) => {
+      await openStory(page, "components-interactive--tabs", "mode:light", "", storybook);
+      await expect(page.locator("#tab-s5"), "enhanceTabs ran").toHaveAttribute("tabindex", "-1");
+      await page.locator("#tab-cards").focus();
+      await page.keyboard.press("ArrowRight");
+      await expect(page.locator("#tab-stats")).toHaveAttribute("aria-selected", "true");
+      await expect(page.locator("#panel-stats")).toBeVisible();
+      await page.keyboard.press("End");
+      await page.keyboard.press("ArrowRight");
+      await expect(page.locator("#tab-cards")).toBeFocused();
+      await page.locator("#tab-s7").focus();
+      await page.keyboard.press("ArrowRight");
+      await expect(page.locator("#tab-s6")).toBeFocused();
+      await expect(page.locator("#tab-s7")).toHaveAttribute("aria-selected", "true");
+      await page.keyboard.press("ArrowRight");
+      await expect(page.locator("#tab-s7"), "ArrowRight skips the disabled tab").toBeFocused();
+      await page.keyboard.press("ArrowLeft");
+      await page.keyboard.press("Enter");
+      await expect(page.locator("#tab-s6")).toHaveAttribute("aria-selected", "true");
+      await expect(page.locator("#panel-s6")).toBeVisible();
+      await page.locator("#tab-cards").click();
+      await expect(page.locator("#panel-cards")).toBeVisible();
+      await page.keyboard.press("Tab");
+      await expect(page.locator("#panel-cards"), "Tab leaves the list for the chosen panel").toBeFocused();
+    });
+  }
 
   test("a toast shown over a modal dialog is clickable and the region moves back after", async ({ page }) => {
     await openStory(page, "components-interactive--toast", "mode:light");

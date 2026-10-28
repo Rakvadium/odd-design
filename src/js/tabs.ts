@@ -1,5 +1,7 @@
 import { roving } from "./roving.ts";
 
+const holders = new WeakMap<HTMLElement, { count: number; tablist: HTMLElement; stop: () => void }>();
+
 /*
  * <div class="odd-tabs">
  *   <div role="tablist" aria-label="Deck view">
@@ -15,10 +17,34 @@ import { roving } from "./roving.ts";
  * are slow to fill, set data-activation="manual" on the tablist so Enter or Space chooses instead.
  * aria-orientation="vertical" on the tablist switches to Up and Down.
  * Fires a bubbling "odd-tab-change" event with { tab, panel } in its detail.
+ * A root is wired once however many callers enhance it, and its listeners go when the last caller
+ * cleans up. A root with no tablist yet is
+ * left alone, so a later call can still wire it. A call after the tablist was replaced wires the new one.
  */
 export function enhanceTabs(root: HTMLElement): () => void {
   const tablist = root.querySelector<HTMLElement>('[role="tablist"]');
-  if (!tablist) return () => {};
+  let hold = holders.get(root);
+  if (hold === undefined) {
+    if (!tablist) return () => {};
+    hold = { count: 0, tablist, stop: wire(root, tablist) };
+    holders.set(root, hold);
+  } else if (tablist && tablist !== hold.tablist) {
+    hold.stop();
+    hold.tablist = tablist;
+    hold.stop = wire(root, tablist);
+  }
+  hold.count++;
+  let released = false;
+  return () => {
+    if (released) return;
+    released = true;
+    if (--hold.count > 0) return;
+    hold.stop();
+    holders.delete(root);
+  };
+}
+
+function wire(root: HTMLElement, tablist: HTMLElement): () => void {
   const tabs = () => [...tablist.querySelectorAll<HTMLElement>('[role="tab"]')];
   const panelOf = (tab: HTMLElement) => document.getElementById(tab.getAttribute("aria-controls") ?? "");
 
