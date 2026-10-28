@@ -170,6 +170,12 @@ The plugin checks `Tabs` as a `div` with `odd-tabs`, from its entry of `WRAPPERS
 
 So a `Tabs` whose tablist sits inside a `div` reports `ODD-TABS-002`. A panel placed before the tablist passes. `aria-orientation` or `data-activation` on `Tabs` reports `ODD-TABS-003`, and on the tablist it passes. A `div` with `role="tab"`, or a tab `button` with no `aria-controls`, reports `ODD-TABS-004`. A raw `<section className="odd-tabs">` reports `ODD-TABS-001`. `<Tabs data-tone="info">` reports `ODD-TABS-005`, and `data-state` passes. A child component, such as `<Tabs><DeckTabList /></Tabs>`, a computed `role`, or a spread with no `role` hides the tablist, so a missing tablist stays quiet. A spread on a tab hides its `aria-controls`, so only a tab that is not a `button` still reports.
 
+### Search from odd-design/react
+
+The plugin checks `Search` as a `search` with `odd-search`, from its entry of `WRAPPERS`. Every prop is the attribute with the same name. The plugin reads the direct children for the input and the icon, and the children of a fragment count as direct. An `Input` counts as an `input` with `odd-input`.
+
+So a `Search` whose `Input` sits inside a `div` or a `form`, a raw `input` with no `odd-input`, or an `Input` with `type="text"` reports `ODD-SEARCH-002`. A `Search` with no `svg`, with its `svg` inside a `span`, or with an `svg` that lacks `aria-hidden="true"` reports `ODD-SEARCH-003`. A bare `aria-hidden` reads as empty, so it reports too. `<Search onSubmit={submit}>` reports `ODD-SEARCH-004`. A raw `<div className="odd-search">` reports `ODD-SEARCH-001` alone, and `<search><form className="odd-search">` is checked like `Search`. `<Search data-tone="info">` reports `ODD-SEARCH-005`. A child component, such as an icon from an icon library, or an expression child hides what it renders, so `ODD-SEARCH-002` and `ODD-SEARCH-003` both stay quiet on that search. A computed `className` or `type` on the input, a computed `aria-hidden` on the icon, or a spread that leaves the attribute out also stays quiet. A computed `className` still reports when the input's `type` is missing or not `search`.
+
 ### Other components
 
 The plugin cannot see what another component renders. A component with an `odd-` class, such as `<Link className="odd-button">`, gets one `ODD-STATIC-001` warning on the element and no button rules. An `odd-` class that is not in the registry still reports `ODD-CLASS-001`. `<UI.Button>`, with `UI` a namespace import, counts as another component.

@@ -1,5 +1,7 @@
 import type { UsageCode } from "./format.ts";
 
+type ChildValue = { attribute?: never; value?: never } | { attribute: string; value: string };
+
 export type UsageRule =
   | { kind: "element"; code: UsageCode; className: string; elements: readonly string[] }
   | { kind: "enum"; code: UsageCode; attribute: string; values: readonly string[]; omit: readonly string[] }
@@ -13,8 +15,9 @@ export type UsageRule =
   | { kind: "icon-only-text"; code: UsageCode; attribute: string; ignore: string }
   | { kind: "system-data"; code: UsageCode; allow?: readonly string[] }
   | { kind: "stretched-link"; code: UsageCode; attribute: string; className: string; controls: readonly string[] }
-  | { kind: "required-child"; code: UsageCode; element: string; child: string }
-  | { kind: "required-child"; code: UsageCode; element: string; role: string }
+  | ({ kind: "required-child"; code: UsageCode; element: string; child: string } & ChildValue)
+  | ({ kind: "required-child"; code: UsageCode; element: string; role: string } & ChildValue)
+  | ({ kind: "required-child"; code: UsageCode; element: string; className: string } & ChildValue)
   | { kind: "role-descendant"; code: UsageCode; role: string; elements: readonly string[]; attribute: string }
   | { kind: "unknown-class"; code: UsageCode }
   | { kind: "computed-value"; code: UsageCode }
@@ -155,6 +158,16 @@ export const USAGE = {
     { kind: "role-descendant", code: "ODD-TABS-004", role: "tab", elements: ["button"], attribute: "aria-controls" },
     { kind: "system-data", code: "ODD-TABS-005" },
   ] as const satisfies readonly UsageRule[],
+  search: [
+    { kind: "element", code: "ODD-SEARCH-001", className: "odd-search", elements: ["search", "form"] },
+    { kind: "required-child", code: "ODD-SEARCH-002", element: "search", className: "odd-input", attribute: "type", value: "search" },
+    { kind: "required-child", code: "ODD-SEARCH-002", element: "form", className: "odd-input", attribute: "type", value: "search" },
+    { kind: "required-child", code: "ODD-SEARCH-003", element: "search", child: "svg", attribute: "aria-hidden", value: "true" },
+    { kind: "required-child", code: "ODD-SEARCH-003", element: "form", child: "svg", attribute: "aria-hidden", value: "true" },
+    { kind: "forbidden-on-element", code: "ODD-SEARCH-004", element: "search", attribute: "onSubmit" },
+    { kind: "forbidden-on-element", code: "ODD-SEARCH-004", element: "search", attribute: "onsubmit" },
+    { kind: "system-data", code: "ODD-SEARCH-005" },
+  ] as const satisfies readonly UsageRule[],
   shared: [
     { kind: "unknown-class", code: "ODD-CLASS-001" },
     { kind: "computed-value", code: "ODD-STATIC-001" },
@@ -200,6 +213,7 @@ export const WRAPPERS = {
   CardFooter: { source: "odd-design/react", className: "odd-card-footer", props: {}, element: "div" },
   Disclosure: { source: "odd-design/react", className: "odd-disclosure", props: {}, element: "details" },
   Tabs: { source: "odd-design/react", className: "odd-tabs", props: {}, element: "div" },
+  Search: { source: "odd-design/react", className: "odd-search", props: {}, element: "search" },
 } as const satisfies Record<string, Wrapper>;
 
 export const CLASS_REGISTRY = [
@@ -327,3 +341,4 @@ export type CardLinkRule = (typeof USAGE.cardLink)[number];
 export type CardFooterRule = (typeof USAGE.cardFooter)[number];
 export type DisclosureRule = (typeof USAGE.disclosure)[number];
 export type TabsRule = (typeof USAGE.tabs)[number];
+export type SearchRule = (typeof USAGE.search)[number];

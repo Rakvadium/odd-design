@@ -67,6 +67,11 @@ const RUNTIME_CODES = [
   "ODD-TABS-003",
   "ODD-TABS-004",
   "ODD-TABS-005",
+  "ODD-SEARCH-001",
+  "ODD-SEARCH-002",
+  "ODD-SEARCH-003",
+  "ODD-SEARCH-004",
+  "ODD-SEARCH-005",
   "ODD-CLASS-001",
 ];
 
@@ -147,6 +152,12 @@ test("data-varient suggests data-variant", () => {
 test("data-tone on a separator names data-orientation as the exception", () => {
   expect(diagnose(`<hr class="odd-separator" data-tone="danger">`).map((diagnostic) => diagnostic.message)).toEqual([
     "ODD-SEPARATOR-004: odd-separator does not take that data attribute. Allowed values: any app data attribute, the appearance axes, and the headless allowlist. Fix: remove the attribute. A separator takes aria-orientation and no system data attribute. Appearance axes: data-chrome, data-palette, data-mode. Headless allowlist: data-state, data-side, data-disabled, data-orientation, data-highlighted, except data-orientation, which is ODD-SEPARATOR-002. docs/usage/separator.md#odd-separator-004 Found data-tone.",
+  ]);
+});
+
+test("a search with a text input names the class and the type it is missing", () => {
+  expect(diagnose(`<search class="odd-search"><svg aria-hidden="true"></svg><input class="odd-input" type="text" aria-label="Search cards"></search>`).map((diagnostic) => diagnostic.message)).toEqual([
+    "ODD-SEARCH-002: this search has no direct child with odd-input and type=search. search.css pads only a direct .odd-input, so a wrapped input runs under the icon, and an input of another type is a textbox with no restyled clear button. Allowed values: an input with odd-input and type=search directly inside odd-search. Fix: make the input an Input with type=search, or an input with odd-input and type=search, directly inside odd-search. Do not put a form between them. To submit, put the form around the search. docs/usage/search.md#odd-search-002 Found no odd-input child with type=search.",
   ]);
 });
 

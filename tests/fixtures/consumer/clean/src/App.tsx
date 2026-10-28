@@ -1,4 +1,4 @@
-import { Alert, AlertTitle, Avatar, AvatarGroup, Badge, Button, Card, CardFooter, CardLink, Choice, Disclosure, Field, Hint, Input, Label, Separator, Skeleton, Switch, Tabs } from "odd-design/react";
+import { Alert, AlertTitle, Avatar, AvatarGroup, Badge, Button, Card, CardFooter, CardLink, Choice, Disclosure, Field, Hint, Input, Label, Search, Separator, Skeleton, Switch, Tabs } from "odd-design/react";
 
 export function App() {
   return (
@@ -51,6 +51,13 @@ export function App() {
           60 cards
         </div>
       </Tabs>
+      <Search>
+        <label className="odd-visually-hidden" htmlFor="card-search">
+          Search cards
+        </label>
+        <svg aria-hidden="true" viewBox="0 0 24 24" />
+        <Input type="search" id="card-search" placeholder="Search cards" />
+      </Search>
       <Button variant="primary">Save</Button>
     </>
   );

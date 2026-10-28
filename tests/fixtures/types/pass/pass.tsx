@@ -1,4 +1,4 @@
-import { useRef, useState, type MouseEvent } from "react";
+import { useRef, useState, type FormEvent, type MouseEvent } from "react";
 import { Alert, AlertTitle, type AlertTone } from "../../../../src/react/alert.tsx";
 import { Avatar, AvatarGroup, type AvatarSize } from "../../../../src/react/avatar.tsx";
 import { Badge, type BadgeTone } from "../../../../src/react/badge.tsx";
@@ -7,6 +7,7 @@ import { Card, CardFooter, CardLink } from "../../../../src/react/card.tsx";
 import { Choice, Segmented, Switch } from "../../../../src/react/choice.tsx";
 import { Disclosure } from "../../../../src/react/disclosure.tsx";
 import { Field, FieldError, Hint, Input, Label, Select, Textarea } from "../../../../src/react/field.tsx";
+import { Search } from "../../../../src/react/search.tsx";
 import { Separator } from "../../../../src/react/separator.tsx";
 import { Skeleton } from "../../../../src/react/skeleton.tsx";
 import { Tabs } from "../../../../src/react/tabs.tsx";
@@ -249,5 +250,36 @@ export function SeasonTabs() {
         Not imported yet.
       </div>
     </Tabs>
+  );
+}
+
+export function CardFilter() {
+  const [query, setQuery] = useState("");
+  return (
+    <Search id="card-filter" className="filter" data-testid="card-filter" data-state="idle">
+      <label className="odd-visually-hidden" htmlFor="card-filter-q">
+        Filter cards
+      </label>
+      <svg aria-hidden="true" viewBox="0 0 24 24" />
+      <Input type="search" id="card-filter-q" value={query} onChange={(event) => setQuery(event.target.value)} />
+    </Search>
+  );
+}
+
+export function SiteSearch({ onSearch }: { onSearch: (query: string) => void }) {
+  const submit = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    onSearch(String(new FormData(event.currentTarget).get("q")));
+  };
+  return (
+    <form action="/search" onSubmit={submit}>
+      <Search>
+        <label className="odd-visually-hidden" htmlFor="site-search">
+          Search the docs
+        </label>
+        <svg aria-hidden="true" viewBox="0 0 24 24" />
+        <Input type="search" id="site-search" name="q" />
+      </Search>
+    </form>
   );
 }

@@ -28,8 +28,12 @@ type ForeignData<N extends Name, Rule> = [Extract<Rule, { kind: "system-data" }>
     ? { [Attribute in Exclude<SystemData, Own<N> | Extract<Rule, { kind: "system-data"; allow: readonly string[] }>["allow"][number]>]?: Message<Code> }
     : never;
 
-type Forbidden<Rule> = {
-  [R in Rule as R extends { kind: "forbidden-attribute"; attribute: infer A extends string } ? A : never]?: R extends {
+type Forbidden<N extends Name, Rule> = {
+  [R in Rule as R extends
+    | { kind: "forbidden-attribute"; attribute: infer A extends string }
+    | { kind: "forbidden-on-element"; element: (typeof WRAPPERS)[N]["element"]; attribute: infer A extends string }
+    ? A
+    : never]?: R extends {
     code: infer Code extends keyof typeof MESSAGES;
   }
     ? Message<Code>
@@ -46,7 +50,7 @@ type Pinned<N extends Name, Rule> = {
     : never;
 };
 
-export type Contract<N extends Name, Rule> = DataProps<N, Rule> & RawData<N> & ForeignData<N, Rule> & Forbidden<Rule> & Pinned<N, Rule>;
+export type Contract<N extends Name, Rule> = DataProps<N, Rule> & RawData<N> & ForeignData<N, Rule> & Forbidden<N, Rule> & Pinned<N, Rule>;
 
 type Part = { [N in Name]: (typeof WRAPPERS)[N]["element"] extends string ? N : never }[Name];
 

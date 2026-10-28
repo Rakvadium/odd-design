@@ -169,17 +169,23 @@ function stretchedLinkFindings(rule: Extract<UsageRule, { kind: "stretched-link"
 function requiredChildFindings(rule: Extract<UsageRule, { kind: "required-child" }>, { node, tag }: Scope): Diagnostic[] {
   if (tag !== rule.element) return [];
   if (node.children.length === 0 && hasUnknownAttributes(node)) return [];
-  const elements = node.children.filter((child) => typeof child !== "string");
-  const matches = (child: UsageNode) => ("child" in rule ? child.tag === rule.child : find(child, "role")?.value === rule.role);
-  const unknown = (child: UsageNode) => isComputed(child.tag) || ("role" in rule && hasUnknownRole(child));
-  if (elements.some((child) => !isComputed(child) && matches(child))) return [];
-  if (elements.some((child) => isComputed(child) || unknown(child))) return [];
-  return [diagnose(rule.code, undefined, { found: `no ${"child" in rule ? rule.child : rule.role} child` })];
+  const pair = rule.attribute === undefined ? undefined : rule;
+  const ruledOut = (child: UsageNode["children"][number]) => {
+    if (typeof child === "string") return true;
+    if (isComputed(child) || isComputed(child.tag)) return false;
+    const fits = "child" in rule ? child.tag === rule.child : "role" in rule ? holds(child, "role", rule.role) : holds(child, "class", rule.className);
+    return fits === false || (pair !== undefined && holds(child, pair.attribute, pair.value) === false);
+  };
+  if (!node.children.every(ruledOut)) return [];
+  const wanted = "child" in rule ? rule.child : "role" in rule ? rule.role : rule.className;
+  return [diagnose(rule.code, undefined, { found: `no ${wanted} child${pair === undefined ? "" : ` with ${pair.attribute}=${pair.value}`}` })];
 }
 
-function hasUnknownRole(node: UsageNode): boolean {
-  const role = find(node, "role");
-  return role === undefined ? hasUnknownAttributes(node) : isComputed(role.value);
+function holds(node: UsageNode, name: string, value: string): boolean | undefined {
+  const attribute = find(node, name);
+  if (attribute === undefined) return hasUnknownAttributes(node) ? undefined : false;
+  if (name === "class" && classWords(attribute).includes(value)) return true;
+  return isComputed(attribute.value) ? undefined : attribute.value === value;
 }
 
 function roleDescendantFindings(rule: Extract<UsageRule, { kind: "role-descendant" }>, scope: Scope): Diagnostic[] {
