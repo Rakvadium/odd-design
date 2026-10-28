@@ -6,61 +6,6 @@ const meta = { title: "Components/Feedback" } satisfies Meta;
 export default meta;
 type Story = StoryObj;
 
-export const Progress: Story = {
-  parameters: {
-    docs: {
-      description: {
-        story:
-          "`<progress>` for tasks, `<meter>` for measurements. Each one is named by its `<label>` or `aria-label`, and the value is also shown as text. A meter with `low`/`high`/`optimum` colors itself by range.",
-      },
-    },
-  },
-  render: () => /* html */ `<div class="odd-stack" style="--gap: var(--space-6); max-inline-size: 28rem">
-    <div class="odd-stack" style="--gap: var(--space-3)">
-      <div class="odd-stat">
-        <label for="import">Importing decks</label><span class="odd-stat-value">40%</span>
-        <progress class="odd-progress" id="import" value="40" max="100"></progress>
-      </div>
-      <div class="odd-stat">
-        <label for="sync">Syncing collection</label><span class="odd-stat-value odd-muted">Waiting…</span>
-        <progress class="odd-progress" id="sync"></progress>
-      </div>
-    </div>
-
-    <div class="odd-stack" style="--gap: var(--space-3)" role="group" aria-labelledby="mix-title">
-      <p class="odd-eyebrow" id="mix-title">Deck mix · 60 cards</p>
-      <div class="odd-stat">
-        <label for="units">Units</label><span class="odd-stat-value">24 <span class="odd-muted">(40%)</span></span>
-        <meter class="odd-meter" id="units" min="0" max="60" value="24"></meter>
-      </div>
-      <div class="odd-stat">
-        <label for="actions">Actions</label><span class="odd-stat-value">22 <span class="odd-muted">(37%)</span></span>
-        <meter class="odd-meter" id="actions" min="0" max="60" value="22" data-tone="info"></meter>
-      </div>
-      <div class="odd-stat">
-        <label for="assets">Assets</label><span class="odd-stat-value">14 <span class="odd-muted">(23%)</span></span>
-        <meter class="odd-meter" id="assets" min="0" max="60" value="14" data-tone="success"></meter>
-      </div>
-    </div>
-
-    <div class="odd-stack" style="--gap: var(--space-3)" role="group" aria-labelledby="storage-title">
-      <p class="odd-eyebrow" id="storage-title">Storage, colored by range</p>
-      ${[
-        ["store-low", "Images", 0.32],
-        ["store-mid", "Backups", 0.71],
-        ["store-high", "Exports", 0.93],
-      ]
-        .map(
-          ([id, label, v]) => /* html */ `<div class="odd-stat">
-        <label for="${id}">${label}</label><span class="odd-stat-value">${Math.round(Number(v) * 100)}% used</span>
-        <meter class="odd-meter" id="${id}" value="${v}" low="0.6" high="0.85" optimum="0"></meter>
-      </div>`,
-        )
-        .join("")}
-    </div>
-  </div>`,
-};
-
 const logSamples: readonly [string, LogTone | undefined][] = [
   ["Pose saved: wave", undefined],
   ["Info: battery at 78%", "info"],

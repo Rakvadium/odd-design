@@ -1,4 +1,4 @@
-import { Alert, AlertTitle, Avatar, AvatarGroup, Badge, Button, Card, CardFooter, CardLink, Choice, Disclosure, Field, Hint, Input, Label, Search, Separator, Skeleton, Switch, Tabs } from "odd-design/react";
+import { Alert, AlertTitle, Avatar, AvatarGroup, Badge, Button, Card, CardFooter, CardLink, Choice, Disclosure, Field, Hint, Input, Label, Meter, Search, Separator, Skeleton, Slider, Switch, Tabs } from "odd-design/react";
 
 export function App() {
   return (
@@ -58,6 +58,15 @@ export function App() {
         <svg aria-hidden="true" viewBox="0 0 24 24" />
         <Input type="search" id="card-search" placeholder="Search cards" />
       </Search>
+      <Field>
+        <Label htmlFor="copies">Copies per card</Label>
+        <Slider type="range" id="copies" min={1} max={4} defaultValue={3} />
+      </Field>
+      <div className="odd-stat">
+        <label htmlFor="actions">Actions</label>
+        <span className="odd-stat-value">22</span>
+        <Meter id="actions" min={0} max={60} value={22} tone="info" />
+      </div>
       <Button variant="primary">Save</Button>
     </>
   );

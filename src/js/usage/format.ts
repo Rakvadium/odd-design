@@ -67,6 +67,13 @@ export const USAGE_CODES = [
   "ODD-SEARCH-003",
   "ODD-SEARCH-004",
   "ODD-SEARCH-005",
+  "ODD-SLIDER-001",
+  "ODD-SLIDER-002",
+  "ODD-SLIDER-003",
+  "ODD-SLIDER-004",
+  "ODD-METER-001",
+  "ODD-METER-002",
+  "ODD-METER-003",
   "ODD-STATIC-001",
   "ODD-STATIC-002",
   "ODD-STATIC-003",
@@ -123,6 +130,9 @@ const shapeRule = USAGE.skeleton[1];
 const shapeAllowed = enumAllowed(shapeRule.values, shapeRule.omit);
 const skeletonAttributes = WRAPPERS.Skeleton.props.shape;
 const cardAttributes = WRAPPERS.Card.props.interactive;
+const meterToneRule = USAGE.meter[2];
+const meterToneAllowed = enumAllowed(meterToneRule.values, meterToneRule.omit);
+const meterAttributes = WRAPPERS.Meter.props.tone;
 const appearanceAxes = comma(APPEARANCE_AXES);
 const headlessAllowlist = comma(HEADLESS_ALLOWLIST);
 
@@ -608,6 +618,55 @@ export const MESSAGES = {
     "any app data attribute, the appearance axes, and the headless allowlist",
     `remove the attribute. The search reads no data attributes. Appearance axes: ${appearanceAxes}. Headless allowlist: ${headlessAllowlist}.`,
     "docs/usage/search.md#odd-search-005",
+  ),
+  "ODD-SLIDER-001": text(
+    "ODD-SLIDER-001",
+    "odd-slider is on the wrong element. Only an input has the slider role, the arrow keys, and a value, and the thumb and rail styles match only a range input.",
+    "input",
+    "put odd-slider on an input with type=range. In React, use Slider.",
+    "docs/usage/slider.md#odd-slider-001",
+  ),
+  "ODD-SLIDER-002": text(
+    "ODD-SLIDER-002",
+    "odd-slider needs type range. Without the type it is a text box with slider sizing, and another type gets no thumb or rail.",
+    "type range",
+    "set type to range.",
+    "docs/usage/slider.md#odd-slider-002",
+  ),
+  "ODD-SLIDER-003": text(
+    "ODD-SLIDER-003",
+    "aria-disabled is forbidden on odd-slider. The thumb still moves with the keys and the pointer, and slider.css styles only the native disabled state.",
+    "none",
+    "remove aria-disabled and set disabled.",
+    "docs/usage/slider.md#odd-slider-003",
+  ),
+  "ODD-SLIDER-004": text(
+    "ODD-SLIDER-004",
+    "this slider does not take that data attribute.",
+    "any app data attribute, the appearance axes, and the headless allowlist",
+    `remove the attribute. The slider reads no data attributes. Appearance axes: ${appearanceAxes}. Headless allowlist: ${headlessAllowlist}.`,
+    "docs/usage/slider.md#odd-slider-004",
+  ),
+  "ODD-METER-001": text(
+    "ODD-METER-001",
+    "this bar class is on the wrong element. A div has no value or role, and the progress bar styles do not match odd-meter, so the browser bar shows through.",
+    "odd-meter on meter, odd-progress on progress",
+    "move the class onto its element. In React, use Meter or Progress.",
+    "docs/usage/meter.md#odd-meter-001",
+  ),
+  "ODD-METER-002": text(
+    meterToneRule.code,
+    "data-tone has a value this bar does not take. meter.css colors four tones, and any other value draws the default bar.",
+    meterToneAllowed,
+    "set one of the allowed tones, or remove data-tone for the default bar.",
+    "docs/usage/meter.md#odd-meter-002",
+  ),
+  "ODD-METER-003": text(
+    "ODD-METER-003",
+    "this bar does not take that data attribute.",
+    "the bar attribute, any app data attribute, the appearance axes, and the headless allowlist",
+    `remove the attribute, or correct its name. Bar attributes: ${meterAttributes}. Appearance axes: ${appearanceAxes}. Headless allowlist: ${headlessAllowlist}.`,
+    "docs/usage/meter.md#odd-meter-003",
   ),
   "ODD-STATIC-001": text(
     "ODD-STATIC-001",

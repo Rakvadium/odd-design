@@ -55,6 +55,8 @@ const REQUIRED = [
   "docs/usage/skeleton.md",
   "docs/usage/tabs.md",
   "docs/usage/search.md",
+  "docs/usage/slider.md",
+  "docs/usage/meter.md",
   "src/css/index.css",
   "src/js/appearance.ts",
   "src/js/enhance.ts",

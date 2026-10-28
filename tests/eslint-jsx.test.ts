@@ -91,6 +91,23 @@ const places: Record<string, readonly (readonly [string, number, number, string]
     ["ODD-SEARCH-004", 29, 13, "onSubmit"],
     ["ODD-SEARCH-005", 30, 13, 'data-tone="info"'],
   ],
+  "slider.tsx": [
+    ["ODD-STATIC-001", 10, 13, "type={kind}"],
+    ["ODD-SLIDER-001", 11, 10, "className"],
+    ["ODD-SLIDER-002", 12, 5, "<input"],
+    ["ODD-SLIDER-002", 13, 13, 'type="number"'],
+    ["ODD-SLIDER-003", 14, 49, 'aria-disabled="true"'],
+    ["ODD-SLIDER-004", 15, 49, 'data-tone="info"'],
+  ],
+  "meter.tsx": [
+    ["ODD-METER-001", 10, 10, "className"],
+    ["ODD-METER-001", 11, 15, "className"],
+    ["ODD-METER-001", 12, 10, "className"],
+    ["ODD-METER-002", 13, 12, 'tone="primary"'],
+    ["ODD-METER-002", 14, 40, 'data-tone="neutral"'],
+    ["ODD-STATIC-001", 15, 12, "tone={typeTone}"],
+    ["ODD-METER-003", 16, 15, 'data-size="sm"'],
+  ],
   "children-prop.tsx": [
     ["ODD-BUTTON-014", 5, 5, "<Button"],
     ["ODD-BUTTON-014", 6, 5, "<button"],

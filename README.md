@@ -31,7 +31,7 @@ Install the package.
 bun add odd-design
 ```
 
-The stylesheet, `odd-design/appearance`, `odd-design/enhance`, and `odd-design/palette` need nothing else. Install React 19 when you render `Button`, the Field parts, the Choice parts, `Badge`, the Alert parts, the Avatar parts, `Separator`, `Skeleton`, the Card parts, `Disclosure`, `Tabs`, or `Search`. React is an optional peer dependency.
+The stylesheet, `odd-design/appearance`, `odd-design/enhance`, and `odd-design/palette` need nothing else. Install React 19 when you render `Button`, the Field parts, the Choice parts, `Badge`, the Alert parts, the Avatar parts, `Separator`, `Skeleton`, the Card parts, `Disclosure`, `Tabs`, `Search`, `Slider`, `Meter`, or `Progress`. React is an optional peer dependency.
 
 ```sh
 bun add react@^19 react-dom@^19
@@ -108,7 +108,7 @@ bun .agents/skills/verify-odd-design/scripts/ctl.ts axe --run a11y    # every st
 
 ## Usage checks
 
-The package ships the button, field, choice, badge, alert, avatar, separator, skeleton, card, disclosure, tabs, and search usage contracts and one message per pinned code. Each message names the code, the failure, and the fix. Types, ESLint, and the runtime checker report the same codes. The pages under [docs/usage/](docs/usage/) record the rules. Button codes are in [Button usage rules](docs/usage/button.md). Field codes are in [Field usage rules](docs/usage/field.md). Choice codes are in [Choice usage rules](docs/usage/choice.md). Badge codes are in [Badge usage rules](docs/usage/badge.md). Alert codes are in [Alert usage rules](docs/usage/alert.md). Avatar codes are in [Avatar usage rules](docs/usage/avatar.md). Separator codes are in [Separator usage rules](docs/usage/separator.md). Skeleton codes are in [Skeleton usage rules](docs/usage/skeleton.md). Card codes are in [Card usage rules](docs/usage/card.md). Disclosure codes are in [Disclosure usage rules](docs/usage/disclosure.md). Tabs codes are in [Tabs usage rules](docs/usage/tabs.md). Search codes are in [Search usage rules](docs/usage/search.md). Class and static codes are in [General usage rules](docs/usage/general.md).
+The package ships the button, field, choice, badge, alert, avatar, separator, skeleton, card, disclosure, tabs, search, slider, and meter usage contracts and one message per pinned code. Each message names the code, the failure, and the fix. Types, ESLint, and the runtime checker report the same codes. The pages under [docs/usage/](docs/usage/) record the rules. Button codes are in [Button usage rules](docs/usage/button.md). Field codes are in [Field usage rules](docs/usage/field.md). Choice codes are in [Choice usage rules](docs/usage/choice.md). Badge codes are in [Badge usage rules](docs/usage/badge.md). Alert codes are in [Alert usage rules](docs/usage/alert.md). Avatar codes are in [Avatar usage rules](docs/usage/avatar.md). Separator codes are in [Separator usage rules](docs/usage/separator.md). Skeleton codes are in [Skeleton usage rules](docs/usage/skeleton.md). Card codes are in [Card usage rules](docs/usage/card.md). Disclosure codes are in [Disclosure usage rules](docs/usage/disclosure.md). Tabs codes are in [Tabs usage rules](docs/usage/tabs.md). Search codes are in [Search usage rules](docs/usage/search.md). Slider codes are in [Slider usage rules](docs/usage/slider.md). Meter and progress codes are in [Meter usage rules](docs/usage/meter.md). Class and static codes are in [General usage rules](docs/usage/general.md).
 
 ## Add a palette
 
@@ -173,12 +173,12 @@ The five palettes ported from uvs-decks-gg went through the same repair. Their i
 | `odd-disclosure` | `<details>` | The question is a `<summary>` directly inside it, and the answer is one element after it. Disclosures that share a `name` form an exclusive accordion. |
 | `odd-heading`, `odd-eyebrow` | `<h1>`–`<h6>`, `<p>` | `data-size` (xs–2xl, hero) sets size apart from level. The eyebrow takes `data-tone`. |
 | `odd-alert`, `odd-alert-title` | `<div>`, `<p>` | `data-tone` is `info`, `success`, `warning`, or `danger`. Leaving it out is the neutral tint. The title is a `p`. Static alerts need no role; insert later ones into an existing `role="status"` or `role="alert"` container. |
-| `odd-progress`, `odd-meter`, `odd-stat` | `<progress>`, `<meter>` | A meter with `low`/`high`/`optimum` colors itself by range. Always show the value as text too. |
+| `odd-progress`, `odd-meter`, `odd-stat` | `<progress>`, `<meter>`, and a native `<div>` stat row | `data-tone` is `success`, `warning`, `danger`, or `info`. A meter with `low`/`high`/`optimum` colors itself by range. Always show the value as text too. `Progress` and `Meter` from `odd-design/react` render the bars. |
 | `odd-skeleton` | `<div aria-hidden="true">` | Put `aria-busy` and "Loading" text on the region, not on the block. The block takes no `role` or name. `data-shape="avatar"`. |
 | `odd-separator` | `<hr>` | `aria-orientation="vertical"` inside a row, not `data-orientation`. `role` takes only `separator`, and `aria-hidden` is not allowed. For a line that means nothing, use a border. |
 | `odd-avatar`, `odd-avatar-group` | `<span>` with `<img alt>` or `role="img"` initials, `<div role="group">` with a name | `data-size` on each avatar. |
 | `odd-table-wrap`, `odd-table`, `odd-table-sort` | `<table>` | The wrapper scrolls and is focusable. `data-numeric`, `aria-sort`, and a row checkbox tints the row. |
-| `odd-slider` | `<input type="range">` | The filled track follows the thumb with no JS where scroll-driven animations exist. |
+| `odd-slider` | `<input type="range">` | The filled track follows the thumb with no JS where scroll-driven animations exist. Disable it with `disabled`, not `aria-disabled`. `Slider` from `odd-design/react` renders it and takes `type="range"`. |
 | `odd-search` | `<search>` with a direct visually hidden `<label>`, `<svg aria-hidden="true">`, and `<input class="odd-input" type="search">` | Put a `<form>` around it to submit. `Search` from `odd-design/react` renders the `<search>`. |
 | `odd-popover` | `<div popover role="dialog">` | Open with `commandfor`/`command="toggle-popover"`. Anchors to the invoker and flips. Use `role="dialog"` and a name when it holds controls. |
 | `odd-tooltip` | `<div popover="hint" role="tooltip">` | Shown via `interestfor`. Wire `aria-labelledby` or `aria-describedby` yourself. |

@@ -13,9 +13,11 @@ import { Card, CardFooter, CardLink } from "../src/react/card.tsx";
 import { Choice, Segmented, Switch } from "../src/react/choice.tsx";
 import { Disclosure } from "../src/react/disclosure.tsx";
 import { Field, FieldError, Hint, Input, Label, Select, Textarea } from "../src/react/field.tsx";
+import { Meter, Progress } from "../src/react/meter.tsx";
 import { Search } from "../src/react/search.tsx";
 import { Separator } from "../src/react/separator.tsx";
 import { Skeleton } from "../src/react/skeleton.tsx";
+import { Slider } from "../src/react/slider.tsx";
 import { Tabs } from "../src/react/tabs.tsx";
 
 Object.assign(globalThis, { IS_REACT_ACT_ENVIRONMENT: true });
@@ -210,6 +212,21 @@ const markup: readonly [string, ReactElement, string][] = [
       <Input type="search" id="card-search" placeholder="Search cards" />
     </Search>,
     '<search class="odd-search deck-search"><label class="odd-visually-hidden" for="card-search">Search cards</label><svg aria-hidden="true" viewBox="0 0 24 24"></svg><input type="search" id="card-search" placeholder="Search cards" class="odd-input"/></search>',
+  ],
+  [
+    "disabled range slider",
+    <Slider type="range" id="locked" min={5} max={9} defaultValue={7} disabled className="wide" />,
+    '<input type="range" id="locked" min="5" max="9" disabled="" class="odd-slider wide" value="7"/>',
+  ],
+  [
+    "meter with a tone",
+    <Meter id="actions" min={0} max={60} value={22} tone="info" />,
+    '<meter id="actions" min="0" max="60" value="22" class="odd-meter" data-tone="info"></meter>',
+  ],
+  [
+    "indeterminate progress with no value",
+    <Progress id="sync" aria-label="Syncing decks" />,
+    '<progress id="sync" aria-label="Syncing decks" class="odd-progress"></progress>',
   ],
 ];
 
@@ -426,6 +443,11 @@ const failures: Record<string, { codes: string[]; text: string[] }> = {
   "tabs-default-value": { codes: [], text: ["not assignable to type 'undefined'"] },
   "search-on-submit": { codes: ["ODD-SEARCH-004"], text: [] },
   "search-data-tone": { codes: ["ODD-SEARCH-005"], text: [] },
+  "slider-type": { codes: [], text: ['"range"'] },
+  "slider-aria-disabled": { codes: ["ODD-SLIDER-003"], text: [] },
+  "slider-data-tone": { codes: ["ODD-SLIDER-004"], text: [] },
+  "meter-tone": { codes: [], text: ['"success"', '"warning"', '"danger"', '"info"'] },
+  "progress-data-size": { codes: ["ODD-METER-003"], text: [] },
 };
 
 describe("React types", () => {
