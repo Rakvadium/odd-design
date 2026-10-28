@@ -159,10 +159,10 @@ Each commit ends with `bun run check`. The boxes under a commit name its extra c
 
 ### Commit 3. Docs, smoke, and the verify recipe
 
-- [ ] In `docs/usage/react.md`, add `Popover` to the export list and the directive-free list, rewrite "Open a dialog or a popover with a command" around `Popover`, add the type-error rows, and add ODD-POPOVER-001 to the "not type errors" paragraph. Add a Popover section and the `name-requires` kind to `docs/usage/eslint.md`. Name `Popover` in the README `odd-popover` row and the usage-contract list.
-- [ ] Update `.agents/skills/verify-odd-design/features/overlays.md` so the Popover recipe names its React side and the new sidebar order.
-- [ ] Add the follow-ups in Appendix D to `docs/follow-ups.md`.
-- [ ] Check. `bun run check`, `bun run build`, and `bun scripts/consumer-smoke.ts` pass.
+- [x] In `docs/usage/react.md`, add `Popover` to the export list and the directive-free list, rewrite "Open a dialog or a popover with a command" around `Popover`, add the type-error rows, and add ODD-POPOVER-001 to the "not type errors" paragraph. Add a Popover section and the `name-requires` kind to `docs/usage/eslint.md`. Name `Popover` in the README `odd-popover` row and the usage-contract list. Result: the command section now opens with the `Popover` example, then the browser behavior, the required `popover`, the text-only popover, `onToggle` for the open state, and `showPopover({ source })` on a `ref`. The table gains ODD-POPOVER-004, 005, and 006, `Popover` without `popover`, and the `popover` and `role` allowed values. `eslint.md` gains "Popover from odd-design/react", with the spread warning, `name-requires` as the converse of `accessible-name`, and the bare JSX `popover` gap. The README also names `Popover` in the React install sentence and links the popover page.
+- [x] Update `.agents/skills/verify-odd-design/features/overlays.md` so the Popover recipe names its React side and the new sidebar order. Result: a React Popover section points the recipe at `react_components-overlays--popover` and names the per-side behavior test. The measured order in `index.json` is Tooltip, Hover Card, Sheet, Alert Dialog, Popover in HTML, and Popover alone in React (`.verify/popover/build/sb-c2`).
+- [x] Add the follow-ups in Appendix D to `docs/follow-ups.md`. Result: five lines, from Appendix D, before the older React entries.
+- [x] Check. `bun run check`, `bun run build`, and `bun scripts/consumer-smoke.ts` pass. Result: `bun run check` passes 596 tests, the build exits 0, and the smoke exits 0 with zero for its clean types, ESLint, and Vitest runs (`.verify/popover/build/check-c3.txt`, `build-c3.txt`, `smoke-c3.txt`).
 
 ## Verify on the real surface
 

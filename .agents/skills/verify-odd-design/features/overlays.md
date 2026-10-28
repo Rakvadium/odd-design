@@ -13,7 +13,7 @@ Overlays built on the Popover API and `<dialog>`, with no JS. `.odd-popover` ope
 
 ## How to get to it (user POV)
 
-- In Storybook, open **Components → Overlays**, which has Popover, Tooltip, Hover Card, Sheet, and Alert Dialog.
+- In Storybook, open **Components → Overlays**, which has Tooltip, Hover Card, Sheet, Alert Dialog, and Popover. Popover sorts last because it loads from `stories/mirrored/`. The React section has Popover.
 
 ## Driving it with ctl.ts
 
@@ -28,6 +28,12 @@ Preconditions:
 - **Hover card.** Run `bun $S goto components-overlays--hover-card`, then `bun $S hover 'a[interestfor="preview-midnight"]'` and `bun $S wait 1200`. The card is open, its left edge equals the link's, and it sits 8px below. Run `bun $S hover '#preview-midnight .odd-badge'` and `bun $S wait 1200`. It is still open. Capture `overlays/hover-card.png`.
 - **Sheets.** Run `bun $S goto components-overlays--sheet "mode:light"` and `bun $S click 'button[commandfor="sheet-end"]'`, then `bun $S wait 500`. The open dialog's rect spans `right: innerWidth`, `top: 0`, `bottom: innerHeight`, and focus is on `Close`. `aria` shows `dialog "Filters" [modal]` with no `banner` inside. Escape closes it and returns focus. Repeat with `sheet-start` (`left: 0`) and `sheet-bottom` (`bottom: innerHeight`, full width). Click `body` with a sheet open, and `openDialogs` is `[]` (`closedby="any"`).
 - **Alert dialog.** Run `bun $S goto components-overlays--alert-dialog`, click `button[commandfor="discard"][command="show-modal"]`, and `wait 400`. `aria` shows `alertdialog "Discard unsaved changes?" description="You’ve edited 6 cards…" [modal]` and `button "Keep editing" [focused]`. `bun $S click body` leaves `openDialogs: ["discard"]`. `bun $S press Escape` empties it and returns focus to the opener.
+
+## React Popover
+
+Build the composed Storybook and serve it, as in the React Field section of `forms.md`. Open `http://127.0.0.1:6106/?path=/story/react_components-overlays--popover`. The preview is the Popover story built from two `Button` triggers and two `Popover` parts holding `Choice`, `Separator`, and `Button`, with the same ids and text as `components-overlays--popover`. The browser owns the open state on both sides, so the Popover recipe above works on the React side too.
+
+The pair sweep checks the closed story against the `aria` literal in `stories/mirrored/Popover.stories.ts`, two `button "Filters"` lines, and the two screenshots are byte-identical. Closed parity cannot see the open state, so `bunx playwright test e2e/behavior.spec.ts --project firefox -g popover` runs the anchor, Escape, focus-return, and flip test once per Storybook.
 
 ## Gotchas
 
