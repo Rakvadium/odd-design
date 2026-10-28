@@ -95,6 +95,14 @@ export const USAGE = {
     { kind: "accessible-name", code: "ODD-AVATAR-004", attribute: "role", names: ["aria-label", "aria-labelledby"] },
     { kind: "system-data", code: "ODD-AVATAR-006" },
   ] as const satisfies readonly UsageRule[],
+  separator: [
+    { kind: "element", code: "ODD-SEPARATOR-001", className: "odd-separator", elements: ["hr"] },
+    { kind: "enum", code: "ODD-SEPARATOR-002", attribute: "aria-orientation", values: ["horizontal", "vertical"], omit: [] },
+    { kind: "forbidden-attribute", code: "ODD-SEPARATOR-002", attribute: "data-orientation" },
+    { kind: "enum", code: "ODD-SEPARATOR-003", attribute: "role", values: ["separator"], omit: [] },
+    { kind: "forbidden-attribute", code: "ODD-SEPARATOR-003", attribute: "aria-hidden" },
+    { kind: "system-data", code: "ODD-SEPARATOR-004" },
+  ] as const satisfies readonly UsageRule[],
   shared: [
     { kind: "unknown-class", code: "ODD-CLASS-001" },
     { kind: "computed-value", code: "ODD-STATIC-001" },
@@ -133,6 +141,7 @@ export const WRAPPERS = {
   AlertTitle: { source: "odd-design/react", className: "odd-alert-title", props: {}, element: "p" },
   Avatar: { source: "odd-design/react", className: "odd-avatar", props: { size: "data-size" }, element: "span" },
   AvatarGroup: { source: "odd-design/react", className: "odd-avatar-group", props: {}, element: "div" },
+  Separator: { source: "odd-design/react", className: "odd-separator", props: {}, element: "hr" },
 } as const satisfies Record<string, Wrapper>;
 
 export const CLASS_REGISTRY = [
@@ -253,3 +262,4 @@ export type AlertRule = (typeof USAGE.alert)[number];
 export type AlertTitleRule = (typeof USAGE.alertTitle)[number];
 export type AvatarRule = (typeof USAGE.avatar)[number];
 export type AvatarGroupRule = (typeof USAGE.avatarGroup)[number];
+export type SeparatorRule = (typeof USAGE.separator)[number];

@@ -5,6 +5,7 @@ import { Badge, type BadgeTone } from "../../../../src/react/badge.tsx";
 import { Button } from "../../../../src/react/button.tsx";
 import { Choice, Segmented, Switch } from "../../../../src/react/choice.tsx";
 import { Field, FieldError, Hint, Input, Label, Select, Textarea } from "../../../../src/react/field.tsx";
+import { Separator } from "../../../../src/react/separator.tsx";
 
 function save(event: MouseEvent<HTMLButtonElement>): void {
   event.currentTarget.blur();
@@ -173,6 +174,20 @@ export function Collaborators({ people }: { people: Person[] }) {
         ))}
       </AvatarGroup>
       <Avatar aria-hidden="true">{people[0]?.initials}</Avatar>
+    </>
+  );
+}
+
+export function DeckActions() {
+  return (
+    <>
+      <Separator />
+      <div className="odd-row">
+        <a href="/decks/1/edit">Edit</a>
+        <Separator aria-orientation="vertical" />
+        <a href="/decks/1/export">Export</a>
+      </div>
+      <Separator role="separator" data-testid="split" />
     </>
   );
 }

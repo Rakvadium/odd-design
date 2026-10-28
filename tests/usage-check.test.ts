@@ -43,6 +43,10 @@ const RUNTIME_CODES = [
   "ODD-AVATAR-004",
   "ODD-AVATAR-005",
   "ODD-AVATAR-006",
+  "ODD-SEPARATOR-001",
+  "ODD-SEPARATOR-002",
+  "ODD-SEPARATOR-003",
+  "ODD-SEPARATOR-004",
   "ODD-CLASS-001",
 ];
 
@@ -106,6 +110,12 @@ test("primray suggests primary", () => {
 test("data-varient suggests data-variant", () => {
   expect(diagnose(`<button class="odd-button" data-varient="primary">Save</button>`).map((diagnostic) => diagnostic.message)).toEqual([
     "ODD-BUTTON-015: this button does not take that data attribute. Allowed values: the button attributes, any app data attribute, the appearance axes, and the headless allowlist. Fix: remove the attribute, or correct its name. Button attributes: data-variant, data-size, data-icon-only. Appearance axes: data-chrome, data-palette, data-mode. Headless allowlist: data-state, data-side, data-disabled, data-orientation, data-highlighted. docs/usage/button.md#odd-button-015 Found data-varient. Did you mean data-variant?",
+  ]);
+});
+
+test("data-tone on a separator names data-orientation as the exception", () => {
+  expect(diagnose(`<hr class="odd-separator" data-tone="danger">`).map((diagnostic) => diagnostic.message)).toEqual([
+    "ODD-SEPARATOR-004: odd-separator does not take that data attribute. Allowed values: any app data attribute, the appearance axes, and the headless allowlist. Fix: remove the attribute. A separator takes aria-orientation and no system data attribute. Appearance axes: data-chrome, data-palette, data-mode. Headless allowlist: data-state, data-side, data-disabled, data-orientation, data-highlighted, except data-orientation, which is ODD-SEPARATOR-002. docs/usage/separator.md#odd-separator-004 Found data-tone.",
   ]);
 });
 

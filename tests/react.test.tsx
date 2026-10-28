@@ -10,6 +10,7 @@ import { Badge } from "../src/react/badge.tsx";
 import { Button } from "../src/react/button.tsx";
 import { Choice, Segmented, Switch } from "../src/react/choice.tsx";
 import { Field, FieldError, Hint, Input, Label, Select, Textarea } from "../src/react/field.tsx";
+import { Separator } from "../src/react/separator.tsx";
 
 Object.assign(globalThis, { IS_REACT_ACT_ENVIRONMENT: true });
 
@@ -144,6 +145,14 @@ const markup: readonly [string, ReactElement, string][] = [
     </AvatarGroup>,
     '<div role="group" aria-label="Collaborators" class="odd-avatar-group wide"><span role="img" aria-label="Mira Okafor" class="odd-avatar" data-size="lg">MO</span><span role="img" aria-label="and 3 more" class="odd-avatar">+3</span></div>',
   ],
+  [
+    "separator horizontal and vertical",
+    <>
+      <Separator />
+      <Separator aria-orientation="vertical" className="tall" />
+    </>,
+    '<hr class="odd-separator"/><hr aria-orientation="vertical" class="odd-separator tall"/>',
+  ],
 ];
 
 describe("React markup", () => {
@@ -264,6 +273,12 @@ const failures: Record<string, { codes: string[]; text: string[] }> = {
   "avatar-group-name": { codes: ["ODD-AVATAR-004"], text: [] },
   "avatar-group-role": { codes: [], text: ["Property 'role' is missing"] },
   "avatar-group-data-size": { codes: ["ODD-AVATAR-006"], text: [] },
+  "separator-orientation": { codes: [], text: ['"horizontal"', '"vertical"'] },
+  "separator-role": { codes: [], text: ['"separator"'] },
+  "separator-aria-hidden": { codes: ["ODD-SEPARATOR-003"], text: [] },
+  "separator-data-orientation": { codes: ["ODD-SEPARATOR-002"], text: [] },
+  "separator-data-tone": { codes: ["ODD-SEPARATOR-004"], text: [] },
+  "separator-children": { codes: [], text: ["'children' is 'undefined'"] },
 };
 
 describe("React types", () => {
