@@ -5,6 +5,7 @@ import { Badge, type BadgeTone } from "../../../../src/react/badge.tsx";
 import { Button } from "../../../../src/react/button.tsx";
 import { Card, CardFooter, CardLink } from "../../../../src/react/card.tsx";
 import { Choice, Segmented, Switch } from "../../../../src/react/choice.tsx";
+import { Disclosure } from "../../../../src/react/disclosure.tsx";
 import { Field, FieldError, Hint, Input, Label, Select, Textarea } from "../../../../src/react/field.tsx";
 import { Separator } from "../../../../src/react/separator.tsx";
 import { Skeleton } from "../../../../src/react/skeleton.tsx";
@@ -215,5 +216,15 @@ export function DeckCard({ href, name, selected }: { href: string; name: string;
         <Badge tone="success">Legal</Badge>
       </CardFooter>
     </Card>
+  );
+}
+
+export function FaqItem({ question, answer }: { question: string; answer: string }) {
+  const [open, setOpen] = useState(false);
+  return (
+    <Disclosure name="faq" open={open} onToggle={(event) => setOpen(event.newState === "open")} className="faq" data-testid="faq" data-state="open">
+      <summary>{question}</summary>
+      <div>{answer}</div>
+    </Disclosure>
   );
 }

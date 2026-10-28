@@ -31,7 +31,7 @@ Install the package.
 bun add odd-design
 ```
 
-The stylesheet, `odd-design/appearance`, `odd-design/enhance`, and `odd-design/palette` need nothing else. Install React 19 when you render `Button`, the Field parts, the Choice parts, `Badge`, the Alert parts, the Avatar parts, `Separator`, `Skeleton`, or the Card parts. React is an optional peer dependency.
+The stylesheet, `odd-design/appearance`, `odd-design/enhance`, and `odd-design/palette` need nothing else. Install React 19 when you render `Button`, the Field parts, the Choice parts, `Badge`, the Alert parts, the Avatar parts, `Separator`, `Skeleton`, the Card parts, or `Disclosure`. React is an optional peer dependency.
 
 ```sh
 bun add react@^19 react-dom@^19
@@ -108,7 +108,7 @@ bun .agents/skills/verify-odd-design/scripts/ctl.ts axe --run a11y    # every st
 
 ## Usage checks
 
-The package ships the button, field, choice, badge, alert, avatar, separator, skeleton, and card usage contracts and one message per pinned code. Each message names the code, the failure, and the fix. Types, ESLint, and the runtime checker report the same codes. The pages under [docs/usage/](docs/usage/) record the rules. Button codes are in [Button usage rules](docs/usage/button.md). Field codes are in [Field usage rules](docs/usage/field.md). Choice codes are in [Choice usage rules](docs/usage/choice.md). Badge codes are in [Badge usage rules](docs/usage/badge.md). Alert codes are in [Alert usage rules](docs/usage/alert.md). Avatar codes are in [Avatar usage rules](docs/usage/avatar.md). Separator codes are in [Separator usage rules](docs/usage/separator.md). Skeleton codes are in [Skeleton usage rules](docs/usage/skeleton.md). Card codes are in [Card usage rules](docs/usage/card.md). Class and static codes are in [General usage rules](docs/usage/general.md).
+The package ships the button, field, choice, badge, alert, avatar, separator, skeleton, card, and disclosure usage contracts and one message per pinned code. Each message names the code, the failure, and the fix. Types, ESLint, and the runtime checker report the same codes. The pages under [docs/usage/](docs/usage/) record the rules. Button codes are in [Button usage rules](docs/usage/button.md). Field codes are in [Field usage rules](docs/usage/field.md). Choice codes are in [Choice usage rules](docs/usage/choice.md). Badge codes are in [Badge usage rules](docs/usage/badge.md). Alert codes are in [Alert usage rules](docs/usage/alert.md). Avatar codes are in [Avatar usage rules](docs/usage/avatar.md). Separator codes are in [Separator usage rules](docs/usage/separator.md). Skeleton codes are in [Skeleton usage rules](docs/usage/skeleton.md). Card codes are in [Card usage rules](docs/usage/card.md). Disclosure codes are in [Disclosure usage rules](docs/usage/disclosure.md). Class and static codes are in [General usage rules](docs/usage/general.md).
 
 ## Add a palette
 
@@ -170,7 +170,7 @@ The five palettes ported from uvs-decks-gg went through the same repair. Their i
 | `odd-card`, `odd-card-title`, `odd-card-link`, `odd-card-footer` | `<article>`, `<section>`, or `<div>` | The title is a heading at the level the page needs. `data-interactive` plus one `.odd-card-link` makes the whole card clickable through a single link, so the card holds no other link or button. |
 | `odd-badge` | `<span>` | `data-tone`, `data-solid`. |
 | `odd-dialog` | `<dialog>` | Open with `commandfor`/`command="show-modal"`, no JS. |
-| `odd-disclosure` | `<details name>` | An exclusive accordion. |
+| `odd-disclosure` | `<details>` | The question is a `<summary>` directly inside it, and the answer is one element after it. Disclosures that share a `name` form an exclusive accordion. |
 | `odd-heading`, `odd-eyebrow` | `<h1>`–`<h6>`, `<p>` | `data-size` (xs–2xl, hero) sets size apart from level. The eyebrow takes `data-tone`. |
 | `odd-alert`, `odd-alert-title` | `<div>`, `<p>` | `data-tone` is `info`, `success`, `warning`, or `danger`. Leaving it out is the neutral tint. The title is a `p`. Static alerts need no role; insert later ones into an existing `role="status"` or `role="alert"` container. |
 | `odd-progress`, `odd-meter`, `odd-stat` | `<progress>`, `<meter>` | A meter with `low`/`high`/`optimum` colors itself by range. Always show the value as text too. |

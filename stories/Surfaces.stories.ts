@@ -29,20 +29,3 @@ export const Dialog: Story = {
     </dialog>
   </div>`,
 };
-
-export const Disclosure: Story = {
-  render: () => /* html */ `<div style="max-inline-size: 36rem">
-    <details class="odd-disclosure" name="faq" open>
-      <summary>What’s the difference between chrome and palette?</summary>
-      <div>Chrome is shape, type, depth, and motion. Palette is color. You can pair any chrome with any palette.</div>
-    </details>
-    <details class="odd-disclosure" name="faq">
-      <summary>Does it need JavaScript?</summary>
-      <div>No. These are native details elements, and sharing a name makes the group exclusive.</div>
-    </details>
-    <details class="odd-disclosure" name="faq">
-      <summary>Does it respect reduced motion?</summary>
-      <div>Yes. Durations drop to zero and press transforms switch off.</div>
-    </details>
-  </div>`,
-};

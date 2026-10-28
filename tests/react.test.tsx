@@ -10,6 +10,7 @@ import { Badge } from "../src/react/badge.tsx";
 import { Button } from "../src/react/button.tsx";
 import { Card, CardFooter, CardLink } from "../src/react/card.tsx";
 import { Choice, Segmented, Switch } from "../src/react/choice.tsx";
+import { Disclosure } from "../src/react/disclosure.tsx";
 import { Field, FieldError, Hint, Input, Label, Select, Textarea } from "../src/react/field.tsx";
 import { Separator } from "../src/react/separator.tsx";
 import { Skeleton } from "../src/react/skeleton.tsx";
@@ -174,6 +175,14 @@ const markup: readonly [string, ReactElement, string][] = [
     </Card>,
     '<article class="odd-card deck" data-interactive=""><h3 class="odd-card-title"><a href="/decks/ember" class="odd-card-link">Ember Aggro</a></h3><div class="odd-card-footer">60 cards</div></article>',
   ],
+  [
+    "open disclosure in a named group",
+    <Disclosure name="faq" open className="faq">
+      <summary>Does it need JavaScript?</summary>
+      <div>No.</div>
+    </Disclosure>,
+    '<details name="faq" open="" class="odd-disclosure faq"><summary>Does it need JavaScript?</summary><div>No.</div></details>',
+  ],
 ];
 
 describe("React markup", () => {
@@ -308,6 +317,7 @@ const failures: Record<string, { codes: string[]; text: string[] }> = {
   "card-on-click": { codes: ["ODD-CARD-004"], text: [] },
   "card-link-href": { codes: [], text: ["Property 'href' is missing"] },
   "card-data-tone": { codes: ["ODD-CARD-006"], text: [] },
+  "disclosure-data-tone": { codes: ["ODD-DISCLOSURE-003"], text: [] },
 };
 
 describe("React types", () => {

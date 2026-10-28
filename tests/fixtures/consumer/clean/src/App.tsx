@@ -1,4 +1,4 @@
-import { Alert, AlertTitle, Avatar, AvatarGroup, Badge, Button, Card, CardFooter, CardLink, Choice, Field, Hint, Input, Label, Separator, Skeleton, Switch } from "odd-design/react";
+import { Alert, AlertTitle, Avatar, AvatarGroup, Badge, Button, Card, CardFooter, CardLink, Choice, Disclosure, Field, Hint, Input, Label, Separator, Skeleton, Switch } from "odd-design/react";
 
 export function App() {
   return (
@@ -37,6 +37,10 @@ export function App() {
         </h3>
         <CardFooter>60 cards</CardFooter>
       </Card>
+      <Disclosure name="faq" open>
+        <summary>Does it need JavaScript?</summary>
+        <div>No.</div>
+      </Disclosure>
       <Button variant="primary">Save</Button>
     </>
   );

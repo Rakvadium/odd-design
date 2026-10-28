@@ -13,6 +13,7 @@ export type UsageRule =
   | { kind: "icon-only-text"; code: UsageCode; attribute: string; ignore: string }
   | { kind: "system-data"; code: UsageCode; allow?: readonly string[] }
   | { kind: "stretched-link"; code: UsageCode; attribute: string; className: string; controls: readonly string[] }
+  | { kind: "required-child"; code: UsageCode; element: string; child: string }
   | { kind: "unknown-class"; code: UsageCode }
   | { kind: "computed-value"; code: UsageCode }
   | { kind: "untagged-template"; code: UsageCode };
@@ -139,6 +140,11 @@ export const USAGE = {
     { kind: "element", code: "ODD-CARD-001", className: "odd-card-footer", elements: ["div"] },
     { kind: "system-data", code: "ODD-CARD-007" },
   ] as const satisfies readonly UsageRule[],
+  disclosure: [
+    { kind: "element", code: "ODD-DISCLOSURE-001", className: "odd-disclosure", elements: ["details"] },
+    { kind: "required-child", code: "ODD-DISCLOSURE-002", element: "details", child: "summary" },
+    { kind: "system-data", code: "ODD-DISCLOSURE-003" },
+  ] as const satisfies readonly UsageRule[],
   shared: [
     { kind: "unknown-class", code: "ODD-CLASS-001" },
     { kind: "computed-value", code: "ODD-STATIC-001" },
@@ -182,6 +188,7 @@ export const WRAPPERS = {
   Card: { source: "odd-design/react", className: "odd-card", props: { interactive: "data-interactive" }, element: "article" },
   CardLink: { source: "odd-design/react", className: "odd-card-link", props: {}, element: "a" },
   CardFooter: { source: "odd-design/react", className: "odd-card-footer", props: {}, element: "div" },
+  Disclosure: { source: "odd-design/react", className: "odd-disclosure", props: {}, element: "details" },
 } as const satisfies Record<string, Wrapper>;
 
 export const CLASS_REGISTRY = [
@@ -307,3 +314,4 @@ export type SkeletonRule = (typeof USAGE.skeleton)[number];
 export type CardRule = (typeof USAGE.card)[number];
 export type CardLinkRule = (typeof USAGE.cardLink)[number];
 export type CardFooterRule = (typeof USAGE.cardFooter)[number];
+export type DisclosureRule = (typeof USAGE.disclosure)[number];

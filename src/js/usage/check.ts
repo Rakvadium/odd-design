@@ -166,6 +166,15 @@ function stretchedLinkFindings(rule: Extract<UsageRule, { kind: "stretched-link"
   return sole ? [] : [diagnose(rule.code, attribute, { found: `no ${rule.className}` })];
 }
 
+function requiredChildFindings(rule: Extract<UsageRule, { kind: "required-child" }>, { node, tag }: Scope): Diagnostic[] {
+  if (tag !== rule.element) return [];
+  if (node.children.length === 0 && hasUnknownAttributes(node)) return [];
+  const elements = node.children.filter((child) => typeof child !== "string");
+  if (elements.some((child) => !isComputed(child) && child.tag === rule.child)) return [];
+  if (elements.some((child) => isComputed(child) || isComputed(child.tag))) return [];
+  return [diagnose(rule.code, undefined, { found: `no ${rule.child} child` })];
+}
+
 function valueReadAttributes(scope: Scope): Set<string> {
   return new Set(
     scope.components.flatMap((component) =>
@@ -232,6 +241,8 @@ function apply(rule: UsageRule, scope: Scope): Diagnostic[] {
       return systemDataFindings(rule, scope);
     case "stretched-link":
       return stretchedLinkFindings(rule, scope);
+    case "required-child":
+      return requiredChildFindings(rule, scope);
     case "unknown-class":
       return scope.words
         .filter((word) => word.startsWith("odd-") && !registry.includes(word))

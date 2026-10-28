@@ -183,6 +183,19 @@ const places: Record<string, readonly (readonly [string, number, number, string]
     ["ODD-SEPARATOR-003", 3, 27, "aria-hidden"],
   ],
   "odd-separator-004.bad.html": [["ODD-SEPARATOR-004", 2, 27, "data-tone"]],
+  "odd-disclosure-001.bad.html": [
+    ["ODD-DISCLOSURE-001", 2, 6, "class"],
+    ["ODD-DISCLOSURE-001", 3, 10, "class"],
+  ],
+  "odd-disclosure-002.bad.html": [
+    ["ODD-DISCLOSURE-002", 2, 1, "<details"],
+    ["ODD-DISCLOSURE-002", 3, 1, "<details"],
+    ["ODD-DISCLOSURE-002", 4, 1, "<details"],
+  ],
+  "odd-disclosure-003.bad.html": [
+    ["ODD-DISCLOSURE-003", 2, 33, "data-tone"],
+    ["ODD-DISCLOSURE-003", 3, 33, "data-size"],
+  ],
   "odd-card-001.bad.html": [
     ["ODD-CARD-001", 2, 4, "class"],
     ["ODD-CARD-001", 3, 4, "class"],
@@ -275,6 +288,18 @@ test("a tagged template reports disabled on the attribute", () => {
     ["ODD-BUTTON-007", 1, 55, "odd/usage"],
   ]);
   expect(lineText(source, 1).slice(54, 62)).toBe("disabled");
+});
+
+test("a tagged summary with a computed name does not report a missing summary", () => {
+  const source = [
+    "export const partName = html`<details class=\"odd-disclosure\"><summary${tag}>Question</summary></details>`;",
+    "export const holeName = html`<details class=\"odd-disclosure\"><sum${tag}>Question</sum${tag}></details>`;",
+    "export const plainDiv = html`<details class=\"odd-disclosure\"><div>Question</div></details>`;",
+  ].join("\n");
+  const messages = lint("tests/fixtures/usage/templates/computed-summary.ts", source);
+  expect(messages.map((message) => [codeOf(message.message), message.line, message.column, message.ruleId])).toEqual([
+    ["ODD-DISCLOSURE-002", 3, 30, "odd/usage"],
+  ]);
 });
 
 test("a computed class still reports the static disabled attribute", () => {

@@ -55,6 +55,16 @@ const places: Record<string, readonly (readonly [string, number, number, string]
     ["ODD-CARD-003", 19, 11, "interactive"],
     ["ODD-STATIC-001", 20, 11, "{...props}"],
   ],
+  "disclosure.tsx": [
+    ["ODD-DISCLOSURE-002", 15, 5, "<Disclosure>"],
+    ["ODD-DISCLOSURE-002", 16, 5, "<Disclosure>"],
+    ["ODD-DISCLOSURE-001", 17, 10, "className"],
+    ["ODD-DISCLOSURE-003", 18, 17, 'data-tone="info"'],
+    ["ODD-STATIC-001", 19, 17, "{...props}"],
+    ["ODD-STATIC-001", 20, 41, "{...props}"],
+    ["ODD-DISCLOSURE-002", 21, 5, "<Disclosure {...props}>"],
+    ["ODD-STATIC-001", 21, 17, "{...props}"],
+  ],
   "children-prop.tsx": [
     ["ODD-BUTTON-014", 5, 5, "<Button"],
     ["ODD-BUTTON-014", 6, 5, "<button"],
