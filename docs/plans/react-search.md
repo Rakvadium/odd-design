@@ -168,11 +168,11 @@ Each commit ends with `bun run check`. The boxes under a commit name its extra c
 
 ### Commit 3. Docs, smoke, and the verify recipe
 
-- [ ] In `docs/usage/react.md`, add "Build a search" with the filter and the submit call sites, the type-error rows for 004 and 005, and Search in the "not type errors" paragraph (001 to 003). Add a Search section to `docs/usage/eslint.md`. Update the README install sentence, the usage-contract list, and the component row.
-- [ ] Add `docs/usage/search.md` to `REQUIRED` in `scripts/consumer-smoke.ts`. The clean app renders a `Search`.
-- [ ] Update `.agents/skills/verify-odd-design/features/forms.md`: the React section loses "Search has no React wrapper" and gains a React Search line, the recipe names the outer form, and the sidebar list gets the new order.
-- [ ] In `docs/follow-ups.md`, shrink the line on unmirrored stories to Slider only, drop Enter-submit from the unobserved paths (measured in `baseline.txt`), and add the follow-ups in Appendix D.
-- [ ] Check. `bun run check`, `bun run build`, and `bun scripts/consumer-smoke.ts` pass.
+- [x] In `docs/usage/react.md`, add "Build a search" with the filter and the submit call sites, the type-error rows for 004 and 005, and Search in the "not type errors" paragraph (001 to 003). Add a Search section to `docs/usage/eslint.md`. Update the README install sentence, the usage-contract list, and the component row. Result: "Build a search" teaches the filter and the `form` around `Search`, and says the CSS's nested form navigates unless prevented. The table gains the 004 and 005 rows, ODD-SEARCH-001 joins the raw-markup codes, and 002 and 003 join the codes that are not type errors. `search.tsx` joins the no-directive list. The README row asks for the three direct children and names the outer form.
+- [x] Add `docs/usage/search.md` to `REQUIRED` in `scripts/consumer-smoke.ts`. The clean app renders a `Search`. Result: the clean app renders a `Search`, and the smoke reports zero for its types, ESLint, and Vitest runs.
+- [x] Update `.agents/skills/verify-odd-design/features/forms.md`: the React section loses "Search has no React wrapper" and gains a React Search line, the recipe names the outer form, and the sidebar list gets the new order. Result: the measured order is Slider, Choices, Switch, Segmented, Text Fields, Select, Search in both the HTML ref sidebar and `index.json`. The recipe's Enter step was driven with `ctl.ts`: one `submit`, same `href` (`.verify/search/build/ctl-evidence/`).
+- [x] In `docs/follow-ups.md`, shrink the line on unmirrored stories to Slider only, drop Enter-submit from the unobserved paths (measured in `baseline.txt`), and add the follow-ups in Appendix D. Result: five React Search lines, the four from Appendix D plus ESLint reading a bare JSX `aria-hidden` as empty, which `tests/fixtures/usage/jsx/search.tsx` now pins.
+- [x] Check. `bun run check`, `bun run build`, and `bun scripts/consumer-smoke.ts` pass. Result: at the branch tip, `bun run check` passes 543 tests, the build exits 0, and the smoke exits 0 (`.verify/search/build/check-c3.txt`).
 
 ## Verify on the real surface
 

@@ -1,4 +1,4 @@
-// expect: ODD-SEARCH-002 ODD-SEARCH-002 ODD-SEARCH-002 ODD-SEARCH-003 ODD-SEARCH-003 ODD-SEARCH-003 ODD-SEARCH-001 ODD-SEARCH-004 ODD-SEARCH-005
+// expect: ODD-SEARCH-002 ODD-SEARCH-002 ODD-SEARCH-002 ODD-SEARCH-003 ODD-SEARCH-003 ODD-SEARCH-003 ODD-SEARCH-003 ODD-SEARCH-001 ODD-SEARCH-004 ODD-SEARCH-005
 import { Input, Search } from "odd-design/react";
 import { SearchIcon } from "lucide-react";
 declare const query: string;
@@ -20,6 +20,7 @@ export const view = (
     <Search><form onSubmit={submit}><svg aria-hidden="true" /><Input type="search" aria-label="Search cards" /></form></Search>
     <Search><span><svg aria-hidden="true" /></span><Input type="search" aria-label="Search cards" /></Search>
     <Search><svg /><Input type="search" aria-label="Search cards" /></Search>
+    <Search><svg aria-hidden /><Input type="search" aria-label="Search cards" /></Search>
     <div className="odd-search"><svg aria-hidden="true" /><Input type="search" aria-label="Search cards" /></div>
     <Search onSubmit={submit}><svg aria-hidden="true" /><Input type="search" aria-label="Search cards" /></Search>
     <Search data-tone="info"><svg aria-hidden="true" /><Input type="search" aria-label="Search cards" /></Search>

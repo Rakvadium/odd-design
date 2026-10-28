@@ -1,8 +1,8 @@
 # Use the React components
 
-`odd-design/react` exports `Button`, the Field parts, the Choice parts, `Badge`, the Alert parts, the Avatar parts, `Separator`, `Skeleton`, the Card parts, `Disclosure`, and `Tabs`. Each renders an `odd-` element from typed props. A contract mistake in those props is a TypeScript error that starts with its code, such as `ODD-BUTTON-007`. `Button` lives in `src/react/button.tsx`, the Field parts in `src/react/field.tsx`, the Choice parts in `src/react/choice.tsx`, `Badge` in `src/react/badge.tsx`, the Alert parts in `src/react/alert.tsx`, the Avatar parts in `src/react/avatar.tsx`, `Separator` in `src/react/separator.tsx`, `Skeleton` in `src/react/skeleton.tsx`, the Card parts in `src/react/card.tsx`, `Disclosure` in `src/react/disclosure.tsx`, and `Tabs` in `src/react/tabs.tsx`. Codes and fixes are in [Button usage rules](button.md), [Field usage rules](field.md), [Choice usage rules](choice.md), [Badge usage rules](badge.md), [Alert usage rules](alert.md), [Avatar usage rules](avatar.md), [Separator usage rules](separator.md), [Skeleton usage rules](skeleton.md), [Card usage rules](card.md), [Disclosure usage rules](disclosure.md), and [Tabs usage rules](tabs.md).
+`odd-design/react` exports `Button`, the Field parts, the Choice parts, `Badge`, the Alert parts, the Avatar parts, `Separator`, `Skeleton`, the Card parts, `Disclosure`, `Tabs`, and `Search`. Each renders an `odd-` element from typed props. A contract mistake in those props is a TypeScript error that starts with its code, such as `ODD-BUTTON-007`. `Button` lives in `src/react/button.tsx`, the Field parts in `src/react/field.tsx`, the Choice parts in `src/react/choice.tsx`, `Badge` in `src/react/badge.tsx`, the Alert parts in `src/react/alert.tsx`, the Avatar parts in `src/react/avatar.tsx`, `Separator` in `src/react/separator.tsx`, `Skeleton` in `src/react/skeleton.tsx`, the Card parts in `src/react/card.tsx`, `Disclosure` in `src/react/disclosure.tsx`, `Tabs` in `src/react/tabs.tsx`, and `Search` in `src/react/search.tsx`. Codes and fixes are in [Button usage rules](button.md), [Field usage rules](field.md), [Choice usage rules](choice.md), [Badge usage rules](badge.md), [Alert usage rules](alert.md), [Avatar usage rules](avatar.md), [Separator usage rules](separator.md), [Skeleton usage rules](skeleton.md), [Card usage rules](card.md), [Disclosure usage rules](disclosure.md), [Tabs usage rules](tabs.md), and [Search usage rules](search.md).
 
-`button.tsx` and `tabs.tsx` start with `"use client"`, so a React Server Components app can render `Button` and `Tabs` from a server component. `Tabs` wires its set in a layout effect. The Field parts, the Choice parts, `Badge`, the Alert parts, the Avatar parts, `Separator`, `Skeleton`, the Card parts, and `Disclosure` hold no state and no handlers, so `field.tsx`, `choice.tsx`, `badge.tsx`, `alert.tsx`, `avatar.tsx`, `separator.tsx`, `skeleton.tsx`, `card.tsx`, and `disclosure.tsx` have no directive. A component that holds the disclosure's state puts the directive in its own file.
+`button.tsx` and `tabs.tsx` start with `"use client"`, so a React Server Components app can render `Button` and `Tabs` from a server component. `Tabs` wires its set in a layout effect. The Field parts, the Choice parts, `Badge`, the Alert parts, the Avatar parts, `Separator`, `Skeleton`, the Card parts, `Disclosure`, and `Search` hold no state and no handlers, so `field.tsx`, `choice.tsx`, `badge.tsx`, `alert.tsx`, `avatar.tsx`, `separator.tsx`, `skeleton.tsx`, `card.tsx`, `disclosure.tsx`, and `search.tsx` have no directive. A component that holds the disclosure's state puts the directive in its own file.
 
 ## Render a button or a link
 
@@ -370,6 +370,61 @@ export function DeckView() {
 
 A tablist inside a wrapper loses its segmented track and reports `ODD-TABS-002` in ESLint and the runtime checker. A tab that is not a `button`, or has no `aria-controls`, reports `ODD-TABS-004`. Without `aria-controls`, choosing a tab shows and hides no panel, so the panels keep whatever `hidden` they started with. ESLint cannot see a tablist or a tab that comes from another component or a computed `role`, so it stays quiet. A spread with no `role` also hides a missing tablist. A spread on a tab hides its `aria-controls`, so only a tab that is not a `button` still reports. `aria-orientation` and `data-activation` on `Tabs` are type errors (`ODD-TABS-003`), because nothing reads them on the root. System `data-` attributes on `Tabs`, such as `data-tone`, are type errors (`ODD-TABS-005`).
 
+## Build a search
+
+```tsx
+import { Input, Search } from "odd-design/react";
+
+<Search>
+  <label className="odd-visually-hidden" htmlFor="card-search">Search cards</label>
+  <svg aria-hidden="true" viewBox="0 0 24 24">…magnifier…</svg>
+  <Input type="search" id="card-search" placeholder="Search cards" />
+</Search>;
+```
+
+`Search` renders a `search` element with the class `odd-search`, the search landmark. Put the visually hidden `label`, the magnifier `svg` with `aria-hidden="true"`, and an `Input` with `type="search"` directly inside it, in that order. The label's `htmlFor` names the input's `id`. An `aria-label` on the input names it too. Enter does nothing in a bare `Search`, so a filter reads the input's `onChange`.
+
+```tsx
+"use client";
+import { useState } from "react";
+import { Input, Search } from "odd-design/react";
+
+export function CardFilter({ onQuery }: { onQuery: (query: string) => void }) {
+  const [query, setQuery] = useState("");
+  return (
+    <Search>
+      <label className="odd-visually-hidden" htmlFor="card-filter">Filter cards</label>
+      <svg aria-hidden="true" viewBox="0 0 24 24">…magnifier…</svg>
+      <Input
+        type="search"
+        id="card-filter"
+        value={query}
+        onChange={(event) => {
+          setQuery(event.target.value);
+          onQuery(event.target.value);
+        }}
+      />
+    </Search>
+  );
+}
+```
+
+To submit on Enter, put a `form` around `Search`. Enter in the input fires the form's `submit`, and the landmark and the icon's room stay as they are.
+
+```tsx
+<form action="/search" onSubmit={submit}>
+  <Search>
+    <label className="odd-visually-hidden" htmlFor="site-search">Search the docs</label>
+    <SearchIcon aria-hidden="true" />
+    <Input type="search" id="site-search" name="q" />
+  </Search>
+</form>;
+```
+
+`onSubmit` on `Search` is a type error (`ODD-SEARCH-004`), because a `search` element holds no form and the handler never runs. Do not put the `form` inside `Search`. A form between `odd-search` and its children leaves the input unstyled and the icon unsized, and reports `ODD-SEARCH-002` and `ODD-SEARCH-003` in ESLint and the runtime checker. An input inside a wrapper, a raw `input` with no `odd-input`, or an input whose `type` is not `search` reports `ODD-SEARCH-002`. A missing or wrapped icon, or an `svg` without `aria-hidden="true"`, reports `ODD-SEARCH-003`. Write `aria-hidden="true"`, because ESLint reads a bare `aria-hidden` as empty. ESLint cannot see inside an icon component, such as one from an icon library, so it stays quiet on both codes for that search. It also stays quiet on a computed `className`, `type`, or `aria-hidden`, and on a spread that leaves the attribute out. The runtime checker still reads the rendered page. System `data-` attributes on `Search`, such as `data-tone`, are type errors (`ODD-SEARCH-005`).
+
+The CSS's own shape, `<search><form className="odd-search">`, also works and is checked the same way. Its form submits on Enter, and the page navigates unless `onSubmit` calls `preventDefault`.
+
 ## Read a type error
 
 The type error names the code and the fix. The table lists what each mistake prints.
@@ -405,6 +460,8 @@ The type error names the code and the fix. The table lists what each mistake pri
 | `aria-orientation` or `data-activation` on `Tabs` | `ODD-TABS-003` |
 | A system `data-` attribute on `Tabs`, such as `data-tone` | `ODD-TABS-005` |
 | `defaultValue` on `Tabs` | `not assignable to type 'undefined'` |
+| `onSubmit` or `onsubmit` on `Search` | `ODD-SEARCH-004` |
+| A system `data-` attribute on `Search`, such as `data-tone` | `ODD-SEARCH-005` |
 | `Switch` without `type` or `role`, `AvatarGroup` without `role`, `Skeleton` without `aria-hidden`, or `CardLink` without `href` | TypeScript's missing property error |
 | A `Switch` `type` other than `checkbox`, a `Switch` `role` other than `switch`, an `Avatar` or `AvatarGroup` `role` other than `img` or `group`, a `Separator` `role` other than `separator`, or a `Skeleton` `aria-hidden` other than `"true"` | The allowed value |
 | `Label` without `htmlFor`, or `Hint` or `FieldError` without `id` | TypeScript's missing property error |
@@ -412,7 +469,7 @@ The type error names the code and the fix. The table lists what each mistake pri
 
 TypeScript shortens a long type in an error. Set `noErrorTruncation` in `tsconfig.json` to see the whole message.
 
-Some rules are not type errors. `Button` picks the element from `href`, so you cannot write an anchor without `href` (`ODD-BUTTON-009`) or a button with `href` (`ODD-BUTTON-010`). Those two codes apply to a raw `a` or `button` with the `odd-button` class. Each Field and Choice part, `Badge`, each Alert part, each Avatar part, `Separator`, `Skeleton`, each Card part, `Disclosure`, and `Tabs` picks its own element too, so `ODD-FIELD-001`, `ODD-CHOICE-001`, `ODD-BADGE-001`, `ODD-ALERT-001`, `ODD-AVATAR-001`, `ODD-SEPARATOR-001`, `ODD-SKELETON-001`, `ODD-CARD-001`, `ODD-DISCLOSURE-001`, and `ODD-TABS-001` apply only to raw markup. Visible text in an icon-only button (`ODD-BUTTON-014`), the links and buttons in a card (`ODD-CARD-003`), the summary of a disclosure (`ODD-DISCLOSURE-002`), the tablist of a tab set (`ODD-TABS-002`), the tabs in a tab set (`ODD-TABS-004`), and a misspelled `data-` name are not type errors either. The ESLint plugin and the [runtime checker](runtime.md) report each of these.
+Some rules are not type errors. `Button` picks the element from `href`, so you cannot write an anchor without `href` (`ODD-BUTTON-009`) or a button with `href` (`ODD-BUTTON-010`). Those two codes apply to a raw `a` or `button` with the `odd-button` class. Each Field and Choice part, `Badge`, each Alert part, each Avatar part, `Separator`, `Skeleton`, each Card part, `Disclosure`, `Tabs`, and `Search` picks its own element too, so `ODD-FIELD-001`, `ODD-CHOICE-001`, `ODD-BADGE-001`, `ODD-ALERT-001`, `ODD-AVATAR-001`, `ODD-SEPARATOR-001`, `ODD-SKELETON-001`, `ODD-CARD-001`, `ODD-DISCLOSURE-001`, `ODD-TABS-001`, and `ODD-SEARCH-001` apply only to raw markup. Visible text in an icon-only button (`ODD-BUTTON-014`), the links and buttons in a card (`ODD-CARD-003`), the summary of a disclosure (`ODD-DISCLOSURE-002`), the tablist of a tab set (`ODD-TABS-002`), the tabs in a tab set (`ODD-TABS-004`), the input and the icon of a search (`ODD-SEARCH-002` and `ODD-SEARCH-003`), and a misspelled `data-` name are not type errors either. The ESLint plugin and the [runtime checker](runtime.md) report each of these.
 
 ## Open a dialog or a popover with a command
 

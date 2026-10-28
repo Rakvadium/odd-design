@@ -15,7 +15,7 @@ Native form controls styled by `.odd-field`, `.odd-label`, `.odd-input`, `.odd-t
 
 ## How to get to it (user POV)
 
-- In Storybook, open **Components → Forms**, which has Text Fields, Select, Choices, Switch, Segmented, Slider, and Search.
+- In Storybook, open **Components → Forms**, which has Slider, Choices, Switch, Segmented, Text Fields, Select, and Search. Slider sorts first because the others load from `stories/mirrored/`.
 - The Showcase Sample App's "Deck settings" card uses the same controls.
 
 ## Driving it with ctl.ts
@@ -32,7 +32,7 @@ Preconditions:
 - **Segmented keyboard.** Run `bun $S goto components-forms--segmented`, `bun $S focus '.odd-segmented input:checked'`, and `bun $S press ArrowRight`. `bun $S eval '[...document.querySelectorAll(".odd-segmented input")].map(i => i.checked)'` returns `[false, true, false]`.
 
 - **Slider fill follows the thumb.** Run `bun $S goto components-forms--slider "mode:light"`. Then `bun $S eval '[...document.querySelectorAll(".odd-slider")].map(s => [s.id, (s.value - s.min) / (s.max - s.min), getComputedStyle(s).getPropertyValue("--_progress")])'` shows each slider's value fraction equal to its `--_progress` (`copies` is `0.6667` and `"0.666667"`). Capture `forms/slider-before.png`. Run `bun $S focus '#copies'` and `bun $S press ArrowLeft` twice. The same eval shows `copies` at `0` and `"0"`, and `#copies-value` reads `1 of 4`. In `forms/slider-after.png` the track is empty and the thumb sits at the start.
-- **Search landmark.** Run `bun $S goto components-forms--search` and `bun $S aria forms/search.aria.txt`. It shows `search` containing `searchbox "Search cards" value="Ember"`.
+- **Search landmark.** Run `bun $S goto components-forms--search` and `bun $S aria forms/search.aria.txt`. It shows `search` containing `searchbox "Search cards" value="Ember"`. The `search.odd-search` sits inside a `form method="dialog"`, so Enter in `#card-search` fires the form's `submit` and the page does not navigate. To count it, run `bun $S eval '(window.submits = 0, document.querySelector("#storybook-root form").addEventListener("submit", () => window.submits++), "listening")'`, then `bun $S focus '#card-search'` and `bun $S press Enter`. `bun $S eval '({ href: location.href, submits: window.submits })'` shows the same `href` as before and `submits: 1`.
 
 ## React Field
 
@@ -43,7 +43,7 @@ bun scripts/storybooks.ts storybook-static
 bun e2e/serve.ts storybook-static 6106
 ```
 
-Open `http://127.0.0.1:6106/?path=/story/react_components-forms--text-fields`. The preview is the React TextFields story, built from `Field`, `Label`, `Input`, `Textarea`, `Hint`, and `FieldError`. The React Select story is `react_components-forms--select`. The Choice stories are under React Choice below. Slider and Search have no React wrapper, so they appear only in the HTML section.
+Open `http://127.0.0.1:6106/?path=/story/react_components-forms--text-fields`. The preview is the React TextFields story, built from `Field`, `Label`, `Input`, `Textarea`, `Hint`, and `FieldError`. The React Select story is `react_components-forms--select`. The Choice stories are under React Choice below, and Search is under React Search. Slider has no React wrapper, so it appears only in the HTML section.
 
 Run the pair sweep with `bunx playwright test e2e/usage.spec.ts --project firefox`. A pass prints the story count and `0 diagnostics`. For each Field and Choice story, both sides then match the `aria` literal in its file under `stories/mirrored/`, and the two screenshots are byte-identical.
 
@@ -56,6 +56,12 @@ Use the same composed build. These stories are built from `Choice`, `Switch`, an
 - **Segmented.** Open `http://127.0.0.1:6106/?path=/story/react_components-forms--segmented`. Focus Grid and press the right arrow. List becomes checked.
 
 The pair sweep above also checks these three stories against the `aria` literals in `stories/mirrored/Choice.stories.ts`.
+
+## React Search
+
+Use the same composed build. Open `http://127.0.0.1:6106/?path=/story/react_components-forms--search`. The preview is the Search story built from a `Search` part around a native hidden `label`, the magnifier `svg`, and an `Input`, inside a `form method="dialog"`, with the same ids and text as `components-forms--search`. The Search landmark recipe above works on the React side too.
+
+The pair sweep checks the story against the `aria` literal in `stories/mirrored/Search.stories.ts`, and the two screenshots are byte-identical. `bunx playwright test e2e/behavior.spec.ts --project firefox -g "clear button"` finds `#card-search` in the HTML Storybook.
 
 ## Gotchas
 
