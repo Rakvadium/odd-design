@@ -14,9 +14,9 @@ const meta = {
 
 export default meta;
 
-const card = (): Node<"article"> => ({
-  of: "article",
-  props: { className: "odd-card", "aria-hidden": "true" },
+const card = (): Node<"Card"> => ({
+  of: "Card",
+  props: { "aria-hidden": "true" },
   children: [
     {
       of: "div",

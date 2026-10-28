@@ -3,6 +3,7 @@ import { Alert, AlertTitle, type AlertTone } from "../../../../src/react/alert.t
 import { Avatar, AvatarGroup, type AvatarSize } from "../../../../src/react/avatar.tsx";
 import { Badge, type BadgeTone } from "../../../../src/react/badge.tsx";
 import { Button } from "../../../../src/react/button.tsx";
+import { Card, CardFooter, CardLink } from "../../../../src/react/card.tsx";
 import { Choice, Segmented, Switch } from "../../../../src/react/choice.tsx";
 import { Field, FieldError, Hint, Input, Label, Select, Textarea } from "../../../../src/react/field.tsx";
 import { Separator } from "../../../../src/react/separator.tsx";
@@ -201,5 +202,18 @@ export function DeckPlaceholder({ loading }: { loading: boolean }) {
       <Skeleton aria-hidden="true" shape="avatar" />
       <Skeleton aria-hidden="true" className="title" style={{ inlineSize: "60%" }} data-testid="deck-title" />
     </div>
+  );
+}
+
+export function DeckCard({ href, name, selected }: { href: string; name: string; selected: boolean }) {
+  return (
+    <Card interactive={selected} aria-labelledby="deck-name" className="deck" data-span="4" data-testid="deck">
+      <h2 className="odd-card-title" id="deck-name">
+        <CardLink href={href}>{name}</CardLink>
+      </h2>
+      <CardFooter>
+        <Badge tone="success">Legal</Badge>
+      </CardFooter>
+    </Card>
   );
 }

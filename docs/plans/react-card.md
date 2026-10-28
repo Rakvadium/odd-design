@@ -118,7 +118,7 @@ Each item is the default the build uses. Each one can be reversed after review.
 
 ## Capture the baseline (no source change)
 
-- [ ] Build both Storybooks from `25296cb` with `bun scripts/storybooks.ts .verify/card/base-sb`, serve the build, and capture the HTML section with `bun scripts/capture-stories.ts <url>/html .verify/card/base.json .verify/card/base-shots`.
+- [x] Build both Storybooks from `25296cb` with `bun scripts/storybooks.ts .verify/card/base-sb`, serve the build, and capture the HTML section with `bun scripts/capture-stories.ts <url>/html .verify/card/base.json .verify/card/base-shots`. Result: 86 captures in `base.json`.
 
 ## Build
 
@@ -126,15 +126,15 @@ Each commit ends with `bun run check`. The boxes under a commit name its extra c
 
 ### Commit 1. Add Card and check it with ODD-CARD-001 to 007
 
-- [ ] Add the `stretched-link` kind and its `apply` case, and the `allow` field on `system-data` with its skip in `systemDataFindings` and `ForeignData`.
-- [ ] Add `USAGE.card`, `cardTitle`, `cardLink`, and `cardFooter`, their `Rule` aliases, the three `WRAPPERS` rows, the seven codes in `USAGE_CODES`, and their `MESSAGES`.
-- [ ] Write `docs/usage/card.md` with one section per code.
-- [ ] Create `src/react/card.tsx`. Add the barrel export and the `WrapperProps` lines.
-- [ ] Add the `odd-card-001` to `007` bad and good HTML pairs, the `RUNTIME_CODES` lines, and the `places` rows in `tests/eslint-html.test.ts`. The 003 good fixture holds a static card with footer buttons and a nested card. Fix `odd-class-001.good.html`.
-- [ ] Add type fail fixtures for `onClick` on `Card`, a missing `href` on `CardLink`, and `data-tone` on `Card`, each with its `failures` entry. Add `pass.tsx` lines, including `data-span` on `Card`.
-- [ ] Add `tests/fixtures/usage/jsx/card.tsx` and its `places` entry. It covers a computed `href`, an opaque child, the 003 failures, and `onClick`. Add one markup row to `tests/react.test.tsx`.
-- [ ] Switch the Skeleton scene's card to `of: "Card"`.
-- [ ] Check. Delete each rule row after the `element` rows, and the `allow` entry, one at a time, and each fails a test. Layout and Showcase pass lint and `tests/stories.test.ts`.
+- [x] Add the `stretched-link` kind and its `apply` case, and the `allow` field on `system-data` with its skip in `systemDataFindings` and `ForeignData`.
+- [x] Add `USAGE.card`, `cardTitle`, `cardLink`, and `cardFooter`, their `Rule` aliases, the three `WRAPPERS` rows, the seven codes in `USAGE_CODES`, and their `MESSAGES`.
+- [x] Write `docs/usage/card.md` with one section per code.
+- [x] Create `src/react/card.tsx`. Add the barrel export and the `WrapperProps` lines.
+- [x] Add the `odd-card-001` to `007` bad and good HTML pairs, the `RUNTIME_CODES` lines, and the `places` rows in `tests/eslint-html.test.ts`. The 003 good fixture holds a static card with footer buttons and a nested card. Fix `odd-class-001.good.html`.
+- [x] Add type fail fixtures for `onClick` on `Card`, a missing `href` on `CardLink`, and `data-tone` on `Card`, each with its `failures` entry. Add `pass.tsx` lines, including `data-span` on `Card`.
+- [x] Add `tests/fixtures/usage/jsx/card.tsx` and its `places` entry. It covers a computed `href`, an opaque child, the 003 failures, and `onClick`. Add one markup row to `tests/react.test.tsx`.
+- [x] Switch the Skeleton scene's card to `of: "Card"`.
+- [x] Check. Delete each rule row after the `element` rows, and the `allow` entry, one at a time, and each fails a test. Layout and Showcase pass lint and `tests/stories.test.ts`. Result: `bun run check` passes 498 tests. Each of the 11 rule rows and the `allow` entry fails 1 to 6 tests when deleted. Deleting `allow` fails the pass type fixture, `odd-card-006.good.html`, and Layout in `tests/stories.test.ts`, with 4 lint problems. Deleting the nested-card stop fails `odd-card-003.good.html`, and deleting the illegal-value skip fails `odd-card-002.bad.html`. The Skeleton scene renders byte-identical HTML. Layout and Showcase pass lint and `tests/stories.test.ts`.
 
 ### Commit 2. Mirror Card in the Storybooks
 

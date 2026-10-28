@@ -47,6 +47,13 @@ export const USAGE_CODES = [
   "ODD-SKELETON-003",
   "ODD-SKELETON-004",
   "ODD-SKELETON-005",
+  "ODD-CARD-001",
+  "ODD-CARD-002",
+  "ODD-CARD-003",
+  "ODD-CARD-004",
+  "ODD-CARD-005",
+  "ODD-CARD-006",
+  "ODD-CARD-007",
   "ODD-STATIC-001",
   "ODD-STATIC-002",
   "ODD-STATIC-003",
@@ -102,6 +109,7 @@ const avatarAttributes = WRAPPERS.Avatar.props.size;
 const shapeRule = USAGE.skeleton[1];
 const shapeAllowed = enumAllowed(shapeRule.values, shapeRule.omit);
 const skeletonAttributes = WRAPPERS.Skeleton.props.shape;
+const cardAttributes = WRAPPERS.Card.props.interactive;
 const appearanceAxes = comma(APPEARANCE_AXES);
 const headlessAllowlist = comma(HEADLESS_ALLOWLIST);
 
@@ -447,6 +455,55 @@ export const MESSAGES = {
     "the skeleton attribute, any app data attribute, the appearance axes, and the headless allowlist",
     `remove the attribute, or correct its name. Skeleton attributes: ${skeletonAttributes}. skeleton.css draws one avatar size, so data-size does nothing. Appearance axes: ${appearanceAxes}. Headless allowlist: ${headlessAllowlist}.`,
     "docs/usage/skeleton.md#odd-skeleton-005",
+  ),
+  "ODD-CARD-001": text(
+    "ODD-CARD-001",
+    "this card class is on the wrong element.",
+    "odd-card on article, section, div, odd-card-title on h1, h2, h3, h4, h5, h6, odd-card-link on a, button, odd-card-footer on div",
+    "move the class onto its element. The title is a heading at the level the page outline needs. The card link is a real link or button, never the card itself.",
+    "docs/usage/card.md#odd-card-001",
+  ),
+  "ODD-CARD-002": text(
+    "ODD-CARD-002",
+    "data-interactive must be empty or true. card.css reads only its presence, so data-interactive=false is interactive too.",
+    "empty, true",
+    "remove data-interactive for a static card, or set it empty or true for a clickable one.",
+    "docs/usage/card.md#odd-card-002",
+  ),
+  "ODD-CARD-003": text(
+    "ODD-CARD-003",
+    "data-interactive and odd-card-link come as a pair. The link stretches over the card only when the card is interactive, and it then covers every other link or button in the card.",
+    "an interactive card with exactly one link or button, its odd-card-link, or a static card with no odd-card-link",
+    "for a clickable card, give the card data-interactive, put one a.odd-card-link with an href inside its title, and move other links and buttons out of the card. For a static card, remove odd-card-link.",
+    "docs/usage/card.md#odd-card-003",
+  ),
+  "ODD-CARD-004": text(
+    "ODD-CARD-004",
+    "the card itself is not a control. A click handler on the card does nothing from the keyboard, and a focusable card reads its whole content as one name.",
+    "no onClick, onclick, tabIndex, or tabindex on the card",
+    "remove the handler and tabindex. Give the card data-interactive and put an a.odd-card-link with an href inside its title, so the whole card clicks through one link.",
+    "docs/usage/card.md#odd-card-004",
+  ),
+  "ODD-CARD-005": text(
+    "ODD-CARD-005",
+    "an anchor with odd-card-link needs an href. Without one it takes no focus and has no link role, so the card does not work from the keyboard.",
+    "an href",
+    "add the href. For an action that is not navigation, use a button with odd-card-link.",
+    "docs/usage/card.md#odd-card-005",
+  ),
+  "ODD-CARD-006": text(
+    "ODD-CARD-006",
+    "this card does not take that data attribute.",
+    "the card attribute, data-span, any app data attribute, the appearance axes, and the headless allowlist",
+    `remove the attribute, or correct its name. Card attributes: ${cardAttributes}. data-span places the card in an odd-grid. Appearance axes: ${appearanceAxes}. Headless allowlist: ${headlessAllowlist}.`,
+    "docs/usage/card.md#odd-card-006",
+  ),
+  "ODD-CARD-007": text(
+    "ODD-CARD-007",
+    "odd-card-title, odd-card-link, and odd-card-footer do not take that data attribute.",
+    "any app data attribute, the appearance axes, and the headless allowlist",
+    `remove the attribute. data-interactive and data-span belong on the card. Appearance axes: ${appearanceAxes}. Headless allowlist: ${headlessAllowlist}.`,
+    "docs/usage/card.md#odd-card-007",
   ),
   "ODD-STATIC-001": text(
     "ODD-STATIC-001",
