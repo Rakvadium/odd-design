@@ -144,7 +144,7 @@ Each item is the default the build uses. Each one can be reversed after review.
 3. **`toast()` is page-wide, and the newest connected region wins.** No caller threads a ref or a context, and code outside React can raise toasts. The registry lives in `dist/js/toast.js`, so `odd-design/react` and `odd-design/enhance` share it, as they share the tabs holds.
 4. **`toast()` throws with no toaster.** A missing `<Toaster>` fails the first time the code runs. The alternative is a `console.error` that drops the toast.
 5. **`toast` stays in `odd-design/enhance` only.** The React barrel stays parts-only, and `tests/react-public-api.test.ts` stays as it is.
-6. **The modal rehome uses a stand-in region.** React cannot own a node that JS moves (measured). The stand-in is new to screen readers on each modal open, as the moved region is today. The NVDA `toast-over-modal` scenario checks it before the PR opens.
+6. **The modal rehome uses a stand-in region.** React cannot own a node that JS moves (measured). The stand-in is new to screen readers on each modal open, as the moved region is today. The NVDA `toast-over-modal` scenario checks it, and that scenario still needs a run.
 7. **`max` becomes a fixed 3.** Neither `enhance()` nor a one-element part has a place for the option, and nothing in the repo sets it.
 8. **`data-tone="neutral"` stays as written today.** The judge proposed omitting it. No code reads it on a toast, so the change is out of scope. It goes to follow-ups.
 9. **Accept a new sidebar order in Interactive.** The mirrored file loads later, so Toast sorts after Tabs. Every earlier port made the same trade.

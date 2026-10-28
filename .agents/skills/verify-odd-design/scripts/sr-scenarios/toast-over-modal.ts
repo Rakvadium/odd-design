@@ -2,7 +2,7 @@ import type { Scenario } from "../sr.ts";
 
 export default {
   title: "Toast, on the page and over a modal",
-  why: "Toast announcements were only inferred from the accessibility tree. A modal makes the rest of the page inert, so the region moves into the dialog first. This is the only check that a toast is actually spoken, both times.",
+  why: "Toast announcements were only inferred from the accessibility tree. A modal makes the rest of the page inert. So a toast shown while a modal is open moves the list and the live region into a stand-in copy of the region inside the dialog. This is the only check that a toast is actually spoken, both times, and the only check that the stand-in is spoken.",
   story: "components-interactive--toast",
   globals: "mode:light",
   steps: [
