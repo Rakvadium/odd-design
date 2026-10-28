@@ -11,7 +11,7 @@ The surface components are cards (`.odd-card`, where `data-interactive` plus `.o
 
 ## How to get to it (user POV)
 
-- In Storybook, open **Components → Surfaces**, which has Dialog, Badge, Card, and Disclosure. Badge, Card, and Disclosure sort after Dialog because they load from `stories/mirrored/`.
+- In Storybook, open **Components → Surfaces**, which has Badge, Card, Dialog, and Disclosure in both sections. Every Surfaces story loads from `stories/mirrored/`.
 
 ## Driving it with ctl.ts
 
@@ -19,7 +19,7 @@ Preconditions:
 
 - The baseline from the README.
 
-- **Dialog open.** Run `bun $S goto components-surfaces--dialog` and then `bun $S click 'button[commandfor="confirm-delete"][command="show-modal"]'`. `bun $S state` shows `openDialogs: ["confirm-delete"]`, and `activeElement` is the `Close` button (it has `autofocus`). `bun $S aria surfaces/dialog.aria.txt` shows `dialog "Delete “Midnight Control”?" [modal]`. Capture `surfaces/dialog-open.png`.
+- **Dialog open.** Run `bun $S goto components-surfaces--dialog` and then `bun $S click 'button[commandfor="confirm-delete"][command="show-modal"]'`. `bun $S state` shows `openDialogs: ["confirm-delete"]`, and `activeElement` is the `Close` button, the first button in the dialog. No button has `autofocus`. `bun $S aria surfaces/dialog.aria.txt` shows `dialog "Delete “Midnight Control”?" [modal]`. Capture `surfaces/dialog-open.png`.
 - **Dialog close.** Run `bun $S press Escape`. Focus returns to the `Delete deck…` button, and `openDialogs` is `[]`. Reopen it and run `bun $S click '#confirm-delete .odd-button' --text 'Delete'`, which also closes it.
 - **Disclosure exclusive.** Run `bun $S goto components-surfaces--disclosure` and then `bun $S click 'summary' --text 'Does it need JavaScript?'`. `bun $S eval '[...document.querySelectorAll("details")].map(d => d.open)'` returns `[false, true, false]`.
 - **Card link.** Run `bun $S goto components-surfaces--card`. The aria tree shows one `link "Ember Aggro"` inside the interactive card. `bun $S eval 'location.href.endsWith("#")'` returns `false`. Then `bun $S click 'article[data-interactive] .odd-muted'` clicks the body text, not the title, and the same eval returns `true`, which proves the whole card is the link's hit area. For a negative control, `goto` again and click `article:not([data-interactive]) .odd-muted`. The eval stays `false`.
@@ -27,7 +27,7 @@ Preconditions:
 
 ## React Badge
 
-Build the composed Storybook and serve it, as in the React Field section of `forms.md`. Open `http://127.0.0.1:6106/?path=/story/react_components-surfaces--badge`. The preview is the Badge story built from `Badge`. It shows a soft row and a solid row of the six tones, the same as `components-surfaces--badge`. Dialog has no React wrapper, so it appears only in the HTML section.
+Build the composed Storybook and serve it, as in the React Field section of `forms.md`. Open `http://127.0.0.1:6106/?path=/story/react_components-surfaces--badge`. The preview is the Badge story built from `Badge`. It shows a soft row and a solid row of the six tones, the same as `components-surfaces--badge`.
 
 Run the pair sweep with `bunx playwright test e2e/usage.spec.ts --project firefox`. The Badge pair matches the `aria` literal in `stories/mirrored/Badge.stories.ts`, and the two screenshots are byte-identical.
 
@@ -39,8 +39,14 @@ In the same composed Storybook, open `http://127.0.0.1:6106/?path=/story/react_c
 
 In the same composed Storybook, open `http://127.0.0.1:6106/?path=/story/react_components-surfaces--disclosure`. The preview is the Disclosure story built from `Disclosure` with native `summary` and `div` children, the same as `components-surfaces--disclosure`. The pair sweep matches the `aria` literal in `stories/mirrored/Disclosure.stories.ts`, three groups with the first open, and the two screenshots are byte-identical. The Disclosure exclusive recipe above works on the React side too.
 
+## React Dialog
+
+In the same composed Storybook, open `http://127.0.0.1:6106/?path=/story/react_components-surfaces--dialog`. The preview is the Dialog story built from `Button`, `Dialog`, a `div.odd-dialog-body`, and `DialogActions`, with the same ids and text as `components-surfaces--dialog`. The browser owns the open state on both sides, so the Dialog open and close recipes above work on the React side too. Focus starts on `Close` on both sides, because `showModal()` focuses the first button and neither side writes `autofocus`.
+
+The pair sweep checks the closed story against the `aria` literal in `stories/mirrored/Dialog.stories.ts`, the one `button "Delete deck…"` line, because a closed dialog is `display: none`. The two screenshots are byte-identical. Closed parity cannot see the open state, so `bunx playwright test e2e/behavior.spec.ts --project firefox -g dialog` runs the backdrop test and the alert-dialog test once per Storybook.
+
 ## Gotchas
 
-- The dialog's `autofocus` lands on `Close`, not on the first button in DOM order. Assert on the button text, not its position.
+- Focus lands on the first button in the open dialog, because no button has `autofocus`. React writes no `autofocus` attribute, so a scene that needs another button focused must put it first.
 - The card links use `href="#"`, and `location.hash` is `""` both before and after navigating to an empty fragment. Assert on `location.href.endsWith("#")` instead.
 - Invoker commands (`commandfor`/`command`) need a current Chromium. If the dialog does not open on click, report the browser version from `doctor` before suspecting the CSS.
