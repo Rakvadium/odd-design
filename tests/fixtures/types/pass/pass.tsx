@@ -7,6 +7,7 @@ import { Card, CardFooter, CardLink } from "../../../../src/react/card.tsx";
 import { Choice, Segmented, Switch } from "../../../../src/react/choice.tsx";
 import { Disclosure } from "../../../../src/react/disclosure.tsx";
 import { Field, FieldError, Hint, Input, Label, Select, Textarea } from "../../../../src/react/field.tsx";
+import { Meter, Progress, type MeterTone } from "../../../../src/react/meter.tsx";
 import { Search } from "../../../../src/react/search.tsx";
 import { Separator } from "../../../../src/react/separator.tsx";
 import { Skeleton } from "../../../../src/react/skeleton.tsx";
@@ -304,5 +305,21 @@ export function CopiesField() {
       />
       <Hint id="copies-hint">Most formats allow up to 4.</Hint>
     </Field>
+  );
+}
+
+const typeTone: Record<"unit" | "action" | "asset", MeterTone | undefined> = { unit: undefined, action: "info", asset: "success" };
+
+export function DeckMix({ count, syncing }: { count: number; syncing: boolean }) {
+  return (
+    <>
+      <div className="odd-stat">
+        <label htmlFor="actions">Actions</label>
+        <span className="odd-stat-value">{count}</span>
+        <Meter id="actions" min={0} max={60} value={count} tone={typeTone.action} />
+      </div>
+      <Meter id="store-high" value={0.93} low={0.6} high={0.85} optimum={0} aria-label="Storage" />
+      {syncing ? <Progress id="sync" aria-label="Syncing decks" /> : <Progress id="import" value={40} max={100} tone="success" aria-label="Importing decks" />}
+    </>
   );
 }

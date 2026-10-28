@@ -36,7 +36,7 @@ function rulesOf(className: string): readonly UsageRule[] {
 }
 
 function stylesheet(wrapper: Wrapper): string {
-  return wrapper.className.replace(/^odd-/, "");
+  return wrapper.className === "odd-progress" ? "meter" : wrapper.className.replace(/^odd-/, "");
 }
 
 test("MESSAGES has one message per code, in order", () => {
@@ -52,7 +52,7 @@ test("each wrapper's enum data prop takes exactly the values its stylesheet styl
       ),
     );
   });
-  expect(compared.map(([attribute]) => attribute)).toEqual(["data-variant", "data-size", "data-tone", "data-tone", "data-size", "data-shape"]);
+  expect(compared.map(([attribute]) => attribute)).toEqual(["data-variant", "data-size", "data-tone", "data-tone", "data-size", "data-shape", "data-tone", "data-tone"]);
   for (const [attribute, values, styled] of compared) expect([attribute, styled]).toEqual([attribute, values]);
   expect(read("components/button.css").includes(":disabled")).toBe(true);
 });

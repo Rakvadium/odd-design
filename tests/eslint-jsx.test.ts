@@ -99,6 +99,15 @@ const places: Record<string, readonly (readonly [string, number, number, string]
     ["ODD-SLIDER-003", 14, 49, 'aria-disabled="true"'],
     ["ODD-SLIDER-004", 15, 49, 'data-tone="info"'],
   ],
+  "meter.tsx": [
+    ["ODD-METER-001", 10, 10, "className"],
+    ["ODD-METER-001", 11, 15, "className"],
+    ["ODD-METER-001", 12, 10, "className"],
+    ["ODD-METER-002", 13, 12, 'tone="primary"'],
+    ["ODD-METER-002", 14, 40, 'data-tone="neutral"'],
+    ["ODD-STATIC-001", 15, 12, "tone={typeTone}"],
+    ["ODD-METER-003", 16, 15, 'data-size="sm"'],
+  ],
   "children-prop.tsx": [
     ["ODD-BUTTON-014", 5, 5, "<Button"],
     ["ODD-BUTTON-014", 6, 5, "<button"],

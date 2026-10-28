@@ -6,6 +6,7 @@ import type { CardFooterProps, CardLinkProps, CardProps } from "./card.tsx";
 import type { ChoiceProps, SegmentedProps, SwitchProps } from "./choice.tsx";
 import type { DisclosureProps } from "./disclosure.tsx";
 import type { FieldErrorProps, FieldProps, HintProps, InputProps, LabelProps, SelectProps, TextareaProps } from "./field.tsx";
+import type { MeterProps, ProgressProps } from "./meter.tsx";
 import type { SearchProps } from "./search.tsx";
 import type { SeparatorProps } from "./separator.tsx";
 import type { SkeletonProps } from "./skeleton.tsx";
@@ -38,4 +39,6 @@ export type WrapperProps = {
   Tabs: TabsProps;
   Search: SearchProps;
   Slider: SliderProps;
+  Meter: MeterProps;
+  Progress: ProgressProps;
 };

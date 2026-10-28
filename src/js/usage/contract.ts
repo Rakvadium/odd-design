@@ -175,6 +175,12 @@ export const USAGE = {
     { kind: "forbidden-attribute", code: "ODD-SLIDER-003", attribute: "aria-disabled" },
     { kind: "system-data", code: "ODD-SLIDER-004" },
   ] as const satisfies readonly UsageRule[],
+  meter: [
+    { kind: "element", code: "ODD-METER-001", className: "odd-meter", elements: ["meter"] },
+    { kind: "element", code: "ODD-METER-001", className: "odd-progress", elements: ["progress"] },
+    { kind: "enum", code: "ODD-METER-002", attribute: "data-tone", values: ["success", "warning", "danger", "info"], omit: ["primary", "neutral"] },
+    { kind: "system-data", code: "ODD-METER-003" },
+  ] as const satisfies readonly UsageRule[],
   shared: [
     { kind: "unknown-class", code: "ODD-CLASS-001" },
     { kind: "computed-value", code: "ODD-STATIC-001" },
@@ -222,6 +228,8 @@ export const WRAPPERS = {
   Tabs: { source: "odd-design/react", className: "odd-tabs", props: {}, element: "div" },
   Search: { source: "odd-design/react", className: "odd-search", props: {}, element: "search" },
   Slider: { source: "odd-design/react", className: "odd-slider", props: {}, element: "input" },
+  Meter: { source: "odd-design/react", className: "odd-meter", props: { tone: "data-tone" }, element: "meter" },
+  Progress: { source: "odd-design/react", className: "odd-progress", props: { tone: "data-tone" }, element: "progress" },
 } as const satisfies Record<string, Wrapper>;
 
 export const CLASS_REGISTRY = [
@@ -351,3 +359,4 @@ export type DisclosureRule = (typeof USAGE.disclosure)[number];
 export type TabsRule = (typeof USAGE.tabs)[number];
 export type SearchRule = (typeof USAGE.search)[number];
 export type SliderRule = (typeof USAGE.slider)[number];
+export type MeterRule = (typeof USAGE.meter)[number];
