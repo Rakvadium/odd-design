@@ -170,10 +170,10 @@ Each commit ends with `bun run check`. The boxes under a commit name its extra c
 
 ### Commit 2. Mirror Sheet in the Storybooks
 
-- [ ] Create `stories/mirrored/Sheet.stories.ts` and remove the Sheet story and its helper from `stories/Overlays.stories.ts`. Measure the closed `aria` literal in the built Firefox Storybook, then paste it.
-- [ ] Pin `components-overlays--sheet` in `tests/stories.test.ts`.
-- [ ] Loop the sheet test in `e2e/behavior.spec.ts` over `html` and `react`, wait on the open state instead of fixed timeouts, and add a backdrop click on the end sheet.
-- [ ] Check. `bunx playwright test e2e/usage.spec.ts e2e/behavior.spec.ts` passes in Firefox and WebKit with 0 diagnostics.
+- [x] Create `stories/mirrored/Sheet.stories.ts` and remove the Sheet story and its helper from `stories/Overlays.stories.ts`. Measure the closed `aria` literal in the built Firefox Storybook, then paste it. Result: the scene is three `Button`s and three `Sheet`s, the end one with no `side`, each `SheetHeader > [h2.odd-dialog-title, Button Close]`, `div.odd-sheet-body > [Field, fieldset]`, `SheetFooter > [Button × 2]`. `Overlays.stories.ts` keeps `icons` for Tooltip. Both sides give `- button "Filters (end)"`, `- button "Start"`, and `- button "Bottom"`, the literal in the story (`.verify/sheet/build/aria-c2-firefox.txt`, from `build/measure/aria.spec.ts`).
+- [x] Pin `components-overlays--sheet` in `tests/stories.test.ts`. Result: the pins end with the id, and the test title names Sheet. It passes the HTML-equals-React and `checkRoot` loops.
+- [x] Loop the sheet test in `e2e/behavior.spec.ts` over `html` and `react`, wait on the open state instead of fixed timeouts, and add a backdrop click on the end sheet. Result: one loop over both Storybooks. Each side opens with `waitOpen`, checks the edge and focus on Close, closes on Escape with `waitOpen(…, false)`, and then reopens the end sheet and closes it with a click at (10, 10).
+- [x] Check. `bunx playwright test e2e/usage.spec.ts e2e/behavior.spec.ts` passes in Firefox and WebKit with 0 diagnostics. Result: `bun run check` passes 628 tests (`.verify/sheet/build/check-commit2.txt`). Against `build/sb-c2` on port 6751, from `build/pw.config.ts`, 58 passed and 2 skipped, the WebKit usage sweep and sidebar test, which run in Firefox only. Firefox reports "69 stories, 0 diagnostics", and all four sheet tests pass (`browsers-c2.txt`).
 
 ### Commit 3. Docs, smoke, and the verify recipe
 
