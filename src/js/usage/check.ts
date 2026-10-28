@@ -170,16 +170,24 @@ function requiredChildFindings(rule: Extract<UsageRule, { kind: "required-child"
   if (tag !== rule.element) return [];
   if (node.children.length === 0 && hasUnknownAttributes(node)) return [];
   const elements = node.children.filter((child) => typeof child !== "string");
-  const matches = (child: UsageNode) => ("child" in rule ? child.tag === rule.child : find(child, "role")?.value === rule.role);
-  const unknown = (child: UsageNode) => isComputed(child.tag) || ("role" in rule && hasUnknownRole(child));
+  const pair = rule.attribute === undefined ? undefined : rule;
+  const fits = (child: UsageNode) =>
+    "child" in rule ? child.tag === rule.child : "role" in rule ? find(child, "role")?.value === rule.role : hasClass(child, rule.className);
+  const matches = (child: UsageNode) => fits(child) && (pair === undefined || find(child, pair.attribute)?.value === pair.value);
+  const unknown = (child: UsageNode) =>
+    isComputed(child.tag) ||
+    ("role" in rule && hasUnknown(child, "role")) ||
+    ("className" in rule && hasUnknown(child, "class")) ||
+    (pair !== undefined && fits(child) && hasUnknown(child, pair.attribute));
   if (elements.some((child) => !isComputed(child) && matches(child))) return [];
   if (elements.some((child) => isComputed(child) || unknown(child))) return [];
-  return [diagnose(rule.code, undefined, { found: `no ${"child" in rule ? rule.child : rule.role} child` })];
+  const wanted = "child" in rule ? rule.child : "role" in rule ? rule.role : rule.className;
+  return [diagnose(rule.code, undefined, { found: `no ${wanted} child${pair === undefined ? "" : ` with ${pair.attribute}=${pair.value}`}` })];
 }
 
-function hasUnknownRole(node: UsageNode): boolean {
-  const role = find(node, "role");
-  return role === undefined ? hasUnknownAttributes(node) : isComputed(role.value);
+function hasUnknown(node: UsageNode, name: string): boolean {
+  const attribute = find(node, name);
+  return attribute === undefined ? hasUnknownAttributes(node) : isComputed(attribute.value);
 }
 
 function roleDescendantFindings(rule: Extract<UsageRule, { kind: "role-descendant" }>, scope: Scope): Diagnostic[] {

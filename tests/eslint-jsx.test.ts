@@ -76,6 +76,17 @@ const places: Record<string, readonly (readonly [string, number, number, string]
     ["ODD-TABS-004", 21, 219, "<Tabs>"],
     ["ODD-TABS-004", 22, 5, "<Tabs>"],
   ],
+  "search.tsx": [
+    ["ODD-SEARCH-002", 18, 5, "<Search>"],
+    ["ODD-SEARCH-002", 19, 5, "<Search>"],
+    ["ODD-SEARCH-002", 20, 5, "<Search>"],
+    ["ODD-SEARCH-003", 20, 5, "<Search>"],
+    ["ODD-SEARCH-003", 21, 5, "<Search>"],
+    ["ODD-SEARCH-003", 22, 5, "<Search>"],
+    ["ODD-SEARCH-001", 23, 10, "className"],
+    ["ODD-SEARCH-004", 24, 13, "onSubmit"],
+    ["ODD-SEARCH-005", 25, 13, 'data-tone="info"'],
+  ],
   "children-prop.tsx": [
     ["ODD-BUTTON-014", 5, 5, "<Button"],
     ["ODD-BUTTON-014", 6, 5, "<button"],

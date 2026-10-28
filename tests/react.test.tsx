@@ -13,6 +13,7 @@ import { Card, CardFooter, CardLink } from "../src/react/card.tsx";
 import { Choice, Segmented, Switch } from "../src/react/choice.tsx";
 import { Disclosure } from "../src/react/disclosure.tsx";
 import { Field, FieldError, Hint, Input, Label, Select, Textarea } from "../src/react/field.tsx";
+import { Search } from "../src/react/search.tsx";
 import { Separator } from "../src/react/separator.tsx";
 import { Skeleton } from "../src/react/skeleton.tsx";
 import { Tabs } from "../src/react/tabs.tsx";
@@ -198,6 +199,17 @@ const markup: readonly [string, ReactElement, string][] = [
       </div>
     </Tabs>,
     '<div id="deck-tabs" class="odd-tabs deck"><div role="tablist" aria-label="Deck view"><button role="tab" id="tab-cards" aria-controls="panel-cards" aria-selected="true">Cards</button></div><div role="tabpanel" id="panel-cards" aria-labelledby="tab-cards">60 cards</div></div>',
+  ],
+  [
+    "search with a hidden label and a leading icon",
+    <Search className="deck-search">
+      <label className="odd-visually-hidden" htmlFor="card-search">
+        Search cards
+      </label>
+      <svg aria-hidden="true" viewBox="0 0 24 24" />
+      <Input type="search" id="card-search" placeholder="Search cards" />
+    </Search>,
+    '<search class="odd-search deck-search"><label class="odd-visually-hidden" for="card-search">Search cards</label><svg aria-hidden="true" viewBox="0 0 24 24"></svg><input type="search" id="card-search" placeholder="Search cards" class="odd-input"/></search>',
   ],
 ];
 
@@ -412,6 +424,8 @@ const failures: Record<string, { codes: string[]; text: string[] }> = {
   "tabs-aria-orientation": { codes: ["ODD-TABS-003"], text: [] },
   "tabs-data-tone": { codes: ["ODD-TABS-005"], text: [] },
   "tabs-default-value": { codes: [], text: ["not assignable to type 'undefined'"] },
+  "search-on-submit": { codes: ["ODD-SEARCH-004"], text: [] },
+  "search-data-tone": { codes: ["ODD-SEARCH-005"], text: [] },
 };
 
 describe("React types", () => {

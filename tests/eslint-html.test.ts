@@ -183,6 +183,31 @@ const places: Record<string, readonly (readonly [string, number, number, string]
     ["ODD-SEPARATOR-003", 3, 27, "aria-hidden"],
   ],
   "odd-separator-004.bad.html": [["ODD-SEPARATOR-004", 2, 27, "data-tone"]],
+  "odd-search-001.bad.html": [
+    ["ODD-SEARCH-001", 2, 6, "class"],
+    ["ODD-SEARCH-001", 3, 10, "class"],
+  ],
+  "odd-search-002.bad.html": [
+    ["ODD-SEARCH-002", 2, 1, "<search"],
+    ["ODD-SEARCH-002", 3, 1, "<search"],
+    ["ODD-SEARCH-002", 4, 1, "<search"],
+    ["ODD-SEARCH-003", 4, 1, "<search"],
+    ["ODD-SEARCH-002", 5, 9, "<form"],
+    ["ODD-SEARCH-002", 6, 1, "<search"],
+    ["ODD-SEARCH-002", 7, 9, "<form"],
+  ],
+  "odd-search-003.bad.html": [
+    ["ODD-SEARCH-003", 2, 1, "<search"],
+    ["ODD-SEARCH-003", 3, 1, "<search"],
+    ["ODD-SEARCH-003", 4, 9, "<form"],
+    ["ODD-SEARCH-003", 5, 1, "<search"],
+    ["ODD-SEARCH-003", 6, 9, "<form"],
+  ],
+  "odd-search-004.bad.html": [["ODD-SEARCH-004", 2, 28, "onsubmit"]],
+  "odd-search-005.bad.html": [
+    ["ODD-SEARCH-005", 2, 28, "data-tone"],
+    ["ODD-SEARCH-005", 3, 34, "data-size"],
+  ],
   "odd-disclosure-001.bad.html": [
     ["ODD-DISCLOSURE-001", 2, 6, "class"],
     ["ODD-DISCLOSURE-001", 3, 10, "class"],
