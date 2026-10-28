@@ -27,7 +27,7 @@ function reactRoot(entry: MirroredEntry, args: Record<string, unknown> = {}): Pa
   return asRoot(renderToStaticMarkup(toReact(entry.mirror.scene(merged))), entry.label);
 }
 
-test("the catalog has every story file's stories, and Button, Field, Choice, Badge, Alert, Avatar, Separator, Skeleton, Card, and Disclosure are mirrored", () => {
+test("the catalog has every story file's stories, and Button, Field, Choice, Badge, Alert, Avatar, Separator, Skeleton, Card, Disclosure, and Tabs are mirrored", () => {
   const storyFiles = globSync(STORYBOOKS.html.stories, { cwd: repo }).map((file) => file.replaceAll("\\", "/"));
   const covered = new Set(html.map((entry) => entry.file));
   const skipped = storyFiles.filter((file) => !covered.has(file));
@@ -47,6 +47,7 @@ test("the catalog has every story file's stories, and Button, Field, Choice, Bad
       "components-data-display--avatar",
       "components-data-display--separator",
       "components-feedback--skeleton",
+      "components-interactive--tabs",
     ]),
   );
   expect(react.every((entry) => html.some((item) => item.id === entry.id))).toBe(true);

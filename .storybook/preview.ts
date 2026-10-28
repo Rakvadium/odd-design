@@ -5,7 +5,7 @@ import "@fontsource-variable/bricolage-grotesque";
 import "../src/css/index.css";
 import { applyAppearance, CHROMES, MODES, PALETTES, type Appearance } from "../src/js/appearance.ts";
 import { A11Y_OPTIONS } from "./a11y.ts";
-import { avatarFallback, closedByFallback, interestForFallback } from "../src/js/enhance.ts";
+import { avatarFallback, closedByFallback, enhanceTabs, interestForFallback } from "../src/js/enhance.ts";
 import { mirrorOf, toHtml } from "../stories/mirror.ts";
 
 // Page-wide fallbacks, installed once as an app would. Each is a no-op where the browser has the feature.
@@ -38,7 +38,10 @@ const preview: Preview = {
       storySort: { order: ["Introduction", "Showcase", "Foundations", "Components"] },
     },
   },
-  render: (args, { parameters }) => toHtml(mirrorOf(parameters).scene(args)),
+  render: (args, { parameters, canvasElement }) => {
+    queueMicrotask(() => canvasElement.querySelectorAll<HTMLElement>(".odd-tabs").forEach(enhanceTabs));
+    return toHtml(mirrorOf(parameters).scene(args));
+  },
 };
 
 export default preview;
