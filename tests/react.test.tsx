@@ -682,6 +682,7 @@ const failures: Record<string, { codes: string[]; text: string[] }> = {
   "menu-item-disabled": { codes: ["ODD-MENU-007"], text: [] },
   "table-wrap-tabindex": { codes: ["ODD-TABLE-002"], text: [] },
   "table-wrap-name": { codes: ["ODD-TABLE-003"], text: [] },
+  "table-wrap-name-undefined": { codes: ["ODD-TABLE-003"], text: [] },
   "table-wrap-role": { codes: [], text: ['"region"'] },
   "table-data-numeric": { codes: ["ODD-TABLE-004"], text: [] },
   "table-sort-aria-sort": { codes: ["ODD-TABLE-005"], text: [] },

@@ -66,7 +66,7 @@ export type Exclusive<Rule> =
       )
     : {};
 
-type Given<Keys extends string> = { [Each in Keys]: { [Key in Each]: unknown } }[Keys];
+type Given<Keys extends string> = { [Each in Keys]: { [Key in Each]: NonNullable<unknown> } }[Keys];
 
 type CodeOf<Rule, Kind> = Extract<Rule, { kind: Kind; code: keyof typeof MESSAGES }>["code"];
 
