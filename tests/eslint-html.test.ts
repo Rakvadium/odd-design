@@ -245,6 +245,32 @@ const places: Record<string, readonly (readonly [string, number, number, string]
   ],
   "odd-toast-003.bad.html": [["ODD-TOAST-003", 2, 1, "<section"]],
   "odd-toast-004.bad.html": [["ODD-TOAST-004", 2, 74, "data-tone"]],
+  "odd-popover-001.bad.html": [
+    ["ODD-POPOVER-001", 2, 4, "class"],
+    ["ODD-POPOVER-001", 3, 7, "class"],
+  ],
+  "odd-popover-002.bad.html": [
+    ["ODD-POPOVER-002", 2, 1, "<div"],
+    ["ODD-POPOVER-002", 3, 33, "popover"],
+    ["ODD-POPOVER-002", 4, 33, "popover"],
+  ],
+  "odd-popover-003.bad.html": [
+    ["ODD-POPOVER-003", 2, 41, "role"],
+    ["ODD-POPOVER-003", 3, 41, "role"],
+    ["ODD-POPOVER-003", 4, 41, "role"],
+  ],
+  "odd-popover-004.bad.html": [
+    ["ODD-POPOVER-004", 2, 1, "<div"],
+    ["ODD-POPOVER-004", 3, 1, "<div"],
+  ],
+  "odd-popover-005.bad.html": [
+    ["ODD-POPOVER-005", 2, 41, "aria-labelledby"],
+    ["ODD-POPOVER-005", 3, 41, "aria-label"],
+  ],
+  "odd-popover-006.bad.html": [
+    ["ODD-POPOVER-006", 2, 41, "data-tone"],
+    ["ODD-POPOVER-006", 3, 41, "data-size"],
+  ],
   "odd-disclosure-001.bad.html": [
     ["ODD-DISCLOSURE-001", 2, 6, "class"],
     ["ODD-DISCLOSURE-001", 3, 10, "class"],

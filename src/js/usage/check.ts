@@ -258,6 +258,12 @@ function apply(rule: UsageRule, scope: Scope): Diagnostic[] {
     }
     case "accessible-name":
       return isSet(scope, rule.attribute) && !hasUnknownAttributes(node) && !rule.names.some((name) => hasName(node, name)) ? [diagnose(rule.code)] : [];
+    case "name-requires": {
+      const name = rule.names.find((candidate) => hasName(node, candidate));
+      return name !== undefined && find(node, rule.attribute) === undefined && !hasUnknownAttributes(node)
+        ? [diagnose(rule.code, find(node, name), { found: `${name} without ${rule.attribute}` })]
+        : [];
+    }
     case "icon-only-text":
       return isSet(scope, rule.attribute) && hasVisibleText(node.children, rule.ignore) ? [diagnose(rule.code)] : [];
     case "system-data":

@@ -8,6 +8,7 @@ import { Choice, Segmented, Switch } from "../../../../src/react/choice.tsx";
 import { Disclosure } from "../../../../src/react/disclosure.tsx";
 import { Field, FieldError, Hint, Input, Label, Select, Textarea } from "../../../../src/react/field.tsx";
 import { Meter, Progress, type MeterTone } from "../../../../src/react/meter.tsx";
+import { Popover } from "../../../../src/react/popover.tsx";
 import { Search } from "../../../../src/react/search.tsx";
 import { Separator } from "../../../../src/react/separator.tsx";
 import { Skeleton } from "../../../../src/react/skeleton.tsx";
@@ -326,6 +327,21 @@ export function DeckMix({ count, syncing }: { count: number; syncing: boolean })
       </div>
       <Meter id="store-high" value={0.93} low={0.6} high={0.85} optimum={0} aria-label="Storage" />
       {syncing ? <Progress id="sync" aria-label="Syncing decks" /> : <Progress id="import" value={40} max={100} tone="success" aria-label="Importing decks" />}
+    </>
+  );
+}
+
+export function DeckFilters({ label }: { label: string }) {
+  const panel = useRef<HTMLDivElement>(null);
+  const [open, setOpen] = useState(false);
+  return (
+    <>
+      <Button commandfor="filters" command="toggle-popover">{open ? "Hide filters" : "Filters"}</Button>
+      <Popover ref={panel} id="filters" popover="auto" role="dialog" aria-labelledby="filters-title" onToggle={(event) => setOpen(event.newState === "open")} className="filters" data-testid="filters" data-state="open">
+        <p className="odd-eyebrow" id="filters-title">Filter decks</p>
+      </Popover>
+      <Popover id="notes" popover="auto" role="dialog" aria-label={label} />
+      <Popover id="rules" popover="">Banned cards are marked.</Popover>
     </>
   );
 }
