@@ -708,14 +708,14 @@ export const MESSAGES = {
   ),
   "ODD-POPOVER-001": text(
     "ODD-POPOVER-001",
-    "odd-popover is on the wrong element. A p ends before its first block child, so the controls render in the page while the popover is closed. A section with a name becomes a region. A span or a button cannot hold the controls a popover takes.",
+    "odd-popover is on the wrong element. A p ends before its first block child, so the controls render in the page while the popover is closed. A section with a name becomes a region.",
     "div",
     "put odd-popover on a div with popover. In React, use Popover.",
     "docs/usage/popover.md#odd-popover-001",
   ),
   "ODD-POPOVER-002": text(
     "ODD-POPOVER-002",
-    "odd-popover needs popover with no value or popover auto. With no popover the box stays in the page, invisible, while its controls still take focus and are read out, and its trigger does nothing. A manual popover, and any token the browser does not know, ignores Escape and a click outside. A hint popover closes when any other popover opens, which suits odd-tooltip and odd-hover-card, not a popover.",
+    "odd-popover needs popover with no value or popover auto. With no popover the box stays in the page, invisible, while its controls still take focus and are read out, and its trigger does nothing. A manual popover ignores Escape and a click outside, and so does an unknown token such as yes, which acts as manual. A hint popover closes when an auto popover or another hint opens, and a manual popover leaves it open. That suits odd-tooltip and odd-hover-card, not a popover.",
     "popover with no value, or auto",
     "write popover with no value in HTML, or popover=auto in React.",
     "docs/usage/popover.md#odd-popover-002",

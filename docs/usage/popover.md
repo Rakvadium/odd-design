@@ -36,7 +36,7 @@ These rules cover `odd-popover` only. `odd-tooltip` and `odd-hover-card` take `p
 
 Fails when `odd-popover` is on an element other than `div`.
 
-A `p` ends before its first block child, so the controls render in the page while the popover is closed. A `section` with a name becomes a region landmark. A `span` or a `button` cannot hold the controls a popover takes.
+A `p` ends before its first block child, so the controls render in the page while the popover is closed. A `section` with a name becomes a region landmark.
 
 Put `odd-popover` on a `div` with `popover`. In React, use `Popover`, which renders the `div`.
 
@@ -44,7 +44,7 @@ Put `odd-popover` on a `div` with `popover`. In React, use `Popover`, which rend
 
 Fails when `odd-popover` has no `popover`, or a `popover` other than no value or `auto`.
 
-With no `popover`, the box stays in the page at opacity 0. Its controls still take focus and are read out, and its trigger does nothing. `popover="manual"`, and any token the browser does not know, such as `yes`, ignores Escape and a click outside. `popover="hint"` closes when any other popover opens, which suits `odd-tooltip` and `odd-hover-card`, not a popover.
+With no `popover`, the box stays in the page at opacity 0. Its controls still take focus and are read out, and its trigger does nothing. `popover="manual"` ignores Escape and a click outside, and so does an unknown token such as `yes`, which acts as `manual`. `popover="hint"` closes when an `auto` popover or another `hint` opens, and a `manual` popover leaves it open. That suits `odd-tooltip` and `odd-hover-card`, not a popover.
 
 Write `popover` with no value in HTML, or `popover="auto"`. In React, `Popover` requires `popover`, and it takes `""` or `"auto"`.
 
