@@ -1,6 +1,6 @@
 # Dialog usage rules
 
-These codes apply to `odd-dialog`, `odd-dialog-body`, `odd-dialog-title`, and `odd-dialog-actions`. Shared codes are in [General usage rules](general.md).
+These codes apply to `odd-dialog`, `odd-dialog-body`, `odd-dialog-title`, and `odd-dialog-actions`. ODD-DIALOG-002 to ODD-DIALOG-006 also apply to `odd-sheet`, which is a modal `dialog` too, and its own codes are in [Sheet usage rules](sheet.md). Shared codes are in [General usage rules](general.md).
 
 ```html
 <button class="odd-button" data-variant="danger" commandfor="confirm-delete" command="show-modal">Delete deck…</button>
@@ -47,7 +47,7 @@ Move the class onto its element. In React, use `Dialog` and `DialogActions`.
 
 ## ODD-DIALOG-002
 
-Fails when `odd-dialog` on a `dialog` has no non-empty `aria-label` or `aria-labelledby`. A blank name such as `aria-label=" "` fails too.
+Fails when `odd-dialog` or `odd-sheet` on a `dialog` has no non-empty `aria-label` or `aria-labelledby`. A blank name such as `aria-label=" "` fails too.
 
 A screen reader announces only "dialog" when it opens. A heading inside does not name it.
 
@@ -55,7 +55,7 @@ Give the `odd-dialog-title` an `id` and point `aria-labelledby` at it, or set `a
 
 ## ODD-DIALOG-003
 
-Fails when `odd-dialog` has a `role` other than `alertdialog`. `role="dialog"` fails too, because the element is already a dialog.
+Fails when `odd-dialog` or `odd-sheet` has a `role` other than `alertdialog`. `role="dialog"` fails too, because the element is already a dialog.
 
 Another role announces the dialog as something else, such as a region or a menu.
 
@@ -63,7 +63,7 @@ Remove `role`, or set `role="alertdialog"` for a decision the user must make. In
 
 ## ODD-DIALOG-004
 
-Fails when `odd-dialog` has `open` in its markup.
+Fails when `odd-dialog` or `odd-sheet` has `open` in its markup.
 
 `open` shows the dialog without `showModal()`. The page behind it stays live, Escape does nothing, and focus is not trapped. In React, `open` sets the attribute and never calls `showModal()`, and the prop goes stale once the browser closes the dialog.
 
@@ -71,7 +71,7 @@ Open it from a button with `commandfor` and `command="show-modal"`, or call `sho
 
 ## ODD-DIALOG-005
 
-Fails when `closedby` on `odd-dialog` is a value other than `any` or `closerequest`, such as `none` or a typo.
+Fails when `closedby` on `odd-dialog` or `odd-sheet` is a value other than `any` or `closerequest`, such as `none` or a typo.
 
 `closedby="none"` stops Escape from closing the dialog, so only a button can close it.
 
@@ -79,7 +79,7 @@ Remove `closedby` so Escape and the buttons close the dialog, or write `closedby
 
 ## ODD-DIALOG-006
 
-Fails when `odd-dialog` has `closedby="any"` and `role="alertdialog"`.
+Fails when `odd-dialog` or `odd-sheet` has `closedby="any"` and `role="alertdialog"`.
 
 A stray click outside dismisses the decision the alert dialog asks for.
 

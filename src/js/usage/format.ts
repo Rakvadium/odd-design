@@ -92,6 +92,9 @@ export const USAGE_CODES = [
   "ODD-DIALOG-006",
   "ODD-DIALOG-007",
   "ODD-DIALOG-008",
+  "ODD-SHEET-001",
+  "ODD-SHEET-002",
+  "ODD-SHEET-003",
   "ODD-STATIC-001",
   "ODD-STATIC-002",
   "ODD-STATIC-003",
@@ -151,8 +154,11 @@ const cardAttributes = WRAPPERS.Card.props.interactive;
 const meterToneRule = USAGE.meter[2];
 const meterToneAllowed = enumAllowed(meterToneRule.values, meterToneRule.omit);
 const meterAttributes = WRAPPERS.Meter.props.tone;
-const dialogRoleRule = USAGE.dialog[2];
+const dialogRoleRule = USAGE.dialog[2] satisfies { kind: "enum"; attribute: "role" };
 const dialogRoleAllowed = enumAllowed(dialogRoleRule.values, dialogRoleRule.omit);
+const sideRule = USAGE.sheet[6] satisfies { kind: "enum"; attribute: "data-side" };
+const sideAllowed = enumAllowed(sideRule.values, sideRule.omit);
+const sheetAttributes = WRAPPERS.Sheet.props.side;
 const appearanceAxes = comma(APPEARANCE_AXES);
 const headlessAllowlist = comma(HEADLESS_ALLOWLIST);
 
@@ -774,21 +780,21 @@ export const MESSAGES = {
   ),
   "ODD-DIALOG-003": text(
     "ODD-DIALOG-003",
-    "role on odd-dialog is alertdialog or nothing. A dialog element is already a dialog, and another role announces it as something else.",
+    "role on odd-dialog or odd-sheet is alertdialog or nothing. A dialog element is already a dialog, and another role announces it as something else.",
     dialogRoleAllowed,
     "remove role, or set role=alertdialog for a decision the user must make.",
     "docs/usage/dialog.md#odd-dialog-003",
   ),
   "ODD-DIALOG-004": text(
     "ODD-DIALOG-004",
-    "odd-dialog takes no open attribute. open shows the dialog without showModal, so the page behind it stays live and Escape does nothing. In React, open never calls showModal and goes stale once the browser closes the dialog.",
+    "odd-dialog and odd-sheet take no open attribute. open shows the dialog without showModal, so the page behind it stays live and Escape does nothing. In React, open never calls showModal and goes stale once the browser closes the dialog.",
     "no open attribute",
     "open it from a button with commandfor and command=show-modal, or call showModal() on a ref. Read the close from onClose.",
     "docs/usage/dialog.md#odd-dialog-004",
   ),
   "ODD-DIALOG-005": text(
     "ODD-DIALOG-005",
-    "closedby on odd-dialog is any, closerequest, or nothing. closedby=none stops Escape from closing the dialog, so only a button can close it.",
+    "closedby on odd-dialog or odd-sheet is any, closerequest, or nothing. closedby=none stops Escape from closing the dialog, so only a button can close it.",
     "any, closerequest, or no closedby",
     "remove closedby so Escape and the buttons close the dialog, or write closedby=any so a click outside also closes it.",
     "docs/usage/dialog.md#odd-dialog-005",
@@ -813,6 +819,27 @@ export const MESSAGES = {
     "any app data attribute, the appearance axes, and the headless allowlist",
     `remove the attribute. dialog.css reads no data attributes. Appearance axes: ${appearanceAxes}. Headless allowlist: ${headlessAllowlist}.`,
     "docs/usage/dialog.md#odd-dialog-008",
+  ),
+  "ODD-SHEET-001": text(
+    "ODD-SHEET-001",
+    "this sheet class is on the wrong element. odd-sheet on a div or a section is never hidden. It sits just past the edge of the page, its buttons take focus off screen, and a screen reader reads its content as part of the page. A header or a footer inside the sheet is read as a banner or contentinfo landmark. In HTML a p ends before its first block child, so the controls in p.odd-sheet-body fall out of the scrolling body.",
+    "odd-sheet on dialog, odd-sheet-header on div, odd-sheet-body on div, form, odd-sheet-footer on div",
+    "put odd-sheet on a dialog element, the header and footer classes on a div, and the body class on a div or a form. In React, use Sheet, SheetHeader, and SheetFooter.",
+    "docs/usage/sheet.md#odd-sheet-001",
+  ),
+  "ODD-SHEET-002": text(
+    sideRule.code,
+    "data-side has a value this sheet does not take. sheet.css styles start, top, and bottom, and any other value slides the sheet in from the end edge.",
+    sideAllowed,
+    "set start, top, or bottom, or remove data-side for the end edge. start and end follow the writing direction.",
+    "docs/usage/sheet.md#odd-sheet-002",
+  ),
+  "ODD-SHEET-003": text(
+    "ODD-SHEET-003",
+    "this sheet or sheet section does not take that data attribute.",
+    "the sheet attribute, any app data attribute, the appearance axes, and the headless allowlist",
+    `remove the attribute, or correct its name. sheet.css reads ${sheetAttributes} on odd-sheet and no data attribute on the header, body, or footer. Appearance axes: ${appearanceAxes}. Headless allowlist: ${headlessAllowlist}.`,
+    "docs/usage/sheet.md#odd-sheet-003",
   ),
   "ODD-STATIC-001": text(
     "ODD-STATIC-001",

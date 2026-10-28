@@ -60,6 +60,7 @@ const REQUIRED = [
   "docs/usage/toast.md",
   "docs/usage/popover.md",
   "docs/usage/dialog.md",
+  "docs/usage/sheet.md",
   "src/css/index.css",
   "src/js/appearance.ts",
   "src/js/enhance.ts",

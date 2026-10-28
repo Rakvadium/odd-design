@@ -300,5 +300,5 @@ export function checkUsage(node: UsageNode): Diagnostic[] {
   const tag = isComputed(node.tag) ? undefined : node.tag;
   const matched = tag === undefined ? [] : components.filter((component) => words.includes(component.className));
   const scope: Scope = { node, tag, classAttribute, words, components: matched };
-  return [...shared, ...matched.flatMap((component) => component.rules)].flatMap((rule) => apply(rule, scope));
+  return [...new Set([...shared, ...matched.flatMap((component) => component.rules)])].flatMap((rule) => apply(rule, scope));
 }

@@ -28,6 +28,14 @@ export type UsageRule =
 
 export type RuleKind = UsageRule["kind"];
 
+const modal = [
+  { kind: "accessible-name", code: "ODD-DIALOG-002", element: "dialog", names: ["aria-label", "aria-labelledby"] },
+  { kind: "enum", code: "ODD-DIALOG-003", attribute: "role", values: ["alertdialog"], omit: ["dialog"] },
+  { kind: "forbidden-attribute", code: "ODD-DIALOG-004", attribute: "open" },
+  { kind: "enum", code: "ODD-DIALOG-005", attribute: "closedby", values: ["any", "closerequest"], omit: [] },
+  { kind: "forbidden-value", code: "ODD-DIALOG-006", attribute: "closedby", value: "any", when: { attribute: "role", value: "alertdialog" } },
+] as const satisfies readonly UsageRule[];
+
 export const USAGE = {
   button: [
     { kind: "element", code: "ODD-BUTTON-001", className: "odd-button", elements: ["button", "a"] },
@@ -202,11 +210,7 @@ export const USAGE = {
   ] as const satisfies readonly UsageRule[],
   dialog: [
     { kind: "element", code: "ODD-DIALOG-001", className: "odd-dialog", elements: ["dialog"] },
-    { kind: "accessible-name", code: "ODD-DIALOG-002", element: "dialog", names: ["aria-label", "aria-labelledby"] },
-    { kind: "enum", code: "ODD-DIALOG-003", attribute: "role", values: ["alertdialog"], omit: ["dialog"] },
-    { kind: "forbidden-attribute", code: "ODD-DIALOG-004", attribute: "open" },
-    { kind: "enum", code: "ODD-DIALOG-005", attribute: "closedby", values: ["any", "closerequest"], omit: [] },
-    { kind: "forbidden-value", code: "ODD-DIALOG-006", attribute: "closedby", value: "any", when: { attribute: "role", value: "alertdialog" } },
+    ...modal,
     { kind: "system-data", code: "ODD-DIALOG-007" },
   ] as const satisfies readonly UsageRule[],
   dialogPart: [
@@ -214,6 +218,18 @@ export const USAGE = {
     { kind: "element", code: "ODD-DIALOG-001", className: "odd-dialog-title", elements: ["h1", "h2", "h3", "h4", "h5", "h6"] },
     { kind: "element", code: "ODD-DIALOG-001", className: "odd-dialog-actions", elements: ["div"] },
     { kind: "system-data", code: "ODD-DIALOG-008" },
+  ] as const satisfies readonly UsageRule[],
+  sheet: [
+    { kind: "element", code: "ODD-SHEET-001", className: "odd-sheet", elements: ["dialog"] },
+    ...modal,
+    { kind: "enum", code: "ODD-SHEET-002", attribute: "data-side", values: ["start", "top", "bottom"], omit: ["end"] },
+    { kind: "system-data", code: "ODD-SHEET-003" },
+  ] as const satisfies readonly UsageRule[],
+  sheetPart: [
+    { kind: "element", code: "ODD-SHEET-001", className: "odd-sheet-header", elements: ["div"] },
+    { kind: "element", code: "ODD-SHEET-001", className: "odd-sheet-body", elements: ["div", "form"] },
+    { kind: "element", code: "ODD-SHEET-001", className: "odd-sheet-footer", elements: ["div"] },
+    { kind: "system-data", code: "ODD-SHEET-003" },
   ] as const satisfies readonly UsageRule[],
   shared: [
     { kind: "unknown-class", code: "ODD-CLASS-001" },
@@ -268,6 +284,9 @@ export const WRAPPERS = {
   Popover: { source: "odd-design/react", className: "odd-popover", props: {}, element: "div" },
   Dialog: { source: "odd-design/react", className: "odd-dialog", props: {}, element: "dialog" },
   DialogActions: { source: "odd-design/react", className: "odd-dialog-actions", props: {}, element: "div" },
+  Sheet: { source: "odd-design/react", className: "odd-sheet", props: { side: "data-side" }, element: "dialog" },
+  SheetHeader: { source: "odd-design/react", className: "odd-sheet-header", props: {}, element: "div" },
+  SheetFooter: { source: "odd-design/react", className: "odd-sheet-footer", props: {}, element: "div" },
 } as const satisfies Record<string, Wrapper>;
 
 export const CLASS_REGISTRY = [
@@ -402,3 +421,5 @@ export type ToasterRule = (typeof USAGE.toaster)[number];
 export type PopoverRule = (typeof USAGE.popover)[number];
 export type DialogRule = (typeof USAGE.dialog)[number];
 export type DialogPartRule = (typeof USAGE.dialogPart)[number];
+export type SheetRule = (typeof USAGE.sheet)[number];
+export type SheetPartRule = (typeof USAGE.sheetPart)[number];

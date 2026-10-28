@@ -11,6 +11,7 @@ export * from "./meter.tsx";
 export * from "./popover.tsx";
 export * from "./search.tsx";
 export * from "./separator.tsx";
+export * from "./sheet.tsx";
 export * from "./skeleton.tsx";
 export * from "./slider.tsx";
 export * from "./tabs.tsx";

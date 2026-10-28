@@ -11,6 +11,7 @@ import type { MeterProps, ProgressProps } from "./meter.tsx";
 import type { PopoverProps } from "./popover.tsx";
 import type { SearchProps } from "./search.tsx";
 import type { SeparatorProps } from "./separator.tsx";
+import type { SheetFooterProps, SheetHeaderProps, SheetProps } from "./sheet.tsx";
 import type { SkeletonProps } from "./skeleton.tsx";
 import type { SliderProps } from "./slider.tsx";
 import type { TabsProps } from "./tabs.tsx";
@@ -48,4 +49,7 @@ export type WrapperProps = {
   Popover: PopoverProps;
   Dialog: DialogProps;
   DialogActions: DialogActionsProps;
+  Sheet: SheetProps;
+  SheetHeader: SheetHeaderProps;
+  SheetFooter: SheetFooterProps;
 };

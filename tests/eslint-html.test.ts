@@ -281,6 +281,8 @@ const places: Record<string, readonly (readonly [string, number, number, string]
     ["ODD-DIALOG-002", 2, 1, "<dialog"],
     ["ODD-DIALOG-002", 3, 1, "<dialog"],
     ["ODD-DIALOG-002", 4, 1, "<dialog"],
+    ["ODD-DIALOG-002", 5, 1, "<dialog"],
+    ["ODD-DIALOG-002", 6, 1, "<dialog"],
   ],
   "odd-dialog-003.bad.html": [
     ["ODD-DIALOG-003", 2, 28, "role"],
@@ -307,6 +309,23 @@ const places: Record<string, readonly (readonly [string, number, number, string]
     ["ODD-DIALOG-008", 2, 30, "data-tone"],
     ["ODD-DIALOG-008", 3, 30, "data-size"],
     ["ODD-DIALOG-008", 4, 33, "data-variant"],
+  ],
+  "odd-sheet-001.bad.html": [
+    ["ODD-SHEET-001", 2, 6, "class"],
+    ["ODD-SHEET-001", 3, 10, "class"],
+    ["ODD-SHEET-001", 4, 9, "class"],
+    ["ODD-SHEET-001", 5, 4, "class"],
+    ["ODD-SHEET-001", 6, 9, "class"],
+  ],
+  "odd-sheet-002.bad.html": [
+    ["ODD-SHEET-002", 2, 48, "data-side"],
+    ["ODD-SHEET-002", 3, 48, "data-side"],
+    ["ODD-SHEET-002", 4, 48, "data-side"],
+  ],
+  "odd-sheet-003.bad.html": [
+    ["ODD-SHEET-003", 2, 48, "data-tone"],
+    ["ODD-SHEET-003", 3, 48, "data-sid"],
+    ["ODD-SHEET-003", 4, 31, "data-variant"],
   ],
   "odd-disclosure-001.bad.html": [
     ["ODD-DISCLOSURE-001", 2, 6, "class"],

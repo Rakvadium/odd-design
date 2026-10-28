@@ -69,8 +69,7 @@ export const HoverCard: Story = {
   </div>`,
 };
 
-const sheet = (id: string, side: string, title: string) => /* html */ `<dialog class="odd-sheet" id="${id}" data-side="${side}" aria-labelledby="${id}-title" closedby="any">
-      <div class="odd-sheet-header">
+const sheet = (id: string, title: string) => /* html */ `<div class="odd-sheet-header">
         <h2 class="odd-dialog-title" id="${id}-title">${title}</h2>
         <button class="odd-button" data-variant="ghost" data-icon-only aria-label="Close" commandfor="${id}" command="close">${icons.close}</button>
       </div>
@@ -89,8 +88,7 @@ const sheet = (id: string, side: string, title: string) => /* html */ `<dialog c
       <div class="odd-sheet-footer">
         <button class="odd-button" commandfor="${id}" command="close">Reset</button>
         <button class="odd-button" data-variant="primary" commandfor="${id}" command="close">Show 12 decks</button>
-      </div>
-    </dialog>`;
+      </div>`;
 
 export const Sheet: Story = {
   parameters: {
@@ -105,8 +103,8 @@ export const Sheet: Story = {
     <button class="odd-button" commandfor="sheet-end" command="show-modal">${icons.filter} Filters (end)</button>
     <button class="odd-button" commandfor="sheet-start" command="show-modal">Start</button>
     <button class="odd-button" commandfor="sheet-bottom" command="show-modal">Bottom</button>
-    ${sheet("sheet-end", "end", "Filters")}
-    ${sheet("sheet-start", "start", "Filters")}
-    ${sheet("sheet-bottom", "bottom", "Filters")}
+    <dialog class="odd-sheet" id="sheet-end" aria-labelledby="sheet-end-title" closedby="any">${sheet("sheet-end", "Filters")}</dialog>
+    <dialog class="odd-sheet" id="sheet-start" data-side="start" aria-labelledby="sheet-start-title" closedby="any">${sheet("sheet-start", "Filters")}</dialog>
+    <dialog class="odd-sheet" id="sheet-bottom" data-side="bottom" aria-labelledby="sheet-bottom-title" closedby="any">${sheet("sheet-bottom", "Filters")}</dialog>
   </div>`,
 };

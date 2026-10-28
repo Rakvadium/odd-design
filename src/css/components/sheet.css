@@ -3,7 +3,7 @@
  * the inert page, and focus return come from showModal(), opened with no JS:
  *
  *   <button class="odd-button" commandfor="filters" command="show-modal">Filters</button>
- *   <dialog class="odd-sheet" id="filters" data-side="end" aria-labelledby="filters-title" closedby="any">
+ *   <dialog class="odd-sheet" id="filters" aria-labelledby="filters-title" closedby="any">
  *     <div class="odd-sheet-header">
  *       <h2 class="odd-dialog-title" id="filters-title">Filters</h2>
  *       <button class="odd-button" data-variant="ghost" data-icon-only aria-label="Close"
@@ -13,7 +13,7 @@
  *     <div class="odd-sheet-footer">…</div>
  *   </dialog>
  *
- * data-side="start|end|top|bottom". start and end follow the writing direction; end is the default.
+ * data-side="start|top|bottom", or no data-side for the end edge. start and end follow the writing direction.
  * The header and footer are plain divs: <header> and <footer> inside a dialog are exposed as the page's
  * banner and contentinfo landmarks.
  */
