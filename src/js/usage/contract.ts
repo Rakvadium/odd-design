@@ -103,6 +103,18 @@ export const USAGE = {
     { kind: "forbidden-attribute", code: "ODD-SEPARATOR-003", attribute: "aria-hidden" },
     { kind: "system-data", code: "ODD-SEPARATOR-004" },
   ] as const satisfies readonly UsageRule[],
+  skeleton: [
+    { kind: "element", code: "ODD-SKELETON-001", className: "odd-skeleton", elements: ["div"] },
+    { kind: "enum", code: "ODD-SKELETON-002", attribute: "data-shape", values: ["avatar"], omit: ["text", "line", "rect", "rectangular", "rounded"] },
+    { kind: "required-attribute", code: "ODD-SKELETON-003", element: "div", attribute: "aria-hidden" },
+    { kind: "enum", code: "ODD-SKELETON-003", attribute: "aria-hidden", values: ["true"], omit: [] },
+    { kind: "icon-only-text", code: "ODD-SKELETON-004", attribute: "aria-hidden", ignore: "aria-hidden" },
+    { kind: "forbidden-attribute", code: "ODD-SKELETON-004", attribute: "aria-busy" },
+    { kind: "forbidden-attribute", code: "ODD-SKELETON-004", attribute: "role" },
+    { kind: "forbidden-attribute", code: "ODD-SKELETON-004", attribute: "aria-label" },
+    { kind: "forbidden-attribute", code: "ODD-SKELETON-004", attribute: "aria-labelledby" },
+    { kind: "system-data", code: "ODD-SKELETON-005" },
+  ] as const satisfies readonly UsageRule[],
   shared: [
     { kind: "unknown-class", code: "ODD-CLASS-001" },
     { kind: "computed-value", code: "ODD-STATIC-001" },
@@ -142,6 +154,7 @@ export const WRAPPERS = {
   Avatar: { source: "odd-design/react", className: "odd-avatar", props: { size: "data-size" }, element: "span" },
   AvatarGroup: { source: "odd-design/react", className: "odd-avatar-group", props: {}, element: "div" },
   Separator: { source: "odd-design/react", className: "odd-separator", props: {}, element: "hr" },
+  Skeleton: { source: "odd-design/react", className: "odd-skeleton", props: { shape: "data-shape" }, element: "div" },
 } as const satisfies Record<string, Wrapper>;
 
 export const CLASS_REGISTRY = [
@@ -263,3 +276,4 @@ export type AlertTitleRule = (typeof USAGE.alertTitle)[number];
 export type AvatarRule = (typeof USAGE.avatar)[number];
 export type AvatarGroupRule = (typeof USAGE.avatarGroup)[number];
 export type SeparatorRule = (typeof USAGE.separator)[number];
+export type SkeletonRule = (typeof USAGE.skeleton)[number];

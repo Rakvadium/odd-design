@@ -6,6 +6,7 @@ import { Button } from "../../../../src/react/button.tsx";
 import { Choice, Segmented, Switch } from "../../../../src/react/choice.tsx";
 import { Field, FieldError, Hint, Input, Label, Select, Textarea } from "../../../../src/react/field.tsx";
 import { Separator } from "../../../../src/react/separator.tsx";
+import { Skeleton } from "../../../../src/react/skeleton.tsx";
 
 function save(event: MouseEvent<HTMLButtonElement>): void {
   event.currentTarget.blur();
@@ -189,5 +190,16 @@ export function DeckActions() {
       </div>
       <Separator role="separator" data-testid="split" />
     </>
+  );
+}
+
+export function DeckPlaceholder({ loading }: { loading: boolean }) {
+  if (!loading) return null;
+  return (
+    <div aria-busy="true">
+      <span className="odd-visually-hidden">Loading decks…</span>
+      <Skeleton aria-hidden="true" shape="avatar" />
+      <Skeleton aria-hidden="true" className="title" style={{ inlineSize: "60%" }} data-testid="deck-title" />
+    </div>
   );
 }

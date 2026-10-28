@@ -11,6 +11,7 @@ import { Button } from "../src/react/button.tsx";
 import { Choice, Segmented, Switch } from "../src/react/choice.tsx";
 import { Field, FieldError, Hint, Input, Label, Select, Textarea } from "../src/react/field.tsx";
 import { Separator } from "../src/react/separator.tsx";
+import { Skeleton } from "../src/react/skeleton.tsx";
 
 Object.assign(globalThis, { IS_REACT_ACT_ENVIRONMENT: true });
 
@@ -153,6 +154,15 @@ const markup: readonly [string, ReactElement, string][] = [
     </>,
     '<hr class="odd-separator"/><hr aria-orientation="vertical" class="odd-separator tall"/>',
   ],
+  [
+    "skeleton blocks in a busy region",
+    <div aria-busy="true">
+      <span className="odd-visually-hidden">Loading decks…</span>
+      <Skeleton aria-hidden="true" shape="avatar" />
+      <Skeleton aria-hidden="true" className="wide" style={{ inlineSize: "60%" }} />
+    </div>,
+    '<div aria-busy="true"><span class="odd-visually-hidden">Loading decks…</span><div aria-hidden="true" class="odd-skeleton" data-shape="avatar"></div><div aria-hidden="true" style="inline-size:60%" class="odd-skeleton wide"></div></div>',
+  ],
 ];
 
 describe("React markup", () => {
@@ -279,6 +289,11 @@ const failures: Record<string, { codes: string[]; text: string[] }> = {
   "separator-data-orientation": { codes: ["ODD-SEPARATOR-002"], text: [] },
   "separator-data-tone": { codes: ["ODD-SEPARATOR-004"], text: [] },
   "separator-children": { codes: [], text: ["'children' is 'undefined'"] },
+  "skeleton-shape": { codes: [], text: ['"avatar"'] },
+  "skeleton-aria-hidden": { codes: [], text: ["'\"aria-hidden\"' is missing"] },
+  "skeleton-text": { codes: ["ODD-SKELETON-004"], text: [] },
+  "skeleton-aria-busy": { codes: ["ODD-SKELETON-004"], text: [] },
+  "skeleton-data-size": { codes: ["ODD-SKELETON-005"], text: [] },
 };
 
 describe("React types", () => {

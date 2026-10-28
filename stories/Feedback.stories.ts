@@ -61,32 +61,6 @@ export const Progress: Story = {
   </div>`,
 };
 
-export const Skeleton: Story = {
-  parameters: {
-    docs: {
-      description: {
-        story:
-          "The loading region has `aria-busy=\"true\"` and says “Loading” in text. The blocks are `aria-hidden`. The pulse follows `--duration-slow`, so reduced motion stops it.",
-      },
-    },
-  },
-  render: () => /* html */ `<div style="display:grid; gap: var(--space-5); grid-template-columns: repeat(auto-fill, minmax(17rem, 1fr))" aria-busy="true">
-    <span class="odd-visually-hidden">Loading decks…</span>
-    ${/* html */ `<article class="odd-card" aria-hidden="true">
-      <div class="odd-row">
-        <div class="odd-skeleton" data-shape="avatar"></div>
-        <div class="odd-stack" style="--gap: var(--space-2); flex: 1">
-          <div class="odd-skeleton" style="inline-size: 70%"></div>
-          <div class="odd-skeleton" style="inline-size: 40%; block-size: 0.75em"></div>
-        </div>
-      </div>
-      <div class="odd-skeleton" style="block-size: 5rem; border-radius: var(--radius-surface)"></div>
-      <div class="odd-skeleton" style="inline-size: 90%"></div>
-      <div class="odd-skeleton" style="inline-size: 60%"></div>
-    </article>`.repeat(2)}
-  </div>`,
-};
-
 const logSamples: readonly [string, LogTone | undefined][] = [
   ["Pose saved: wave", undefined],
   ["Info: battery at 78%", "info"],

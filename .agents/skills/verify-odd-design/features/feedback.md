@@ -12,7 +12,7 @@ Feedback components tell the user about state: `.odd-alert` messages in a neutra
 
 ## How to get to it (user POV)
 
-- In Storybook, open **Components → Feedback**, which has Alert, Progress, and Skeleton.
+- In Storybook, open **Components → Feedback**, which has Progress, Log, Alert, and Skeleton. Alert and Skeleton sort last because they load from `stories/mirrored/`.
 
 ## Driving it with ctl.ts
 
@@ -28,9 +28,13 @@ Preconditions:
 
 ## React Alert
 
-Build the composed Storybook and serve it, as in the React Field section of `forms.md`. Open `http://127.0.0.1:6106/?path=/story/react_components-feedback--alert`. The preview is the Alert story built from `Alert` and `AlertTitle`. It shows the neutral alert and the four tones, the same as `components-feedback--alert`. Progress, Skeleton, and Log have no React wrappers, so they appear only in the HTML section.
+Build the composed Storybook and serve it, as in the React Field section of `forms.md`. Open `http://127.0.0.1:6106/?path=/story/react_components-feedback--alert`. The preview is the Alert story built from `Alert` and `AlertTitle`. It shows the neutral alert and the four tones, the same as `components-feedback--alert`. Progress and Log have no React wrappers, so they appear only in the HTML section.
 
 Run the pair sweep with `bunx playwright test e2e/usage.spec.ts --project firefox`. The Alert pair matches the `aria` literal in `stories/mirrored/Alert.stories.ts`, and the two screenshots are byte-identical.
+
+## React Skeleton
+
+In the same composed Storybook, open `http://127.0.0.1:6106/?path=/story/react_components-feedback--skeleton`. The preview is the Skeleton story built from `Skeleton`, the same as `components-feedback--skeleton`. The pair sweep matches the `aria` literal in `stories/mirrored/Skeleton.stories.ts`, which is only `- text: Loading decks…`, because every block and both cards are hidden. The avatar block matches a default avatar, and its shape follows the chrome's chip radius. The two screenshots are byte-identical.
 
 ## Gotchas
 

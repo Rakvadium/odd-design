@@ -47,6 +47,11 @@ const RUNTIME_CODES = [
   "ODD-SEPARATOR-002",
   "ODD-SEPARATOR-003",
   "ODD-SEPARATOR-004",
+  "ODD-SKELETON-001",
+  "ODD-SKELETON-002",
+  "ODD-SKELETON-003",
+  "ODD-SKELETON-004",
+  "ODD-SKELETON-005",
   "ODD-CLASS-001",
 ];
 
@@ -92,6 +97,17 @@ test("data-tone neutral on an alert says to remove the attribute", () => {
 test("data-size md on an avatar says to remove the attribute", () => {
   expect(diagnose(`<span class="odd-avatar" data-size="md" aria-hidden="true">AR</span>`).map((diagnostic) => diagnostic.message)).toEqual([
     "ODD-AVATAR-002: data-size has a value this avatar does not take. Allowed values: sm, lg. md and medium mean remove the attribute. Fix: set sm or lg, or remove data-size for the default size. docs/usage/avatar.md#odd-avatar-002 Found md. Did you mean to remove data-size?",
+  ]);
+});
+
+test("data-shape text on a skeleton says to remove the attribute, and circle does not", () => {
+  const messages = (shape: string) =>
+    diagnose(`<div class="odd-skeleton" data-shape="${shape}" aria-hidden="true"></div>`).map((diagnostic) => diagnostic.message);
+  expect(messages("text")).toEqual([
+    "ODD-SKELETON-002: data-shape has a value skeleton.css does not draw. Allowed values: avatar. text and line and rect and rectangular and rounded mean remove the attribute. Fix: remove data-shape for a line or a block and size it with inline-size and block-size, or set avatar for a block that matches a default avatar and takes the chrome's chip radius. A circle or circular block is avatar. docs/usage/skeleton.md#odd-skeleton-002 Found text. Did you mean to remove data-shape?",
+  ]);
+  expect(messages("circle")).toEqual([
+    "ODD-SKELETON-002: data-shape has a value skeleton.css does not draw. Allowed values: avatar. text and line and rect and rectangular and rounded mean remove the attribute. Fix: remove data-shape for a line or a block and size it with inline-size and block-size, or set avatar for a block that matches a default avatar and takes the chrome's chip radius. A circle or circular block is avatar. docs/usage/skeleton.md#odd-skeleton-002 Found circle.",
   ]);
 });
 

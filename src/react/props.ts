@@ -5,6 +5,7 @@ import type { ButtonProps } from "./button.tsx";
 import type { ChoiceProps, SegmentedProps, SwitchProps } from "./choice.tsx";
 import type { FieldErrorProps, FieldProps, HintProps, InputProps, LabelProps, SelectProps, TextareaProps } from "./field.tsx";
 import type { SeparatorProps } from "./separator.tsx";
+import type { SkeletonProps } from "./skeleton.tsx";
 
 export type WrapperProps = {
   Button: ButtonProps;
@@ -24,4 +25,5 @@ export type WrapperProps = {
   Avatar: AvatarProps;
   AvatarGroup: AvatarGroupProps;
   Separator: SeparatorProps;
+  Skeleton: SkeletonProps;
 };

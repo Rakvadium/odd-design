@@ -146,6 +146,12 @@ The plugin checks `Separator` as an `hr` with `odd-separator`, from its entry of
 
 So `<Separator aria-orientation="verticle">` and `<Separator data-orientation="vertical">` report `ODD-SEPARATOR-002`, `<Separator role="none">` and `<Separator aria-hidden="true">` report `ODD-SEPARATOR-003`, and `<Separator data-tone="danger">` reports `ODD-SEPARATOR-004`. A computed `aria-orientation` or `role` gives the `ODD-STATIC-001` warning. The plugin does not read a separator's parent, so a vertical separator outside an `odd-row` passes.
 
+### Skeleton from odd-design/react
+
+The plugin checks `Skeleton` as a `div` with `odd-skeleton`, from its entry of `WRAPPERS`. `shape` is read as `data-shape`. A raw `data-shape` gives nothing. `Skeleton` sets that attribute from `shape`, so it drops a raw one, and its type rejects one. Every other prop is the attribute with the same name.
+
+So `<Skeleton aria-hidden="true" shape="circle">` reports `ODD-SKELETON-002`, `<Skeleton />` and `<Skeleton aria-hidden>` report `ODD-SKELETON-003`, `<Skeleton aria-hidden="true">Loading</Skeleton>` and `<Skeleton aria-hidden="true" aria-busy="true">` report `ODD-SKELETON-004`, and `<Skeleton aria-hidden="true" data-size="lg">` reports `ODD-SKELETON-005`. A bare `aria-hidden` is read as empty, which hides nothing. A computed `shape` gives the `ODD-STATIC-001` warning. A spread gives that warning too, and `ODD-SKELETON-003` then stays quiet, because the spread may hold `aria-hidden`. The plugin does not read a skeleton's parent, so a block with no busy region passes.
+
 ### Other components
 
 The plugin cannot see what another component renders. A component with an `odd-` class, such as `<Link className="odd-button">`, gets one `ODD-STATIC-001` warning on the element and no button rules. An `odd-` class that is not in the registry still reports `ODD-CLASS-001`. `<UI.Button>`, with `UI` a namespace import, counts as another component.
