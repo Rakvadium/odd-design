@@ -128,6 +128,44 @@ function hasVisibleText(children: UsageNode["children"], ignore: string): boolea
   });
 }
 
+function hasClass(node: UsageNode, className: string): boolean {
+  return classWords(find(node, "class")).includes(className);
+}
+
+function descendants(node: UsageNode, stop: readonly string[]): { readonly found: readonly UsageNode[]; readonly unknown: boolean } {
+  const found: UsageNode[] = [];
+  let unknown = false;
+  for (const child of node.children) {
+    if (typeof child === "string") continue;
+    if (isComputed(child)) {
+      unknown = true;
+      continue;
+    }
+    if (isComputed(child.tag)) unknown = true;
+    if (stop.some((className) => hasClass(child, className))) continue;
+    found.push(child);
+    const below = descendants(child, stop);
+    found.push(...below.found);
+    unknown ||= below.unknown;
+  }
+  return { found, unknown };
+}
+
+function stretchedLinkFindings(rule: Extract<UsageRule, { kind: "stretched-link" }>, scope: Scope): Diagnostic[] {
+  const attribute = find(scope.node, rule.attribute);
+  if (attribute !== undefined && !isSet(scope, rule.attribute)) return [];
+  const { found, unknown } = descendants(scope.node, scope.components.map((component) => component.className));
+  const links = found.filter((node) => hasClass(node, rule.className));
+  const controls = found.filter((node) => typeof node.tag === "string" && rule.controls.includes(node.tag));
+  if (attribute === undefined) {
+    return links.length > 0 && !hasUnknownAttributes(scope.node) ? [diagnose(rule.code, undefined, { found: `${rule.className} without ${rule.attribute}` })] : [];
+  }
+  if (controls.length > 1) return [diagnose(rule.code, attribute, { found: `${controls.length} links or buttons` })];
+  if (unknown && controls.every((node) => hasClass(node, rule.className))) return [];
+  const sole = controls.length === 1 && links.length === 1 && controls[0] === links[0];
+  return sole ? [] : [diagnose(rule.code, attribute, { found: `no ${rule.className}` })];
+}
+
 function valueReadAttributes(scope: Scope): Set<string> {
   return new Set(
     scope.components.flatMap((component) =>
@@ -150,15 +188,15 @@ function computedFindings(scope: Scope): Diagnostic[] {
   return findings;
 }
 
-function systemDataFindings(code: UsageCode, scope: Scope): Diagnostic[] {
-  const own = scope.components.flatMap((component) => component.attributes);
+function systemDataFindings(rule: Extract<UsageRule, { kind: "system-data" }>, scope: Scope): Diagnostic[] {
+  const own = [...scope.components.flatMap((component) => component.attributes), ...(rule.allow ?? [])];
   return scope.node.attributes.flatMap((attribute) => {
     if (isComputed(attribute) || !attribute.name.startsWith("data-")) return [];
     const name = attribute.name;
     if (own.includes(name) || alwaysAllowed.has(name)) return [];
-    if (systemData.has(name)) return [diagnose(code, attribute, { found: name })];
+    if (systemData.has(name)) return [diagnose(rule.code, attribute, { found: name })];
     const suggestion = nearest(name, own);
-    return suggestion === undefined ? [] : [diagnose(code, attribute, { found: name, suggestion })];
+    return suggestion === undefined ? [] : [diagnose(rule.code, attribute, { found: name, suggestion })];
   });
 }
 
@@ -191,7 +229,9 @@ function apply(rule: UsageRule, scope: Scope): Diagnostic[] {
     case "icon-only-text":
       return isSet(scope, rule.attribute) && hasVisibleText(node.children, rule.ignore) ? [diagnose(rule.code)] : [];
     case "system-data":
-      return systemDataFindings(rule.code, scope);
+      return systemDataFindings(rule, scope);
+    case "stretched-link":
+      return stretchedLinkFindings(rule, scope);
     case "unknown-class":
       return scope.words
         .filter((word) => word.startsWith("odd-") && !registry.includes(word))

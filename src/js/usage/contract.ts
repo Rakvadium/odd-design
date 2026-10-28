@@ -11,7 +11,8 @@ export type UsageRule =
   | { kind: "enum-on-element"; code: UsageCode; element: string; attribute: string }
   | { kind: "accessible-name"; code: UsageCode; attribute: string; names: readonly string[] }
   | { kind: "icon-only-text"; code: UsageCode; attribute: string; ignore: string }
-  | { kind: "system-data"; code: UsageCode }
+  | { kind: "system-data"; code: UsageCode; allow?: readonly string[] }
+  | { kind: "stretched-link"; code: UsageCode; attribute: string; className: string; controls: readonly string[] }
   | { kind: "unknown-class"; code: UsageCode }
   | { kind: "computed-value"; code: UsageCode }
   | { kind: "untagged-template"; code: UsageCode };
@@ -115,6 +116,29 @@ export const USAGE = {
     { kind: "forbidden-attribute", code: "ODD-SKELETON-004", attribute: "aria-labelledby" },
     { kind: "system-data", code: "ODD-SKELETON-005" },
   ] as const satisfies readonly UsageRule[],
+  card: [
+    { kind: "element", code: "ODD-CARD-001", className: "odd-card", elements: ["article", "section", "div"] },
+    { kind: "boolean-attribute", code: "ODD-CARD-002", attribute: "data-interactive", values: ["", "true"] },
+    { kind: "stretched-link", code: "ODD-CARD-003", attribute: "data-interactive", className: "odd-card-link", controls: ["a", "button"] },
+    { kind: "forbidden-attribute", code: "ODD-CARD-004", attribute: "onClick" },
+    { kind: "forbidden-attribute", code: "ODD-CARD-004", attribute: "onclick" },
+    { kind: "forbidden-attribute", code: "ODD-CARD-004", attribute: "tabIndex" },
+    { kind: "forbidden-attribute", code: "ODD-CARD-004", attribute: "tabindex" },
+    { kind: "system-data", code: "ODD-CARD-006", allow: ["data-span"] },
+  ] as const satisfies readonly UsageRule[],
+  cardTitle: [
+    { kind: "element", code: "ODD-CARD-001", className: "odd-card-title", elements: ["h1", "h2", "h3", "h4", "h5", "h6"] },
+    { kind: "system-data", code: "ODD-CARD-007" },
+  ] as const satisfies readonly UsageRule[],
+  cardLink: [
+    { kind: "element", code: "ODD-CARD-001", className: "odd-card-link", elements: ["a", "button"] },
+    { kind: "required-attribute", code: "ODD-CARD-005", element: "a", attribute: "href" },
+    { kind: "system-data", code: "ODD-CARD-007" },
+  ] as const satisfies readonly UsageRule[],
+  cardFooter: [
+    { kind: "element", code: "ODD-CARD-001", className: "odd-card-footer", elements: ["div"] },
+    { kind: "system-data", code: "ODD-CARD-007" },
+  ] as const satisfies readonly UsageRule[],
   shared: [
     { kind: "unknown-class", code: "ODD-CLASS-001" },
     { kind: "computed-value", code: "ODD-STATIC-001" },
@@ -155,6 +179,9 @@ export const WRAPPERS = {
   AvatarGroup: { source: "odd-design/react", className: "odd-avatar-group", props: {}, element: "div" },
   Separator: { source: "odd-design/react", className: "odd-separator", props: {}, element: "hr" },
   Skeleton: { source: "odd-design/react", className: "odd-skeleton", props: { shape: "data-shape" }, element: "div" },
+  Card: { source: "odd-design/react", className: "odd-card", props: { interactive: "data-interactive" }, element: "article" },
+  CardLink: { source: "odd-design/react", className: "odd-card-link", props: {}, element: "a" },
+  CardFooter: { source: "odd-design/react", className: "odd-card-footer", props: {}, element: "div" },
 } as const satisfies Record<string, Wrapper>;
 
 export const CLASS_REGISTRY = [
@@ -277,3 +304,6 @@ export type AvatarRule = (typeof USAGE.avatar)[number];
 export type AvatarGroupRule = (typeof USAGE.avatarGroup)[number];
 export type SeparatorRule = (typeof USAGE.separator)[number];
 export type SkeletonRule = (typeof USAGE.skeleton)[number];
+export type CardRule = (typeof USAGE.card)[number];
+export type CardLinkRule = (typeof USAGE.cardLink)[number];
+export type CardFooterRule = (typeof USAGE.cardFooter)[number];

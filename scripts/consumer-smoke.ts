@@ -43,6 +43,7 @@ const REQUIRED = [
   "docs/usage/avatar.md",
   "docs/usage/badge.md",
   "docs/usage/button.md",
+  "docs/usage/card.md",
   "docs/usage/choice.md",
   "docs/usage/eslint.md",
   "docs/usage/field.md",

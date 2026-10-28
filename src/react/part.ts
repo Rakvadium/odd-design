@@ -25,7 +25,7 @@ type SystemData = Exclude<(typeof VOCABULARY)[keyof typeof VOCABULARY][number], 
 type ForeignData<N extends Name, Rule> = [Extract<Rule, { kind: "system-data" }>] extends [never]
   ? {}
   : Extract<Rule, { kind: "system-data" }> extends { code: infer Code extends keyof typeof MESSAGES }
-    ? { [Attribute in Exclude<SystemData, Own<N>>]?: Message<Code> }
+    ? { [Attribute in Exclude<SystemData, Own<N> | Extract<Rule, { kind: "system-data"; allow: readonly string[] }>["allow"][number]>]?: Message<Code> }
     : never;
 
 type Forbidden<Rule> = {
@@ -40,7 +40,9 @@ type Pinned<N extends Name, Rule> = {
   [R in Rule as R extends { kind: "required-attribute"; element: (typeof WRAPPERS)[N]["element"]; attribute: infer A extends string } ? A : never]: R extends {
     attribute: infer A extends string;
   }
-    ? Values<Rule, A>
+    ? [Values<Rule, A>] extends [never]
+      ? string
+      : Values<Rule, A>
     : never;
 };
 

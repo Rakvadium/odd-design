@@ -45,6 +45,16 @@ const places: Record<string, readonly (readonly [string, number, number, string]
     ["ODD-BADGE-003", 9, 33, "data-solid={false}"],
     ["ODD-BADGE-001", 10, 10, "className"],
   ],
+  "card.tsx": [
+    ["ODD-CARD-003", 14, 11, "interactive"],
+    ["ODD-CARD-003", 15, 5, "<Card>"],
+    ["ODD-CARD-003", 16, 11, "interactive"],
+    ["ODD-CARD-004", 17, 11, "onClick={open}"],
+    ["ODD-CARD-004", 17, 26, "tabIndex={0}"],
+    ["ODD-CARD-001", 18, 14, "className"],
+    ["ODD-CARD-003", 19, 11, "interactive"],
+    ["ODD-STATIC-001", 20, 11, "{...props}"],
+  ],
   "children-prop.tsx": [
     ["ODD-BUTTON-014", 5, 5, "<Button"],
     ["ODD-BUTTON-014", 6, 5, "<button"],

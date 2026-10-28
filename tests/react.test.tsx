@@ -8,6 +8,7 @@ import { Alert, AlertTitle } from "../src/react/alert.tsx";
 import { Avatar, AvatarGroup } from "../src/react/avatar.tsx";
 import { Badge } from "../src/react/badge.tsx";
 import { Button } from "../src/react/button.tsx";
+import { Card, CardFooter, CardLink } from "../src/react/card.tsx";
 import { Choice, Segmented, Switch } from "../src/react/choice.tsx";
 import { Field, FieldError, Hint, Input, Label, Select, Textarea } from "../src/react/field.tsx";
 import { Separator } from "../src/react/separator.tsx";
@@ -163,6 +164,16 @@ const markup: readonly [string, ReactElement, string][] = [
     </div>,
     '<div aria-busy="true"><span class="odd-visually-hidden">Loading decks…</span><div aria-hidden="true" class="odd-skeleton" data-shape="avatar"></div><div aria-hidden="true" style="inline-size:60%" class="odd-skeleton wide"></div></div>',
   ],
+  [
+    "interactive card with one link and a footer",
+    <Card interactive className="deck">
+      <h3 className="odd-card-title">
+        <CardLink href="/decks/ember">Ember Aggro</CardLink>
+      </h3>
+      <CardFooter>60 cards</CardFooter>
+    </Card>,
+    '<article class="odd-card deck" data-interactive=""><h3 class="odd-card-title"><a href="/decks/ember" class="odd-card-link">Ember Aggro</a></h3><div class="odd-card-footer">60 cards</div></article>',
+  ],
 ];
 
 describe("React markup", () => {
@@ -294,6 +305,9 @@ const failures: Record<string, { codes: string[]; text: string[] }> = {
   "skeleton-text": { codes: ["ODD-SKELETON-004"], text: [] },
   "skeleton-aria-busy": { codes: ["ODD-SKELETON-004"], text: [] },
   "skeleton-data-size": { codes: ["ODD-SKELETON-005"], text: [] },
+  "card-on-click": { codes: ["ODD-CARD-004"], text: [] },
+  "card-link-href": { codes: [], text: ["Property 'href' is missing"] },
+  "card-data-tone": { codes: ["ODD-CARD-006"], text: [] },
 };
 
 describe("React types", () => {

@@ -6,28 +6,6 @@ const meta = { title: "Components/Surfaces" } satisfies Meta;
 export default meta;
 type Story = StoryObj;
 
-export const Card: Story = {
-  render: () => /* html */ `<div style="display:grid; gap: var(--space-5); grid-template-columns: repeat(auto-fill, minmax(17rem, 1fr))">
-    <article class="odd-card">
-      <p class="odd-eyebrow">Static</p>
-      <h3 class="odd-card-title">Midnight Control</h3>
-      <p class="odd-muted">A slow, grindy list that wins on card advantage.</p>
-      <div class="odd-card-footer">
-        <span class="odd-badge" data-tone="success">Legal</span>
-        <span class="odd-badge">60 cards</span>
-      </div>
-    </article>
-    <article class="odd-card" data-interactive>
-      <p class="odd-eyebrow">Interactive</p>
-      <h3 class="odd-card-title"><a class="odd-card-link" href="#">Ember Aggro</a></h3>
-      <p class="odd-muted">The whole card is clickable. Screen readers hear a single link.</p>
-      <div class="odd-card-footer">
-        <span class="odd-badge" data-tone="warning">Rotating soon</span>
-      </div>
-    </article>
-  </div>`,
-};
-
 export const Dialog: Story = {
   parameters: {
     docs: {

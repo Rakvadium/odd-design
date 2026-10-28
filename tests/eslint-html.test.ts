@@ -183,6 +183,32 @@ const places: Record<string, readonly (readonly [string, number, number, string]
     ["ODD-SEPARATOR-003", 3, 27, "aria-hidden"],
   ],
   "odd-separator-004.bad.html": [["ODD-SEPARATOR-004", 2, 27, "data-tone"]],
+  "odd-card-001.bad.html": [
+    ["ODD-CARD-001", 2, 4, "class"],
+    ["ODD-CARD-001", 3, 4, "class"],
+    ["ODD-CARD-001", 4, 7, "class"],
+    ["ODD-CARD-001", 5, 9, "class"],
+  ],
+  "odd-card-002.bad.html": [["ODD-CARD-002", 2, 27, "data-interactive"]],
+  "odd-card-003.bad.html": [
+    ["ODD-CARD-003", 2, 27, "data-interactive"],
+    ["ODD-CARD-003", 3, 1, "<article"],
+    ["ODD-CARD-003", 4, 27, "data-interactive"],
+  ],
+  "odd-card-004.bad.html": [
+    ["ODD-CARD-004", 2, 27, "onclick"],
+    ["ODD-CARD-004", 2, 66, "tabindex"],
+  ],
+  "odd-card-005.bad.html": [["ODD-CARD-005", 2, 71, "<a"]],
+  "odd-card-006.bad.html": [
+    ["ODD-CARD-006", 2, 27, "data-tone"],
+    ["ODD-CARD-006", 3, 27, "data-interactiv"],
+  ],
+  "odd-card-007.bad.html": [
+    ["ODD-CARD-007", 3, 30, "data-size"],
+    ["ODD-CARD-007", 3, 90, "data-interactive"],
+    ["ODD-CARD-007", 4, 32, "data-tone"],
+  ],
   "odd-skeleton-001.bad.html": [["ODD-SKELETON-001", 2, 7, "class"]],
   "odd-skeleton-002.bad.html": [
     ["ODD-SKELETON-002", 2, 46, "data-shape"],
