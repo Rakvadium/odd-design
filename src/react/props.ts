@@ -12,6 +12,7 @@ import type { SeparatorProps } from "./separator.tsx";
 import type { SkeletonProps } from "./skeleton.tsx";
 import type { SliderProps } from "./slider.tsx";
 import type { TabsProps } from "./tabs.tsx";
+import type { ToasterProps } from "./toast.tsx";
 
 export type WrapperProps = {
   Button: ButtonProps;
@@ -41,4 +42,5 @@ export type WrapperProps = {
   Slider: SliderProps;
   Meter: MeterProps;
   Progress: ProgressProps;
+  Toaster: ToasterProps;
 };

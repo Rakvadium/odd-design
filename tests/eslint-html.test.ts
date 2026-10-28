@@ -235,6 +235,16 @@ const places: Record<string, readonly (readonly [string, number, number, string]
     ["ODD-METER-003", 2, 32, "data-size"],
     ["ODD-METER-003", 3, 38, "data-variant"],
   ],
+  "odd-toast-001.bad.html": [
+    ["ODD-TOAST-001", 2, 6, "class"],
+    ["ODD-TOAST-001", 3, 8, "class"],
+  ],
+  "odd-toast-002.bad.html": [
+    ["ODD-TOAST-002", 2, 1, "<section"],
+    ["ODD-TOAST-002", 3, 30, "popover"],
+  ],
+  "odd-toast-003.bad.html": [["ODD-TOAST-003", 2, 1, "<section"]],
+  "odd-toast-004.bad.html": [["ODD-TOAST-004", 2, 74, "data-tone"]],
   "odd-disclosure-001.bad.html": [
     ["ODD-DISCLOSURE-001", 2, 6, "class"],
     ["ODD-DISCLOSURE-001", 3, 10, "class"],
