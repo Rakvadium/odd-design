@@ -41,7 +41,7 @@ React writes no `autofocus` attribute. It calls `focus()` once when the button m
 
 Fails when a dialog class is on the wrong element. `odd-dialog` goes on `dialog`. `odd-dialog-body` goes on `div`, or on `form` to submit. `odd-dialog-title` goes on a heading, `h1` to `h6`. `odd-dialog-actions` goes on `div`.
 
-`odd-dialog` on a `div` is never hidden. It sits in the page at opacity 0, and its buttons still take focus. A `p` ends before its first heading, so the title inside a `p.odd-dialog-body` renders outside the body. A title that is not a heading drops out of heading navigation. The title rule also covers `odd-sheet` headers, which reuse the class.
+`odd-dialog` on a `div` is never hidden. It sits in the page at opacity 0, and its buttons still take focus. In HTML, a `p` ends before a heading, so the title inside a `p.odd-dialog-body` is parsed outside the body. React leaves it inside the `p`, where a heading is not allowed. A title that is not a heading drops out of heading navigation. The title rule also covers `odd-sheet` headers, which reuse the class.
 
 Move the class onto its element. In React, use `Dialog` and `DialogActions`.
 
@@ -67,7 +67,7 @@ Fails when `odd-dialog` has `open` in its markup.
 
 `open` shows the dialog without `showModal()`. The page behind it stays live, Escape does nothing, and focus is not trapped. In React, `open` sets the attribute and never calls `showModal()`, and the prop goes stale once the browser closes the dialog.
 
-Open it from a button with `commandfor` and `command="show-modal"`, or call `showModal()` on a `ref`. Read the close from `onClose`. In React, `open` on `Dialog` is a type error. The runtime checker ignores the `open` that `showModal()` writes.
+Open it from a button with `commandfor` and `command="show-modal"`, or call `showModal()` on a `ref`. Read the close from `onClose`. In React, `open` on `Dialog` is a type error. In browsers, which match `dialog:modal` after `showModal()`, the runtime checker ignores the `open` that `showModal()` writes. happy-dom does not match `:modal`, so `checkRoot` after `showModal()` there still reports ODD-DIALOG-004.
 
 ## ODD-DIALOG-005
 

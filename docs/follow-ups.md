@@ -136,6 +136,7 @@ Run with NVDA 2026.2, OneCore David, rate 50, in Chrome. The transcripts are in 
 - **A dialog whose safe choice is not first cannot set initial focus in React.** React writes no `autofocus`. The docs say to put the safe choice first. (React Dialog)
 - **A `Dialog` unmounted while modal, holding the toast stand-in, is unmeasured.** (React Dialog)
 - **The open dialog is unchecked by a screen reader.** NVDA and VoiceOver did not run. (React Dialog)
+- **happy-dom does not match `dialog:modal`.** `toUsageNode` keeps the `open` that `showModal()` writes there, so `checkRoot` after `showModal()` in a happy-dom test reports ODD-DIALOG-004 (measured with happy-dom 21). Browsers match `:modal` and drop it. (React Dialog)
 - **The Firefox hover-card test timed out once under full-suite load.** It passed alone. It predates this work, by inference. (React Tabs)
 - **React has no image fallback part.** `avatarFallback` replaces an avatar's children, and React throws `NotFoundError` from `removeChild` on its next render of them, then unmounts the root (measured in happy-dom). So `data-initials` on `Avatar` is a type error, and a React app writes its own `onError` fallback, as `docs/usage/react.md` shows. A shipped fallback would be a `"use client"` part with state, which the static mirror cannot show after the error. (React Avatar)
 - **No arrow on tooltips or popovers.** uvs-decks-gg's tooltip has one. An anchored arrow needs anchor functions on a pseudo-element; skipped for now. (step 2)

@@ -760,7 +760,7 @@ export const MESSAGES = {
   ),
   "ODD-DIALOG-001": text(
     "ODD-DIALOG-001",
-    "this dialog class is on the wrong element. odd-dialog on a div is never hidden. It sits in the page at opacity 0 and its buttons still take focus. A p ends before its first heading, so a title inside p.odd-dialog-body renders outside the body. A title that is not a heading drops out of heading navigation.",
+    "this dialog class is on the wrong element. odd-dialog on a div is never hidden. It sits in the page at opacity 0 and its buttons still take focus. In HTML a p ends before a heading, so a title inside p.odd-dialog-body is parsed outside the body. React leaves it inside the p, where a heading is not allowed. A title that is not a heading drops out of heading navigation.",
     "odd-dialog on dialog, odd-dialog-body on div, form, odd-dialog-title on h1, h2, h3, h4, h5, h6, odd-dialog-actions on div",
     "put odd-dialog on a dialog element, the body class on a div or a form, and the title class on a heading. In React, use Dialog and DialogActions.",
     "docs/usage/dialog.md#odd-dialog-001",

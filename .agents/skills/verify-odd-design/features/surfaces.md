@@ -43,7 +43,7 @@ In the same composed Storybook, open `http://127.0.0.1:6106/?path=/story/react_c
 
 In the same composed Storybook, open `http://127.0.0.1:6106/?path=/story/react_components-surfaces--dialog`. The preview is the Dialog story built from `Button`, `Dialog`, a `div.odd-dialog-body`, and `DialogActions`, with the same ids and text as `components-surfaces--dialog`. The browser owns the open state on both sides, so the Dialog open and close recipes above work on the React side too. Focus starts on `Close` on both sides, because `showModal()` focuses the first button and neither side writes `autofocus`.
 
-The pair sweep checks the closed story against the `aria` literal in `stories/mirrored/Dialog.stories.ts`, the one `button "Delete deck…"` line, because a closed dialog is `display: none`. The two screenshots are byte-identical. Closed parity cannot see the open state, so `bunx playwright test e2e/behavior.spec.ts --project firefox -g dialog` runs the backdrop test and the alert-dialog test once per Storybook.
+The pair sweep checks the closed story against the `aria` literal in `stories/mirrored/Dialog.stories.ts`, the one `button "Delete deck…"` line, because a closed dialog is `display: none`. The two screenshots are byte-identical. Closed parity cannot see the open state, so `bunx playwright test e2e/behavior.spec.ts --project firefox -g "closedby=any|alert dialog"` runs the backdrop test and the alert-dialog test once per Storybook.
 
 ## Gotchas
 
