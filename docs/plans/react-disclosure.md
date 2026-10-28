@@ -105,7 +105,7 @@ Each item is the default the build uses. Each one can be reversed after review.
 
 ## Capture the baseline (no source change)
 
-- [ ] Build both Storybooks from `6e49f4f` with `bun scripts/storybooks.ts .verify/disclosure/base-sb`, serve the build, and capture the HTML section with `bun scripts/capture-stories.ts <url>/html .verify/disclosure/base.json .verify/disclosure/base-shots`.
+- [x] Build both Storybooks from `6e49f4f` with `bun scripts/storybooks.ts .verify/disclosure/base-sb`, serve the build, and capture the HTML section with `bun scripts/capture-stories.ts <url>/html .verify/disclosure/base.json .verify/disclosure/base-shots`. Result: 86 captures in `base.json`.
 
 ## Build
 
@@ -127,7 +127,7 @@ Each commit ends with `bun run check`. The boxes under a commit name its extra c
 - [x] Create `stories/mirrored/Disclosure.stories.ts` with `title: "Components/Surfaces"` and the export `Disclosure`. The meta component description carries the story text.
 - [x] Remove the `Disclosure` export from `stories/Surfaces.stories.ts`. Add the id to the mirrored-ids pin in `tests/stories.test.ts`.
 - [x] Measure the `aria` literal in the built Firefox Storybook, then paste it. Result: in the built Firefox Storybook, the HTML and React sides give the planned tree, with U+2019 in the first question, and it equals the pasted literal. With one word changed in the literal, the sweep fails on that line.
-- [x] Check. `bunx playwright test e2e/usage.spec.ts --project firefox` passes with 0 diagnostics. Result: `bun run check` passes 510 tests. `usage.spec.ts` passes 2 of 2 with "60 stories, 0 diagnostics".
+- [x] Check. `bunx playwright test e2e/usage.spec.ts --project firefox` passes with 0 diagnostics. Result: `bun run check` passes 511 tests. `usage.spec.ts` passes 2 of 2 with "60 stories, 0 diagnostics".
 
 ### Commit 3. Docs, smoke, and the verify recipe
 
@@ -135,18 +135,18 @@ Each commit ends with `bun run check`. The boxes under a commit name its extra c
 - [x] Add `docs/usage/disclosure.md` to `REQUIRED` in `scripts/consumer-smoke.ts`. The clean app renders a `Disclosure`.
 - [x] Update `.agents/skills/verify-odd-design/features/surfaces.md`, which says Disclosure has no React wrapper, and its sidebar-order line.
 - [x] Add the follow-ups in Appendix D to `docs/follow-ups.md`.
-- [x] Check. `bun run check`, `bun run build`, and `bun scripts/consumer-smoke.ts` pass. Result: `bun run check` passes 510 tests. The build exits 0. The smoke exits 0, with zero clean-app findings in types, ESLint, and vitest, and `Disclosure` in the packed React exports.
+- [x] Check. `bun run check`, `bun run build`, and `bun scripts/consumer-smoke.ts` pass. Result: `bun run check` passes 511 tests. The build exits 0. The smoke exits 0, with zero clean-app findings in types, ESLint, and vitest, and `Disclosure` in the packed React exports.
 
 ## Verify on the real surface
 
-- [ ] Rebuild both Storybooks, capture the HTML section to `after.json`, and run `bun scripts/capture-stories.ts --diff .verify/disclosure/base.json .verify/disclosure/after.json`. Pass means `changed` lists only `components-surfaces--disclosure`, with no `png` or `aria` change.
-- [ ] Run `bun run test:browsers`. Pass means the Firefox and WebKit runs pass, the sweep reports 0 diagnostics, and axe reports 0 violations.
-- [ ] Drive the composed build per the verify-odd-design skill. Open `react_components-surfaces--disclosure` and `components-surfaces--disclosure` in `calm` light, `holoterminal` dark, and one more palette. Save each screenshot and `ariaSnapshot`. Confirm that the two sides look the same, and that a click on "Does it need JavaScript?" gives `[false, true, false]` on both sides.
+- [x] Rebuild both Storybooks, capture the HTML section to `after.json`, and run `bun scripts/capture-stories.ts --diff .verify/disclosure/base.json .verify/disclosure/after.json`. Pass means `changed` lists only `components-surfaces--disclosure`, with no `png` or `aria` change. Result: 2 changed (Disclosure light and dark, `dom` only), 0 removed, 0 added. The `dom` change is whitespace in the wrapper's inline `style`. The screenshots and aria trees are identical.
+- [x] Run `bun run test:browsers`. Pass means the Firefox and WebKit runs pass, the sweep reports 0 diagnostics, and axe reports 0 violations. Result: 46 passed, 2 skipped, at the branch tip. "60 stories, 0 diagnostics". 0 axe violations in Firefox and WebKit, both modes.
+- [x] Drive the composed build per the verify-odd-design skill. Open `react_components-surfaces--disclosure` and `components-surfaces--disclosure` in `calm` light, `holoterminal` dark, and one more palette. Save each screenshot and `ariaSnapshot`. Confirm that the two sides look the same, and that a click on "Does it need JavaScript?" gives `[false, true, false]` on both sides. Result: `.verify/disclosure/chrome-pair.ts` drove both sides of the built composed Storybook in Chrome 156, and the composed manager shows `react_components-surfaces--disclosure` with 3 disclosures. In `calm` light, `holoterminal` dark, and `bubblegum` `sorbet` dark, both sides read `[true, false, false]` before and `[false, true, false]` after a mouse click on "Does it need JavaScript?". The before screenshots, the after-click screenshots, and the aria trees are identical. The after-click shot waits for the `::details-content` block-size to reach its end state, because Chrome fires no `transitionend` for that pseudo-element.
 
 ## Review and open the PR
 
-- [ ] The `cursor grok-4.7` reviewer reads the diff against this plan. A fresh builder fixes each finding that blocks. Other findings go to `docs/follow-ups.md`.
-- [ ] Run `/deslop` and `/no-comments` over the diff.
+- [x] The `cursor grok-4.7` reviewer reads the diff against this plan. A fresh builder fixes each finding that blocks. Other findings go to `docs/follow-ups.md`. Result: the reviewer found three blocking holes in ESLint. A fresh builder fixed two. A child tag with a computed name now counts as unknown, and a spread with no written children no longer reports 002. Each fix has a test that fails without it. `dangerouslySetInnerHTML` and a JSX element in the `children` prop went to `docs/follow-ups.md`, because every kind that reads children shares them.
+- [x] Run `/deslop` and `/no-comments` over the diff. Result: nothing to remove. The only comment-like lines are the `expect:` directives the tests read.
 - [ ] Open the PR ready with `gh pr create --base main --repo Rakvadium/odd-design`. The title is `feat(react): add Disclosure and mirror it in the Storybooks`.
 - [ ] Run `gh pr checks`. The repo has no workflows, so expect "no checks reported". Report the PR as open. Do not merge.
 
