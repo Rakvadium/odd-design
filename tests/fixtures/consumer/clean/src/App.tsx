@@ -1,4 +1,4 @@
-import { Alert, AlertTitle, Avatar, AvatarGroup, Badge, Button, Card, CardFooter, CardLink, Choice, Disclosure, Field, Hint, Input, Label, Meter, Search, Separator, Skeleton, Slider, Switch, Tabs } from "odd-design/react";
+import { Alert, AlertTitle, Avatar, AvatarGroup, Badge, Button, Card, CardFooter, CardLink, Choice, Disclosure, Field, Hint, Input, Label, Meter, Search, Separator, Skeleton, Slider, Switch, Tabs, Toaster } from "odd-design/react";
 
 export function App() {
   return (
@@ -68,6 +68,7 @@ export function App() {
         <Meter id="actions" min={0} max={60} value={22} tone="info" />
       </div>
       <Button variant="primary">Save</Button>
+      <Toaster popover="manual" aria-label="Notifications" />
     </>
   );
 }

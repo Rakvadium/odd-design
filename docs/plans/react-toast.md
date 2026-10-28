@@ -187,11 +187,11 @@ Each commit ends with `bun run check`. The boxes under a commit name its extra c
 
 ### Commit 4. Docs, smoke, and the verify recipes
 
-- [ ] In `docs/usage/react.md`, add "Show a toast", the type-error rows, ODD-TOAST-001 in the "not type errors" paragraph, and `toast.tsx` in the directive paragraph. Add a Toast section to `docs/usage/eslint.md`. Update the README install sentence and the usage-contract list.
-- [ ] Add `toast.js` to `CLIENT_MODULES` and `docs/usage/toast.md` to `REQUIRED` in `scripts/consumer-smoke.ts`. The clean app renders a `Toaster`.
-- [ ] Update `.agents/skills/verify-odd-design/features/interactive.md`: the toast recipes on both sides, the new selectors, and the measured sidebar order.
-- [ ] Add the follow-ups in Appendix D to `docs/follow-ups.md`.
-- [ ] Check. `bun run check`, `bun run build`, and `bun scripts/consumer-smoke.ts` pass.
+- [x] In `docs/usage/react.md`, add "Show a toast", the type-error rows, ODD-TOAST-001 in the "not type errors" paragraph, and `toast.tsx` in the directive paragraph. Add a Toast section to `docs/usage/eslint.md`. Update the README install sentence and the usage-contract list. Result: "Show a toast" teaches the shell `Toaster`, `toast()` from any code, the throw with no `Toaster`, and the modal behavior. The table gains ODD-TOAST-004, children, the missing `popover` or `aria-label`, and a `popover` other than `manual`. `eslint.md` gains "Toaster from odd-design/react", with the spread warning. The README component row also names `Toaster`.
+- [x] Add `toast.js` to `CLIENT_MODULES` and `docs/usage/toast.md` to `REQUIRED` in `scripts/consumer-smoke.ts`. The clean app renders a `Toaster`. Result: the clean app renders `<Toaster popover="manual" aria-label="Notifications" />` last. The built `dist/react/toast.js` starts with `"use client"`.
+- [x] Update `.agents/skills/verify-odd-design/features/interactive.md`: the toast recipes on both sides, the new selectors, and the measured sidebar order. Result: the toast recipe waits until `[data-toast=saved]` has an `onclick` function. The modal recipe expects `#toast-settings .odd-toaster > ol` while open, and one `.odd-toaster` in `#storybook-root` holding the `ol` after Escape. A React Toast section points both recipes at the React side. The measured order in `index.json` is Menu, Tabs, Toast in HTML, and Tabs, Toast in React.
+- [x] Add the follow-ups in Appendix D to `docs/follow-ups.md`. Result: five lines, from Appendix D. The existing inert-toasts line now says the toasts move, not the region, and the Tabs-only preview line now names the toasters too.
+- [x] Check. `bun run check`, `bun run build`, and `bun scripts/consumer-smoke.ts` pass. Result: `bun run check` passes 580 tests, the build exits 0, and the smoke exits 0 with zero for its clean types, ESLint, and Vitest runs (`.verify/toast/build/check-c4.txt`, `build-c4.txt`, `smoke-c4.txt`).
 
 ## Verify on the real surface
 
