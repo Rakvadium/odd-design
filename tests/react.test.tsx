@@ -18,6 +18,7 @@ import { Meter, Progress } from "../src/react/meter.tsx";
 import { Popover } from "../src/react/popover.tsx";
 import { Search } from "../src/react/search.tsx";
 import { Separator } from "../src/react/separator.tsx";
+import { Sheet, SheetFooter, SheetHeader } from "../src/react/sheet.tsx";
 import { Skeleton } from "../src/react/skeleton.tsx";
 import { Slider } from "../src/react/slider.tsx";
 import { Tabs } from "../src/react/tabs.tsx";
@@ -250,6 +251,17 @@ const markup: readonly [string, ReactElement, string][] = [
       <DialogActions className="end" />
     </Dialog>,
     '<dialog id="confirm" aria-labelledby="confirm-title" closedby="any" class="odd-dialog wide"><h2 id="confirm-title">Delete deck?</h2><div class="odd-dialog-actions end"></div></dialog>',
+  ],
+  [
+    "sheet from the start edge around its header and footer",
+    <Sheet id="filters" side="start" aria-labelledby="filters-title" closedby="any" className="wide">
+      <SheetHeader>
+        <h2 className="odd-dialog-title" id="filters-title">Filters</h2>
+      </SheetHeader>
+      <div className="odd-sheet-body" />
+      <SheetFooter className="end" />
+    </Sheet>,
+    '<dialog id="filters" aria-labelledby="filters-title" closedby="any" class="odd-sheet wide" data-side="start"><div class="odd-sheet-header"><h2 class="odd-dialog-title" id="filters-title">Filters</h2></div><div class="odd-sheet-body"></div><div class="odd-sheet-footer end"></div></dialog>',
   ],
 ];
 
@@ -519,6 +531,12 @@ const failures: Record<string, { codes: string[]; text: string[] }> = {
   "dialog-alert-closedby": { codes: [], text: ["'\"any\"' is not assignable to type '\"closerequest\"'"] },
   "dialog-data-tone": { codes: ["ODD-DIALOG-007"], text: [] },
   "dialog-actions-data-tone": { codes: ["ODD-DIALOG-008"], text: [] },
+  "sheet-name": { codes: [], text: ["Property '\"aria-labelledby\"' is missing"] },
+  "sheet-side": { codes: [], text: ['"bottom" | "start" | "top" | undefined'] },
+  "sheet-data-side": { codes: [], text: ["not assignable to type 'undefined'"] },
+  "sheet-alert-closedby": { codes: [], text: ["'\"any\"' is not assignable to type '\"closerequest\"'"] },
+  "sheet-data-tone": { codes: ["ODD-SHEET-003"], text: [] },
+  "sheet-footer-data-variant": { codes: ["ODD-SHEET-003"], text: [] },
 };
 
 describe("React types", () => {

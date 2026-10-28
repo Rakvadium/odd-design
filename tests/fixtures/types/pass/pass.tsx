@@ -12,6 +12,7 @@ import { Meter, Progress, type MeterTone } from "../../../../src/react/meter.tsx
 import { Popover } from "../../../../src/react/popover.tsx";
 import { Search } from "../../../../src/react/search.tsx";
 import { Separator } from "../../../../src/react/separator.tsx";
+import { Sheet, SheetFooter, SheetHeader, type SheetProps } from "../../../../src/react/sheet.tsx";
 import { Skeleton } from "../../../../src/react/skeleton.tsx";
 import { Slider } from "../../../../src/react/slider.tsx";
 import { Tabs } from "../../../../src/react/tabs.tsx";
@@ -366,6 +367,26 @@ export function DeleteDeck({ title, onDelete }: { title: string; onDelete: () =>
           <DialogActions data-testid="actions" />
         </div>
       </Dialog>
+    </>
+  );
+}
+
+export function FilterSheet({ side, onApply }: { side: SheetProps["side"]; onApply: () => void }) {
+  const sheet = useRef<HTMLDialogElement>(null);
+  return (
+    <>
+      <Button commandfor="filters" command="show-modal">Filters</Button>
+      <Sheet ref={sheet} id="filters" side={side} aria-labelledby="filters-title" closedby="any" onClose={() => sheet.current?.returnValue === "apply" && onApply()} className="wide" data-testid="filters" data-state="open">
+        <SheetHeader>
+          <h2 className="odd-dialog-title" id="filters-title">Filters</h2>
+          <Button variant="ghost" iconOnly aria-label="Close" commandfor="filters" command="close">×</Button>
+        </SheetHeader>
+        <form className="odd-sheet-body" id="filters-form" method="dialog" />
+        <SheetFooter data-testid="footer">
+          <Button type="submit" form="filters-form" value="apply" variant="primary">Show 12 decks</Button>
+        </SheetFooter>
+      </Sheet>
+      <Sheet side="bottom" role="alertdialog" aria-label="Discard changes?" closedby="closerequest" onCancel={(event) => event.preventDefault()} />
     </>
   );
 }

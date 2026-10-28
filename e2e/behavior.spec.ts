@@ -170,22 +170,29 @@ test.describe("popovers and dialogs", () => {
     });
   }
 
-  test("sheets fill the edge they slide in from", async ({ page }, testInfo) => {
-    await openStory(page, "components-overlays--sheet", "mode:light");
-    const viewport = page.viewportSize()!;
-    for (const side of ["end", "start", "bottom"] as const) {
-      await page.locator(`button[commandfor="sheet-${side}"][command="show-modal"]`).click();
-      await page.waitForTimeout(500);
-      const r = await rect(page, `#sheet-${side}`);
-      if (side === "end") expect(Math.round(r.right)).toBe(viewport.width);
-      if (side === "start") expect(Math.round(r.left)).toBe(0);
-      if (side === "bottom") expect(Math.round(r.bottom)).toBe(viewport.height);
-      await expect(page.locator(`#sheet-${side} button[aria-label="Close"]`)).toBeFocused();
-      await shot(page, testInfo, `sheet-${side}.png`);
-      await page.keyboard.press("Escape");
-      await page.waitForTimeout(500);
-    }
-  });
+  for (const storybook of ["html", "react"] as const) {
+    test(`sheets fill the edge they slide in from and close on Escape or a backdrop click (${storybook})`, async ({ page }, testInfo) => {
+      await openStory(page, "components-overlays--sheet", "mode:light", "", storybook);
+      const viewport = page.viewportSize()!;
+      for (const side of ["end", "start", "bottom"] as const) {
+        const opener = page.locator(`button[commandfor="sheet-${side}"][command="show-modal"]`);
+        await opener.click();
+        await waitOpen(page, `#sheet-${side}`);
+        const r = await rect(page, `#sheet-${side}`);
+        if (side === "end") expect(Math.round(r.right)).toBe(viewport.width);
+        if (side === "start") expect(Math.round(r.left)).toBe(0);
+        if (side === "bottom") expect(Math.round(r.bottom)).toBe(viewport.height);
+        await expect(page.locator(`#sheet-${side} button[aria-label="Close"]`)).toBeFocused();
+        await shot(page, testInfo, `sheet-${side}-${storybook}.png`);
+        await page.keyboard.press("Escape");
+        await waitOpen(page, `#sheet-${side}`, false);
+      }
+      await page.locator('button[commandfor="sheet-end"][command="show-modal"]').click();
+      await waitOpen(page, "#sheet-end");
+      await page.mouse.click(10, 10);
+      await waitOpen(page, "#sheet-end", false);
+    });
+  }
 });
 
 test.describe("keyboard widgets", () => {

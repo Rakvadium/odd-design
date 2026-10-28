@@ -50,6 +50,22 @@ type Pinned<N extends Name, Rule> = {
     : never;
 };
 
+type Names<Rule> = Extract<Rule, { kind: "accessible-name" }> extends { names: readonly (infer Each extends string)[] } ? Each : never;
+
+export type Named<Rule> = { [Each in Names<Rule>]: { [Key in Each]: string } }[Names<Rule>];
+
+export type Exclusive<Rule> =
+  Extract<Rule, { kind: "forbidden-value" }> extends {
+    attribute: infer A extends string;
+    value: infer V;
+    when: { attribute: infer W extends string; value: infer X };
+  }
+    ? { [Key in A]?: Values<Rule, A> } & (
+        | ({ [Key in W]: X } & { [Key in A]?: Exclude<Values<Rule, A>, V> })
+        | { [Key in W]?: Exclude<Values<Rule, W>, X> }
+      )
+    : {};
+
 export type Contract<N extends Name, Rule> = DataProps<N, Rule> & RawData<N> & ForeignData<N, Rule> & Forbidden<N, Rule> & Pinned<N, Rule>;
 
 type Part = { [N in Name]: (typeof WRAPPERS)[N]["element"] extends string ? N : never }[Name];

@@ -214,6 +214,14 @@ The name rule is the `element` form of `accessible-name`. The `attribute` form r
 
 `<Dialog role="alertdialog" aria-label="Discard changes?" closedby="any">` reports `ODD-DIALOG-006` on `closedby`. That rule is the `forbidden-value` kind: one value of an attribute is wrong when another attribute holds a given value. It stays quiet when either value is computed.
 
+### Sheet from odd-design/react
+
+The plugin checks `Sheet` as a `dialog` with `odd-sheet`, and `SheetHeader` and `SheetFooter` as a `div` with `odd-sheet-header` and `odd-sheet-footer`, from their entries of `WRAPPERS`. `side` is read as `data-side`. A raw `data-side` gives nothing. `Sheet` sets that attribute from `side`, so it drops a raw one, and its type rejects one. Every other prop is the attribute with the same name. The body has no part, so the plugin checks the `odd-sheet-body` class where you write it.
+
+`odd-sheet` runs the same `ODD-DIALOG-002` to `006` rules as `odd-dialog`. So `<Sheet id="filters">` with no name reports `ODD-DIALOG-002`, `<Sheet aria-label="Filters" open>` reports `ODD-DIALOG-004`, and `<Sheet role="alertdialog" aria-label="Discard changes?" closedby="any">` reports `ODD-DIALOG-006`. A node with both `odd-dialog` and `odd-sheet` reports each of those once.
+
+`<Sheet aria-label="Filters" side="end">` and a raw `<dialog className="odd-sheet" data-side="left">` report `ODD-SHEET-002`. `<Sheet aria-label="Filters" data-tone="danger">` and `<SheetFooter data-tone="danger">` report `ODD-SHEET-003`. A raw `<div className="odd-sheet">` or `<header className="odd-sheet-header">` reports `ODD-SHEET-001`. A computed `side`, such as `<Sheet side={side}>`, gives the `ODD-STATIC-001` warning, the same as a computed `tone` on `Badge`.
+
 ### Other components
 
 The plugin cannot see what another component renders. A component with an `odd-` class, such as `<Link className="odd-button">`, gets one `ODD-STATIC-001` warning on the element and no button rules. An `odd-` class that is not in the registry still reports `ODD-CLASS-001`. `<UI.Button>`, with `UI` a namespace import, counts as another component.

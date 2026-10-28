@@ -52,7 +52,7 @@ test("each wrapper's enum data prop takes exactly the values its stylesheet styl
       ),
     );
   });
-  expect(compared.map(([attribute]) => attribute)).toEqual(["data-variant", "data-size", "data-tone", "data-tone", "data-size", "data-shape", "data-tone", "data-tone"]);
+  expect(compared.map(([attribute]) => attribute)).toEqual(["data-variant", "data-size", "data-tone", "data-tone", "data-size", "data-shape", "data-tone", "data-tone", "data-side"]);
   for (const [attribute, values, styled] of compared) expect([attribute, styled]).toEqual([attribute, values]);
   expect(read("components/button.css").includes(":disabled")).toBe(true);
 });
