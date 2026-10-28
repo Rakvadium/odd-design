@@ -174,10 +174,10 @@ Each commit ends with `bun run check`. The boxes under a commit name its extra c
 
 ### Commit 2. Mirror Table in the Storybooks
 
-- [ ] Create `stories/mirrored/Table.stories.ts` and remove `Table` from `stories/DataDisplay.stories.ts`. Add the preview line. Measure the `aria` literal in the built Firefox Storybook, then paste it.
-- [ ] Pin `components-data-display--table` in `tests/stories.test.ts`.
-- [ ] Loop the select-all test in `e2e/behavior.spec.ts` over `html` and `react`.
-- [ ] Check. `bunx playwright test e2e/usage.spec.ts e2e/behavior.spec.ts` passes in Firefox and WebKit with 0 diagnostics.
+- [x] Create `stories/mirrored/Table.stories.ts` and remove `Table` from `stories/DataDisplay.stories.ts`. Add the preview line. Measure the `aria` literal in the built Firefox Storybook, then paste it. Result: the scene is `TableWrap` with the region and name, `Table`, the native caption, a header row with the select-all box, three `TableSort` buttons, and two plain headers, four rows with a link and a `Badge`, and the `tfoot`. Row two uses `defaultChecked`. `DataDisplay.stories.ts` keeps `AvatarFallback` and drops its `enhanceSelectAll` import. The HTML preview runs `enhanceSelectAll` on `table:has([data-select-all])` beside tabs, toasters, and menus. Both sides give the same snapshot in Firefox, with `checkbox "Select all decks" [checked=mixed]`, and it equals the literal in the story line for line (`.verify/table/build/aria-c2-firefox.txt`, from `build/measure/aria.spec.ts`).
+- [x] Pin `components-data-display--table` in `tests/stories.test.ts`. Result: the pins end with the id, and it passes the HTML-equals-React and `checkRoot` loops.
+- [x] Loop the select-all test in `e2e/behavior.spec.ts` over `html` and `react`. Result: one loop over both Storybooks. The steps and expected states are unchanged, and both sides pass them in both engines.
+- [x] Check. `bunx playwright test e2e/usage.spec.ts e2e/behavior.spec.ts` passes in Firefox and WebKit with 0 diagnostics. Result: `bun run check` passes 663 tests (`.verify/table/build/check-commit2.txt`). Against `build/sb-c2`, served by `python -m http.server 6771` and run from `build/pw.config.ts`, 64 passed and 2 skipped, the WebKit usage sweep and sidebar test, which run in Firefox only. Firefox reports "71 stories, 0 diagnostics", and the four select-all tests pass (`browsers-c2.txt`).
 
 ### Commit 3. Docs, smoke, and the verify recipe
 

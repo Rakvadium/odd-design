@@ -306,23 +306,25 @@ test.describe("keyboard widgets", () => {
     expect(errors.map((error) => error.message)).toEqual([]);
   });
 
-  test("select-all checks every row, shows mixed, and clears", async ({ page }) => {
-    await openStory(page, "components-data-display--table", "mode:light");
-    const all = page.locator("[data-select-all]");
-    const state = () =>
-      page.evaluate(() => {
-        const a = document.querySelector<HTMLInputElement>("[data-select-all]")!;
-        return { all: a.checked, mixed: a.indeterminate, rows: [...document.querySelectorAll<HTMLInputElement>("tbody input")].map((c) => c.checked) };
-      });
-    expect(await state()).toEqual({ all: false, mixed: true, rows: [false, true, false, false] });
-    await all.click();
-    expect(await state()).toEqual({ all: true, mixed: false, rows: [true, true, true, true] });
-    await page.locator('input[aria-label="Select Tidecaller"]').click();
-    expect((await state()).mixed).toBe(true);
-    await all.click();
-    await all.click();
-    expect(await state()).toEqual({ all: false, mixed: false, rows: [false, false, false, false] });
-  });
+  for (const storybook of ["html", "react"] as const) {
+    test(`select-all checks every row, shows mixed, and clears (${storybook})`, async ({ page }) => {
+      await openStory(page, "components-data-display--table", "mode:light", "", storybook);
+      const all = page.locator("[data-select-all]");
+      const state = () =>
+        page.evaluate(() => {
+          const a = document.querySelector<HTMLInputElement>("[data-select-all]")!;
+          return { all: a.checked, mixed: a.indeterminate, rows: [...document.querySelectorAll<HTMLInputElement>("tbody input")].map((c) => c.checked) };
+        });
+      expect(await state()).toEqual({ all: false, mixed: true, rows: [false, true, false, false] });
+      await all.click();
+      expect(await state()).toEqual({ all: true, mixed: false, rows: [true, true, true, true] });
+      await page.locator('input[aria-label="Select Tidecaller"]').click();
+      expect((await state()).mixed).toBe(true);
+      await all.click();
+      await all.click();
+      expect(await state()).toEqual({ all: false, mixed: false, rows: [false, false, false, false] });
+    });
+  }
 
   test("a broken avatar image falls back to its initials and keeps its name", async ({ page }) => {
     await openStory(page, "components-data-display--avatar-fallback", "mode:light");
