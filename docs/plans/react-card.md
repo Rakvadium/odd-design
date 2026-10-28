@@ -50,7 +50,7 @@ Each rule comes from `card.css`, a story, the README row, or a mistake an agent 
 | `ODD-CARD-002` | `card`, `boolean-attribute` on `data-interactive` (`""`, `true`) | `data-interactive="false"` | `card.css` reads presence, so `"false"` still stretches the link. Measured in Firefox and WebKit | `interactive?: boolean`. `lower` drops `false` |
 | `ODD-CARD-003` | `card`, new kind `stretched-link` | An interactive card does not hold exactly one `a` or `button`, its `.odd-card-link`. Or a static card holds a `.odd-card-link` | `card.css:24-46`. Each failure was measured with `elementFromPoint` in the built Storybook: a plain `a` does not click the card, a footer button under the stretch cannot be clicked, and a card link in a static card has no focus outline in Firefox | Not a type error. Children are `ReactNode` |
 | `ODD-CARD-004` | `card`, `forbidden-attribute` on `onClick`, `onclick`, `tabIndex`, `tabindex` | The card itself is made a control | The `card.css` header says screen readers hear one link, not the card's content. `<Card onClick>` is the MUI `CardActionArea` habit, a guess with no eval | Each name is the 004 message |
-| `ODD-CARD-005` | `cardLink`, `required-attribute` `a`/`href` | `a.odd-card-link` has no `href` | An anchor with no `href` takes no focus and has no link role. Button's 009 precedent | `href: string`, hand-written |
+| `ODD-CARD-005` | `cardLink`, `required-attribute` `a`/`href` | `a.odd-card-link` has no `href` | An anchor with no `href` takes no focus and has no link role. Button's 009 precedent | `href: string`, required through `Pinned` |
 | `ODD-CARD-006` | `card`, `system-data` with `allow: ["data-span"]` | The card has a foreign system `data-*`, such as `data-tone`, or a near miss such as `data-interactiv` | Both pass every checker today. `data-span` is grid placement from `shell.css` that Layout writes on cards | Each foreign name except `data-span` is the 006 message |
 | `ODD-CARD-007` | `system-data` in `cardTitle`, `cardLink`, and `cardFooter` | A sub-part has a system `data-*`, such as `data-interactive` on the link | `data-interactive` belongs on the card. The `alertTitle` precedent | `CardLink` and `CardFooter` type each name as the 007 message |
 
@@ -70,17 +70,11 @@ CardLink: { source: "odd-design/react", className: "odd-card-link", props: {}, e
 CardFooter: { source: "odd-design/react", className: "odd-card-footer", props: {}, element: "div" },
 ```
 
-`src/react/card.tsx` is the README recipe three times. `CardLink` adds one line, because `Pinned` types a required attribute from its enum values, and `href` has none, so it comes out `never`.
+`src/react/card.tsx` is the README recipe three times. `Pinned` used to type a required attribute with no enum values as `never`, which would have made `href` on `CardLink` impossible to pass. `Pinned` now falls back to `string` in that case. `CardLink`'s `href` is the only attribute it affects.
 
-```tsx
-interface CardLinkContract extends Omit<Contract<"CardLink", CardLinkRule>, "href"> {
-  href: string;
-}
-```
+Shared modules change in three places, by a few lines each. They are the two changes below and the `Pinned` fallback above.
 
-Two shared modules change, by a few lines each.
-
-1. `UsageRule` gains `{ kind: "stretched-link"; code; attribute; className; controls }`, and `check.ts` gains its `apply` case. The case runs only when the card's `data-interactive` value is legal or absent, so `"false"` reports 002 alone. It walks the children both adapters already pass. It stops at a nested `odd-card`, so an inner card's link does not count for the outer one. A computed child makes the subtree unknown. Then a missing link stays silent, and a second control or a card link in a static card still fails, because those are certain.
+1. `UsageRule` gains `{ kind: "stretched-link"; code; attribute; className; controls }`, and `check.ts` gains its `apply` case. The case runs only when the card's `data-interactive` value is legal or absent, so `"false"` reports 002 alone. It walks the children both adapters already pass. It stops at a nested `odd-card`, so an inner card's link does not count for the outer one. A computed child makes the subtree unknown. Then a missing link stays silent. A second control, or a link or button that is not the card link, still fails, because those are certain. A card link in a card with no `data-interactive` fails only when the card has no spread that could carry the attribute.
 2. The `system-data` kind gains an optional `allow` list. `systemDataFindings` skips those names, and `ForeignData` in `part.ts` excludes them. No other part sets `allow`, so their types do not change. `data-span` does not join the global allowlist, because Badge must still reject it.
 
 `jsx.ts`, `html.ts`, `dom.ts`, `mirror.ts`, and `mirror-react.ts` do not change.
@@ -153,9 +147,9 @@ Each commit ends with `bun run check`. The boxes under a commit name its extra c
 
 ## Verify on the real surface
 
-- [ ] Rebuild both Storybooks, capture the HTML section to `after.json`, and run `bun scripts/capture-stories.ts --diff .verify/card/base.json .verify/card/after.json`. Pass means `changed` lists only `components-surfaces--card` and `components-feedback--skeleton`, with no `png` or `aria` change, and nothing else moves.
-- [ ] Run `bun run test:browsers`. Pass means the Firefox and WebKit runs pass, the sweep reports 0 diagnostics, and axe reports 0 violations.
-- [ ] Drive the composed build per the verify-odd-design skill. Open `react_components-surfaces--card` and `components-surfaces--card` in `calm` light, `holoterminal` dark, and one more palette. Save each screenshot and `ariaSnapshot`. Confirm that the two sides look the same, the tree has one link, "Ember Aggro", and a click on the interactive card's body lands on the link.
+- [x] Rebuild both Storybooks, capture the HTML section to `after.json`, and run `bun scripts/capture-stories.ts --diff .verify/card/base.json .verify/card/after.json`. Pass means `changed` lists only `components-surfaces--card` and `components-feedback--skeleton`, with no `png` or `aria` change, and nothing else moves. Result: 2 changed (Card light and dark, `dom` only), 0 removed, 0 added. The `dom` change is whitespace in the grid wrapper's inline `style`. Skeleton did not change, because its HTML is byte-identical.
+- [x] Run `bun run test:browsers`. Pass means the Firefox and WebKit runs pass, the sweep reports 0 diagnostics, and axe reports 0 violations. Result: 46 passed, 2 skipped. "59 stories, 0 diagnostics". 0 axe violations in Firefox and WebKit, both modes.
+- [x] Drive the composed build per the verify-odd-design skill. Open `react_components-surfaces--card` and `components-surfaces--card` in `calm` light, `holoterminal` dark, and one more palette. Save each screenshot and `ariaSnapshot`. Confirm that the two sides look the same, the tree has one link, "Ember Aggro", and a click on the interactive card's body lands on the link. Result: `.verify/card/chrome-pair.ts` drove both sides of the built composed Storybook in Chrome, and the composed manager shows `react_components-surfaces--card` with one card link. `calm` light, `holoterminal` dark, and `bubblegum` `sorbet` dark each gave byte-identical screenshots and the same aria tree, with one link, "Ember Aggro". On both sides, the point at the center of the interactive card's body text belongs to that link, and a mouse click there follows it. A click on the static card's body does not navigate.
 
 ## Review and open the PR
 
@@ -208,8 +202,8 @@ These files are local scratch under the gitignored `.verify/card/` folder of thi
 
 - **Nothing checks a card link outside any card.** No adapter passes a parent. The static-card half of 003 covers a link inside a card that is not interactive.
 - **An `<a>` wrapped around a card and a skipped heading level stay unchecked.** Neither shows on the card node.
-- **A spread or a computed child silences part of 003.** The missing-link check stays silent when the subtree is opaque.
-- **`Pinned` types a required attribute with no enum as `never`.** `CardLink` works around it with one line. A follow-up could type it as `string` in `part.ts`. This PR fixed it, so `Pinned` now falls back to `string`.
+- **A spread or a computed child silences part of 003.** The missing-link check stays silent when the subtree is opaque, and the static-card check stays silent when the card has a spread.
+- **`Pinned` typed a required attribute with no enum as `never`.** This PR fixed it, so `Pinned` now falls back to `string`.
 - **The runtime observer watches insertions only.** Toggling `interactive` on a mounted card is not rechecked.
 - **004 also bans click delegation on the card.** `onClickCapture` still works.
 - **Showcase sets `--gap` on cards that do not read it.**
