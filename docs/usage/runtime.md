@@ -12,7 +12,7 @@ import { installUsageChecker } from "odd-design/usage";
 installUsageChecker("dev");
 ```
 
-The checker watches `document` for added elements. When an element is added, the checker checks that element and every element inside it, then writes each problem to `console.error`. It reads the attributes at that moment. The message starts with the code, such as `ODD-BUTTON-007`, and it includes the fix. `createToaster().show()` adds the action button and the dismiss button inside the toast, so both buttons are part of the added element.
+The checker watches `document` for added elements. When an element is added, the checker checks that element and every element inside it, then writes each problem to `console.error`. It reads the attributes at that moment. The message starts with the code, such as `ODD-BUTTON-007`, and it includes the fix. `toast()` adds the action button and the dismiss button inside the toast, so both buttons are part of the added element.
 
 Dev mode does not watch attribute changes. A `disabled` attribute set after the added-element report does not produce another log. `flush` reports added elements the observer has not reported yet, using the attributes at the time of the call, and `flush` does not throw.
 

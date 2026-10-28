@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/html-vite";
-import { createToaster, enhanceMenu, type Toaster } from "../src/js/enhance.ts";
+import { enhanceMenu, enhanceToaster, toast } from "../src/js/enhance.ts";
 import { icons } from "./icons.ts";
 
 const meta = {
@@ -71,14 +71,12 @@ export const Menu: Story = {
     ),
 };
 
-let toaster: Toaster | undefined;
-
 export const Toast: Story = {
   parameters: {
     docs: {
       description: {
         story:
-          "`createToaster()` adds one polite live region per page. Toasts pause while hovered or focused, keep at most three, and leave after six seconds. The danger toast stays until dismissed. Save inside Settings shows a toast above the open modal dialog.",
+          "A `section.odd-toaster` with `popover=\"manual\"` and an `aria-label`, wired by `enhanceToaster`, is the one polite live region per page, and `toast()` shows a toast on it. Toasts pause while hovered or focused, keep at most three, and leave after six seconds. The danger toast stays until dismissed. Save inside Settings shows a toast above the open modal dialog.",
       },
     },
   },
@@ -99,17 +97,17 @@ export const Toast: Story = {
             <button class="odd-button" data-variant="primary" data-toast="saved">Save</button>
           </div>
         </div>
-      </dialog>`,
+      </dialog>
+      <section class="odd-toaster" popover="manual" aria-label="Notifications"></section>`,
       (root) => {
-        toaster?.destroy();
-        const t = (toaster = createToaster());
+        enhanceToaster(root.querySelector<HTMLElement>(".odd-toaster")!);
         root.addEventListener("click", (event) => {
           const kind = (event.target as Element).closest<HTMLElement>("[data-toast]")?.dataset.toast;
-          if (kind === "saved") t.show({ title: "Deck saved", description: "Midnight Control, version 15.", tone: "success" });
+          if (kind === "saved") toast({ title: "Deck saved", description: "Midnight Control, version 15.", tone: "success" });
           if (kind === "undo")
-            t.show({ title: "Removed “Ember Drake”", action: { label: "Undo", onClick: () => t.show({ title: "Card restored", tone: "info" }) } });
+            toast({ title: "Removed “Ember Drake”", action: { label: "Undo", onClick: () => toast({ title: "Card restored", tone: "info" }) } });
           if (kind === "error")
-            t.show({ title: "Couldn’t sync", description: "Check your connection. Your changes are safe on this device.", tone: "danger", duration: Infinity });
+            toast({ title: "Couldn’t sync", description: "Check your connection. Your changes are safe on this device.", tone: "danger", duration: Infinity });
         });
       },
     ),

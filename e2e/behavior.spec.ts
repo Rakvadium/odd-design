@@ -245,18 +245,20 @@ test.describe("keyboard widgets", () => {
     });
   }
 
-  test("a toast shown over a modal dialog is clickable and the region moves back after", async ({ page }) => {
+  test("a toast shown over a modal dialog is clickable and the list comes home after", async ({ page }) => {
     await openStory(page, "components-interactive--toast", "mode:light");
     await page.locator('button[commandfor="toast-settings"][command="show-modal"]').click();
     await page.waitForTimeout(300);
     await page.locator("#toast-settings [data-toast=saved]").click();
+    await expect(page.locator("#toast-settings .odd-toast"), "the toast shows inside the modal").toHaveCount(1);
     const dismiss = page.locator('.odd-toast button[aria-label^="Dismiss"]');
     await expect(dismiss).toBeVisible();
     await dismiss.click();
     await expect(page.locator(".odd-toast")).toHaveCount(0);
     expect(await isOpen(page, "#toast-settings"), "the dialog stays open").toBe(true);
     await page.keyboard.press("Escape");
-    await expect.poll(() => page.locator(".odd-toaster").evaluate((el) => el.parentElement!.tagName)).toBe("BODY");
+    await expect(page.locator(".odd-toaster"), "the stand-in is gone").toHaveCount(1);
+    await expect(page.locator(".odd-toaster > ol"), "the region holds the list again").toHaveCount(1);
   });
 
   // NVDA read the old markup as "Deck savedMidnight Control, version 15. Dismiss: Deck saved": the

@@ -4,6 +4,7 @@ import { enhanceMenu } from "./menu.ts";
 import { enhanceRangeField } from "./range-field.ts";
 import { enhanceStepper } from "./stepper.ts";
 import { enhanceTabs } from "./tabs.ts";
+import { enhanceToaster } from "./toast.ts";
 
 export { closedByFallback, interestForFallback, supportsClosedBy, supportsInterestFor } from "./fallbacks.ts";
 export { appendLogLine, enhanceLog, type LogLineOptions, type LogTone } from "./log.ts";
@@ -11,7 +12,7 @@ export { enhanceMenu } from "./menu.ts";
 export { enhanceRangeField, type RangeFieldOptions } from "./range-field.ts";
 export { enhanceStepper } from "./stepper.ts";
 export { enhanceTabs } from "./tabs.ts";
-export { createToaster, type Toaster, type ToastOptions, type ToastTone } from "./toast.ts";
+export { enhanceToaster, toast, type ToastOptions, type ToastTone } from "./toast.ts";
 export { roving, type RovingOptions } from "./roving.ts";
 
 /**
@@ -77,15 +78,16 @@ export function enhanceSelectAll(table: HTMLTableElement): () => void {
 }
 
 /**
- * Wires every behavior under root: menus (.odd-menu[role="menu"]), tab sets (.odd-tabs), steppers
- * (.odd-stepper), range fields (.odd-range-field), logs (.odd-log), select-all tables, avatar
- * fallbacks, and the interestfor and closedby fallbacks. Elements added later need their own
+ * Wires every behavior under root: menus (.odd-menu[role="menu"]), tab sets (.odd-tabs), toasters
+ * (.odd-toaster), steppers (.odd-stepper), range fields (.odd-range-field), logs (.odd-log),
+ * select-all tables, avatar fallbacks, and the interestfor and closedby fallbacks. Elements added later need their own
  * enhance* call. Returns one cleanup function for everything.
  */
 export function enhance(root: Document | HTMLElement = document): () => void {
   const cleanups = [
     ...[...root.querySelectorAll<HTMLElement>('.odd-menu[role="menu"]')].map(enhanceMenu),
     ...[...root.querySelectorAll<HTMLElement>(".odd-tabs")].map(enhanceTabs),
+    ...[...root.querySelectorAll<HTMLElement>(".odd-toaster")].map(enhanceToaster),
     ...[...root.querySelectorAll<HTMLElement>(".odd-stepper")].map(enhanceStepper),
     ...[...root.querySelectorAll<HTMLElement>(".odd-range-field")].map((field) => enhanceRangeField(field)),
     ...[...root.querySelectorAll<HTMLElement>(".odd-log")].map(enhanceLog),
