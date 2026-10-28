@@ -478,7 +478,7 @@ describe("Menu", () => {
 });
 
 describe("Table", () => {
-  test("select-all reaches React onChange once per changed row under StrictMode beside an app's enhance(), resyncs after React changes the rows, and finds a header box rendered after mount", async () => {
+  test("select-all reaches React onChange once per changed row under StrictMode beside an app's enhance(), leaves a row that cancels its click, resyncs after React changes the rows, and finds a header box rendered after mount", async () => {
     const host = document.createElement("div");
     document.body.append(host);
     const root = createRoot(host);
@@ -520,6 +520,11 @@ describe("Table", () => {
                   </td>
                 </tr>
               ))}
+              <tr onClick={(event) => event.preventDefault()}>
+                <td>
+                  <input type="checkbox" aria-label="locked" />
+                </td>
+              </tr>
             </tbody>
           </Table>
         </>
@@ -536,14 +541,14 @@ describe("Table", () => {
     const all = () => host.querySelector<HTMLInputElement>("[data-select-all]")!;
     const press = (label: string) => act(async () => [...host.querySelectorAll("button")].find((button) => button.textContent === label)!.click());
     const state = () => [[...host.querySelectorAll<HTMLInputElement>("tbody input")].map((row) => row.checked), all().indeterminate ? "mixed" : all().checked ? "checked" : "unchecked"];
-    expect(state()).toEqual([[false, true, false], "mixed"]);
+    expect(state()).toEqual([[false, true, false, false], "mixed"]);
     await act(async () => all().click());
-    expect([changed, ...state()]).toEqual([["a", "c"], [true, true, true], "checked"]);
+    expect([changed, ...state()]).toEqual([["a", "c"], [true, true, true, false], "mixed"]);
     await press("Clear");
-    expect(state()).toEqual([[false, false, false], "unchecked"]);
+    expect(state()).toEqual([[false, false, false, false], "unchecked"]);
     await press("Replace");
     await act(async () => all().click());
-    expect([changed, ...state()]).toEqual([["a", "c", "a", "b", "c"], [true, true, true], "checked"]);
+    expect([changed, ...state()]).toEqual([["a", "c", "a", "b", "c"], [true, true, true, false], "mixed"]);
     unwire();
   });
 });

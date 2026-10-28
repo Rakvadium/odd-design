@@ -44,36 +44,58 @@ export function avatarFallback(root: Document | HTMLElement = document): () => v
   return () => root.removeEventListener("error", onError, true);
 }
 
+const selectAllHolders = new WeakMap<HTMLTableElement, { count: number; stop: () => void }>();
+
 /**
  * Table select-all: <th><input type="checkbox" data-select-all aria-label="Select all decks"></th>
  * Checking it checks every row; checking rows updates it to checked, unchecked, or mixed.
  * It clicks each row it changes, so the row fires click, input, and change as if the user had
  * clicked it, and React's onChange sees it. The header box is looked up on every change, so one
  * mounted or replaced later is found.
+ * A table is wired once however many callers enhance it, and its listener goes when the last caller
+ * cleans up. Every call syncs the header box with the rows.
  */
 export function enhanceSelectAll(table: HTMLTableElement): () => void {
-  const header = () => table.querySelector<HTMLInputElement>('thead input[type="checkbox"][data-select-all]');
-  const rows = () => [...table.querySelectorAll<HTMLInputElement>('tbody input[type="checkbox"]:not(:disabled)')];
-
-  const sync = () => {
-    const all = header();
-    if (!all) return;
-    const list = rows();
-    const checked = list.filter((c) => c.checked).length;
-    all.checked = list.length > 0 && checked === list.length;
-    all.indeterminate = checked > 0 && checked < list.length;
+  let hold = selectAllHolders.get(table);
+  if (hold === undefined) {
+    hold = { count: 0, stop: wireSelectAll(table) };
+    selectAllHolders.set(table, hold);
+  }
+  hold.count++;
+  syncSelectAll(table);
+  let released = false;
+  return () => {
+    if (released) return;
+    released = true;
+    if (--hold.count > 0) return;
+    hold.stop();
+    selectAllHolders.delete(table);
   };
+}
+
+const selectAllHeader = (table: HTMLTableElement) => table.querySelector<HTMLInputElement>('thead input[type="checkbox"][data-select-all]');
+const selectAllRows = (table: HTMLTableElement) => [...table.querySelectorAll<HTMLInputElement>('tbody input[type="checkbox"]:not(:disabled)')];
+
+function syncSelectAll(table: HTMLTableElement): void {
+  const all = selectAllHeader(table);
+  if (!all) return;
+  const list = selectAllRows(table);
+  const checked = list.filter((c) => c.checked).length;
+  all.checked = list.length > 0 && checked === list.length;
+  all.indeterminate = checked > 0 && checked < list.length;
+}
+
+function wireSelectAll(table: HTMLTableElement): () => void {
   const onChange = (event: Event) => {
-    const all = header();
+    const all = selectAllHeader(table);
     if (all && event.target === all) {
       // Read once: each row's change event re-enters this handler and re-syncs `all` mid-loop.
       const checked = all.checked;
-      for (const row of rows()) if (row.checked !== checked) row.click();
+      for (const row of selectAllRows(table)) if (row.checked !== checked) row.click();
     }
-    sync();
+    syncSelectAll(table);
   };
   table.addEventListener("change", onChange);
-  sync();
   return () => table.removeEventListener("change", onChange);
 }
 
