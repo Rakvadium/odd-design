@@ -1,5 +1,5 @@
 /*
- * Toasts, built and placed by createToaster() in src/js/toast.ts. The region is a manual popover in
+ * Toasts, built by enhanceToaster() and toast() in src/js/toast.ts. The region is a manual popover in
  * the bottom inline-end corner. It lets clicks through between toasts and stacks the newest last.
  * Tone shows as a dot beside the title; the text is always --overlay-foreground.
  */

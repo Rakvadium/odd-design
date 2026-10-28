@@ -12,3 +12,4 @@ export * from "./separator.tsx";
 export * from "./skeleton.tsx";
 export * from "./slider.tsx";
 export * from "./tabs.tsx";
+export * from "./toast.tsx";

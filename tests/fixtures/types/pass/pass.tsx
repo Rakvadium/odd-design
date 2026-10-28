@@ -13,6 +13,7 @@ import { Separator } from "../../../../src/react/separator.tsx";
 import { Skeleton } from "../../../../src/react/skeleton.tsx";
 import { Slider } from "../../../../src/react/slider.tsx";
 import { Tabs } from "../../../../src/react/tabs.tsx";
+import { Toaster } from "../../../../src/react/toast.tsx";
 
 function save(event: MouseEvent<HTMLButtonElement>): void {
   event.currentTarget.blur();
@@ -253,6 +254,11 @@ export function SeasonTabs() {
       </div>
     </Tabs>
   );
+}
+
+export function Toasts() {
+  const region = useRef<HTMLElement>(null);
+  return <Toaster ref={region} id="toasts" className="toasts" popover="manual" aria-label="Notifications" />;
 }
 
 export function CardFilter() {

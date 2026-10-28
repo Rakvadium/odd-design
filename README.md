@@ -31,7 +31,7 @@ Install the package.
 bun add odd-design
 ```
 
-The stylesheet, `odd-design/appearance`, `odd-design/enhance`, and `odd-design/palette` need nothing else. Install React 19 when you render `Button`, the Field parts, the Choice parts, `Badge`, the Alert parts, the Avatar parts, `Separator`, `Skeleton`, the Card parts, `Disclosure`, `Tabs`, `Search`, `Slider`, `Meter`, or `Progress`. React is an optional peer dependency.
+The stylesheet, `odd-design/appearance`, `odd-design/enhance`, and `odd-design/palette` need nothing else. Install React 19 when you render `Button`, the Field parts, the Choice parts, `Badge`, the Alert parts, the Avatar parts, `Separator`, `Skeleton`, the Card parts, `Disclosure`, `Tabs`, `Search`, `Slider`, `Meter`, `Progress`, or `Toaster`. React is an optional peer dependency.
 
 ```sh
 bun add react@^19 react-dom@^19
@@ -108,7 +108,7 @@ bun .agents/skills/verify-odd-design/scripts/ctl.ts axe --run a11y    # every st
 
 ## Usage checks
 
-The package ships the button, field, choice, badge, alert, avatar, separator, skeleton, card, disclosure, tabs, search, slider, and meter usage contracts and one message per pinned code. Each message names the code, the failure, and the fix. Types, ESLint, and the runtime checker report the same codes. The pages under [docs/usage/](docs/usage/) record the rules. Button codes are in [Button usage rules](docs/usage/button.md). Field codes are in [Field usage rules](docs/usage/field.md). Choice codes are in [Choice usage rules](docs/usage/choice.md). Badge codes are in [Badge usage rules](docs/usage/badge.md). Alert codes are in [Alert usage rules](docs/usage/alert.md). Avatar codes are in [Avatar usage rules](docs/usage/avatar.md). Separator codes are in [Separator usage rules](docs/usage/separator.md). Skeleton codes are in [Skeleton usage rules](docs/usage/skeleton.md). Card codes are in [Card usage rules](docs/usage/card.md). Disclosure codes are in [Disclosure usage rules](docs/usage/disclosure.md). Tabs codes are in [Tabs usage rules](docs/usage/tabs.md). Search codes are in [Search usage rules](docs/usage/search.md). Slider codes are in [Slider usage rules](docs/usage/slider.md). Meter and progress codes are in [Meter usage rules](docs/usage/meter.md). Class and static codes are in [General usage rules](docs/usage/general.md).
+The package ships the button, field, choice, badge, alert, avatar, separator, skeleton, card, disclosure, tabs, search, slider, meter, and toast usage contracts and one message per pinned code. Each message names the code, the failure, and the fix. Types, ESLint, and the runtime checker report the same codes. The pages under [docs/usage/](docs/usage/) record the rules. Button codes are in [Button usage rules](docs/usage/button.md). Field codes are in [Field usage rules](docs/usage/field.md). Choice codes are in [Choice usage rules](docs/usage/choice.md). Badge codes are in [Badge usage rules](docs/usage/badge.md). Alert codes are in [Alert usage rules](docs/usage/alert.md). Avatar codes are in [Avatar usage rules](docs/usage/avatar.md). Separator codes are in [Separator usage rules](docs/usage/separator.md). Skeleton codes are in [Skeleton usage rules](docs/usage/skeleton.md). Card codes are in [Card usage rules](docs/usage/card.md). Disclosure codes are in [Disclosure usage rules](docs/usage/disclosure.md). Tabs codes are in [Tabs usage rules](docs/usage/tabs.md). Search codes are in [Search usage rules](docs/usage/search.md). Slider codes are in [Slider usage rules](docs/usage/slider.md). Meter and progress codes are in [Meter usage rules](docs/usage/meter.md). Toast codes are in [Toast usage rules](docs/usage/toast.md). Class and static codes are in [General usage rules](docs/usage/general.md).
 
 ## Add a palette
 
@@ -187,7 +187,7 @@ The five palettes ported from uvs-decks-gg went through the same repair. Their i
 | alert dialog | `<dialog class="odd-dialog" role="alertdialog">` | Leave out `closedby="any"` so only Escape or a button closes it. |
 | `odd-menu`, `odd-menu-item` | `<div popover role="menu">` | Needs `enhanceMenu`. `menuitemcheckbox`/`menuitemradio` with `aria-checked`; `data-tone="danger"`; disable items with `aria-disabled="true"`, which keeps them reachable. |
 | `odd-tabs` | `<div>` with a direct `role="tablist"`, `<button role="tab">`, `role="tabpanel"` | Needs `enhanceTabs`, or `Tabs` from `odd-design/react`. Each tab's `aria-controls` names its panel. `data-activation="manual"` and `aria-orientation="vertical"` go on the tablist. |
-| `odd-toaster`, `odd-toast` | built by `createToaster()` | A polite live region in the corner; it moves into an open modal dialog so toasts stay live. |
+| `odd-toaster`, `odd-toast` | `<section popover="manual" aria-label="Notifications">`, once per page | Needs `enhanceToaster`, or `Toaster` from `odd-design/react`. `enhanceToaster` builds the list and a polite live region inside. `toast()` adds each `odd-toast`. A toast shown while a modal dialog is open moves the list inside the dialog, so the toasts stay live. Toasts already showing when it opens stay behind it until the next `toast()`. |
 | `odd-estop` | `<button>` | A big round stop. `aria-pressed="true"` draws it latched; the page sets it and owns any shortcut. Never disable it. |
 | `odd-stepper` | `<div role="group">` with step buttons around `<input type="number">` | Needs `enhanceStepper`. `data-step` counts input steps. Hold repeats; `input` per step, one `change` per press. Disable with `disabled` on the input. |
 | `odd-range-field` | `<div>` holding an `odd-slider`, an `odd-input type="number"`, and an optional unit | `enhanceRangeField` copies min, max, and step from the slider and keeps both in sync. Listen to the slider. A bad number shows an `odd-error` on commit. |
@@ -200,16 +200,15 @@ The five palettes ported from uvs-decks-gg went through the same repair. Their i
 Menus, tabs, toasts, steppers, range fields, and logs need behavior HTML doesn't have yet, so `odd-design/enhance` (`src/js/enhance.ts`) adds them on top of native markup. Each function takes an element and returns a cleanup function. No dependencies. There is no framework, and the React wrapper is optional.
 
 ```js
-import { enhance, createToaster } from "odd-design/enhance";
+import { enhance, toast } from "odd-design/enhance";
 
-enhance();                   // menus, tab sets, steppers, range fields, logs, select-all tables, and the fallbacks below, under document
-const toaster = createToaster();
-toaster.show({ title: "Deck saved", tone: "success" });
+enhance();                   // menus, tab sets, toasters, steppers, range fields, logs, select-all tables, and the fallbacks below, under document
+toast({ title: "Deck saved", tone: "success" });
 ```
 
-- `enhanceMenu(menu)`, `enhanceTabs(root)`, `enhanceSelectAll(table)`, `enhanceStepper(root)`, `enhanceRangeField(root, { message })`, `enhanceLog(log)`: one widget each. Call them for elements added after `enhance()`.
+- `enhanceMenu(menu)`, `enhanceTabs(root)`, `enhanceToaster(region)`, `enhanceSelectAll(table)`, `enhanceStepper(root)`, `enhanceRangeField(root, { message })`, `enhanceLog(log)`: one widget each. Call them for elements added after `enhance()`.
 - `enhanceTabs(root)` wires a tab set once, however many times it is called. Each call returns its own cleanup, and the last cleanup unwires. A React `Tabs` runs it on itself, so `enhance()` beside it does not wire the set twice.
-- `createToaster({ label, max, parent })`: `show({ title, description, tone, duration, action })` returns `{ dismiss }`.
+- `enhanceToaster(region)` wires a `section.odd-toaster` once, however many times it is called, as `enhanceTabs` does. `toast({ title, description, tone, duration, action })` shows a toast on the newest wired region still in the document and returns `{ dismiss }`. It throws when no region is wired.
 - `appendLogLine(log, text, { tone, time, max })`: adds a line as text, with `time` as a `Date` or a string, and drops the oldest lines past `max` (500).
 - `avatarFallback()`: an `.odd-avatar[data-initials]` whose image fails to load shows its initials. It replaces the avatar's children, so use it on markup the page owns, not on a React `Avatar`.
 - `interestForFallback()` and `closedByFallback()`: tooltips and hover cards, and `closedby="any"`, in browsers without them. They do nothing where the browser has the feature.

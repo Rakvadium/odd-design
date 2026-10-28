@@ -99,6 +99,16 @@ const places: Record<string, readonly (readonly [string, number, number, string]
     ["ODD-SLIDER-003", 14, 49, 'aria-disabled="true"'],
     ["ODD-SLIDER-004", 15, 49, 'data-tone="info"'],
   ],
+  "toast.tsx": [
+    ["ODD-STATIC-001", 9, 14, "{...props}"],
+    ["ODD-STATIC-001", 10, 14, "popover={mode}"],
+    ["ODD-TOAST-001", 11, 10, 'className="odd-toaster"'],
+    ["ODD-TOAST-001", 12, 12, 'className="odd-toaster"'],
+    ["ODD-TOAST-002", 13, 5, "<section"],
+    ["ODD-TOAST-002", 14, 14, 'popover="auto"'],
+    ["ODD-TOAST-003", 15, 5, "<Toaster"],
+    ["ODD-TOAST-004", 16, 58, 'data-tone="success"'],
+  ],
   "meter.tsx": [
     ["ODD-METER-001", 10, 10, "className"],
     ["ODD-METER-001", 11, 15, "className"],

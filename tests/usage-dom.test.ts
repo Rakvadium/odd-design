@@ -3,7 +3,7 @@ import { mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
-import { createToaster } from "../src/js/toast.ts";
+import { enhanceToaster, toast } from "../src/js/toast.ts";
 import { checkRoot, flush, installUsageChecker } from "../src/js/usage/dom.ts";
 import { registerUsageChecks } from "../src/js/usage/test-setup.ts";
 
@@ -147,15 +147,39 @@ test("prod mode does not log or throw from flush", () => {
   }
 });
 
-test("createToaster().show() with an action reports zero diagnostics", () => {
+function writeToaster(): HTMLElement {
+  document.body.insertAdjacentHTML("beforeend", '<section class="odd-toaster" popover="manual" aria-label="Notifications"></section>');
+  return document.body.lastElementChild as HTMLElement;
+}
+
+test("toast() with an action on a wired region reports zero diagnostics", () => {
   installUsageChecker("test");
-  const toaster = createToaster();
+  const release = enhanceToaster(writeToaster());
   try {
-    toaster.show({ title: "Deck saved", action: { label: "Undo", onClick() {} } });
+    toast({ title: "Deck saved", action: { label: "Undo", onClick() {} } });
     expect(document.querySelectorAll(".odd-toast button")).toHaveLength(2);
     flush();
   } finally {
-    toaster.destroy();
+    release();
+    resetPage();
+  }
+});
+
+test("enhanceToaster wires a region once, and toast() needs a holder left", () => {
+  const region = writeToaster();
+  const first = enhanceToaster(region);
+  const second = enhanceToaster(region);
+  try {
+    expect(region.querySelectorAll("ol")).toHaveLength(1);
+    expect(region.querySelectorAll("[aria-live]")).toHaveLength(1);
+    first();
+    first();
+    toast({ title: "Deck saved" });
+    expect(region.querySelectorAll(".odd-toast")).toHaveLength(1);
+    second();
+    expect(region.children).toHaveLength(0);
+    expect(() => toast({ title: "Deck saved" })).toThrow("toast() found no toaster");
+  } finally {
     resetPage();
   }
 });

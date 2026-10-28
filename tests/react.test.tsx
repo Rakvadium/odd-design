@@ -3,7 +3,7 @@ import { fileURLToPath } from "node:url";
 import { act, StrictMode, type ReactElement } from "react";
 import { createRoot, type Root } from "react-dom/client";
 import { renderToStaticMarkup } from "react-dom/server";
-import { enhance, enhanceTabs } from "../src/js/enhance.ts";
+import { enhance, enhanceTabs, toast } from "../src/js/enhance.ts";
 import { checkRoot } from "../src/js/usage/dom.ts";
 import { Alert, AlertTitle } from "../src/react/alert.tsx";
 import { Avatar, AvatarGroup } from "../src/react/avatar.tsx";
@@ -19,6 +19,7 @@ import { Separator } from "../src/react/separator.tsx";
 import { Skeleton } from "../src/react/skeleton.tsx";
 import { Slider } from "../src/react/slider.tsx";
 import { Tabs } from "../src/react/tabs.tsx";
+import { Toaster } from "../src/react/toast.tsx";
 
 Object.assign(globalThis, { IS_REACT_ACT_ENVIRONMENT: true });
 
@@ -228,6 +229,11 @@ const markup: readonly [string, ReactElement, string][] = [
     <Progress id="sync" aria-label="Syncing decks" />,
     '<progress id="sync" aria-label="Syncing decks" class="odd-progress"></progress>',
   ],
+  [
+    "toaster",
+    <Toaster popover="manual" aria-label="Notifications" />,
+    '<section popover="manual" aria-label="Notifications" class="odd-toaster"></section>',
+  ],
 ];
 
 describe("React markup", () => {
@@ -376,6 +382,36 @@ describe("Tabs", () => {
   });
 });
 
+describe("Toaster", () => {
+  test("wires itself once under StrictMode, beside an app's enhance(), and until it unmounts", async () => {
+    const host = document.createElement("div");
+    document.body.append(host);
+    const root = createRoot(host);
+    mounted = root;
+    await act(async () =>
+      root.render(
+        <StrictMode>
+          <Toaster popover="manual" aria-label="Notifications" />
+        </StrictMode>,
+      ),
+    );
+    const unwire = enhance(document);
+    const region = host.querySelector("section")!;
+    toast({ title: "Deck saved", description: "Midnight Control, version 15.", tone: "success" });
+    expect({
+      lists: region.querySelectorAll("ol").length,
+      live: [...region.querySelectorAll("[aria-live]")].map((node) => node.textContent),
+      toasts: region.querySelectorAll(".odd-toast").length,
+    }).toEqual({ lists: 1, live: ["Deck saved. Midnight Control, version 15."], toasts: 1 });
+    unwire();
+    toast({ title: "Card restored", tone: "info" });
+    expect(region.querySelectorAll(".odd-toast")).toHaveLength(2);
+    await act(async () => root.unmount());
+    mounted = undefined;
+    expect(() => toast({ title: "Deck saved" })).toThrow("toast() found no toaster");
+  });
+});
+
 function tsc(project: string): { exit: number; output: string } {
   const result = Bun.spawnSync([process.execPath, "x", "tsc", "-p", project], { cwd: repo });
   return { exit: result.exitCode, output: `${result.stdout.toString()}${result.stderr.toString()}` };
@@ -448,6 +484,11 @@ const failures: Record<string, { codes: string[]; text: string[] }> = {
   "slider-data-tone": { codes: ["ODD-SLIDER-004"], text: [] },
   "meter-tone": { codes: [], text: ['"success"', '"warning"', '"danger"', '"info"'] },
   "progress-data-size": { codes: ["ODD-METER-003"], text: [] },
+  "toaster-popover": { codes: [], text: ["Property 'popover' is missing"] },
+  "toaster-popover-auto": { codes: [], text: ['"manual"'] },
+  "toaster-aria-label": { codes: [], text: ["Property '\"aria-label\"' is missing"] },
+  "toaster-data-tone": { codes: ["ODD-TOAST-004"], text: [] },
+  "toaster-children": { codes: [], text: ["not assignable to type 'undefined'"] },
 };
 
 describe("React types", () => {

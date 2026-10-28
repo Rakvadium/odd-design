@@ -188,6 +188,12 @@ The plugin checks `Meter` as a `meter` with `odd-meter`, and `Progress` as a `pr
 
 So `<Meter tone="primary">` reports `ODD-METER-002`, and so does a raw `<progress className="odd-progress" data-tone="neutral">`. `<Progress data-size="sm">` reports `ODD-METER-003`. A raw `<div className="odd-progress">` or `<progress className="odd-meter">` reports `ODD-METER-001`. A computed `tone`, such as `<Meter tone={toneOf[kind]}>`, gives the `ODD-STATIC-001` warning, the same as a computed `tone` on `Badge`. The plugin does not read `low` and `high` beside `tone`, or the `odd-stat` around a bar.
 
+### Toaster from odd-design/react
+
+The plugin checks `Toaster` as a `section` with `odd-toaster`, from its entry of `WRAPPERS`. Every prop is the attribute with the same name, so `popover` and `aria-label` are read as written.
+
+So `<Toaster aria-label="Notifications">` with no `popover`, and `<Toaster popover="auto">`, report `ODD-TOAST-002`. `<Toaster popover="manual">` with no `aria-label` reports `ODD-TOAST-003`, and `<Toaster popover="manual" aria-label="Notifications" data-tone="success">` reports `ODD-TOAST-004`. A raw `<div className="odd-toaster">` or `<aside className="odd-toaster">` reports `ODD-TOAST-001`. A computed `popover`, such as `popover={mode}`, gives the `ODD-STATIC-001` warning. A spread gives that warning too, and `ODD-TOAST-002` and `ODD-TOAST-003` then stay quiet, because the spread may hold both. The toasts inside come from `toast()` at run time, so the plugin never sees them.
+
 ### Other components
 
 The plugin cannot see what another component renders. A component with an `odd-` class, such as `<Link className="odd-button">`, gets one `ODD-STATIC-001` warning on the element and no button rules. An `odd-` class that is not in the registry still reports `ODD-CLASS-001`. `<UI.Button>`, with `UI` a namespace import, counts as another component.

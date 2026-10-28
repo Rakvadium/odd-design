@@ -1,6 +1,6 @@
 # Interactive
 
-Patterns HTML has no element for, enhanced by `src/js/enhance.ts` on top of native markup. `enhanceMenu` gives a `.odd-menu` popover the menu keyboard. `enhanceTabs` runs the ARIA tabs pattern on `.odd-tabs`. `createToaster` manages a live region of `.odd-toast` messages. The same module carries the small helpers proven on other stories: `enhanceSelectAll` on the Table story, and `avatarFallback` on the Avatar fallback story.
+Patterns HTML has no element for, enhanced by `src/js/enhance.ts` on top of native markup. `enhanceMenu` gives a `.odd-menu` popover the menu keyboard. `enhanceTabs` runs the ARIA tabs pattern on `.odd-tabs`. `enhanceToaster` wires a written `section.odd-toaster`, and `toast()` shows `.odd-toast` messages on it. The same module carries the small helpers proven on other stories: `enhanceSelectAll` on the Table story, and `avatarFallback` on the Avatar fallback story.
 
 ## Sub-features
 
@@ -9,13 +9,13 @@ Patterns HTML has no element for, enhanced by `src/js/enhance.ts` on top of nati
 - `tabs-auto`: one tab stop. Arrows, Home, and End move, and the panel follows. Tab moves into the panel.
 - `tabs-manual`: arrows move focus without choosing, Enter chooses, the disabled tab is skipped, and the tab stop returns to the chosen tab when focus leaves.
 - `toast-lifecycle`: toasts stack in the corner, pause while hovered, leave after six seconds, and the danger toast stays. Undo and Dismiss work.
-- `toast-over-modal`: a toast shown while a modal dialog is open is in the accessibility tree and clickable, and the region returns to `<body>` when the dialog closes.
+- `toast-over-modal`: a toast shown while a modal dialog is open is in the accessibility tree and clickable. It shows in a copy of the region inside the dialog, and the list returns to the story's region when the dialog closes.
 - `select-all`: the header checkbox selects every row, shows a mixed state, and clears all rows.
 - `avatar-fallback`: the broken image avatar shows `JP` and keeps the name "Jo Park".
 
 ## How to get to it (user POV)
 
-- In Storybook, open **Components → Interactive**, which has Menu, Toast, and Tabs. Tabs sorts last because it loads from `stories/mirrored/`.
+- In Storybook, open **Components → Interactive**, which has Menu, Tabs, and Toast. Tabs and Toast sort after Menu because they load from `stories/mirrored/`. The React section has Tabs and Toast.
 - Select-all is on **Components → Data Display → Table**, and the avatar fallback is on **Avatar Fallback**.
 
 ## Driving it with ctl.ts
@@ -28,8 +28,8 @@ Preconditions:
 - **Menu choose.** On `Card count`, press Space. The menu stays open, and the radios read `["false","false","true"]`. Press Home, then Enter. The menu closes, focus is on the trigger, and `#menu-log` reads `Chose “Duplicate”`. Press ArrowUp on the trigger. Focus is on `Delete deck`. Press Tab. The menu closes, and `document.activeElement.id` is `after-menu`.
 - **Tabs, automatic.** Run `bun $S goto components-interactive--tabs`, then press Tab and ArrowRight. `Stats` is `aria-selected="true"` with `tabIndex` 0, the other tabs are -1, and the panels' `hidden` values are `[true, false, true]`. Press End, then ArrowRight. Focus is on `Cards`, which wrapped. Press Tab. Focus is on `#panel-cards`, which has `tabindex="0"` because it has nothing focusable inside.
 - **Tabs, manual.** Run `bun $S focus '#tab-s7'` and press ArrowRight. Focus is on `Season 6`, but `Season 7` stays selected and `#panel-s6` is hidden. Press ArrowRight. Focus is on `Season 7` (it skipped disabled `Season 5`). Press ArrowLeft, then Enter. `Season 6` is selected and its panel is shown. From a fresh `goto`, focus `#tab-s7`, press ArrowRight, then Tab. The tab indexes read `Season 7:0 Season 6:-1 Season 5:-1`.
-- **Toasts.** Run `bun $S goto components-interactive--toast "mode:light"` and click `[data-toast=saved]`, `[data-toast=undo]`, and `[data-toast=error]`. Three `.odd-toast` exist. Capture `interactive/toasts.png`. Run `bun $S hover '.odd-toast'` and wait 7 s (`wait 5000`, then `wait 2000`). All three remain. Then `bun $S hover '[data-toast=saved]'` and wait 7 s again. Only `Couldn’t sync` remains. On a fresh story, click `[data-toast=undo]`, then `.odd-toast .odd-button --text Undo`. Only `Card restored` remains. Click its `button[aria-label^="Dismiss"]`, and no toasts remain.
-- **Toast over a modal.** Click `button[commandfor="toast-settings"]`, wait 300, click `#toast-settings [data-toast=saved]`, and wait 600. `aria` shows `region "Notifications"` with `button "Dismiss: Deck saved"` inside the dialog's tree. Click that Dismiss button. The toast is gone, and `#toast-settings` is still open. Press Escape. `.odd-toaster`'s parent is `BODY`, and it is still `:popover-open`.
+- **Toasts.** Run `bun $S goto components-interactive--toast "mode:light"`. The story's `play` wires the triggers just after the story renders, so first run `bun $S eval 'typeof document.querySelector("[data-toast=saved]").onclick'` until it returns `"function"`. Click `[data-toast=saved]`, `[data-toast=undo]`, and `[data-toast=error]`. Three `.odd-toast` exist. Capture `interactive/toasts.png`. Run `bun $S hover '.odd-toast'` and wait 7 s (`wait 5000`, then `wait 2000`). All three remain. Then `bun $S hover '[data-toast=saved]'` and wait 7 s again. Only `Couldn’t sync` remains. On a fresh story, click `[data-toast=undo]`, then `.odd-toast .odd-button --text Undo`. Only `Card restored` remains. Click its `button[aria-label^="Dismiss"]`, and no toasts remain.
+- **Toast over a modal.** Click `button[commandfor="toast-settings"]`, wait 300, click `#toast-settings [data-toast=saved]`, and wait 600. `aria` shows `region "Notifications"` with `button "Dismiss: Deck saved"` inside the dialog's tree, and `#toast-settings .odd-toaster > ol` exists. Click that Dismiss button. The toast is gone, and `#toast-settings` is still open. Press Escape. One `.odd-toaster` remains, in `#storybook-root`. It holds the `ol` and is still `:popover-open`.
 - **Select-all.** Run `bun $S goto components-data-display--table`. The header checkbox is `indeterminate` (Ember Aggro starts checked). Click `[data-select-all]`. All four rows are checked, and the header is checked and not mixed. Uncheck `Select Tidecaller`. The header is mixed. Click the header twice. All rows are checked, then all are cleared.
 - **Avatar fallback.** Run `bun $S goto components-data-display--avatar-fallback`. `#broken-avatar` has text `JP`, `role="img"`, `aria-label="Jo Park"`, and no `<img>`.
 
@@ -38,6 +38,12 @@ Preconditions:
 Build the composed Storybook and serve it, as in the React Field section of `forms.md`. Open `http://127.0.0.1:6106/?path=/story/react_components-interactive--tabs`. The preview is the Tabs story built from two `Tabs` parts with native tablist, `button`, and panel children, with the same ids and text as `components-interactive--tabs`. `Tabs` wires itself, so the two Tabs recipes above work on the React side too.
 
 Run the pair sweep with `bunx playwright test e2e/usage.spec.ts --project firefox`. The Tabs pair matches the `aria` literal in `stories/mirrored/Tabs.stories.ts`, and the two screenshots are byte-identical. `bunx playwright test e2e/behavior.spec.ts --project firefox -g tabs` runs the tabs test once per Storybook. It first waits for `#tab-s5` to have `tabindex="-1"`, which only `enhanceTabs` writes, so a part that does not wire itself fails there.
+
+## React Toast
+
+Use the same composed build. Open `http://127.0.0.1:6106/?path=/story/react_components-interactive--toast`. The preview is the Toast story built from four `Button` parts, the native Settings dialog, and `Toaster`, with the same ids and text as `components-interactive--toast`. `Toaster` wires itself, and the story's `play` wires the triggers on both sides, so the two toast recipes above work on the React side too.
+
+The pair sweep checks the story against the `aria` literal in `stories/mirrored/Toast.stories.ts`, which ends with `region "Notifications"` and its empty `list`, and the two screenshots are byte-identical. A `Toaster` that does not wire itself drops those two lines on the React side. `bunx playwright test e2e/behavior.spec.ts --project firefox -g toast` runs both toast tests once per Storybook.
 
 ## Gotchas
 

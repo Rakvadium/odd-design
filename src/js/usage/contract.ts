@@ -181,6 +181,13 @@ export const USAGE = {
     { kind: "enum", code: "ODD-METER-002", attribute: "data-tone", values: ["success", "warning", "danger", "info"], omit: ["primary", "neutral"] },
     { kind: "system-data", code: "ODD-METER-003" },
   ] as const satisfies readonly UsageRule[],
+  toaster: [
+    { kind: "element", code: "ODD-TOAST-001", className: "odd-toaster", elements: ["section"] },
+    { kind: "required-attribute", code: "ODD-TOAST-002", element: "section", attribute: "popover" },
+    { kind: "enum", code: "ODD-TOAST-002", attribute: "popover", values: ["manual"], omit: [] },
+    { kind: "required-attribute", code: "ODD-TOAST-003", element: "section", attribute: "aria-label" },
+    { kind: "system-data", code: "ODD-TOAST-004" },
+  ] as const satisfies readonly UsageRule[],
   shared: [
     { kind: "unknown-class", code: "ODD-CLASS-001" },
     { kind: "computed-value", code: "ODD-STATIC-001" },
@@ -230,6 +237,7 @@ export const WRAPPERS = {
   Slider: { source: "odd-design/react", className: "odd-slider", props: {}, element: "input" },
   Meter: { source: "odd-design/react", className: "odd-meter", props: { tone: "data-tone" }, element: "meter" },
   Progress: { source: "odd-design/react", className: "odd-progress", props: { tone: "data-tone" }, element: "progress" },
+  Toaster: { source: "odd-design/react", className: "odd-toaster", props: {}, element: "section" },
 } as const satisfies Record<string, Wrapper>;
 
 export const CLASS_REGISTRY = [
@@ -360,3 +368,4 @@ export type TabsRule = (typeof USAGE.tabs)[number];
 export type SearchRule = (typeof USAGE.search)[number];
 export type SliderRule = (typeof USAGE.slider)[number];
 export type MeterRule = (typeof USAGE.meter)[number];
+export type ToasterRule = (typeof USAGE.toaster)[number];
