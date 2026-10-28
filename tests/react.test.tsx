@@ -1,8 +1,9 @@
 import { afterEach, describe, expect, test } from "bun:test";
 import { fileURLToPath } from "node:url";
-import { act, type ReactElement } from "react";
+import { act, StrictMode, type ReactElement } from "react";
 import { createRoot, type Root } from "react-dom/client";
 import { renderToStaticMarkup } from "react-dom/server";
+import { enhance, enhanceTabs } from "../src/js/enhance.ts";
 import { checkRoot } from "../src/js/usage/dom.ts";
 import { Alert, AlertTitle } from "../src/react/alert.tsx";
 import { Avatar, AvatarGroup } from "../src/react/avatar.tsx";
@@ -14,6 +15,7 @@ import { Disclosure } from "../src/react/disclosure.tsx";
 import { Field, FieldError, Hint, Input, Label, Select, Textarea } from "../src/react/field.tsx";
 import { Separator } from "../src/react/separator.tsx";
 import { Skeleton } from "../src/react/skeleton.tsx";
+import { Tabs } from "../src/react/tabs.tsx";
 
 Object.assign(globalThis, { IS_REACT_ACT_ENVIRONMENT: true });
 
@@ -183,6 +185,20 @@ const markup: readonly [string, ReactElement, string][] = [
     </Disclosure>,
     '<details name="faq" open="" class="odd-disclosure faq"><summary>Does it need JavaScript?</summary><div>No.</div></details>',
   ],
+  [
+    "tab set",
+    <Tabs id="deck-tabs" className="deck">
+      <div role="tablist" aria-label="Deck view">
+        <button role="tab" id="tab-cards" aria-controls="panel-cards" aria-selected="true">
+          Cards
+        </button>
+      </div>
+      <div role="tabpanel" id="panel-cards" aria-labelledby="tab-cards">
+        60 cards
+      </div>
+    </Tabs>,
+    '<div id="deck-tabs" class="odd-tabs deck"><div role="tablist" aria-label="Deck view"><button role="tab" id="tab-cards" aria-controls="panel-cards" aria-selected="true">Cards</button></div><div role="tabpanel" id="panel-cards" aria-labelledby="tab-cards">60 cards</div></div>',
+  ],
 ];
 
 describe("React markup", () => {
@@ -256,6 +272,81 @@ describe("Button with aria-disabled", () => {
   });
 });
 
+function arrowRight(host: HTMLElement) {
+  document.activeElement?.dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowRight", bubbles: true, cancelable: true }));
+  const selected = [...host.querySelectorAll('[aria-selected="true"]')].map((tab) => tab.id);
+  const shown = [...host.querySelectorAll<HTMLElement>('[role="tabpanel"]')].filter((panel) => !panel.hidden).map((panel) => panel.id);
+  return { focused: document.activeElement?.id, selected, shown };
+}
+
+describe("Tabs", () => {
+  test("moves one tab per arrow key under StrictMode, beside an app's enhance(), and after its cleanup", async () => {
+    const host = document.createElement("div");
+    document.body.append(host);
+    const root = createRoot(host);
+    mounted = root;
+    await act(async () =>
+      root.render(
+        <StrictMode>
+          <Tabs>
+            <div role="tablist" aria-label="Deck view">
+              <button role="tab" id="tab-cards" aria-controls="panel-cards" aria-selected="true">
+                Cards
+              </button>
+              <button role="tab" id="tab-stats" aria-controls="panel-stats" aria-selected="false">
+                Stats
+              </button>
+              <button role="tab" id="tab-notes" aria-controls="panel-notes" aria-selected="false">
+                Notes
+              </button>
+            </div>
+            <div role="tabpanel" id="panel-cards" aria-labelledby="tab-cards">
+              Cards
+            </div>
+            <div role="tabpanel" id="panel-stats" aria-labelledby="tab-stats" hidden>
+              Stats
+            </div>
+            <div role="tabpanel" id="panel-notes" aria-labelledby="tab-notes" hidden>
+              Notes
+            </div>
+          </Tabs>
+        </StrictMode>,
+      ),
+    );
+    const unwire = enhance(document);
+    document.getElementById("tab-cards")?.focus();
+    expect(arrowRight(host)).toEqual({ focused: "tab-stats", selected: ["tab-stats"], shown: ["panel-stats"] });
+    unwire();
+    expect(arrowRight(host)).toEqual({ focused: "tab-notes", selected: ["tab-notes"], shown: ["panel-notes"] });
+  });
+
+  test("enhanceTabs wires a root that gains its tablist after an earlier call", () => {
+    const root = document.createElement("div");
+    root.className = "odd-tabs";
+    document.body.append(root);
+    enhanceTabs(root);
+    root.innerHTML =
+      '<div role="tablist" aria-label="Deck view"><button role="tab" id="tab-cards" aria-controls="panel-cards" aria-selected="true">Cards</button><button role="tab" id="tab-stats" aria-controls="panel-stats" aria-selected="false">Stats</button></div><div role="tabpanel" id="panel-cards">Cards</div><div role="tabpanel" id="panel-stats" hidden>Stats</div>';
+    enhanceTabs(root);
+    document.getElementById("tab-cards")?.focus();
+    expect(arrowRight(root)).toEqual({ focused: "tab-stats", selected: ["tab-stats"], shown: ["panel-stats"] });
+  });
+
+  test("enhanceTabs wires a replaced tablist while an earlier call still holds the root", () => {
+    const root = document.createElement("div");
+    root.className = "odd-tabs";
+    document.body.append(root);
+    root.innerHTML =
+      '<div role="tablist" aria-label="Deck view"><button role="tab" id="tab-cards" aria-controls="panel-cards" aria-selected="true">Cards</button><button role="tab" id="tab-stats" aria-controls="panel-stats" aria-selected="false">Stats</button></div><div role="tabpanel" id="panel-cards">Cards</div><div role="tabpanel" id="panel-stats" hidden>Stats</div>';
+    enhanceTabs(root);
+    root.innerHTML =
+      '<div role="tablist" aria-label="Deck view"><button role="tab" id="tab-deck" aria-controls="panel-deck" aria-selected="true">Deck</button><button role="tab" id="tab-notes" aria-controls="panel-notes" aria-selected="false">Notes</button></div><div role="tabpanel" id="panel-deck">Deck</div><div role="tabpanel" id="panel-notes" hidden>Notes</div>';
+    enhanceTabs(root);
+    document.getElementById("tab-deck")?.focus();
+    expect(arrowRight(root)).toEqual({ focused: "tab-notes", selected: ["tab-notes"], shown: ["panel-notes"] });
+  });
+});
+
 function tsc(project: string): { exit: number; output: string } {
   const result = Bun.spawnSync([process.execPath, "x", "tsc", "-p", project], { cwd: repo });
   return { exit: result.exitCode, output: `${result.stdout.toString()}${result.stderr.toString()}` };
@@ -318,6 +409,9 @@ const failures: Record<string, { codes: string[]; text: string[] }> = {
   "card-link-href": { codes: [], text: ["Property 'href' is missing"] },
   "card-data-tone": { codes: ["ODD-CARD-006"], text: [] },
   "disclosure-data-tone": { codes: ["ODD-DISCLOSURE-003"], text: [] },
+  "tabs-aria-orientation": { codes: ["ODD-TABS-003"], text: [] },
+  "tabs-data-tone": { codes: ["ODD-TABS-005"], text: [] },
+  "tabs-default-value": { codes: [], text: ["not assignable to type 'undefined'"] },
 };
 
 describe("React types", () => {

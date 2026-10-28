@@ -65,6 +65,17 @@ const places: Record<string, readonly (readonly [string, number, number, string]
     ["ODD-DISCLOSURE-002", 21, 5, "<Disclosure {...props}>"],
     ["ODD-STATIC-001", 21, 17, "{...props}"],
   ],
+  "tabs.tsx": [
+    ["ODD-TABS-002", 16, 5, "<Tabs>"],
+    ["ODD-TABS-003", 17, 11, "aria-orientation"],
+    ["ODD-TABS-003", 17, 39, "data-activation"],
+    ["ODD-TABS-004", 18, 5, "<Tabs>"],
+    ["ODD-TABS-004", 18, 5, "<Tabs>"],
+    ["ODD-TABS-001", 19, 14, "className"],
+    ["ODD-TABS-005", 20, 11, 'data-tone="info"'],
+    ["ODD-TABS-004", 21, 219, "<Tabs>"],
+    ["ODD-TABS-004", 22, 5, "<Tabs>"],
+  ],
   "children-prop.tsx": [
     ["ODD-BUTTON-014", 5, 5, "<Button"],
     ["ODD-BUTTON-014", 6, 5, "<button"],

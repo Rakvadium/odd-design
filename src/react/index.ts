@@ -8,3 +8,4 @@ export * from "./disclosure.tsx";
 export * from "./field.tsx";
 export * from "./separator.tsx";
 export * from "./skeleton.tsx";
+export * from "./tabs.tsx";

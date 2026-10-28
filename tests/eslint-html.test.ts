@@ -196,6 +196,21 @@ const places: Record<string, readonly (readonly [string, number, number, string]
     ["ODD-DISCLOSURE-003", 2, 33, "data-tone"],
     ["ODD-DISCLOSURE-003", 3, 33, "data-size"],
   ],
+  "odd-tabs-001.bad.html": [["ODD-TABS-001", 2, 10, "class"]],
+  "odd-tabs-002.bad.html": [
+    ["ODD-TABS-002", 2, 1, "<div"],
+    ["ODD-TABS-002", 3, 1, "<div"],
+  ],
+  "odd-tabs-003.bad.html": [
+    ["ODD-TABS-003", 2, 23, "aria-orientation"],
+    ["ODD-TABS-003", 3, 23, "data-activation"],
+  ],
+  "odd-tabs-004.bad.html": [
+    ["ODD-TABS-004", 2, 1, "<div"],
+    ["ODD-TABS-004", 2, 1, "<div"],
+    ["ODD-TABS-004", 3, 199, "<div"],
+  ],
+  "odd-tabs-005.bad.html": [["ODD-TABS-005", 2, 23, "data-tone"]],
   "odd-card-001.bad.html": [
     ["ODD-CARD-001", 2, 4, "class"],
     ["ODD-CARD-001", 3, 4, "class"],

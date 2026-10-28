@@ -14,6 +14,8 @@ export type UsageRule =
   | { kind: "system-data"; code: UsageCode; allow?: readonly string[] }
   | { kind: "stretched-link"; code: UsageCode; attribute: string; className: string; controls: readonly string[] }
   | { kind: "required-child"; code: UsageCode; element: string; child: string }
+  | { kind: "required-child"; code: UsageCode; element: string; role: string }
+  | { kind: "role-descendant"; code: UsageCode; role: string; elements: readonly string[]; attribute: string }
   | { kind: "unknown-class"; code: UsageCode }
   | { kind: "computed-value"; code: UsageCode }
   | { kind: "untagged-template"; code: UsageCode };
@@ -145,6 +147,14 @@ export const USAGE = {
     { kind: "required-child", code: "ODD-DISCLOSURE-002", element: "details", child: "summary" },
     { kind: "system-data", code: "ODD-DISCLOSURE-003" },
   ] as const satisfies readonly UsageRule[],
+  tabs: [
+    { kind: "element", code: "ODD-TABS-001", className: "odd-tabs", elements: ["div"] },
+    { kind: "required-child", code: "ODD-TABS-002", element: "div", role: "tablist" },
+    { kind: "forbidden-attribute", code: "ODD-TABS-003", attribute: "aria-orientation" },
+    { kind: "forbidden-attribute", code: "ODD-TABS-003", attribute: "data-activation" },
+    { kind: "role-descendant", code: "ODD-TABS-004", role: "tab", elements: ["button"], attribute: "aria-controls" },
+    { kind: "system-data", code: "ODD-TABS-005" },
+  ] as const satisfies readonly UsageRule[],
   shared: [
     { kind: "unknown-class", code: "ODD-CLASS-001" },
     { kind: "computed-value", code: "ODD-STATIC-001" },
@@ -189,6 +199,7 @@ export const WRAPPERS = {
   CardLink: { source: "odd-design/react", className: "odd-card-link", props: {}, element: "a" },
   CardFooter: { source: "odd-design/react", className: "odd-card-footer", props: {}, element: "div" },
   Disclosure: { source: "odd-design/react", className: "odd-disclosure", props: {}, element: "details" },
+  Tabs: { source: "odd-design/react", className: "odd-tabs", props: {}, element: "div" },
 } as const satisfies Record<string, Wrapper>;
 
 export const CLASS_REGISTRY = [
@@ -315,3 +326,4 @@ export type CardRule = (typeof USAGE.card)[number];
 export type CardLinkRule = (typeof USAGE.cardLink)[number];
 export type CardFooterRule = (typeof USAGE.cardFooter)[number];
 export type DisclosureRule = (typeof USAGE.disclosure)[number];
+export type TabsRule = (typeof USAGE.tabs)[number];
