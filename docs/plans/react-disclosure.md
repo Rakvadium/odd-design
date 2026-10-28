@@ -113,14 +113,14 @@ Each commit ends with `bun run check`. The boxes under a commit name its extra c
 
 ### Commit 1. Add Disclosure and check it with ODD-DISCLOSURE-001 to 003
 
-- [ ] Add the `required-child` kind and its `apply` case, with the host-tag guard and the opaque-child silence. Add the contract-test line.
-- [ ] Add `USAGE.disclosure`, `DisclosureRule`, the `WRAPPERS` row, the three codes in `USAGE_CODES`, and their `MESSAGES`.
-- [ ] Write `docs/usage/disclosure.md` with one section per code. Say "direct child", not "first child".
-- [ ] Create `src/react/disclosure.tsx`. Add the barrel export and the `WrapperProps` line.
-- [ ] Add the `odd-disclosure-001` to `003` bad and good HTML pairs, the `RUNTIME_CODES` lines, and the `places` rows in `tests/eslint-html.test.ts`. The 002 good fixture holds the CustomPalette shape with a `pre` body and a summary placed last. Fix `odd-class-001.good.html`.
-- [ ] Add a type fail fixture for `data-tone` on `Disclosure` with its `failures` entry. Add `pass.tsx` lines for `open`, `name`, and an `onToggle` that reads `event.newState`.
-- [ ] Add `tests/fixtures/usage/jsx/disclosure.tsx` and its `places` entry. It covers a fragment child, an opaque child, an expression child, a computed `open` with `onToggle` that stays silent, the 002 failures, and `data-tone`. Add one markup row to `tests/react.test.tsx`.
-- [ ] Check. Delete each new rule row, the host-tag guard, and the opaque-child silence, one at a time, and each fails a test.
+- [x] Add the `required-child` kind and its `apply` case, with the host-tag guard and the opaque-child silence. Add the contract-test line.
+- [x] Add `USAGE.disclosure`, `DisclosureRule`, the `WRAPPERS` row, the three codes in `USAGE_CODES`, and their `MESSAGES`.
+- [x] Write `docs/usage/disclosure.md` with one section per code. Say "direct child", not "first child".
+- [x] Create `src/react/disclosure.tsx`. Add the barrel export and the `WrapperProps` line.
+- [x] Add the `odd-disclosure-001` to `003` bad and good HTML pairs, the `RUNTIME_CODES` lines, and the `places` rows in `tests/eslint-html.test.ts`. The 002 good fixture holds the CustomPalette shape with a `pre` body and a summary placed last. Fix `odd-class-001.good.html`.
+- [x] Add a type fail fixture for `data-tone` on `Disclosure` with its `failures` entry. Add `pass.tsx` lines for `open`, `name`, and an `onToggle` that reads `event.newState`.
+- [x] Add `tests/fixtures/usage/jsx/disclosure.tsx` and its `places` entry. It covers a fragment child, an opaque child, an expression child, a computed `open` with `onToggle` that stays silent, the 002 failures, and `data-tone`. Add one markup row to `tests/react.test.tsx`.
+- [x] Check. Delete each new rule row, the host-tag guard, and the opaque-child silence, one at a time, and each fails a test. Result: `bun run check` passes 509 tests. Deleting the 001 row fails 7 tests, because the 002 and 003 rows run only behind an `element` row. Deleting the 002 row fails 5, among them `odd-disclosure-002.bad.html` and the JSX places. Deleting the 003 row fails 5, among them the `disclosure-data-tone` type fixture. Deleting the host-tag guard fails `odd-disclosure-001.bad.html` and the HTML places, where the `section` also reports 002. Deleting the opaque-child silence fails the JSX places in `disclosure.tsx` and the tagged summary with a computed name.
 
 ### Commit 2. Mirror Disclosure in the Storybooks
 
