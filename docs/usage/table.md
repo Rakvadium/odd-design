@@ -24,7 +24,7 @@ The wrap scrolls sideways when the table is wider than the page. `tabindex="0"`,
 
 In React, `TableWrap` renders the `div`, `Table` renders the `table` and runs `enhanceSelectAll` on it after every commit, and `TableSort` renders each sort `button`. Write the caption, sections, rows, cells, and checkboxes as plain elements. Leave the header box uncontrolled, with no `checked`, because `Table` owns it. Row boxes can be uncontrolled or controlled with `onChange`, and a header click reaches each changed row's `onChange` once.
 
-React sets a controlled box's `checked` without a `change` event, so `Table` resyncs the header box each time it renders. A row list that re-renders on its own, such as a memoized `tbody` component, leaves the header box stale until `Table` renders again or a box changes.
+React sets a controlled box's `checked` without a `change` event, so `Table` resyncs the header box each time it renders. A row list that re-renders on its own, such as a memoized `tbody` component, leaves the header box stale until `Table` renders again or a box changes. So does a header box that a child component remounts on its own, for example with a `key`. The new box shows unchecked until the next box change or `Table` render, though a click on it still checks or clears every row.
 
 ```tsx
 import { Table, TableSort, TableWrap } from "odd-design/react";

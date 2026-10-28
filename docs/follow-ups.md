@@ -155,6 +155,7 @@ Run with NVDA 2026.2, OneCore David, rate 50, in Chrome. The transcripts are in 
 - **Two columns with a concrete `aria-sort` draw two arrows.** No rule kind counts siblings (measured by the Grok design runner). (React Table)
 - **A select-all box outside `thead` checks only itself.** `enhanceSelectAll` reads `thead`, and no rule kind reads an ancestor by tag (measured by the Grok design runner). (React Table)
 - **A memoized row list that re-renders without `Table` leaves the header box stale.** `Table` resyncs in a layout effect after its own commits only. `docs/usage/table.md` names it. (React Table)
+- **A header box that a child component remounts without a `Table` commit shows the wrong state.** The new box starts unchecked and not mixed, and it stays that way until the next box change or `Table` commit. A click on it still checks or clears every row, because `enhanceSelectAll` looks the header box up on every change (measured in the branch review). `docs/usage/table.md` names it. (React Table)
 - **Rows that HTML code inserts after `enhanceSelectAll` leave the header box stale until the next change.** This was already true before the port. (React Table)
 - **The select-all resync cost grows with row count.** `Table` re-queries the enabled row boxes on every commit. It is not measured on a large table. (React Table)
 - **A `TableWrap` region with a blank `aria-label` compiles.** ESLint and the runtime checker report ODD-TABLE-003 for it (measured). It is the same gap as `Menu`, `Dialog`, and `Sheet`. (React Table)
