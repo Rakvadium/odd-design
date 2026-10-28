@@ -70,7 +70,6 @@ type Given<Keys extends string> = { [Each in Keys]: { [Key in Each]: NonNullable
 
 type CodeOf<Rule, Kind> = Extract<Rule, { kind: Kind; code: keyof typeof MESSAGES }>["code"];
 
-/** A role from the rule's enum needs a name (accessible-name), and a name needs the role (name-requires). */
 export type RoleWithName<P, Rule> = P extends { role: Values<Rule, "role"> }
   ? [P] extends [Given<NameKeys<Rule, "accessible-name">>]
     ? P
