@@ -165,10 +165,10 @@ Each commit ends with `bun run check`. The boxes under a commit name its extra c
 
 ### Commit 2. Mirror Menu in the Storybooks
 
-- [ ] Create `stories/mirrored/Menu.stories.ts` and delete `stories/Interactive.stories.ts`. Add the preview line. Measure the closed `aria` literal in the built Firefox Storybook, then paste it.
-- [ ] Pin `components-interactive--menu` in `tests/stories.test.ts`.
-- [ ] Loop the menu test in `e2e/behavior.spec.ts` over `html` and `react`, and add a checkbox toggle and a radio choice.
-- [ ] Check. `bunx playwright test e2e/usage.spec.ts e2e/behavior.spec.ts` passes in Firefox and WebKit with 0 diagnostics.
+- [x] Create `stories/mirrored/Menu.stories.ts` and delete `stories/Interactive.stories.ts`. Add the preview line. Measure the closed `aria` literal in the built Firefox Storybook, then paste it. Result: the scene is a row with the `Button` trigger and Publish, a `Menu` with nine `MenuItem`s, three `Separator`s, the native label, shortcut, and radio group, and the empty live log. The menu writes `popover="auto"` where the old HTML wrote a bare `popover`, which the browser reads the same. The "Chose …" log is a `play`. The HTML preview runs `enhanceMenu` on `.odd-menu[role="menu"]` beside tabs and toasters. Both sides give `- button "Deck actions"`, `- button "Publish"`, and `- paragraph`, the literal in the story (`.verify/menu/build/aria-c2-firefox.txt`, from `build/measure/aria.spec.ts`).
+- [x] Pin `components-interactive--menu` in `tests/stories.test.ts`. Result: the pins end with the id, and it passes the HTML-equals-React and `checkRoot` loops.
+- [x] Loop the menu test in `e2e/behavior.spec.ts` over `html` and `react`, and add a checkbox toggle and a radio choice. Result: one loop over both Storybooks. After typeahead lands on Compact grid, Enter sets its `aria-checked` to `true` with focus still on it, and Enter on Last edited leaves it the only checked radio. The rest of the old test is unchanged.
+- [x] Check. `bunx playwright test e2e/usage.spec.ts e2e/behavior.spec.ts` passes in Firefox and WebKit with 0 diagnostics. Result: `bun run check` passes 648 tests (`.verify/menu/build/check-commit2.txt`). Against `build/sb-c2` on port 6761, from `build/pw.config.ts`, 60 passed and 2 skipped, the WebKit usage sweep and sidebar test, which run in Firefox only. Firefox reports "70 stories, 0 diagnostics", and all four menu tests pass (`browsers-c2.txt`).
 
 ### Commit 3. Docs, smoke, and the verify recipe
 
