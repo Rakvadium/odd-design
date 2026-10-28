@@ -1,8 +1,8 @@
 # Use the React components
 
-`odd-design/react` exports `Button`, the Field parts, the Choice parts, `Badge`, the Alert parts, the Avatar parts, `Separator`, `Skeleton`, the Card parts, and `Disclosure`. Each renders an `odd-` element from typed props. A contract mistake in those props is a TypeScript error that starts with its code, such as `ODD-BUTTON-007`. `Button` lives in `src/react/button.tsx`, the Field parts in `src/react/field.tsx`, the Choice parts in `src/react/choice.tsx`, `Badge` in `src/react/badge.tsx`, the Alert parts in `src/react/alert.tsx`, the Avatar parts in `src/react/avatar.tsx`, `Separator` in `src/react/separator.tsx`, `Skeleton` in `src/react/skeleton.tsx`, the Card parts in `src/react/card.tsx`, and `Disclosure` in `src/react/disclosure.tsx`. Codes and fixes are in [Button usage rules](button.md), [Field usage rules](field.md), [Choice usage rules](choice.md), [Badge usage rules](badge.md), [Alert usage rules](alert.md), [Avatar usage rules](avatar.md), [Separator usage rules](separator.md), [Skeleton usage rules](skeleton.md), [Card usage rules](card.md), and [Disclosure usage rules](disclosure.md).
+`odd-design/react` exports `Button`, the Field parts, the Choice parts, `Badge`, the Alert parts, the Avatar parts, `Separator`, `Skeleton`, the Card parts, `Disclosure`, and `Tabs`. Each renders an `odd-` element from typed props. A contract mistake in those props is a TypeScript error that starts with its code, such as `ODD-BUTTON-007`. `Button` lives in `src/react/button.tsx`, the Field parts in `src/react/field.tsx`, the Choice parts in `src/react/choice.tsx`, `Badge` in `src/react/badge.tsx`, the Alert parts in `src/react/alert.tsx`, the Avatar parts in `src/react/avatar.tsx`, `Separator` in `src/react/separator.tsx`, `Skeleton` in `src/react/skeleton.tsx`, the Card parts in `src/react/card.tsx`, `Disclosure` in `src/react/disclosure.tsx`, and `Tabs` in `src/react/tabs.tsx`. Codes and fixes are in [Button usage rules](button.md), [Field usage rules](field.md), [Choice usage rules](choice.md), [Badge usage rules](badge.md), [Alert usage rules](alert.md), [Avatar usage rules](avatar.md), [Separator usage rules](separator.md), [Skeleton usage rules](skeleton.md), [Card usage rules](card.md), [Disclosure usage rules](disclosure.md), and [Tabs usage rules](tabs.md).
 
-`button.tsx` starts with `"use client"`, so a React Server Components app can render `Button` from a server component. The Field parts, the Choice parts, `Badge`, the Alert parts, the Avatar parts, `Separator`, `Skeleton`, the Card parts, and `Disclosure` hold no state and no handlers, so `field.tsx`, `choice.tsx`, `badge.tsx`, `alert.tsx`, `avatar.tsx`, `separator.tsx`, `skeleton.tsx`, `card.tsx`, and `disclosure.tsx` have no directive. A component that holds the disclosure's state puts the directive in its own file.
+`button.tsx` and `tabs.tsx` start with `"use client"`, so a React Server Components app can render `Button` and `Tabs` from a server component. `Tabs` wires its set in a layout effect. The Field parts, the Choice parts, `Badge`, the Alert parts, the Avatar parts, `Separator`, `Skeleton`, the Card parts, and `Disclosure` hold no state and no handlers, so `field.tsx`, `choice.tsx`, `badge.tsx`, `alert.tsx`, `avatar.tsx`, `separator.tsx`, `skeleton.tsx`, `card.tsx`, and `disclosure.tsx` have no directive. A component that holds the disclosure's state puts the directive in its own file.
 
 ## Render a button or a link
 
@@ -329,6 +329,47 @@ export function FaqItem({ question, answer }: { question: string; answer: string
 
 A disclosure with no direct `summary` child shows the browser's own Details label, and the question sits hidden in the closed answer. A `summary` inside a `div`, or a `div` or `button` used as the trigger, reports `ODD-DISCLOSURE-002` in ESLint and the runtime checker. ESLint cannot see a summary that comes from another component or an expression, so it stays quiet. Keep the summary's text non-empty, and keep links and buttons out of it. An empty summary takes its name from the answer, and a link in the summary follows its `href` and leaves the panel closed. Do not set `aria-expanded` on the summary. The browser reports the state, and a written `aria-expanded="false"` stays `false` after a click opens the panel. System `data-` attributes on `Disclosure`, such as `data-tone`, are type errors (`ODD-DISCLOSURE-003`).
 
+## Build tabs
+
+```tsx
+import { Tabs } from "odd-design/react";
+
+<Tabs>
+  <div role="tablist" aria-label="Deck view">
+    <button role="tab" id="tab-cards" aria-controls="panel-cards" aria-selected="true">Cards</button>
+    <button role="tab" id="tab-stats" aria-controls="panel-stats" aria-selected="false">Stats</button>
+  </div>
+  <div role="tabpanel" id="panel-cards" aria-labelledby="tab-cards">60 cards across 24 units.</div>
+  <div role="tabpanel" id="panel-stats" aria-labelledby="tab-stats" hidden>Average cost 2.4.</div>
+</Tabs>;
+```
+
+`Tabs` renders a `div` with the class `odd-tabs` and runs `enhanceTabs` on it, so arrows, Home, End, clicks, and the panel switch work with no other call. Write the tablist as its direct child. Each tab is a `button` with `role="tab"` and an `aria-controls` that names its panel. Each panel has `role="tabpanel"`, that `id`, and an `aria-labelledby` that names its tab. `enhanceTabs` finds a panel by its `id`, so keep the ids unique on the page. `aria-selected` and `hidden` in the JSX set the first choice only. After mount, `enhanceTabs` owns them, as the browser owns `open` on a `Disclosure`. `aria-orientation="vertical"` and `data-activation="manual"` go on the tablist. A disabled tab takes native `disabled`, and the arrows skip it. An `enhance()` call elsewhere in the app does not wire the set twice.
+
+To read the choice, listen for `odd-tab-change` on the forwarded ref. React 19 does not attach a custom-event prop on a `div`, so the listener goes through `addEventListener`. To choose a tab from code, call `.click()` on its button. The click goes through `enhanceTabs`, so the tab stop moves too.
+
+```tsx
+"use client";
+import { useEffect, useRef, useState } from "react";
+import { Tabs } from "odd-design/react";
+
+export function DeckView() {
+  const ref = useRef<HTMLDivElement>(null);
+  const [view, setView] = useState("cards");
+  useEffect(() => {
+    const tabs = ref.current!;
+    const onChange = (event: Event) => setView((event as CustomEvent<{ tab: HTMLElement }>).detail.tab.id.replace("tab-", ""));
+    tabs.addEventListener("odd-tab-change", onChange);
+    return () => tabs.removeEventListener("odd-tab-change", onChange);
+  }, []);
+  return <Tabs ref={ref}>…</Tabs>;
+}
+```
+
+`Tabs` takes no `value`, `onValueChange`, or `defaultValue`, and `defaultValue` is a type error. React state that writes `aria-selected` by itself moves the selection and leaves the tab stop on the old tab. Setting `aria-selected` from the `odd-tab-change` value is safe, because it writes what `enhanceTabs` already wrote.
+
+A tablist inside a wrapper loses its segmented track and reports `ODD-TABS-002` in ESLint and the runtime checker. A tab that is not a `button`, or has no `aria-controls`, reports `ODD-TABS-004`. Without `aria-controls`, choosing a tab shows and hides no panel, so the panels keep whatever `hidden` they started with. ESLint cannot see a tablist or a tab that comes from another component or a computed `role`, so it stays quiet. A spread with no `role` also hides a missing tablist. A spread on a tab hides its `aria-controls`, so only a tab that is not a `button` still reports. `aria-orientation` and `data-activation` on `Tabs` are type errors (`ODD-TABS-003`), because nothing reads them on the root. System `data-` attributes on `Tabs`, such as `data-tone`, are type errors (`ODD-TABS-005`).
+
 ## Read a type error
 
 The type error names the code and the fix. The table lists what each mistake prints.
@@ -361,6 +402,9 @@ The type error names the code and the fix. The table lists what each mistake pri
 | A system `data-` attribute on `Card` other than `data-span`, such as `data-tone` | `ODD-CARD-006` |
 | A system `data-` attribute on `CardLink` or `CardFooter`, such as `data-interactive` | `ODD-CARD-007` |
 | A system `data-` attribute on `Disclosure`, such as `data-tone` | `ODD-DISCLOSURE-003` |
+| `aria-orientation` or `data-activation` on `Tabs` | `ODD-TABS-003` |
+| A system `data-` attribute on `Tabs`, such as `data-tone` | `ODD-TABS-005` |
+| `defaultValue` on `Tabs` | `not assignable to type 'undefined'` |
 | `Switch` without `type` or `role`, `AvatarGroup` without `role`, `Skeleton` without `aria-hidden`, or `CardLink` without `href` | TypeScript's missing property error |
 | A `Switch` `type` other than `checkbox`, a `Switch` `role` other than `switch`, an `Avatar` or `AvatarGroup` `role` other than `img` or `group`, a `Separator` `role` other than `separator`, or a `Skeleton` `aria-hidden` other than `"true"` | The allowed value |
 | `Label` without `htmlFor`, or `Hint` or `FieldError` without `id` | TypeScript's missing property error |
@@ -368,7 +412,7 @@ The type error names the code and the fix. The table lists what each mistake pri
 
 TypeScript shortens a long type in an error. Set `noErrorTruncation` in `tsconfig.json` to see the whole message.
 
-Some rules are not type errors. `Button` picks the element from `href`, so you cannot write an anchor without `href` (`ODD-BUTTON-009`) or a button with `href` (`ODD-BUTTON-010`). Those two codes apply to a raw `a` or `button` with the `odd-button` class. Each Field and Choice part, `Badge`, each Alert part, each Avatar part, `Separator`, `Skeleton`, each Card part, and `Disclosure` picks its own element too, so `ODD-FIELD-001`, `ODD-CHOICE-001`, `ODD-BADGE-001`, `ODD-ALERT-001`, `ODD-AVATAR-001`, `ODD-SEPARATOR-001`, `ODD-SKELETON-001`, `ODD-CARD-001`, and `ODD-DISCLOSURE-001` apply only to raw markup. Visible text in an icon-only button (`ODD-BUTTON-014`), the links and buttons in a card (`ODD-CARD-003`), the summary of a disclosure (`ODD-DISCLOSURE-002`), and a misspelled `data-` name are not type errors either. The ESLint plugin and the [runtime checker](runtime.md) report each of these.
+Some rules are not type errors. `Button` picks the element from `href`, so you cannot write an anchor without `href` (`ODD-BUTTON-009`) or a button with `href` (`ODD-BUTTON-010`). Those two codes apply to a raw `a` or `button` with the `odd-button` class. Each Field and Choice part, `Badge`, each Alert part, each Avatar part, `Separator`, `Skeleton`, each Card part, `Disclosure`, and `Tabs` picks its own element too, so `ODD-FIELD-001`, `ODD-CHOICE-001`, `ODD-BADGE-001`, `ODD-ALERT-001`, `ODD-AVATAR-001`, `ODD-SEPARATOR-001`, `ODD-SKELETON-001`, `ODD-CARD-001`, `ODD-DISCLOSURE-001`, and `ODD-TABS-001` apply only to raw markup. Visible text in an icon-only button (`ODD-BUTTON-014`), the links and buttons in a card (`ODD-CARD-003`), the summary of a disclosure (`ODD-DISCLOSURE-002`), the tablist of a tab set (`ODD-TABS-002`), the tabs in a tab set (`ODD-TABS-004`), and a misspelled `data-` name are not type errors either. The ESLint plugin and the [runtime checker](runtime.md) report each of these.
 
 ## Open a dialog or a popover with a command
 

@@ -164,6 +164,12 @@ The plugin checks `Disclosure` as a `details` with `odd-disclosure`, from its en
 
 So a `Disclosure` whose question is a `div` or a `button`, or whose `summary` sits inside a `div`, reports `ODD-DISCLOSURE-002`. A `summary` placed after the answer passes. A raw `<div className="odd-disclosure">` reports `ODD-DISCLOSURE-001` alone. `<Disclosure data-tone="info">` reports `ODD-DISCLOSURE-003`, and `data-state` passes. A child component, such as `<Disclosure><FaqQuestion /><div>No.</div></Disclosure>`, or an expression child hides what it renders, so a missing summary stays quiet. A spread gives the `ODD-STATIC-001` warning. With no written children, `ODD-DISCLOSURE-002` then stays quiet, because the spread may hold `children`. Written children win over the spread, so `<Disclosure {...props}><div>Question</div></Disclosure>` still reports `ODD-DISCLOSURE-002`. A computed `open` gives no warning, so `open={open}` with `onToggle` passes.
 
+### Tabs from odd-design/react
+
+The plugin checks `Tabs` as a `div` with `odd-tabs`, from its entry of `WRAPPERS`. Every prop is the attribute with the same name. The plugin reads the direct children for the tablist, and the children of a fragment count as direct. It reads every element inside the set for the tabs, and it stops at a nested tab set.
+
+So a `Tabs` whose tablist sits inside a `div` reports `ODD-TABS-002`. A panel placed before the tablist passes. `aria-orientation` or `data-activation` on `Tabs` reports `ODD-TABS-003`, and on the tablist it passes. A `div` with `role="tab"`, or a tab `button` with no `aria-controls`, reports `ODD-TABS-004`. A raw `<section className="odd-tabs">` reports `ODD-TABS-001`. `<Tabs data-tone="info">` reports `ODD-TABS-005`, and `data-state` passes. A child component, such as `<Tabs><DeckTabList /></Tabs>`, a computed `role`, or a spread with no `role` hides the tablist, so a missing tablist stays quiet. A spread on a tab hides its `aria-controls`, so only a tab that is not a `button` still reports.
+
 ### Other components
 
 The plugin cannot see what another component renders. A component with an `odd-` class, such as `<Link className="odd-button">`, gets one `ODD-STATIC-001` warning on the element and no button rules. An `odd-` class that is not in the registry still reports `ODD-CLASS-001`. `<UI.Button>`, with `UI` a namespace import, counts as another component.

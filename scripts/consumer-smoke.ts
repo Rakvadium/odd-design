@@ -7,7 +7,7 @@ const root = join(import.meta.dir, "..");
 const fixtures = join(root, "tests/fixtures/consumer");
 const manifest = JSON.parse(readFileSync(join(root, "package.json"), "utf8")) as { name: string; version: string };
 const expectedTarball = join(root, `${manifest.name}-${manifest.version}.tgz`);
-const clientModule = join(root, "dist/react/button.js");
+const CLIENT_MODULES = ["button.js", "tabs.js"];
 
 const FORBIDDEN =
   "ODD-BUTTON-007: the disabled attribute is forbidden on odd-button. Allowed values: none. Fix: remove disabled and set aria-disabled. docs/usage/button.md#odd-button-007";
@@ -53,6 +53,7 @@ const REQUIRED = [
   "docs/usage/runtime.md",
   "docs/usage/separator.md",
   "docs/usage/skeleton.md",
+  "docs/usage/tabs.md",
   "src/css/index.css",
   "src/js/appearance.ts",
   "src/js/enhance.ts",
@@ -265,9 +266,11 @@ function checkVitest(app: string, name: string): void {
 let tarball = expectedTarball;
 let app: string | undefined;
 try {
-  const clientFirst = readFileSync(clientModule, "utf8").split(/\r?\n/, 1)[0] ?? "";
-  if (clientFirst !== '"use client";') fail(`button.js first line is ${JSON.stringify(clientFirst)}`);
-  console.log('button.js: "use client"');
+  for (const name of CLIENT_MODULES) {
+    const first = readFileSync(join(root, "dist/react", name), "utf8").split(/\r?\n/, 1)[0] ?? "";
+    if (first !== '"use client";') fail(`${name} first line is ${JSON.stringify(first)}`);
+    console.log(`${name}: "use client"`);
+  }
   assertOneState();
 
   rmSync(tarball, { force: true });
