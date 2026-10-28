@@ -131,7 +131,7 @@ export const Progress: (props: ProgressProps) => ReactElement = part("Progress")
 
 The Slider story's inline `oninput` keeps `output#copies-value` in sync, and a scene cannot carry an `on*` prop. The mirrored story keeps the `output` and adds a `play` beside `mirrored(...)`. The `play` finds `#copies` and `#copies-value` under `canvasElement` and assigns `slider.oninput`, which writes `` `${slider.value} of ${slider.max}` ``. Both Storybooks load the same file and both run `play`, so one definition wires both sides. Assigning the property, not adding a listener, means a second run replaces the handler. `bun test` never runs `play`, so the static markup equality still sees `3 of 4`.
 
-`openStory` returns before `play` binds. The slider behavior test therefore probes first. It sets `#copies` to its max, dispatches `input`, waits until `#copies-value` reads `4 of 4`, and restores `3` the same way. Then it presses ArrowLeft twice and expects `1 of 4`. The test runs on both Storybooks, the way the tabs test does. The forms verify recipe gets the same wait.
+`openStory` in `e2e/story.ts` waits until Storybook's `__STORYBOOK_PREVIEW__.currentRender.phase` is past `playing`, so `play` has returned before the slider behavior test starts. The test presses ArrowLeft twice and expects `1 of 4`. It runs on both Storybooks, the way the tabs test does. The forms verify recipe waits until `#copies` has an `oninput` function.
 
 ## Decisions taken under the autonomy grant
 
@@ -142,7 +142,7 @@ Each item is the default the build uses. Each one can be reversed after review.
 3. **`type="range"` is a required prop.** `part()` stays the three declarations, and `type="text"` is unrepresentable. The cost is one attribute at every call site, the same as `Switch`.
 4. **`stylesheet()` maps `odd-progress` to `meter`.** This is the first graft from the Grok design. The judge rejected the Opus runner's content scan, because `.odd-button` lives in two files.
 5. **The readout lives in the story `play`.** It keeps the live text, the e2e check, and the recipe on both sides. Docs pages show the static `3 of 4`.
-6. **The behavior test probes the binding before ArrowLeft.** This is the second graft. It makes the race between `openStory` and `play` a wait on visible text.
+6. **`openStory` waits until `play` has returned.** This is the second graft. The Grok design waited for `play` with a probe on visible text. What shipped waits in `openStory` itself, until Storybook's `__STORYBOOK_PREVIEW__.currentRender.phase` is past `playing`, so the slider test presses ArrowLeft with no probe. The wait stops short of `finished`, because the phases after `play` wait up to 5s on running animations, and the scroll-driven fill never ends.
 7. **`stories/Forms.stories.ts` is deleted.** `Slider` is its last story, and a story file with no stories fails the catalog's coverage test. Its component paragraph on `:user-invalid` and `base-select` moves to the Field meta.
 8. **The Progress story's `span.odd-stat-value.odd-muted` becomes `span.odd-stat-value > span.odd-muted`.** A native scene node takes one class. The story already nests `odd-muted` this way for `(40%)`. The capture diff should show `dom` only.
 9. **Two new usage pages, `docs/usage/slider.md` and `docs/usage/meter.md`.** Both join `REQUIRED` in the consumer smoke.
@@ -204,10 +204,10 @@ Each commit ends with `bun run check`.
 
 ## Review and open the PR
 
-- [ ] The `cursor grok-4.7` reviewer reads the diff against this plan. A fresh builder fixes each finding that blocks. Other findings go to `docs/follow-ups.md`.
-- [ ] Run `/deslop` and `/no-comments` over the diff.
-- [ ] Open the PR ready with `gh pr create --base main --repo Rakvadium/odd-design`. The title is `feat(react): add Slider and Meter and mirror them in the Storybooks`.
-- [ ] Run `gh pr checks`. Report the PR as open. Do not merge.
+- [x] The `cursor grok-4.7` reviewer reads the diff against this plan. A fresh builder fixes each finding that blocks. Other findings go to `docs/follow-ups.md`. Result: the reviewer passed `6b6c6ee..2c11a16` with no finding that blocks. A second `grok-4.7` review of the delta to `68b0201` checked the `openStory` wait against Storybook 10.6.2's phase machine and found nothing that blocks. Its four other points are in `docs/follow-ups.md`.
+- [x] Run `/deslop` and `/no-comments` over the diff. Result: the `/no-comments` pass deleted four comments and raised three kills. Two were accepted, the `openStory` wait and the `fill.timelineRuns` rename. The third, an event-wiring hook on the mirror, was rejected per Appendix B. For `/deslop`, the lead read the diff. The only finding was the barrel export order, fixed in the Slider commit.
+- [x] Open the PR ready with `gh pr create --base main --repo Rakvadium/odd-design`. The title is `feat(react): add Slider and Meter and mirror them in the Storybooks`. Result: opened ready as #33.
+- [x] Run `gh pr checks`. Report the PR as open. Do not merge. Result: the repo has no workflows, so `gh pr checks` reports no checks. The PR is open and not merged.
 
 ## Throughput checkpoint
 
@@ -226,7 +226,7 @@ Each commit ends with `bun run check`.
 | Bar codes | One `meter` group, ODD-METER | One CSS rule styles both bars |
 | Stylesheet test | `odd-progress` maps to `meter` | The result is also the vocabulary key |
 | Readout | Story `play` assigning `oninput` | Keeps the live text on both sides, and a rerun converges |
-| Probe | Set, dispatch, and wait before ArrowLeft | `openStory` returns before `play` binds |
+| Wait for `play` | `openStory` waits until the render phase is past `playing` | The slider test needs no probe, and `finished` waits on the fill's endless animation |
 | `"use client"` | None | No state or handler |
 
 ## Appendix B. Alternatives rejected
