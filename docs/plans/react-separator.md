@@ -120,8 +120,8 @@ Each commit ends with `bun run check`. The boxes under a commit name its extra c
 
 ## Review and open the PR
 
-- [ ] The `cursor grok-4.7` reviewer reads the diff against this plan. A fresh builder fixes each finding that blocks. Other findings go to `docs/follow-ups.md`.
-- [ ] Run `/deslop` and `/no-comments` over the diff.
+- [x] The `cursor grok-4.7` reviewer reads the diff against this plan. A fresh builder fixes each finding that blocks. Other findings go to `docs/follow-ups.md`. Result: `interrogate` ran two reviewers, Opus and `cursor grok-4.7`, and this run is also the cross-provider review. It found 0 blocking findings and no correctness bugs. Both reviewers found that the 004 message listed `data-orientation` as allowed. Grok found that the README row forbade `role`, and Opus found that the README recipe missed the hand-typed `Values` line. Five nits covered the 003 wording, message derivation, duplicate fixture lines, and a stray `Button` in `pass.tsx`. A fresh builder fixed all of them. The `dangerouslySetInnerHTML` nit is noted and left out. The recipe gap is in `docs/follow-ups.md`.
+- [x] Run `/deslop` and `/no-comments` over the diff. Result: `/deslop` removed nothing. Comment Sicko kept the one JSDoc on `children?: never` and the fixtures' `expect:` lines, which the tests parse.
 - [ ] Open the PR ready with `gh pr create --base main --repo Rakvadium/odd-design`. The title is `feat(react): add Separator and mirror it in the Storybooks`.
 - [ ] Run `gh pr checks`. The repo has no workflows, so expect "no checks reported". Report the PR as open. Do not merge.
 
