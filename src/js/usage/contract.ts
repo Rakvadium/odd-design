@@ -12,6 +12,7 @@ export type UsageRule =
   | { kind: "forbidden-on-element"; code: UsageCode; element: string; attribute: string }
   | { kind: "enum-on-element"; code: UsageCode; element: string; attribute: string }
   | { kind: "accessible-name"; code: UsageCode; attribute: string; names: readonly string[] }
+  | { kind: "name-requires"; code: UsageCode; attribute: string; names: readonly string[] }
   | { kind: "icon-only-text"; code: UsageCode; attribute: string; ignore: string }
   | { kind: "system-data"; code: UsageCode; allow?: readonly string[] }
   | { kind: "stretched-link"; code: UsageCode; attribute: string; className: string; controls: readonly string[] }
@@ -188,6 +189,15 @@ export const USAGE = {
     { kind: "required-attribute", code: "ODD-TOAST-003", element: "section", attribute: "aria-label" },
     { kind: "system-data", code: "ODD-TOAST-004" },
   ] as const satisfies readonly UsageRule[],
+  popover: [
+    { kind: "element", code: "ODD-POPOVER-001", className: "odd-popover", elements: ["div"] },
+    { kind: "required-attribute", code: "ODD-POPOVER-002", element: "div", attribute: "popover" },
+    { kind: "enum", code: "ODD-POPOVER-002", attribute: "popover", values: ["", "auto"], omit: [] },
+    { kind: "enum", code: "ODD-POPOVER-003", attribute: "role", values: ["dialog"], omit: [] },
+    { kind: "accessible-name", code: "ODD-POPOVER-004", attribute: "role", names: ["aria-label", "aria-labelledby"] },
+    { kind: "name-requires", code: "ODD-POPOVER-005", attribute: "role", names: ["aria-label", "aria-labelledby"] },
+    { kind: "system-data", code: "ODD-POPOVER-006" },
+  ] as const satisfies readonly UsageRule[],
   shared: [
     { kind: "unknown-class", code: "ODD-CLASS-001" },
     { kind: "computed-value", code: "ODD-STATIC-001" },
@@ -238,6 +248,7 @@ export const WRAPPERS = {
   Meter: { source: "odd-design/react", className: "odd-meter", props: { tone: "data-tone" }, element: "meter" },
   Progress: { source: "odd-design/react", className: "odd-progress", props: { tone: "data-tone" }, element: "progress" },
   Toaster: { source: "odd-design/react", className: "odd-toaster", props: {}, element: "section" },
+  Popover: { source: "odd-design/react", className: "odd-popover", props: {}, element: "div" },
 } as const satisfies Record<string, Wrapper>;
 
 export const CLASS_REGISTRY = [
@@ -369,3 +380,4 @@ export type SearchRule = (typeof USAGE.search)[number];
 export type SliderRule = (typeof USAGE.slider)[number];
 export type MeterRule = (typeof USAGE.meter)[number];
 export type ToasterRule = (typeof USAGE.toaster)[number];
+export type PopoverRule = (typeof USAGE.popover)[number];

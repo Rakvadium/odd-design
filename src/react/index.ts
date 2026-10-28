@@ -7,6 +7,7 @@ export * from "./choice.tsx";
 export * from "./disclosure.tsx";
 export * from "./field.tsx";
 export * from "./meter.tsx";
+export * from "./popover.tsx";
 export * from "./search.tsx";
 export * from "./separator.tsx";
 export * from "./skeleton.tsx";

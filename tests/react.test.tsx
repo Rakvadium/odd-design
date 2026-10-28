@@ -14,6 +14,7 @@ import { Choice, Segmented, Switch } from "../src/react/choice.tsx";
 import { Disclosure } from "../src/react/disclosure.tsx";
 import { Field, FieldError, Hint, Input, Label, Select, Textarea } from "../src/react/field.tsx";
 import { Meter, Progress } from "../src/react/meter.tsx";
+import { Popover } from "../src/react/popover.tsx";
 import { Search } from "../src/react/search.tsx";
 import { Separator } from "../src/react/separator.tsx";
 import { Skeleton } from "../src/react/skeleton.tsx";
@@ -233,6 +234,13 @@ const markup: readonly [string, ReactElement, string][] = [
     "toaster",
     <Toaster popover="manual" aria-label="Notifications" />,
     '<section popover="manual" aria-label="Notifications" class="odd-toaster"></section>',
+  ],
+  [
+    "popover dialog named by its title",
+    <Popover id="filters" popover="auto" role="dialog" aria-labelledby="filters-title" className="wide">
+      <p id="filters-title">Filter decks</p>
+    </Popover>,
+    '<div id="filters" popover="auto" role="dialog" aria-labelledby="filters-title" class="odd-popover wide"><p id="filters-title">Filter decks</p></div>',
   ],
 ];
 
@@ -489,6 +497,12 @@ const failures: Record<string, { codes: string[]; text: string[] }> = {
   "toaster-aria-label": { codes: [], text: ["Property '\"aria-label\"' is missing"] },
   "toaster-data-tone": { codes: ["ODD-TOAST-004"], text: [] },
   "toaster-children": { codes: [], text: ["not assignable to type 'undefined'"] },
+  "popover-popover": { codes: [], text: ["Property 'popover' is missing"] },
+  "popover-popover-manual": { codes: [], text: ['"auto"'] },
+  "popover-role": { codes: [], text: ['"dialog"'] },
+  "popover-name-without-role": { codes: ["ODD-POPOVER-005"], text: [] },
+  "popover-name": { codes: ["ODD-POPOVER-004"], text: [] },
+  "popover-data-tone": { codes: ["ODD-POPOVER-006"], text: [] },
 };
 
 describe("React types", () => {

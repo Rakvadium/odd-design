@@ -194,6 +194,16 @@ The plugin checks `Toaster` as a `section` with `odd-toaster`, from its entry of
 
 So `<Toaster aria-label="Notifications">` with no `popover`, and `<Toaster popover="auto">`, report `ODD-TOAST-002`. `<Toaster popover="manual">` with no `aria-label` reports `ODD-TOAST-003`, and `<Toaster popover="manual" aria-label="Notifications" data-tone="success">` reports `ODD-TOAST-004`. A raw `<div className="odd-toaster">` or `<aside className="odd-toaster">` reports `ODD-TOAST-001`. A computed `popover`, such as `popover={mode}`, gives the `ODD-STATIC-001` warning. A spread gives that warning too, and `ODD-TOAST-002` and `ODD-TOAST-003` then stay quiet, because the spread may hold both. The toasts inside come from `toast()` at run time, so the plugin never sees them.
 
+### Popover from odd-design/react
+
+The plugin checks `Popover` as a `div` with `odd-popover`, from its entry of `WRAPPERS`. Every prop is the attribute with the same name, so `popover`, `role`, and the names are read as written.
+
+So `<Popover id="filters">` with no `popover`, `<Popover popover="manual">`, and `<Popover popover="hint">` report `ODD-POPOVER-002`. `<Popover popover="auto" role="menu" aria-label="Deck actions">` reports `ODD-POPOVER-003`, and `<Popover popover="auto" role="dialog">` with no `aria-label` and no `aria-labelledby` reports `ODD-POPOVER-004`. `<Popover popover="auto" data-tone="info">` reports `ODD-POPOVER-006`. A raw `<span className="odd-popover">` reports `ODD-POPOVER-001`. A computed `popover`, such as `popover={kind}`, gives the `ODD-STATIC-001` warning. A spread gives that warning too, and `ODD-POPOVER-002` and `ODD-POPOVER-005` then stay quiet, because the spread may hold `popover` or `role`.
+
+`<Popover popover="auto" aria-labelledby="filters-title">` with no `role` reports `ODD-POPOVER-005` on the name. That rule is the `name-requires` kind, the converse of `accessible-name` with the same fields. `accessible-name` reports a set `role` with no name. `name-requires` reports a name with no `role`. Both count a computed name as present and a blank one, such as `aria-label=" "`, as absent.
+
+A valueless `popover` in JSX reads as `""`, which passes. React drops `popover={true}` and warns, so the rendered `div` has no `popover`. On `Popover`, TypeScript rejects it, and the [runtime checker](runtime.md) reports `ODD-POPOVER-002` on the rendered page.
+
 ### Other components
 
 The plugin cannot see what another component renders. A component with an `odd-` class, such as `<Link className="odd-button">`, gets one `ODD-STATIC-001` warning on the element and no button rules. An `odd-` class that is not in the registry still reports `ODD-CLASS-001`. `<UI.Button>`, with `UI` a namespace import, counts as another component.
