@@ -61,6 +61,7 @@ const REQUIRED = [
   "docs/usage/popover.md",
   "docs/usage/dialog.md",
   "docs/usage/sheet.md",
+  "docs/usage/menu.md",
   "src/css/index.css",
   "src/js/appearance.ts",
   "src/js/enhance.ts",

@@ -287,6 +287,19 @@ test.describe("keyboard widgets", () => {
     });
   }
 
+  test("ArrowDown opens the menu after the HTML story renders it again", async ({ page }) => {
+    const errors: Error[] = [];
+    page.on("pageerror", (error) => errors.push(error));
+    await openStory(page, "components-interactive--menu", "mode:light");
+    const old = await page.locator("#deck-actions").elementHandle();
+    await page.evaluate(() => (window as any).__STORYBOOK_PREVIEW__.channel.emit("forceReRender"));
+    await page.waitForFunction((menu) => !menu!.isConnected, old);
+    await page.locator('button[commandfor="deck-actions"]').focus();
+    await page.keyboard.press("ArrowDown");
+    await expect(page.locator(".odd-menu-item", { hasText: "Duplicate" })).toBeFocused();
+    expect(errors.map((error) => error.message)).toEqual([]);
+  });
+
   test("select-all checks every row, shows mixed, and clears", async ({ page }) => {
     await openStory(page, "components-data-display--table", "mode:light");
     const all = page.locator("[data-select-all]");

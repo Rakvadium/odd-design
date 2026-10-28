@@ -95,6 +95,13 @@ export const USAGE_CODES = [
   "ODD-SHEET-001",
   "ODD-SHEET-002",
   "ODD-SHEET-003",
+  "ODD-MENU-001",
+  "ODD-MENU-002",
+  "ODD-MENU-003",
+  "ODD-MENU-004",
+  "ODD-MENU-005",
+  "ODD-MENU-006",
+  "ODD-MENU-007",
   "ODD-STATIC-001",
   "ODD-STATIC-002",
   "ODD-STATIC-003",
@@ -159,6 +166,9 @@ const dialogRoleAllowed = enumAllowed(dialogRoleRule.values, dialogRoleRule.omit
 const sideRule = USAGE.sheet[6] satisfies { kind: "enum"; attribute: "data-side" };
 const sideAllowed = enumAllowed(sideRule.values, sideRule.omit);
 const sheetAttributes = WRAPPERS.Sheet.props.side;
+const menuToneRule = USAGE.menuItem[3] satisfies { kind: "enum"; attribute: "data-tone" };
+const menuItemRoles = comma((USAGE.menuItem[2] satisfies { kind: "enum"; attribute: "role" }).values);
+const menuAttributes = WRAPPERS.MenuItem.props.tone;
 const appearanceAxes = comma(APPEARANCE_AXES);
 const headlessAllowlist = comma(HEADLESS_ALLOWLIST);
 
@@ -731,7 +741,7 @@ export const MESSAGES = {
   ),
   "ODD-POPOVER-002": text(
     "ODD-POPOVER-002",
-    "odd-popover needs popover with no value or popover auto. With no popover the box stays in the page, invisible, while its controls still take focus and are read out, and its trigger does nothing. A manual popover ignores Escape and a click outside, and so does an unknown token such as yes, which acts as manual. A hint popover closes when an auto popover or another hint opens, and a manual popover leaves it open. That suits odd-tooltip and odd-hover-card, not a popover.",
+    "odd-popover and odd-menu need popover with no value or popover auto. With no popover the box stays in the page, invisible, while a popover's controls still take focus and are read out, a closed menu and its first items stay in the accessibility tree, and its trigger does nothing. A manual popover ignores Escape and a click outside, and so does an unknown token such as yes, which acts as manual. A hint popover closes when an auto popover or another hint opens, and a manual popover leaves it open. That suits odd-tooltip and odd-hover-card, not a popover or a menu.",
     "popover with no value, or auto",
     "write popover with no value in HTML, or popover=auto in React.",
     "docs/usage/popover.md#odd-popover-002",
@@ -840,6 +850,55 @@ export const MESSAGES = {
     "the sheet attribute, any app data attribute, the appearance axes, and the headless allowlist",
     `remove the attribute, or correct its name. sheet.css reads ${sheetAttributes} on odd-sheet and no data attribute on the header, body, or footer. Appearance axes: ${appearanceAxes}. Headless allowlist: ${headlessAllowlist}.`,
     "docs/usage/sheet.md#odd-sheet-003",
+  ),
+  "ODD-MENU-001": text(
+    "ODD-MENU-001",
+    "this menu class is on the wrong element. A p ends before its first block child, so the items after a separator or a group render in the page while the menu is closed. Enter and Space click only a button, so a div item does nothing when chosen from the keyboard, and an a item with href ignores Space and is underlined.",
+    "odd-menu on div, odd-menu-item on button",
+    "put odd-menu on a div with popover and role=menu, and odd-menu-item on a button. In React, use Menu and MenuItem.",
+    "docs/usage/menu.md#odd-menu-001",
+  ),
+  "ODD-MENU-002": text(
+    "ODD-MENU-002",
+    "odd-menu needs role=menu. enhance() wires only .odd-menu[role=menu], so without it the trigger opens the menu with focus left on the trigger, and ArrowDown and the arrow keys inside do nothing.",
+    "role=menu",
+    "set role=menu. For a popover that holds controls, use odd-popover with role=dialog.",
+    "docs/usage/menu.md#odd-menu-002",
+  ),
+  "ODD-MENU-003": text(
+    "ODD-MENU-003",
+    "this menu has no name, so a screen reader announces only menu when it opens.",
+    "aria-label or aria-labelledby",
+    "point aria-labelledby at the trigger, or set aria-label.",
+    "docs/usage/menu.md#odd-menu-003",
+  ),
+  "ODD-MENU-004": text(
+    "ODD-MENU-004",
+    "this menu or menu item does not take that data attribute.",
+    "the menu item attribute, any app data attribute, the appearance axes, and the headless allowlist",
+    `remove the attribute, or correct its name. menu.css reads ${menuAttributes} on odd-menu-item and no data attribute on odd-menu, so data-tone on the menu changes nothing. Appearance axes: ${appearanceAxes}. Headless allowlist: ${headlessAllowlist}.`,
+    "docs/usage/menu.md#odd-menu-004",
+  ),
+  "ODD-MENU-005": text(
+    "ODD-MENU-005",
+    "odd-menu-item needs a menu item role. enhanceMenu and the arrow keys reach only menuitem, menuitemcheckbox, and menuitemradio, so an item with no role or another role is skipped and stays in the Tab order.",
+    menuItemRoles,
+    "set role=menuitem for an action, menuitemcheckbox for a toggle, or menuitemradio for one choice in a group.",
+    "docs/usage/menu.md#odd-menu-005",
+  ),
+  "ODD-MENU-006": text(
+    menuToneRule.code,
+    "data-tone on odd-menu-item is danger or nothing. menu.css styles only danger, so any other tone looks like a plain item.",
+    comma(menuToneRule.values),
+    "set data-tone=danger for a destructive item, or remove it. In React, pass tone=danger.",
+    "docs/usage/menu.md#odd-menu-006",
+  ),
+  "ODD-MENU-007": text(
+    "ODD-MENU-007",
+    "odd-menu-item takes no disabled attribute. The arrow keys skip a disabled button, so a keyboard user never reaches the item.",
+    "aria-disabled=true",
+    "replace disabled with aria-disabled=true. The item stays reachable, and enhanceMenu stops its click.",
+    "docs/usage/menu.md#odd-menu-007",
   ),
   "ODD-STATIC-001": text(
     "ODD-STATIC-001",

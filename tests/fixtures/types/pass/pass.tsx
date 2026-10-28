@@ -8,6 +8,7 @@ import { Choice, Segmented, Switch } from "../../../../src/react/choice.tsx";
 import { Dialog, DialogActions } from "../../../../src/react/dialog.tsx";
 import { Disclosure } from "../../../../src/react/disclosure.tsx";
 import { Field, FieldError, Hint, Input, Label, Select, Textarea } from "../../../../src/react/field.tsx";
+import { Menu, MenuItem } from "../../../../src/react/menu.tsx";
 import { Meter, Progress, type MeterTone } from "../../../../src/react/meter.tsx";
 import { Popover } from "../../../../src/react/popover.tsx";
 import { Search } from "../../../../src/react/search.tsx";
@@ -387,6 +388,26 @@ export function FilterSheet({ side, onApply }: { side: SheetProps["side"]; onApp
         </SheetFooter>
       </Sheet>
       <Sheet side="bottom" role="alertdialog" aria-label="Discard changes?" closedby="closerequest" onCancel={(event) => event.preventDefault()} />
+    </>
+  );
+}
+
+export function DeckMenu({ label, onRename }: { label: string; onRename: () => void }) {
+  const menu = useRef<HTMLDivElement>(null);
+  return (
+    <>
+      <Button id="deck-actions-trigger" commandfor="deck-actions" command="toggle-popover" aria-haspopup="menu">Deck actions</Button>
+      <Menu ref={menu} id="deck-actions" popover="auto" role="menu" aria-labelledby="deck-actions-trigger" className="wide" data-testid="actions">
+        <MenuItem role="menuitem" onClick={onRename}>Rename</MenuItem>
+        <MenuItem role="menuitem" aria-disabled="true">Merge</MenuItem>
+        <Separator />
+        <MenuItem role="menuitemcheckbox" aria-checked="true" onClick={(event) => event.currentTarget.getAttribute("aria-checked") === "true"}>Show prices</MenuItem>
+        <div role="group" aria-label="Sort by">
+          <MenuItem role="menuitemradio" aria-checked="false" data-testid="sort-name">Name</MenuItem>
+        </div>
+        <MenuItem role="menuitem" tone="danger" onClick={() => menu.current?.hidePopover()}>Delete deck</MenuItem>
+      </Menu>
+      <Menu popover="" role="menu" aria-label={label} />
     </>
   );
 }

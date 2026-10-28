@@ -7,6 +7,7 @@ export * from "./choice.tsx";
 export * from "./dialog.tsx";
 export * from "./disclosure.tsx";
 export * from "./field.tsx";
+export * from "./menu.tsx";
 export * from "./meter.tsx";
 export * from "./popover.tsx";
 export * from "./search.tsx";

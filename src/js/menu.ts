@@ -1,5 +1,7 @@
 import { roving } from "./roving.ts";
 
+const holders = new WeakMap<HTMLElement, { count: number; stop: () => void }>();
+
 /*
  * <button class="odd-button" commandfor="deck-actions" command="toggle-popover" aria-haspopup="menu">Actions</button>
  * <div class="odd-menu" id="deck-actions" popover role="menu" aria-label="Deck actions">
@@ -16,29 +18,49 @@ import { roving } from "./roving.ts";
  * enhanceMenu adds the menu keyboard: focus lands on the first item, arrows, Home, End, and typing
  * move between items, and Tab closes. ArrowDown or ArrowUp on the trigger opens it at the first or
  * last item. A menuitem closes the menu when chosen; checkbox and radio items toggle and stay open.
- * Listen for click on the items to act on them.
+ * Listen for click on the items to act on them. By then enhanceMenu has already flipped aria-checked.
  *
  * Disable an item with aria-disabled="true", not the disabled attribute. It stays reachable with the
  * arrows, so a screen-reader user hears that it exists and that it's unavailable (the APG's default
  * for menus), and it does nothing when chosen: enhanceMenu stops the click before your listeners see it.
+ *
+ * A menu is wired once however many callers enhance it, and its listeners go when the last caller
+ * cleans up. Its triggers are found by id when they are used, so a trigger added later works too.
  */
 const ITEM = '[role="menuitem"], [role="menuitemcheckbox"], [role="menuitemradio"]';
 
 export function enhanceMenu(menu: HTMLElement): () => void {
+  let hold = holders.get(menu);
+  if (hold === undefined) {
+    hold = { count: 0, stop: wire(menu) };
+    holders.set(menu, hold);
+  }
+  hold.count++;
+  let released = false;
+  return () => {
+    if (released) return;
+    released = true;
+    if (--hold.count > 0) return;
+    hold.stop();
+    holders.delete(menu);
+  };
+}
+
+function wire(menu: HTMLElement): () => void {
   const items = () => [...menu.querySelectorAll<HTMLElement>(ITEM)];
   const unavailable = (el: Element) => el.matches(':disabled, [aria-disabled="true"]');
   const enabled = () => items().filter((el) => !unavailable(el));
-  const triggers = () => [
-    ...document.querySelectorAll<HTMLElement>(`[commandfor="${CSS.escape(menu.id)}"], [popovertarget="${CSS.escape(menu.id)}"]`),
-  ];
+  const triggerSelector = () => `[commandfor="${CSS.escape(menu.id)}"], [popovertarget="${CSS.escape(menu.id)}"]`;
+  const triggers = () => (menu.id ? [...document.querySelectorAll<HTMLElement>(triggerSelector())] : []);
+  const triggerOf = (event: Event) => (menu.id ? (event.target as Element).closest?.<HTMLElement>(triggerSelector()) : null) ?? undefined;
   let openAt: "first" | "last" = "first";
   let lastTrigger: HTMLElement | undefined;
 
-  for (const el of items()) el.tabIndex = -1;
   const stopRoving = roving(menu, { items, orientation: "vertical", typeahead: true });
 
   const onToggle = (event: Event) => {
     if ((event as ToggleEvent).newState !== "open") return;
+    for (const el of items()) el.tabIndex = -1;
     (openAt === "last" ? enabled().at(-1) : enabled()[0])?.focus();
     openAt = "first";
   };
@@ -74,27 +96,27 @@ export function enhanceMenu(menu: HTMLElement): () => void {
     menu.hidePopover();
   };
   const onTriggerUse = (event: Event) => {
-    lastTrigger = event.currentTarget as HTMLElement;
+    if (!menu.isConnected) return;
+    lastTrigger = triggerOf(event) ?? lastTrigger;
   };
 
   const onTriggerKeyDown = (event: KeyboardEvent) => {
-    if (event.key !== "ArrowDown" && event.key !== "ArrowUp") return;
+    if (!menu.isConnected) return;
+    const trigger = triggerOf(event);
+    if (trigger === undefined || (event.key !== "ArrowDown" && event.key !== "ArrowUp")) return;
     event.preventDefault();
     openAt = event.key === "ArrowUp" ? "last" : "first";
-    lastTrigger = event.currentTarget as HTMLElement;
+    lastTrigger = trigger;
     if (menu.matches(":popover-open")) (openAt === "last" ? enabled().at(-1) : enabled()[0])?.focus();
-    else menu.showPopover({ source: event.currentTarget } as ShowPopoverOptions);
+    else menu.showPopover({ source: trigger } as ShowPopoverOptions);
   };
 
-  const bound = triggers();
   menu.addEventListener("toggle", onToggle);
   menu.addEventListener("click", onDisabledClick, true);
   menu.addEventListener("click", onClick);
   menu.addEventListener("keydown", onMenuKeyDown);
-  for (const t of bound) {
-    t.addEventListener("keydown", onTriggerKeyDown);
-    t.addEventListener("click", onTriggerUse);
-  }
+  document.addEventListener("keydown", onTriggerKeyDown, true);
+  document.addEventListener("click", onTriggerUse, true);
 
   return () => {
     stopRoving();
@@ -102,9 +124,7 @@ export function enhanceMenu(menu: HTMLElement): () => void {
     menu.removeEventListener("click", onDisabledClick, true);
     menu.removeEventListener("click", onClick);
     menu.removeEventListener("keydown", onMenuKeyDown);
-    for (const t of bound) {
-      t.removeEventListener("keydown", onTriggerKeyDown);
-      t.removeEventListener("click", onTriggerUse);
-    }
+    document.removeEventListener("keydown", onTriggerKeyDown, true);
+    document.removeEventListener("click", onTriggerUse, true);
   };
 }

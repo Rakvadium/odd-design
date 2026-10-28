@@ -14,6 +14,7 @@ import { Choice, Segmented, Switch } from "../src/react/choice.tsx";
 import { Dialog, DialogActions } from "../src/react/dialog.tsx";
 import { Disclosure } from "../src/react/disclosure.tsx";
 import { Field, FieldError, Hint, Input, Label, Select, Textarea } from "../src/react/field.tsx";
+import { Menu, MenuItem } from "../src/react/menu.tsx";
 import { Meter, Progress } from "../src/react/meter.tsx";
 import { Popover } from "../src/react/popover.tsx";
 import { Search } from "../src/react/search.tsx";
@@ -253,6 +254,16 @@ const markup: readonly [string, ReactElement, string][] = [
     '<dialog id="confirm" aria-labelledby="confirm-title" closedby="any" class="odd-dialog wide"><h2 id="confirm-title">Delete deck?</h2><div class="odd-dialog-actions end"></div></dialog>',
   ],
   [
+    "menu with a danger item",
+    <Menu id="deck-actions" popover="auto" role="menu" aria-label="Deck actions">
+      <MenuItem role="menuitem">Rename</MenuItem>
+      <MenuItem role="menuitem" tone="danger" aria-disabled="true">
+        Delete
+      </MenuItem>
+    </Menu>,
+    '<div id="deck-actions" popover="auto" role="menu" aria-label="Deck actions" class="odd-menu"><button role="menuitem" class="odd-menu-item">Rename</button><button role="menuitem" aria-disabled="true" class="odd-menu-item" data-tone="danger">Delete</button></div>',
+  ],
+  [
     "sheet from the start edge around its header and footer",
     <Sheet id="filters" side="start" aria-labelledby="filters-title" closedby="any" className="wide">
       <SheetHeader>
@@ -411,6 +422,43 @@ describe("Tabs", () => {
   });
 });
 
+function arrowDown() {
+  document.activeElement?.dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowDown", bubbles: true, cancelable: true }));
+  return document.activeElement?.textContent;
+}
+
+describe("Menu", () => {
+  test("moves one item per arrow key and toggles once per click under StrictMode, beside an app's enhance(), and after its cleanup", async () => {
+    const host = document.createElement("div");
+    document.body.append(host);
+    const root = createRoot(host);
+    mounted = root;
+    await act(async () =>
+      root.render(
+        <StrictMode>
+          <Menu id="deck-actions" popover="auto" role="menu" aria-label="Deck actions">
+            <MenuItem role="menuitem">Rename</MenuItem>
+            <MenuItem role="menuitem">Share</MenuItem>
+            <MenuItem role="menuitemcheckbox" aria-checked="false">
+              Show prices
+            </MenuItem>
+          </Menu>
+        </StrictMode>,
+      ),
+    );
+    const unwire = enhance(document);
+    const [rename, , prices] = host.querySelectorAll<HTMLElement>(".odd-menu-item");
+    rename!.focus();
+    expect([arrowDown(), arrowDown()]).toEqual(["Share", "Show prices"]);
+    prices!.click();
+    expect(prices!.getAttribute("aria-checked")).toBe("true");
+    unwire();
+    expect(arrowDown()).toBe("Rename");
+    prices!.click();
+    expect(prices!.getAttribute("aria-checked")).toBe("false");
+  });
+});
+
 describe("Toaster", () => {
   test("wires itself once under StrictMode, beside an app's enhance(), and until it unmounts", async () => {
     const host = document.createElement("div");
@@ -531,6 +579,13 @@ const failures: Record<string, { codes: string[]; text: string[] }> = {
   "dialog-alert-closedby": { codes: [], text: ["'\"any\"' is not assignable to type '\"closerequest\"'"] },
   "dialog-data-tone": { codes: ["ODD-DIALOG-007"], text: [] },
   "dialog-actions-data-tone": { codes: ["ODD-DIALOG-008"], text: [] },
+  "menu-popover": { codes: [], text: ["Property 'popover' is missing"] },
+  "menu-role": { codes: [], text: ['"menu"'] },
+  "menu-name": { codes: [], text: ["Property '\"aria-labelledby\"' is missing"] },
+  "menu-data-tone": { codes: ["ODD-MENU-004"], text: [] },
+  "menu-item-role": { codes: [], text: ["Property 'role' is missing"] },
+  "menu-item-tone": { codes: [], text: ["'\"info\"' is not assignable to type '\"danger\"'"] },
+  "menu-item-disabled": { codes: ["ODD-MENU-007"], text: [] },
   "sheet-name": { codes: [], text: ["Property '\"aria-labelledby\"' is missing"] },
   "sheet-side": { codes: [], text: ['"bottom" | "start" | "top" | undefined'] },
   "sheet-data-side": { codes: [], text: ["not assignable to type 'undefined'"] },

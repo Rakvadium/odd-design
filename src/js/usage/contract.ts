@@ -36,6 +36,11 @@ const modal = [
   { kind: "forbidden-value", code: "ODD-DIALOG-006", attribute: "closedby", value: "any", when: { attribute: "role", value: "alertdialog" } },
 ] as const satisfies readonly UsageRule[];
 
+const autoPopover = [
+  { kind: "required-attribute", code: "ODD-POPOVER-002", element: "div", attribute: "popover" },
+  { kind: "enum", code: "ODD-POPOVER-002", attribute: "popover", values: ["", "auto"], omit: [] },
+] as const satisfies readonly UsageRule[];
+
 export const USAGE = {
   button: [
     { kind: "element", code: "ODD-BUTTON-001", className: "odd-button", elements: ["button", "a"] },
@@ -201,8 +206,7 @@ export const USAGE = {
   ] as const satisfies readonly UsageRule[],
   popover: [
     { kind: "element", code: "ODD-POPOVER-001", className: "odd-popover", elements: ["div"] },
-    { kind: "required-attribute", code: "ODD-POPOVER-002", element: "div", attribute: "popover" },
-    { kind: "enum", code: "ODD-POPOVER-002", attribute: "popover", values: ["", "auto"], omit: [] },
+    ...autoPopover,
     { kind: "enum", code: "ODD-POPOVER-003", attribute: "role", values: ["dialog"], omit: [] },
     { kind: "accessible-name", code: "ODD-POPOVER-004", attribute: "role", names: ["aria-label", "aria-labelledby"] },
     { kind: "name-requires", code: "ODD-POPOVER-005", attribute: "role", names: ["aria-label", "aria-labelledby"] },
@@ -230,6 +234,22 @@ export const USAGE = {
     { kind: "element", code: "ODD-SHEET-001", className: "odd-sheet-body", elements: ["div", "form"] },
     { kind: "element", code: "ODD-SHEET-001", className: "odd-sheet-footer", elements: ["div"] },
     { kind: "system-data", code: "ODD-SHEET-003" },
+  ] as const satisfies readonly UsageRule[],
+  menu: [
+    { kind: "element", code: "ODD-MENU-001", className: "odd-menu", elements: ["div"] },
+    ...autoPopover,
+    { kind: "required-attribute", code: "ODD-MENU-002", element: "div", attribute: "role" },
+    { kind: "enum", code: "ODD-MENU-002", attribute: "role", values: ["menu"], omit: [] },
+    { kind: "accessible-name", code: "ODD-MENU-003", element: "div", names: ["aria-label", "aria-labelledby"] },
+    { kind: "system-data", code: "ODD-MENU-004" },
+  ] as const satisfies readonly UsageRule[],
+  menuItem: [
+    { kind: "element", code: "ODD-MENU-001", className: "odd-menu-item", elements: ["button"] },
+    { kind: "required-attribute", code: "ODD-MENU-005", element: "button", attribute: "role" },
+    { kind: "enum", code: "ODD-MENU-005", attribute: "role", values: ["menuitem", "menuitemcheckbox", "menuitemradio"], omit: [] },
+    { kind: "enum", code: "ODD-MENU-006", attribute: "data-tone", values: ["danger"], omit: [] },
+    { kind: "forbidden-attribute", code: "ODD-MENU-007", attribute: "disabled" },
+    { kind: "system-data", code: "ODD-MENU-004" },
   ] as const satisfies readonly UsageRule[],
   shared: [
     { kind: "unknown-class", code: "ODD-CLASS-001" },
@@ -287,6 +307,8 @@ export const WRAPPERS = {
   Sheet: { source: "odd-design/react", className: "odd-sheet", props: { side: "data-side" }, element: "dialog" },
   SheetHeader: { source: "odd-design/react", className: "odd-sheet-header", props: {}, element: "div" },
   SheetFooter: { source: "odd-design/react", className: "odd-sheet-footer", props: {}, element: "div" },
+  Menu: { source: "odd-design/react", className: "odd-menu", props: {}, element: "div" },
+  MenuItem: { source: "odd-design/react", className: "odd-menu-item", props: { tone: "data-tone" }, element: "button" },
 } as const satisfies Record<string, Wrapper>;
 
 export const CLASS_REGISTRY = [
@@ -423,3 +445,5 @@ export type DialogRule = (typeof USAGE.dialog)[number];
 export type DialogPartRule = (typeof USAGE.dialogPart)[number];
 export type SheetRule = (typeof USAGE.sheet)[number];
 export type SheetPartRule = (typeof USAGE.sheetPart)[number];
+export type MenuRule = (typeof USAGE.menu)[number];
+export type MenuItemRule = (typeof USAGE.menuItem)[number];
