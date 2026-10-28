@@ -161,10 +161,10 @@ Each commit ends with `bun run check`. The boxes under a commit name its extra c
 
 ### Commit 2. Mirror Search in the Storybooks
 
-- [ ] Create `stories/mirrored/Search.stories.ts` with `title: "Components/Forms"` and the export `Search`. The meta component description carries the story text, now "With a `<form>` around it, Enter submits."
-- [ ] Remove the `Search` export and the unused `icons` import from `stories/Forms.stories.ts`. Add the id to the mirrored-ids pin in `tests/stories.test.ts`.
-- [ ] Measure the `aria` literal in the built Firefox Storybook, then paste it.
-- [ ] Check. `bunx playwright test e2e/usage.spec.ts e2e/behavior.spec.ts --project firefox` passes with 0 diagnostics, and the clear-button test still finds `#card-search`.
+- [x] Create `stories/mirrored/Search.stories.ts` with `title: "Components/Forms"` and the export `Search`. The meta component description carries the story text, now "With a `<form>` around it, Enter submits." Result: the scene is the planned `form method="dialog"` around `Search`, and the id stays `components-forms--search`.
+- [x] Remove the `Search` export and the unused `icons` import from `stories/Forms.stories.ts`. Add the id to the mirrored-ids pin in `tests/stories.test.ts`. Result: `Forms.stories.ts` keeps `Slider` only. The catalog test pins `components-forms--search` as mirrored.
+- [x] Measure the `aria` literal in the built Firefox Storybook, then paste it. Result: the sweep's `ariaSnapshot()` of `#storybook-root` equals the planned literal on the HTML and React sides in Firefox. The outer `form` has no name, so it adds no `form` node.
+- [x] Check. `bunx playwright test e2e/usage.spec.ts e2e/behavior.spec.ts --project firefox` passes with 0 diagnostics, and the clear-button test still finds `#card-search`. Result: `bun run check` passes 543 tests. The Firefox run passes 23 of 23 with "62 stories, 0 diagnostics", and "the search field's clear button is restyled" passes on `#card-search` (`.verify/search/build/browsers-c2-firefox.txt`).
 
 ### Commit 3. Docs, smoke, and the verify recipe
 

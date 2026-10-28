@@ -1,5 +1,4 @@
 import type { Meta, StoryObj } from "@storybook/html-vite";
-import { icons } from "./icons.ts";
 
 const meta = {
   title: "Components/Forms",
@@ -43,25 +42,5 @@ export const Slider: Story = {
       <label class="odd-label" for="locked">Hand size (locked by format)</label>
       <input class="odd-slider" type="range" id="locked" min="5" max="9" value="7" disabled>
     </div>
-  </div>`,
-};
-
-export const Search: Story = {
-  parameters: {
-    docs: {
-      description: {
-        story:
-          "`<search>` is the search landmark. The label is visually hidden but still names the field. With a `<form>` inside, Enter submits.",
-      },
-    },
-  },
-  render: () => /* html */ `<div class="odd-stack" style="max-inline-size: 26rem">
-    <search>
-      <form class="odd-search" onsubmit="event.preventDefault()">
-        <label class="odd-visually-hidden" for="card-search">Search cards</label>
-        ${icons.search}
-        <input class="odd-input" type="search" id="card-search" name="q" placeholder="Search cards" value="Ember">
-      </form>
-    </search>
   </div>`,
 };
