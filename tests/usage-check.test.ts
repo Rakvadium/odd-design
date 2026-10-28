@@ -100,6 +100,13 @@ const RUNTIME_CODES = [
   "ODD-SHEET-001",
   "ODD-SHEET-002",
   "ODD-SHEET-003",
+  "ODD-MENU-001",
+  "ODD-MENU-002",
+  "ODD-MENU-003",
+  "ODD-MENU-004",
+  "ODD-MENU-005",
+  "ODD-MENU-006",
+  "ODD-MENU-007",
   "ODD-CLASS-001",
 ];
 
@@ -241,4 +248,9 @@ test("a computed data-icon-only on a button with text only warns", () => {
   const iconOnly = attribute("data-icon-only", { computed: [] });
   const node: UsageNode = { tag: "button", attributes: [attribute("class", "odd-button"), iconOnly], children: ["Save"] };
   expect(checkUsage(node).map((diagnostic) => [diagnostic.code, diagnostic.attribute])).toEqual([["ODD-STATIC-001", iconOnly]]);
+});
+
+test("a menu that also carries odd-popover reports the shared popover rule once", () => {
+  const html = '<div class="odd-popover odd-menu" id="m" role="menu" aria-label="Deck actions"></div>';
+  expect(diagnose(html).map((diagnostic) => diagnostic.code)).toEqual(["ODD-POPOVER-002", "ODD-POPOVER-003"]);
 });

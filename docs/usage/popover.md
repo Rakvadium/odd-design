@@ -42,11 +42,11 @@ Put `odd-popover` on a `div` with `popover`. In React, use `Popover`, which rend
 
 ## ODD-POPOVER-002
 
-Fails when `odd-popover` has no `popover`, or a `popover` other than no value or `auto`.
+Fails when `odd-popover` or `odd-menu` has no `popover`, or a `popover` other than no value or `auto`.
 
-With no `popover`, the box stays in the page at opacity 0. Its controls still take focus and are read out, and its trigger does nothing. `popover="manual"` ignores Escape and a click outside, and so does an unknown token such as `yes`, which acts as `manual`. `popover="hint"` closes when an `auto` popover or another `hint` opens, and a `manual` popover leaves it open. That suits `odd-tooltip` and `odd-hover-card`, not a popover.
+With no `popover`, the box stays in the page at opacity 0. A popover's controls still take focus and are read out, a closed menu and its first items stay in the accessibility tree, and its trigger does nothing. `popover="manual"` ignores Escape and a click outside, and so does an unknown token such as `yes`, which acts as `manual`. `popover="hint"` closes when an `auto` popover or another `hint` opens, and a `manual` popover leaves it open. That suits `odd-tooltip` and `odd-hover-card`, not a popover or a [menu](menu.md).
 
-Write `popover` with no value in HTML, or `popover="auto"`. In React, `Popover` requires `popover`, and it takes `""` or `"auto"`.
+Write `popover` with no value in HTML, or `popover="auto"`. In React, `Popover` and `Menu` require `popover`, and they take `""` or `"auto"`.
 
 ## ODD-POPOVER-003
 

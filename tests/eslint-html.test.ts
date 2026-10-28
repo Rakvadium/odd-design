@@ -253,6 +253,8 @@ const places: Record<string, readonly (readonly [string, number, number, string]
     ["ODD-POPOVER-002", 2, 1, "<div"],
     ["ODD-POPOVER-002", 3, 33, "popover"],
     ["ODD-POPOVER-002", 4, 33, "popover"],
+    ["ODD-POPOVER-002", 5, 1, "<div"],
+    ["ODD-POPOVER-002", 6, 30, "popover"],
   ],
   "odd-popover-003.bad.html": [
     ["ODD-POPOVER-003", 2, 41, "role"],
@@ -402,6 +404,34 @@ const places: Record<string, readonly (readonly [string, number, number, string]
   "odd-skeleton-005.bad.html": [
     ["ODD-SKELETON-005", 2, 66, "data-size"],
     ["ODD-SKELETON-005", 3, 46, "data-shap"],
+  ],
+  "odd-menu-001.bad.html": [
+    ["ODD-MENU-001", 2, 4, "class"],
+    ["ODD-MENU-001", 3, 81, "class"],
+    ["ODD-MENU-001", 4, 79, "class"],
+  ],
+  "odd-menu-002.bad.html": [
+    ["ODD-MENU-002", 2, 1, "<div"],
+    ["ODD-MENU-002", 3, 38, "role"],
+  ],
+  "odd-menu-003.bad.html": [
+    ["ODD-MENU-003", 2, 1, "<div"],
+    ["ODD-MENU-003", 3, 1, "<div"],
+  ],
+  "odd-menu-004.bad.html": [
+    ["ODD-MENU-004", 2, 76, "data-tone"],
+    ["ODD-MENU-004", 3, 49, "data-size"],
+  ],
+  "odd-menu-005.bad.html": [
+    ["ODD-MENU-005", 3, 3, "<button"],
+    ["ODD-MENU-005", 4, 33, "role"],
+  ],
+  "odd-menu-006.bad.html": [
+    ["ODD-MENU-006", 3, 49, "data-tone"],
+    ["ODD-MENU-006", 4, 49, "data-tone"],
+  ],
+  "odd-menu-007.bad.html": [
+    ["ODD-MENU-007", 3, 49, "disabled"],
   ],
   "odd-class-001.bad.html": [
     ["ODD-CLASS-001", 2, 6, "class"],

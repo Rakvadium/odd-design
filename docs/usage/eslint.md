@@ -204,6 +204,14 @@ So `<Popover id="filters">` with no `popover`, `<Popover popover="manual">`, and
 
 A valueless `popover` in JSX reads as `""`, which passes. React drops `popover={true}` and warns, so the rendered `div` has no `popover`. On `Popover`, TypeScript rejects it, and the [runtime checker](runtime.md) reports `ODD-POPOVER-002` on the rendered page.
 
+### Menu from odd-design/react
+
+The plugin checks `Menu` as a `div` with `odd-menu`, and `MenuItem` as a `button` with `odd-menu-item`, from their entries of `WRAPPERS`. `tone` is read as `data-tone`. A raw `data-tone` on `MenuItem` gives nothing, and its type rejects one. Every other prop is the attribute with the same name. The label, the shortcut, and the group have no part.
+
+`odd-menu` runs the same `ODD-POPOVER-002` rows as `odd-popover`. So `<Menu role="menu" aria-label="Deck actions">` with no `popover`, and `<Menu popover="manual">`, report `ODD-POPOVER-002`. A node with both `odd-popover` and `odd-menu` reports it once.
+
+`<Menu popover="auto" aria-label="Deck actions">` with no `role` and `<Menu popover="auto" role="listbox">` report `ODD-MENU-002`. `<Menu popover="auto" role="menu">` with no name, or with `aria-label=" "`, reports `ODD-MENU-003`. `data-tone="danger"` on `Menu` and `data-size="sm"` on `MenuItem` report `ODD-MENU-004`. `<MenuItem>` with no `role` and `<MenuItem role="option">` report `ODD-MENU-005`. `<MenuItem role="menuitem" tone="info">` reports `ODD-MENU-006`, and `<MenuItem role="menuitem" disabled>` reports `ODD-MENU-007`. A raw `<p className="odd-menu">` or `<div className="odd-menu-item">` reports `ODD-MENU-001`. A computed `tone` gives the `ODD-STATIC-001` warning. A spread on `Menu` gives that warning too, and the `popover`, `role`, and name rules then stay quiet, because the spread may hold them.
+
 ### Dialog from odd-design/react
 
 The plugin checks `Dialog` as a `dialog` with `odd-dialog`, and `DialogActions` as a `div` with `odd-dialog-actions`, from their entries of `WRAPPERS`. Every prop is the attribute with the same name, so `role`, `closedby`, `open`, and the names are read as written. The body and the title have no part, so the plugin checks the `odd-dialog-body` and `odd-dialog-title` classes where you write them.

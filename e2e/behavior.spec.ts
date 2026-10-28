@@ -196,38 +196,44 @@ test.describe("popovers and dialogs", () => {
 });
 
 test.describe("keyboard widgets", () => {
-  test("the menu opens on ArrowDown, stops on disabled items, wraps, and Tab moves past the trigger", async ({ page }) => {
-    await openStory(page, "components-interactive--menu", "mode:light");
-    const trigger = page.locator('button[commandfor="deck-actions"]');
-    await trigger.focus();
-    await page.keyboard.press("ArrowDown");
-    await expect(page.locator(".odd-menu-item", { hasText: "Duplicate" })).toBeFocused();
-    await page.keyboard.press("ArrowDown");
-    await page.keyboard.press("ArrowDown");
-    // NVDA heard the old menu skip Merge while still counting it ("Show prices 4 of 9"). A disabled
-    // item stays reachable, so it can be announced as unavailable, and choosing it does nothing.
-    const merge = page.locator(".odd-menu-item", { hasText: "Merge" });
-    await expect(merge).toBeFocused();
-    await page.keyboard.press("Enter");
-    await expect(merge, "Enter on a disabled item keeps the menu open").toBeFocused();
-    await expect(page.locator("#menu-log")).toHaveText("");
-    await page.keyboard.press("ArrowDown");
-    await expect(page.locator(".odd-menu-item", { hasText: "Show prices" })).toBeFocused();
-    for (let i = 0; i < 4; i++) await page.keyboard.press("ArrowUp");
-    await expect(page.locator(".odd-menu-item", { hasText: "Delete deck" })).toBeFocused();
-    await page.keyboard.press("c");
-    await expect(page.locator(".odd-menu-item", { hasText: "Compact grid" })).toBeFocused();
-    await page.keyboard.press("Home");
-    await page.keyboard.press("Enter");
-    await expect(page.locator("#menu-log")).toHaveText("Chose “Duplicate”");
-    await expect(trigger).toBeFocused();
-    await page.keyboard.press("ArrowDown");
-    // The menu focuses its first item once it has opened; Tab from there.
-    await expect(page.locator(".odd-menu-item", { hasText: "Duplicate" })).toBeFocused();
-    await page.keyboard.press("Tab");
-    await expect(page.locator("#after-menu")).toBeFocused();
-    expect(await isOpen(page, "#deck-actions")).toBe(false);
-  });
+  for (const storybook of ["html", "react"] as const) {
+    test(`the menu opens on ArrowDown, stops on disabled items, wraps, and Tab moves past the trigger (${storybook})`, async ({ page }) => {
+      await openStory(page, "components-interactive--menu", "mode:light", "", storybook);
+      const trigger = page.locator('button[commandfor="deck-actions"]');
+      await trigger.focus();
+      await page.keyboard.press("ArrowDown");
+      await expect(page.locator(".odd-menu-item", { hasText: "Duplicate" })).toBeFocused();
+      await page.keyboard.press("ArrowDown");
+      await page.keyboard.press("ArrowDown");
+      const merge = page.locator(".odd-menu-item", { hasText: "Merge" });
+      await expect(merge).toBeFocused();
+      await page.keyboard.press("Enter");
+      await expect(merge, "Enter on a disabled item keeps the menu open").toBeFocused();
+      await expect(page.locator("#menu-log")).toHaveText("");
+      await page.keyboard.press("ArrowDown");
+      await expect(page.locator(".odd-menu-item", { hasText: "Show prices" })).toBeFocused();
+      for (let i = 0; i < 4; i++) await page.keyboard.press("ArrowUp");
+      await expect(page.locator(".odd-menu-item", { hasText: "Delete deck" })).toBeFocused();
+      await page.keyboard.press("c");
+      const compact = page.locator(".odd-menu-item", { hasText: "Compact grid" });
+      await expect(compact).toBeFocused();
+      await page.keyboard.press("Enter");
+      await expect(compact, "a checkbox item toggles and the menu stays open").toHaveAttribute("aria-checked", "true");
+      await page.keyboard.press("ArrowDown");
+      await page.keyboard.press("ArrowDown");
+      await page.keyboard.press("Enter");
+      await expect(page.locator('[role="menuitemradio"][aria-checked="true"]')).toHaveText(["Last edited"]);
+      await page.keyboard.press("Home");
+      await page.keyboard.press("Enter");
+      await expect(page.locator("#menu-log")).toHaveText("Chose “Duplicate”");
+      await expect(trigger).toBeFocused();
+      await page.keyboard.press("ArrowDown");
+      await expect(page.locator(".odd-menu-item", { hasText: "Duplicate" })).toBeFocused();
+      await page.keyboard.press("Tab");
+      await expect(page.locator("#after-menu")).toBeFocused();
+      expect(await isOpen(page, "#deck-actions")).toBe(false);
+    });
+  }
 
   for (const storybook of ["html", "react"] as const) {
     test(`tabs follow the arrow keys, and manual tabs wait for Enter (${storybook})`, async ({ page }) => {
@@ -286,6 +292,19 @@ test.describe("keyboard widgets", () => {
       await expect(live).toHaveText("");
     });
   }
+
+  test("ArrowDown opens the menu after the HTML story renders it again", async ({ page }) => {
+    const errors: Error[] = [];
+    page.on("pageerror", (error) => errors.push(error));
+    await openStory(page, "components-interactive--menu", "mode:light");
+    const old = await page.locator("#deck-actions").elementHandle();
+    await page.evaluate(() => (window as any).__STORYBOOK_PREVIEW__.channel.emit("forceReRender"));
+    await page.waitForFunction((menu) => !menu!.isConnected, old);
+    await page.locator('button[commandfor="deck-actions"]').focus();
+    await page.keyboard.press("ArrowDown");
+    await expect(page.locator(".odd-menu-item", { hasText: "Duplicate" })).toBeFocused();
+    expect(errors.map((error) => error.message)).toEqual([]);
+  });
 
   test("select-all checks every row, shows mixed, and clears", async ({ page }) => {
     await openStory(page, "components-data-display--table", "mode:light");

@@ -56,6 +56,7 @@ test("the catalog has every story file's stories, and Button, Field, Choice, Bad
       "components-surfaces--dialog",
       "components-overlays--alert-dialog",
       "components-overlays--sheet",
+      "components-interactive--menu",
     ]),
   );
   expect(react.every((entry) => html.some((item) => item.id === entry.id))).toBe(true);
