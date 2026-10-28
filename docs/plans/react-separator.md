@@ -81,7 +81,7 @@ Each item is the default the build uses. Each one can be reversed after review.
 
 ## Capture the baseline (no source change)
 
-- [ ] Build both Storybooks from `3af3465` with `bun scripts/storybooks.ts .verify/separator/base-sb`, serve the build, and capture the HTML section with `bun scripts/capture-stories.ts <url>/html .verify/separator/base.json .verify/separator/base-shots`.
+- [x] Build both Storybooks from `3af3465` with `bun scripts/storybooks.ts .verify/separator/base-sb`, serve the build, and capture the HTML section with `bun scripts/capture-stories.ts <url>/html .verify/separator/base.json .verify/separator/base-shots`.
 
 ## Build
 
@@ -89,34 +89,34 @@ Each commit ends with `bun run check`. The boxes under a commit name its extra c
 
 ### Commit 1. Add Separator and check it with ODD-SEPARATOR-001 to 004
 
-- [ ] Add `USAGE.separator`, `SeparatorRule`, the `WRAPPERS` row, the four codes in `USAGE_CODES`, and their `MESSAGES`.
-- [ ] Write `docs/usage/separator.md` with one section per code.
-- [ ] Create `src/react/separator.tsx`. Add the barrel export and the `WrapperProps` line.
-- [ ] Add the `odd-separator-001` to `004` bad and good HTML pairs, four `RUNTIME_CODES` lines, and the `places` rows in `tests/eslint-html.test.ts`. Move `odd-separator` in `odd-class-001.good.html` onto an `hr`.
-- [ ] Add type fail fixtures for `aria-orientation`, `role`, `aria-hidden`, `data-orientation`, `data-tone`, and children, each with its `failures` entry. Add `pass.tsx` lines.
-- [ ] Add `tests/fixtures/usage/jsx/separator.tsx` and its `places` entry. Add one markup row to `tests/react.test.tsx`.
-- [ ] Check. Delete the `role` line, the `children` line, the `data-orientation` rule, and the `system-data` rule one at a time, and the fixtures that name each fail.
+- [x] Add `USAGE.separator`, `SeparatorRule`, the `WRAPPERS` row, the four codes in `USAGE_CODES`, and their `MESSAGES`.
+- [x] Write `docs/usage/separator.md` with one section per code.
+- [x] Create `src/react/separator.tsx`. Add the barrel export and the `WrapperProps` line.
+- [x] Add the `odd-separator-001` to `004` bad and good HTML pairs, four `RUNTIME_CODES` lines, and the `places` rows in `tests/eslint-html.test.ts`. Move `odd-separator` in `odd-class-001.good.html` onto an `hr`.
+- [x] Add type fail fixtures for `aria-orientation`, `role`, `aria-hidden`, `data-orientation`, `data-tone`, and children, each with its `failures` entry. Add `pass.tsx` lines.
+- [x] Add `tests/fixtures/usage/jsx/separator.tsx` and its `places` entry. Add one markup row to `tests/react.test.tsx`.
+- [x] Check. Delete the `role` line, the `children` line, the `data-orientation` rule, and the `system-data` rule one at a time, and the fixtures that name each fail.
 
 ### Commit 2. Mirror Separator in the Storybooks
 
-- [ ] Create `stories/mirrored/Separator.stories.ts` with `title: "Components/Data Display"` and the export `Separator`. The scene is the HTML story. The meta component description carries the story text.
-- [ ] Remove the `Separator` export from `stories/DataDisplay.stories.ts`. Add the id to the mirrored-ids pin in `tests/stories.test.ts`.
-- [ ] Measure the `aria` literal in the built Firefox Storybook, then paste it.
-- [ ] Check. `bunx playwright test e2e/usage.spec.ts --project firefox` passes.
+- [x] Create `stories/mirrored/Separator.stories.ts` with `title: "Components/Data Display"` and the export `Separator`. The scene is the HTML story. The meta component description carries the story text.
+- [x] Remove the `Separator` export from `stories/DataDisplay.stories.ts`. Add the id to the mirrored-ids pin in `tests/stories.test.ts`.
+- [x] Measure the `aria` literal in the built Firefox Storybook, then paste it.
+- [x] Check. `bunx playwright test e2e/usage.spec.ts --project firefox` passes.
 
 ### Commit 3. Docs, smoke, and the verify recipe
 
-- [ ] In `docs/usage/react.md`, add "Split sections with a separator" and the type-error rows. Add a Separator section to `docs/usage/eslint.md`. Update the Separator lines in `README.md`.
-- [ ] Add `docs/usage/separator.md` to `REQUIRED` in `scripts/consumer-smoke.ts`. The clean app renders a `Separator`.
-- [ ] Update `.agents/skills/verify-odd-design/features/data-display.md` for the React Separator.
-- [ ] Add the follow-ups in Appendix D to `docs/follow-ups.md`.
-- [ ] Check. `bun run check`, `bun run build`, and `bun scripts/consumer-smoke.ts` pass.
+- [x] In `docs/usage/react.md`, add "Split sections with a separator" and the type-error rows. Add a Separator section to `docs/usage/eslint.md`. Update the Separator lines in `README.md`.
+- [x] Add `docs/usage/separator.md` to `REQUIRED` in `scripts/consumer-smoke.ts`. The clean app renders a `Separator`.
+- [x] Update `.agents/skills/verify-odd-design/features/data-display.md` for the React Separator.
+- [x] Add the follow-ups in Appendix D to `docs/follow-ups.md`.
+- [x] Check. `bun run check`, `bun run build`, and `bun scripts/consumer-smoke.ts` pass.
 
 ## Verify on the real surface
 
-- [ ] Rebuild both Storybooks, capture the HTML section to `after.json`, and run `bun scripts/capture-stories.ts --diff .verify/separator/base.json .verify/separator/after.json`. Pass means `changed` lists only `components-data-display--separator`, with no `png` or `aria` change, and nothing else moves.
-- [ ] Run `bun run test:browsers`. Pass means the Firefox and WebKit runs pass and the sweep reports 0 diagnostics.
-- [ ] Drive the composed build per the verify-odd-design skill. Open `react_components-data-display--separator` and `components-data-display--separator` in `calm` light, `holoterminal` dark, and one more palette. Save each screenshot and `ariaSnapshot`, and confirm that the two sides look the same and the vertical lines stand between the links.
+- [x] Rebuild both Storybooks, capture the HTML section to `after.json`, and run `bun scripts/capture-stories.ts --diff .verify/separator/base.json .verify/separator/after.json`. Pass means `changed` lists only `components-data-display--separator`, with no `png` or `aria` change, and nothing else moves. Result: 2 changed (Separator light and dark, in `dom` only), 0 removed, 0 added.
+- [x] Run `bun run test:browsers`. Pass means the Firefox and WebKit runs pass and the sweep reports 0 diagnostics. Result: 45 passed, 2 skipped, and 1 failed on the Firefox tooltip hover timing, which passed 3 of 3 on a rerun. "57 stories, 0 diagnostics", 0 axe violations.
+- [x] Drive the composed build per the verify-odd-design skill. Open `react_components-data-display--separator` and `components-data-display--separator` in `calm` light, `holoterminal` dark, and one more palette. Save each screenshot and `ariaSnapshot`, and confirm that the two sides look the same and the vertical lines stand between the links. Result: `ctl.ts` drives only the HTML dev Storybook, so `.verify/separator/chrome-pair.ts` drove both sides of the built composed Storybook in Chrome. `calm` light, `holoterminal` dark, and `bubblegum` `sorbet` dark each gave byte-identical screenshots and identical aria. The vertical lines stand between the links, at `A@16 HR@53 A@66 HR@137 A@150` in calm.
 
 ## Review and open the PR
 
