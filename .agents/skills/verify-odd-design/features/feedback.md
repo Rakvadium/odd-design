@@ -34,7 +34,7 @@ Run the pair sweep with `bunx playwright test e2e/usage.spec.ts --project firefo
 
 ## React Skeleton
 
-In the same composed Storybook, open `http://127.0.0.1:6106/?path=/story/react_components-feedback--skeleton`. The preview is the Skeleton story built from `Skeleton`, the same as `components-feedback--skeleton`. The pair sweep matches the `aria` literal in `stories/mirrored/Skeleton.stories.ts`, which is only `- text: Loading decks…`, because every block and both cards are hidden. The avatar block is square, and the two screenshots are byte-identical.
+In the same composed Storybook, open `http://127.0.0.1:6106/?path=/story/react_components-feedback--skeleton`. The preview is the Skeleton story built from `Skeleton`, the same as `components-feedback--skeleton`. The pair sweep matches the `aria` literal in `stories/mirrored/Skeleton.stories.ts`, which is only `- text: Loading decks…`, because every block and both cards are hidden. The avatar block matches a default avatar, and its shape follows the chrome's chip radius. The two screenshots are byte-identical.
 
 ## Gotchas
 

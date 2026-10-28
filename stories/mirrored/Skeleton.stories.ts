@@ -6,7 +6,7 @@ const meta = {
     docs: {
       description: {
         component:
-          "`Skeleton` from `odd-design/react` renders `div.odd-skeleton`, a decorative block that holds the place of content while it loads. Every block takes `aria-hidden=\"true\"` and no children. `shape=\"avatar\"` draws a square the size of a default avatar. Size other blocks with `inline-size` and `block-size` in `style`. The region that is filling in has `aria-busy=\"true\"` and says “Loading” in an `odd-visually-hidden` span, and both go away when the content arrives. The pulse follows `--duration-slow`, so reduced motion stops it.",
+          "`Skeleton` from `odd-design/react` renders `div.odd-skeleton`, a decorative block that holds the place of content while it loads. Every block takes `aria-hidden=\"true\"` and no children. `shape=\"avatar\"` draws a block that matches a default avatar. The shape follows the chrome's chip radius. Size other blocks with `inline-size` and `block-size` in `style`. The region that is filling in has `aria-busy=\"true\"` and says “Loading” in an `odd-visually-hidden` span, and both go away when the content arrives. The pulse follows `--duration-slow`, so reduced motion stops it.",
       },
     },
   },

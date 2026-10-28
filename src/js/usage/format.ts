@@ -424,7 +424,7 @@ export const MESSAGES = {
     shapeRule.code,
     "data-shape has a value skeleton.css does not draw.",
     shapeAllowed,
-    "remove data-shape for a line or a block and size it with inline-size and block-size, or set avatar for a square the size of a default avatar. A circle or circular block is avatar.",
+    "remove data-shape for a line or a block and size it with inline-size and block-size, or set avatar for a block that matches a default avatar and takes the chrome's chip radius. A circle or circular block is avatar.",
     "docs/usage/skeleton.md#odd-skeleton-002",
   ),
   "ODD-SKELETON-003": text(

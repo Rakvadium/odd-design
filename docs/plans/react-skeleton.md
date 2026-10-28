@@ -104,7 +104,7 @@ Each commit ends with `bun run check`. The boxes under a commit name its extra c
 
 - [x] Create `stories/mirrored/Skeleton.stories.ts` with `title: "Components/Feedback"` and the export `Skeleton`. The scene is the HTML story with `aria-hidden="true"` on every block. The meta component description carries the story text.
 - [x] Remove the `Skeleton` export from `stories/Feedback.stories.ts`. Add the id to the mirrored-ids pin in `tests/stories.test.ts`.
-- [x] Measure the `aria` literal in the built Firefox Storybook, then paste it. Result: `- text: Loading decks�` on both sides in Firefox and WebKit, with 12 of 12 blocks hidden and byte-identical screenshots per engine.
+- [x] Measure the `aria` literal in the built Firefox Storybook, then paste it. Result: `- text: Loading decks…` on both sides in Firefox and WebKit, with 12 of 12 blocks hidden and byte-identical screenshots per engine.
 - [x] Check. `bunx playwright test e2e/usage.spec.ts --project firefox` and the reduced-motion test in `e2e/behavior.spec.ts` pass. Result: `bun run check` passes 481 tests. `usage.spec.ts` passes 2 of 2 with "58 stories, 0 diagnostics". The reduced-motion test passes.
 
 ### Commit 3. Docs, smoke, and the verify recipe
@@ -119,7 +119,7 @@ Each commit ends with `bun run check`. The boxes under a commit name its extra c
 
 - [ ] Rebuild both Storybooks, capture the HTML section to `after.json`, and run `bun scripts/capture-stories.ts --diff .verify/skeleton/base.json .verify/skeleton/after.json`. Pass means `changed` lists only `components-feedback--skeleton`, with no `png` or `aria` change, and nothing else moves.
 - [ ] Run `bun run test:browsers`. Pass means the Firefox and WebKit runs pass and the sweep reports 0 diagnostics.
-- [ ] Drive the composed build per the verify-odd-design skill. Open `react_components-feedback--skeleton` and `components-feedback--skeleton` in `calm` light, `holoterminal` dark, and one more palette. Save each screenshot and `ariaSnapshot`, and confirm that the two sides look the same, the avatar block is square, and the tree reads only "Loading decks…".
+- [ ] Drive the composed build per the verify-odd-design skill. Open `react_components-feedback--skeleton` and `components-feedback--skeleton` in `calm` light, `holoterminal` dark, and one more palette. Save each screenshot and `ariaSnapshot`, and confirm that the two sides look the same, the avatar block keeps 1:1 proportions, and the tree reads only "Loading decks…".
 
 ## Review and open the PR
 
@@ -177,5 +177,5 @@ These files are local scratch under the gitignored `.verify/skeleton/` folder of
 - **A missing required attribute prints "Property missing".** `Pinned` could print the code for Switch, AvatarGroup, and Skeleton at once.
 - **A spread silences 003.** `required-attribute` skips a node with a spread, as it already does for Switch.
 - **A scene can pass children to the block.** Scene children follow the `div` tag, not the part. `checkRoot` still catches visible text.
-- **The avatar square matches only the default Avatar size.** Skeleton sizes for `sm` and `lg` would be a CSS change.
+- **The avatar block matches only the default Avatar size.** Skeleton sizes for `sm` and `lg` would be a CSS change.
 - **A computed `shape` warns.** `<Skeleton shape={s}>` raises `ODD-STATIC-001`, the same as the other parts.

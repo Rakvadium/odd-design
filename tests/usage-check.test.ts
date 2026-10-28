@@ -100,6 +100,17 @@ test("data-size md on an avatar says to remove the attribute", () => {
   ]);
 });
 
+test("data-shape text on a skeleton says to remove the attribute, and circle does not", () => {
+  const messages = (shape: string) =>
+    diagnose(`<div class="odd-skeleton" data-shape="${shape}" aria-hidden="true"></div>`).map((diagnostic) => diagnostic.message);
+  expect(messages("text")).toEqual([
+    "ODD-SKELETON-002: data-shape has a value skeleton.css does not draw. Allowed values: avatar. text and line and rect and rectangular and rounded mean remove the attribute. Fix: remove data-shape for a line or a block and size it with inline-size and block-size, or set avatar for a block that matches a default avatar and takes the chrome's chip radius. A circle or circular block is avatar. docs/usage/skeleton.md#odd-skeleton-002 Found text. Did you mean to remove data-shape?",
+  ]);
+  expect(messages("circle")).toEqual([
+    "ODD-SKELETON-002: data-shape has a value skeleton.css does not draw. Allowed values: avatar. text and line and rect and rectangular and rounded mean remove the attribute. Fix: remove data-shape for a line or a block and size it with inline-size and block-size, or set avatar for a block that matches a default avatar and takes the chrome's chip radius. A circle or circular block is avatar. docs/usage/skeleton.md#odd-skeleton-002 Found circle.",
+  ]);
+});
+
 test("data-variant outline says to remove the attribute", () => {
   expect(diagnose(`<button class="odd-button" data-variant="outline">Save</button>`).map((diagnostic) => diagnostic.message)).toEqual([
     "ODD-BUTTON-002: data-variant has a value this button does not take. Allowed values: primary, secondary, danger, ghost. outline and default mean remove the attribute. Fix: remove data-variant, or set primary, secondary, danger, or ghost. docs/usage/button.md#odd-button-002 Found outline. Did you mean to remove data-variant?",

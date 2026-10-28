@@ -26,9 +26,9 @@ Move the class onto a `div`. In React, use `Skeleton`, which renders one.
 
 Fails when `data-shape` is not `avatar`.
 
-`skeleton.css` draws one shape, `avatar`, a square the size and radius of a default avatar. Any other value draws the plain block. `text`, `line`, `rect`, `rectangular`, and `rounded` name that block, so they mean remove the attribute. `circle` and `circular` mean `avatar`.
+`skeleton.css` draws one shape, `avatar`, which matches a default avatar. The shape follows the chrome's chip radius. Any other value draws the plain block. `text`, `line`, `rect`, `rectangular`, and `rounded` name that block, so they mean remove the attribute. `circle` and `circular` mean `avatar`.
 
-Remove `data-shape` for a line or a block, and size it with `inline-size` and `block-size`. Set `avatar` for a round or square placeholder beside text. In React, `shape` takes only `"avatar"`, and a raw `data-shape` is a type error.
+Remove `data-shape` for a line or a block, and size it with `inline-size` and `block-size`. Set `avatar` for an avatar placeholder beside text. In React, `shape` takes only `"avatar"`, and a raw `data-shape` is a type error.
 
 ## ODD-SKELETON-003
 

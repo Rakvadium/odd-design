@@ -267,7 +267,7 @@ import { Skeleton } from "odd-design/react";
 </div>;
 ```
 
-`Skeleton` renders a `div` with the class `odd-skeleton`, a block that pulses while content loads. Pass `aria-hidden="true"` on every block, as on the element. It is a required prop, and it takes only the string `"true"`. `aria-hidden={true}` and a bare `aria-hidden` are type errors, because ESLint reads the bare form as empty, and an empty value hides nothing. Leaving `shape` out draws a bar 1em tall. `shape="avatar"` draws a square the size of a default avatar. Size each block with `inlineSize` and `blockSize` in `style`.
+`Skeleton` renders a `div` with the class `odd-skeleton`, a block that pulses while content loads. Pass `aria-hidden="true"` on every block, as on the element. It is a required prop, and it takes only the string `"true"`. `aria-hidden={true}` and a bare `aria-hidden` are type errors, because ESLint reads the bare form as empty, and an empty value hides nothing. Leaving `shape` out draws a bar 1em tall. `shape="avatar"` draws a block that matches a default avatar. The shape follows the chrome's chip radius. Size each block with `inlineSize` and `blockSize` in `style`.
 
 The block is hidden, so it cannot say that the page is loading. Set `aria-busy="true"` on the region that is filling in, and put the loading words in an `odd-visually-hidden` span inside it. Remove the blocks, the span, and `aria-busy` when the content arrives. No checker reads the region, so a block with no busy region beside it passes. Children, `aria-busy`, `role`, `aria-label`, and `aria-labelledby` on `Skeleton` are type errors (`ODD-SKELETON-004`). A computed `shape`, such as `<Skeleton shape={shapeOf[kind]}>`, gives the `ODD-STATIC-001` warning, the same as a computed `size` on `Avatar`.
 
