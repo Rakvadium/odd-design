@@ -145,11 +145,11 @@ Each commit ends with `bun run check`. The boxes under a commit name its extra c
 
 ### Commit 3. Docs, smoke, and the verify recipe
 
-- [ ] In `docs/usage/react.md`, add a section on a clickable card, the type-error rows, and Card in the "not type errors" paragraph. Add a Card section to `docs/usage/eslint.md`. Update the README row (`article`, `section`, or `div`) and add the parts to the part list.
-- [ ] Add `docs/usage/card.md` to `REQUIRED` in `scripts/consumer-smoke.ts`. The clean app renders a `Card`.
-- [ ] Update `.agents/skills/verify-odd-design/features/surfaces.md`, which says Card has no React wrapper.
-- [ ] Add the follow-ups in Appendix D to `docs/follow-ups.md`.
-- [ ] Check. `bun run check`, `bun run build`, and `bun scripts/consumer-smoke.ts` pass.
+- [x] In `docs/usage/react.md`, add a section on a clickable card, the type-error rows, and Card in the "not type errors" paragraph. Add a Card section to `docs/usage/eslint.md`. Update the README row (`article`, `section`, or `div`) and add the parts to the part list.
+- [x] Add `docs/usage/card.md` to `REQUIRED` in `scripts/consumer-smoke.ts`. The clean app renders a `Card`.
+- [x] Update `.agents/skills/verify-odd-design/features/surfaces.md`, which says Card has no React wrapper.
+- [x] Add the follow-ups in Appendix D to `docs/follow-ups.md`.
+- [x] Check. `bun run check`, `bun run build`, and `bun scripts/consumer-smoke.ts` pass. Result: `bun run check` passes 500 tests. The build exits 0. The smoke exits 0, with zero clean-app findings in types, ESLint, and vitest, and `Card`, `CardFooter`, and `CardLink` in the packed React exports.
 
 ## Verify on the real surface
 

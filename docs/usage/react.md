@@ -1,8 +1,8 @@
 # Use the React components
 
-`odd-design/react` exports `Button`, the Field parts, the Choice parts, `Badge`, the Alert parts, the Avatar parts, `Separator`, and `Skeleton`. Each renders an `odd-` element from typed props. A contract mistake in those props is a TypeScript error that starts with its code, such as `ODD-BUTTON-007`. `Button` lives in `src/react/button.tsx`, the Field parts in `src/react/field.tsx`, the Choice parts in `src/react/choice.tsx`, `Badge` in `src/react/badge.tsx`, the Alert parts in `src/react/alert.tsx`, the Avatar parts in `src/react/avatar.tsx`, `Separator` in `src/react/separator.tsx`, and `Skeleton` in `src/react/skeleton.tsx`. Codes and fixes are in [Button usage rules](button.md), [Field usage rules](field.md), [Choice usage rules](choice.md), [Badge usage rules](badge.md), [Alert usage rules](alert.md), [Avatar usage rules](avatar.md), [Separator usage rules](separator.md), and [Skeleton usage rules](skeleton.md).
+`odd-design/react` exports `Button`, the Field parts, the Choice parts, `Badge`, the Alert parts, the Avatar parts, `Separator`, `Skeleton`, and the Card parts. Each renders an `odd-` element from typed props. A contract mistake in those props is a TypeScript error that starts with its code, such as `ODD-BUTTON-007`. `Button` lives in `src/react/button.tsx`, the Field parts in `src/react/field.tsx`, the Choice parts in `src/react/choice.tsx`, `Badge` in `src/react/badge.tsx`, the Alert parts in `src/react/alert.tsx`, the Avatar parts in `src/react/avatar.tsx`, `Separator` in `src/react/separator.tsx`, `Skeleton` in `src/react/skeleton.tsx`, and the Card parts in `src/react/card.tsx`. Codes and fixes are in [Button usage rules](button.md), [Field usage rules](field.md), [Choice usage rules](choice.md), [Badge usage rules](badge.md), [Alert usage rules](alert.md), [Avatar usage rules](avatar.md), [Separator usage rules](separator.md), [Skeleton usage rules](skeleton.md), and [Card usage rules](card.md).
 
-`button.tsx` starts with `"use client"`, so a React Server Components app can render `Button` from a server component. The Field parts, the Choice parts, `Badge`, the Alert parts, the Avatar parts, `Separator`, and `Skeleton` hold no state and no handlers, so `field.tsx`, `choice.tsx`, `badge.tsx`, `alert.tsx`, `avatar.tsx`, `separator.tsx`, and `skeleton.tsx` have no directive.
+`button.tsx` starts with `"use client"`, so a React Server Components app can render `Button` from a server component. The Field parts, the Choice parts, `Badge`, the Alert parts, the Avatar parts, `Separator`, `Skeleton`, and the Card parts hold no state and no handlers, so `field.tsx`, `choice.tsx`, `badge.tsx`, `alert.tsx`, `avatar.tsx`, `separator.tsx`, `skeleton.tsx`, and `card.tsx` have no directive.
 
 ## Render a button or a link
 
@@ -271,6 +271,27 @@ import { Skeleton } from "odd-design/react";
 
 The block is hidden, so it cannot say that the page is loading. Set `aria-busy="true"` on the region that is filling in, and put the loading words in an `odd-visually-hidden` span inside it. Remove the blocks, the span, and `aria-busy` when the content arrives. No checker reads the region, so a block with no busy region beside it passes. Children, `aria-busy`, `role`, `aria-label`, and `aria-labelledby` on `Skeleton` are type errors (`ODD-SKELETON-004`). A computed `shape`, such as `<Skeleton shape={shapeOf[kind]}>`, gives the `ODD-STATIC-001` warning, the same as a computed `size` on `Avatar`.
 
+## Make a whole card clickable
+
+```tsx
+import { Badge, Card, CardFooter, CardLink } from "odd-design/react";
+
+<Card interactive>
+  <p className="odd-eyebrow">Interactive</p>
+  <h3 className="odd-card-title">
+    <CardLink href="/decks/ember">Ember Aggro</CardLink>
+  </h3>
+  <p className="odd-muted">The whole card is clickable. Screen readers hear a single link.</p>
+  <CardFooter>
+    <Badge tone="warning">Rotating soon</Badge>
+  </CardFooter>
+</Card>;
+```
+
+`Card` renders an `article` with the class `odd-card`. `interactive` sets `data-interactive`, and `interactive={false}` leaves it off. `CardLink` renders an `a` with the class `odd-card-link`, and `href` is a required prop. In an interactive card, the link's `::after` covers the card, so a click anywhere on the card follows the link, and a screen reader hears one link named by the title. `CardFooter` renders a `div` with the class `odd-card-footer`. The title has no part. Write the heading at the level your page needs, with `className="odd-card-title"`.
+
+An interactive card holds exactly one link or button, its `CardLink`. A second control sits under the stretched link and takes no click, so put it outside the card. A `CardLink` in a card without `interactive` does not stretch and loses its focus outline. ESLint and the runtime checker report both as `ODD-CARD-003`. They cannot see inside another component, so a missing link in `<Card interactive><DeckTitle /></Card>` passes. `onClick` and `tabIndex` on `Card` are type errors (`ODD-CARD-004`), because the card itself is not a control. `data-span` places a card in an `odd-grid`, and other system `data-` attributes on `Card` are type errors (`ODD-CARD-006`). For a named panel or a plain box, write a raw `section` or `div` with the class `odd-card`. ESLint checks it the same way.
+
 ## Read a type error
 
 The type error names the code and the fix. The table lists what each mistake prints.
@@ -299,14 +320,17 @@ The type error names the code and the fix. The table lists what each mistake pri
 | Children on `Separator` | `the expected type of 'children' is 'undefined'` |
 | Children, `aria-busy`, `role`, `aria-label`, or `aria-labelledby` on `Skeleton` | `ODD-SKELETON-004` |
 | A system `data-` attribute on `Skeleton`, such as `data-size` | `ODD-SKELETON-005` |
-| `Switch` without `type` or `role`, `AvatarGroup` without `role`, or `Skeleton` without `aria-hidden` | TypeScript's missing property error |
+| `onClick` or `tabIndex` on `Card` | `ODD-CARD-004` |
+| A system `data-` attribute on `Card` other than `data-span`, such as `data-tone` | `ODD-CARD-006` |
+| A system `data-` attribute on `CardLink` or `CardFooter`, such as `data-interactive` | `ODD-CARD-007` |
+| `Switch` without `type` or `role`, `AvatarGroup` without `role`, `Skeleton` without `aria-hidden`, or `CardLink` without `href` | TypeScript's missing property error |
 | A `Switch` `type` other than `checkbox`, a `Switch` `role` other than `switch`, an `Avatar` or `AvatarGroup` `role` other than `img` or `group`, a `Separator` `role` other than `separator`, or a `Skeleton` `aria-hidden` other than `"true"` | The allowed value |
 | `Label` without `htmlFor`, or `Hint` or `FieldError` without `id` | TypeScript's missing property error |
 | A `variant`, `size`, `aria-current`, `tone`, `aria-orientation`, or `shape` value outside the contract | The allowed values |
 
 TypeScript shortens a long type in an error. Set `noErrorTruncation` in `tsconfig.json` to see the whole message.
 
-Some rules are not type errors. `Button` picks the element from `href`, so you cannot write an anchor without `href` (`ODD-BUTTON-009`) or a button with `href` (`ODD-BUTTON-010`). Those two codes apply to a raw `a` or `button` with the `odd-button` class. Each Field and Choice part, `Badge`, each Alert part, each Avatar part, `Separator`, and `Skeleton` picks its own element too, so `ODD-FIELD-001`, `ODD-CHOICE-001`, `ODD-BADGE-001`, `ODD-ALERT-001`, `ODD-AVATAR-001`, `ODD-SEPARATOR-001`, and `ODD-SKELETON-001` apply only to raw markup. Visible text in an icon-only button (`ODD-BUTTON-014`) and a misspelled `data-` name are not type errors either. The ESLint plugin and the [runtime checker](runtime.md) report each of these.
+Some rules are not type errors. `Button` picks the element from `href`, so you cannot write an anchor without `href` (`ODD-BUTTON-009`) or a button with `href` (`ODD-BUTTON-010`). Those two codes apply to a raw `a` or `button` with the `odd-button` class. Each Field and Choice part, `Badge`, each Alert part, each Avatar part, `Separator`, `Skeleton`, and each Card part picks its own element too, so `ODD-FIELD-001`, `ODD-CHOICE-001`, `ODD-BADGE-001`, `ODD-ALERT-001`, `ODD-AVATAR-001`, `ODD-SEPARATOR-001`, `ODD-SKELETON-001`, and `ODD-CARD-001` apply only to raw markup. Visible text in an icon-only button (`ODD-BUTTON-014`), the links and buttons in a card (`ODD-CARD-003`), and a misspelled `data-` name are not type errors either. The ESLint plugin and the [runtime checker](runtime.md) report each of these.
 
 ## Open a dialog or a popover with a command
 

@@ -1,4 +1,4 @@
-import { Alert, AlertTitle, Avatar, AvatarGroup, Badge, Button, Choice, Field, Hint, Input, Label, Separator, Skeleton, Switch } from "odd-design/react";
+import { Alert, AlertTitle, Avatar, AvatarGroup, Badge, Button, Card, CardFooter, CardLink, Choice, Field, Hint, Input, Label, Separator, Skeleton, Switch } from "odd-design/react";
 
 export function App() {
   return (
@@ -31,6 +31,12 @@ export function App() {
         <span className="odd-visually-hidden">Loading decks…</span>
         <Skeleton aria-hidden="true" shape="avatar" />
       </div>
+      <Card interactive>
+        <h3 className="odd-card-title">
+          <CardLink href="/decks/ember">Ember Aggro</CardLink>
+        </h3>
+        <CardFooter>60 cards</CardFooter>
+      </Card>
       <Button variant="primary">Save</Button>
     </>
   );
