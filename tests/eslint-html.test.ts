@@ -208,6 +208,19 @@ const places: Record<string, readonly (readonly [string, number, number, string]
     ["ODD-SEARCH-005", 2, 28, "data-tone"],
     ["ODD-SEARCH-005", 3, 34, "data-size"],
   ],
+  "odd-slider-001.bad.html": [
+    ["ODD-SLIDER-001", 2, 6, "class"],
+    ["ODD-SLIDER-001", 3, 9, "class"],
+  ],
+  "odd-slider-002.bad.html": [
+    ["ODD-SLIDER-002", 2, 1, "<input"],
+    ["ODD-SLIDER-002", 3, 27, "type"],
+  ],
+  "odd-slider-003.bad.html": [["ODD-SLIDER-003", 2, 66, "aria-disabled"]],
+  "odd-slider-004.bad.html": [
+    ["ODD-SLIDER-004", 2, 40, "data-tone"],
+    ["ODD-SLIDER-004", 3, 40, "data-size"],
+  ],
   "odd-disclosure-001.bad.html": [
     ["ODD-DISCLOSURE-001", 2, 6, "class"],
     ["ODD-DISCLOSURE-001", 3, 10, "class"],

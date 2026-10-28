@@ -168,6 +168,13 @@ export const USAGE = {
     { kind: "forbidden-on-element", code: "ODD-SEARCH-004", element: "search", attribute: "onsubmit" },
     { kind: "system-data", code: "ODD-SEARCH-005" },
   ] as const satisfies readonly UsageRule[],
+  slider: [
+    { kind: "element", code: "ODD-SLIDER-001", className: "odd-slider", elements: ["input"] },
+    { kind: "required-attribute", code: "ODD-SLIDER-002", element: "input", attribute: "type" },
+    { kind: "enum", code: "ODD-SLIDER-002", attribute: "type", values: ["range"], omit: [] },
+    { kind: "forbidden-attribute", code: "ODD-SLIDER-003", attribute: "aria-disabled" },
+    { kind: "system-data", code: "ODD-SLIDER-004" },
+  ] as const satisfies readonly UsageRule[],
   shared: [
     { kind: "unknown-class", code: "ODD-CLASS-001" },
     { kind: "computed-value", code: "ODD-STATIC-001" },
@@ -214,6 +221,7 @@ export const WRAPPERS = {
   Disclosure: { source: "odd-design/react", className: "odd-disclosure", props: {}, element: "details" },
   Tabs: { source: "odd-design/react", className: "odd-tabs", props: {}, element: "div" },
   Search: { source: "odd-design/react", className: "odd-search", props: {}, element: "search" },
+  Slider: { source: "odd-design/react", className: "odd-slider", props: {}, element: "input" },
 } as const satisfies Record<string, Wrapper>;
 
 export const CLASS_REGISTRY = [
@@ -342,3 +350,4 @@ export type CardFooterRule = (typeof USAGE.cardFooter)[number];
 export type DisclosureRule = (typeof USAGE.disclosure)[number];
 export type TabsRule = (typeof USAGE.tabs)[number];
 export type SearchRule = (typeof USAGE.search)[number];
+export type SliderRule = (typeof USAGE.slider)[number];

@@ -9,4 +9,5 @@ export * from "./field.tsx";
 export * from "./search.tsx";
 export * from "./separator.tsx";
 export * from "./skeleton.tsx";
+export * from "./slider.tsx";
 export * from "./tabs.tsx";

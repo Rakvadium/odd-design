@@ -9,6 +9,7 @@ import type { FieldErrorProps, FieldProps, HintProps, InputProps, LabelProps, Se
 import type { SearchProps } from "./search.tsx";
 import type { SeparatorProps } from "./separator.tsx";
 import type { SkeletonProps } from "./skeleton.tsx";
+import type { SliderProps } from "./slider.tsx";
 import type { TabsProps } from "./tabs.tsx";
 
 export type WrapperProps = {
@@ -36,4 +37,5 @@ export type WrapperProps = {
   Disclosure: DisclosureProps;
   Tabs: TabsProps;
   Search: SearchProps;
+  Slider: SliderProps;
 };

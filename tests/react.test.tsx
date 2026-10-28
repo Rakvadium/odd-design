@@ -16,6 +16,7 @@ import { Field, FieldError, Hint, Input, Label, Select, Textarea } from "../src/
 import { Search } from "../src/react/search.tsx";
 import { Separator } from "../src/react/separator.tsx";
 import { Skeleton } from "../src/react/skeleton.tsx";
+import { Slider } from "../src/react/slider.tsx";
 import { Tabs } from "../src/react/tabs.tsx";
 
 Object.assign(globalThis, { IS_REACT_ACT_ENVIRONMENT: true });
@@ -210,6 +211,11 @@ const markup: readonly [string, ReactElement, string][] = [
       <Input type="search" id="card-search" placeholder="Search cards" />
     </Search>,
     '<search class="odd-search deck-search"><label class="odd-visually-hidden" for="card-search">Search cards</label><svg aria-hidden="true" viewBox="0 0 24 24"></svg><input type="search" id="card-search" placeholder="Search cards" class="odd-input"/></search>',
+  ],
+  [
+    "disabled range slider",
+    <Slider type="range" id="locked" min={5} max={9} defaultValue={7} disabled className="wide" />,
+    '<input type="range" id="locked" min="5" max="9" disabled="" class="odd-slider wide" value="7"/>',
   ],
 ];
 
@@ -426,6 +432,9 @@ const failures: Record<string, { codes: string[]; text: string[] }> = {
   "tabs-default-value": { codes: [], text: ["not assignable to type 'undefined'"] },
   "search-on-submit": { codes: ["ODD-SEARCH-004"], text: [] },
   "search-data-tone": { codes: ["ODD-SEARCH-005"], text: [] },
+  "slider-type": { codes: [], text: ['"range"'] },
+  "slider-aria-disabled": { codes: ["ODD-SLIDER-003"], text: [] },
+  "slider-data-tone": { codes: ["ODD-SLIDER-004"], text: [] },
 };
 
 describe("React types", () => {

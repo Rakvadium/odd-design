@@ -10,6 +10,7 @@ import { Field, FieldError, Hint, Input, Label, Select, Textarea } from "../../.
 import { Search } from "../../../../src/react/search.tsx";
 import { Separator } from "../../../../src/react/separator.tsx";
 import { Skeleton } from "../../../../src/react/skeleton.tsx";
+import { Slider } from "../../../../src/react/slider.tsx";
 import { Tabs } from "../../../../src/react/tabs.tsx";
 
 function save(event: MouseEvent<HTMLButtonElement>): void {
@@ -281,5 +282,27 @@ export function SiteSearch({ onSearch }: { onSearch: (query: string) => void }) 
         <Input type="search" id="site-search" name="q" />
       </Search>
     </form>
+  );
+}
+
+export function CopiesField() {
+  const [copies, setCopies] = useState(3);
+  return (
+    <Field>
+      <Label htmlFor="copies">Copies per card</Label>
+      <output className="odd-stat-value" htmlFor="copies">
+        {copies} of 4
+      </output>
+      <Slider
+        type="range"
+        id="copies"
+        min={1}
+        max={4}
+        value={copies}
+        onChange={(event) => setCopies(event.currentTarget.valueAsNumber)}
+        aria-describedby="copies-hint"
+      />
+      <Hint id="copies-hint">Most formats allow up to 4.</Hint>
+    </Field>
   );
 }
