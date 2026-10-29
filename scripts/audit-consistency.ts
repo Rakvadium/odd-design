@@ -167,6 +167,11 @@ const NOT_COLORS = new Set(["transparent", "currentcolor", "inherit", "initial",
 const NAMED_COLORS = new Set(Object.keys(colorsNamed).filter((name) => !NOT_COLORS.has(name)));
 const LENGTH_UNITS = new Set(["px", "rem", "em", "ch", "ex", "lh", "rlh", "cap", "ic", "vw", "vh", "vi", "vb", "vmin", "vmax", "dvw", "dvh", "dvi", "dvb", "svw", "svh", "svi", "svb", "lvw", "lvh", "lvi", "lvb", "cqw", "cqh", "cqi", "cqb", "%"]);
 const UNITLESS = new Set(["font-weight", "line-height", "z-index", "opacity", "scale"]);
+const TIMING = /^(transition|animation)(-timing-function)?$/;
+const EASING_KEYWORDS = new Set(["ease", "ease-in", "ease-out", "ease-in-out", "linear", "step-start", "step-end"]);
+// translate*() takes a unitless number only as 0, which is never a literal, so only the scale functions count.
+const SCALE_FUNCTIONS = new Set(["scale", "scalex", "scaley", "scalez", "scale3d"]);
+const MATH_FUNCTIONS = new Set(["calc", "min", "max", "clamp"]);
 const TOKEN = /("(?:[^"\\]|\\.)*"|'(?:[^'\\]|\\.)*')|(#[0-9a-fA-F]{3,8})(?![\w-])|(-?-?[A-Za-z_][\w-]*)(\()?|([+-]?(?:\d*\.\d+|\d+)(?:[eE][+-]?\d+)?)(%|[A-Za-z]+)?|([()])/g;
 
 type Found = { kind: Kind; text: string; offset: number };
@@ -174,8 +179,9 @@ type Found = { kind: Kind; text: string; offset: number };
 /** Visual literals in one declaration value. A bare 0 is never a literal, except on a unitless property. */
 function literalsIn(value: string, property: string): Found[] {
   const found: Found[] = [];
-  const frames: string[] = [];
+  const frames: { name: string; at: number }[] = [];
   const unitless = UNITLESS.has(property);
+  const timing = TIMING.test(property);
   const re = new RegExp(TOKEN.source, "g");
   for (let m = re.exec(value); m; m = re.exec(value)) {
     const [all, text, hex, ident, call, number, unit, paren] = m;
@@ -186,23 +192,42 @@ function literalsIn(value: string, property: string): Found[] {
       const name = ident.toLowerCase();
       if (call === undefined) {
         if (NAMED_COLORS.has(name)) found.push({ kind: "color", text: ident, offset: m.index });
+        else if (timing && EASING_KEYWORDS.has(name)) found.push({ kind: "easing", text: ident, offset: m.index });
       } else if (COLOR_FUNCTIONS.has(name) || EASING_FUNCTIONS.has(name) || name === "url") {
         const end = closeParen(value, m.index + ident.length);
         if (name !== "url") found.push({ kind: COLOR_FUNCTIONS.has(name) ? "color" : "easing", text: value.slice(m.index, end + 1), offset: m.index });
         re.lastIndex = end + 1;
-      } else frames.push(name);
-    } else if (paren === "(") frames.push("");
+      } else frames.push({ name, at: m.index + ident.length });
+    } else if (paren === "(") frames.push({ name: "", at: m.index });
     else if (paren === ")") frames.pop();
     else if (number !== undefined) {
       const u = unit?.toLowerCase();
       if (u === undefined) {
-        if (unitless) found.push({ kind: "number", text: all, offset: m.index });
-      } else if (u === "%" && frames.at(-1) === "color-mix") found.push({ kind: "mix", text: all, offset: m.index });
+        if (unitless || SCALE_FUNCTIONS.has(frames.at(-1)?.name ?? "") || multipliesVar(value, m.index, all, frames)) found.push({ kind: "number", text: all, offset: m.index });
+      } else if (u === "%" && frames.at(-1)?.name === "color-mix") found.push({ kind: "mix", text: all, offset: m.index });
       else if (LENGTH_UNITS.has(u)) found.push({ kind: "length", text: all, offset: m.index });
       else if (u === "ms" || u === "s") found.push({ kind: "duration", text: all, offset: m.index });
     }
   }
   return found;
+}
+
+/**
+ * A unitless factor in calc(), min(), max(), or clamp() whose group also reads a var(), as in calc(var(--x) * 0.67).
+ * Sign flips (* -1), identity (* 1), and halving (/ 2) are arithmetic, not design values.
+ * A density product such as calc(1.5rem * var(--density)) has no unitless factor, so its length is its only row.
+ */
+function multipliesVar(value: string, at: number, number: string, frames: { name: string; at: number }[]): boolean {
+  const math = frames.findLast((f) => f.name !== "");
+  if (!math || !MATH_FUNCTIONS.has(math.name)) return false;
+  const before = value.slice(0, at).trimEnd().at(-1);
+  const after = value.slice(at + number.length).trimStart()[0];
+  const operator = before === "*" || before === "/" ? before : after === "*" || after === "/" ? after : undefined;
+  if (operator === undefined) return false;
+  if (operator === "*" && Math.abs(Number(number)) === 1) return false;
+  if (operator === "/" && before === "/" && Number(number) === 2) return false;
+  const group = frames.at(-1)!;
+  return value.slice(group.at, closeParen(value, group.at) + 1).includes("var(");
 }
 
 const PROPERTY_CATEGORY: [RegExp, Category][] = [
@@ -285,7 +310,7 @@ function chromeFamily(property: string, kind: Kind, category: Category, selector
   if (property === "outline-offset") return "--focus-offset";
   if (/^outline(-width)?$/.test(property) && kind === "length") return "--focus-width";
   if (/^outline(-color)?$/.test(property) && (kind === "color" || kind === "mix")) return "--focus-color";
-  if (/^(scale|transform)$/.test(property) && /:active/.test(selector)) return "--press-transform";
+  if (/^(scale|transform)$/.test(property) && /:active|pressed/.test(selector)) return "--press-transform";
   return undefined;
 }
 
@@ -798,6 +823,7 @@ function statsMarkdown(rows: Literal[], graph: ReturnType<typeof tokenGraph>, m:
     `${rows.length} literals in ${new Set(rows.map((r) => r.file)).size} files, ${keys} distinct (file, property, value) keys.`,
     table(["Category", "Literals"], CATEGORIES.filter((c) => byCategory.has(c)).map((c) => [c, String(byCategory.get(c))])),
     table(["Verdict", "Literals"], [...byVerdict].sort(([a], [b]) => byText(a, b)).map(([v, n]) => [v, String(n)])),
+    "`none` means no rule in the plan applies, so the literal is not a finding.",
     table(
       ["Token graph", "Count"],
       [

@@ -1,43 +1,47 @@
 file	property	value	verdict	reason
-src/css/base.css	background	30%	exception one-off value	selection tint mix strength; used only by ::selection, no mix scale
-src/css/base.css	block-size	1px	exception intrinsic value	visually-hidden clip box; this is the .odd-visually-hidden definition that choice.css:81 copies
-src/css/base.css	clip-path	50%	exception intrinsic value	visually-hidden inset(50%); the utility definition that choice.css:83 copies
-src/css/base.css	inline-size	1px	exception intrinsic value	visually-hidden clip box; the utility definition that choice.css:80 copies
-src/css/base.css	min-block-size	100dvh	exception intrinsic value	body fills the viewport; a viewport unit, not a scale value
-src/css/base.css	text-decoration-thickness	1px	exception one-off value	default link underline; only base.css sets it
+src/css/base.css	background	30%	none one-off value	selection tint mix strength; used only by ::selection, no mix scale
+src/css/base.css	block-size	1px	none intrinsic value	visually-hidden clip box; this is the .odd-visually-hidden definition that choice.css:81 copies
+src/css/base.css	clip-path	50%	none intrinsic value	visually-hidden inset(50%); the utility definition that choice.css:83 copies
+src/css/base.css	inline-size	1px	none intrinsic value	visually-hidden clip box; the utility definition that choice.css:80 copies
+src/css/base.css	min-block-size	100dvh	none intrinsic value	body fills the viewport; a viewport unit, not a scale value
+src/css/base.css	text-decoration-thickness	1px	none one-off value	default link underline; only base.css sets it
 src/css/base.css	text-decoration-thickness	2px	shared --underline-strong	emphasized link underline; same 2px job at button.css:122 for the current page
 src/css/base.css	text-underline-offset	0.2em	shared --underline-offset	link underline offset; button.css:123 uses 0.4em for the same job
-src/css/base.css	translate	-200%	exception intrinsic value	skip link parked off-screen until focus
+src/css/base.css	translate	-200%	none intrinsic value	skip link parked off-screen until focus
 src/css/components/alert.css	block-size	1.25rem	missing-scale icon-size	alert icon; other icon sizes at menu.css:38 (1rem) and button.css:92 (1.15em)
 src/css/components/alert.css	border	45%	shared --tone-edge-mix	tone edge mixed into transparent; badge.css:14 uses 35% and avatar.css:18 40% for the same job
-src/css/components/alert.css	color	70%	exception one-off value	icon pulled toward foreground so a pale tone reads; only alert does this
+src/css/components/alert.css	color	70%	none one-off value	icon pulled toward foreground so a pale tone reads; only alert does this
 src/css/components/alert.css	font-weight	650	missing-scale font-weight	label-role title; every other label weight is 600 (badge.css:20, button.css:27)
 src/css/components/alert.css	inline-size	1.25rem	missing-scale icon-size	alert icon; other icon sizes at menu.css:37 (1rem) and button.css:91 (1.15em)
 src/css/components/alert.css	margin-block-start	0.05em	exception glyph geometry	optical nudge aligning the icon with the first text line, in em
+src/css/components/alert.css	padding	0.67	shared --surface-padding-compact	compact surface padding as 0.67 of --surface-padding; popover.css:35 repeats it
 src/css/components/avatar.css	--_size	2.5rem	shared --avatar-size	density-scaled base size copied by skeleton.css:20, so rule 6 overrides the private-size exception
 src/css/components/avatar.css	--_size	2rem	exception density-scaled private size	sm avatar base times --density; matches --space-6 by value only, not in a spacing role
 src/css/components/avatar.css	--_size	3.5rem	exception density-scaled private size	lg avatar base times --density; no other component uses it
-src/css/components/avatar.css	block-size	100%	exception intrinsic value	image fills the avatar
+src/css/components/avatar.css	block-size	100%	none intrinsic value	image fills the avatar
 src/css/components/avatar.css	border	40%	shared --tone-edge-mix	primary edge mixed into transparent; alert.css:19 uses 45% and badge.css:14 35% for the same job
 src/css/components/avatar.css	box-shadow	2px	chrome --shadow-*	group ring replaces --shadow-control (avatar.css:22), dropping bubblegum.css:24 and expressive.css:25 shadows
+src/css/components/avatar.css	font-size	0.38	none one-off value	initials sized to the avatar box; only avatar sizes text from its own box
 src/css/components/avatar.css	font-weight	700	missing-scale font-weight	initials weight; 700 again at menu.css:60
-src/css/components/avatar.css	inline-size	100%	exception intrinsic value	image fills the avatar
+src/css/components/avatar.css	inline-size	100%	none intrinsic value	image fills the avatar
 src/css/components/avatar.css	letter-spacing	0.02em	missing-scale tracking	label-font initials skip --label-tracking; other tracking literals at estop.css:31 and menu.css:90
 src/css/components/avatar.css	line-height	1	missing-scale line-height	line-height 1 again at button.css:28; only --leading-tight and --leading-normal exist
+src/css/components/avatar.css	margin-inline-start	-0.2	none one-off value	group overlap as a fifth of the avatar size; only avatar stacks
 src/css/components/badge.css	block-size	0.5em	shared --tone-dot-size	tone dot; toast.css:85 draws the same dot at 0.5rem, so not glyph geometry
 src/css/components/badge.css	border	35%	shared --tone-edge-mix	tone edge mixed into transparent; alert.css:19 uses 45% for the same job
-src/css/components/badge.css	border-radius	50%	exception platform floor	circle shape for the tone dot, the 50% analogue of the 999px pill
+src/css/components/badge.css	border-radius	50%	none intrinsic value	circle; 50% is geometry, not a design value
 src/css/components/badge.css	font-weight	600	missing-scale font-weight	label weight 600 also at button.css:27 and tabs.css:46
 src/css/components/badge.css	gap	0.4em	shared --icon-gap	dot-to-label gap in em; button.css:16 (0.5em) and table.css:97 (0.35em) do the same job
 src/css/components/badge.css	inline-size	0.5em	shared --tone-dot-size	tone dot; toast.css:84 draws the same dot at 0.5rem
 src/css/components/badge.css	line-height	1.4	missing-scale line-height	1.4 again at popover.css:59
-src/css/components/badge.css	padding	0.2em	exception one-off value	chip padding in em; only badge sizes padding to its text
-src/css/components/badge.css	padding	0.65em	exception one-off value	chip padding in em; only badge sizes padding to its text
-src/css/components/button.css	animation	700ms	exception one-off value	spinner rotation period; no duration token is 700ms (CSS-13 covers the motion policy)
-src/css/components/button.css	animation-duration	2.4s	exception one-off value	reduced-motion spinner period set in a private media block instead of preferences.css (CSS-13)
-src/css/components/button.css	background-color	10%	exception one-off value	current-page tint; only button marks aria-current this way
-src/css/components/button.css	background-color	8%	exception one-off value	ghost hover tint of the foreground; menu.css:44 hovers with plain --muted instead
-src/css/components/button.css	background-color	88%	exception one-off value	filled hover darkening toward --_fg; no other component mixes its own fill on hover
+src/css/components/badge.css	padding	0.2em	none one-off value	chip padding in em; only badge sizes padding to its text
+src/css/components/badge.css	padding	0.65em	none one-off value	chip padding in em; only badge sizes padding to its text
+src/css/components/button.css	animation	700ms	none one-off value	spinner rotation period; no duration token is 700ms (CSS-13 covers the motion policy)
+src/css/components/button.css	animation	linear	none intrinsic value	spinner rotation needs constant speed; a chrome --ease such as bubblegum.css:37 would stutter each turn
+src/css/components/button.css	animation-duration	2.4s	none one-off value	reduced-motion spinner period set in a private media block instead of preferences.css (CSS-13)
+src/css/components/button.css	background-color	10%	none one-off value	current-page tint; only button marks aria-current this way
+src/css/components/button.css	background-color	8%	none one-off value	ghost hover tint of the foreground; menu.css:44 hovers with plain --muted instead
+src/css/components/button.css	background-color	88%	none one-off value	filled hover darkening toward --_fg; no other component mixes its own fill on hover
 src/css/components/button.css	block-size	1.15em	missing-scale icon-size	button icon in em; alert.css:35 1.25rem and menu.css:38 1rem
 src/css/components/button.css	block-size	1em	exception glyph geometry	busy spinner drawn in CSS, sized to the button text
 src/css/components/button.css	border	2px	exception glyph geometry	busy spinner stroke; only button draws this glyph
@@ -48,39 +52,42 @@ src/css/components/button.css	inline-size	1.15em	missing-scale icon-size	button 
 src/css/components/button.css	inline-size	1em	exception glyph geometry	busy spinner drawn in CSS, sized to the button text
 src/css/components/button.css	line-height	1	missing-scale line-height	line-height 1 again at avatar.css:26
 src/css/components/button.css	opacity	0.55	shared --disabled-opacity	disabled dim; same 0.55 at choice.css:26, slider.css:44, tabs.css:82
+src/css/components/button.css	padding-inline	0.75	none one-off value	small-button inline padding; no other control scales --control-padding-inline by size
+src/css/components/button.css	padding-inline	1.4	none one-off value	large-button inline padding; no other control scales --control-padding-inline by size
 src/css/components/button.css	text-decoration	2px	shared --underline-strong	current-page underline; same 2px job at base.css:53 for link hover
 src/css/components/button.css	text-underline-offset	0.4em	shared --underline-offset	current-page underline offset; base.css:48 uses 0.2em for links
 src/css/components/choice.css	--_size	1.5rem	exception density-scaled private size	switch base size times --density; matches --space-5 by value only
-src/css/components/choice.css	--_track	45%	exception one-off value	switch track mix; foundations --track (foundations.css:63) is 22%, so no token holds it
-src/css/components/choice.css	background	100%	exception intrinsic value	radial-gradient edge stop for the switch thumb
+src/css/components/choice.css	--_track	45%	none one-off value	switch track mix; foundations --track (foundations.css:63) is 22%, so no token holds it
+src/css/components/choice.css	background	100%	none intrinsic value	radial-gradient edge stop for the switch thumb
 src/css/components/choice.css	background	1px	chrome --border-width	switch thumb offset assumes a 1px border; bubblegum.css:16 sets 2px (CSS-15)
 src/css/components/choice.css	background	4px	chrome --border-width	thumb inset of size minus 4px assumes a 1px border; bubblegum.css:16 sets 2px (CSS-15)
-src/css/components/choice.css	background	92%	exception intrinsic value	radial-gradient solid stop that antialiases the thumb edge
+src/css/components/choice.css	background	92%	none intrinsic value	radial-gradient solid stop that antialiases the thumb edge
 src/css/components/choice.css	block-size	1.125rem	shared --checkbox-size	native checkbox and forced-colors switch size; table.css:88 repeats 1.125rem
 src/css/components/choice.css	block-size	1px	shared .odd-visually-hidden	legend hand-copies the utility at base.css:77
-src/css/components/choice.css	border	60%	exception one-off value	switch edge softened from --edge-control; only the switch does this
+src/css/components/choice.css	border	60%	none one-off value	switch edge softened from --edge-control; only the switch does this
 src/css/components/choice.css	border-radius	3px	shared --inset-tight	outer radius is --radius-control plus the 3px padding; tabs.css:22 repeats it
 src/css/components/choice.css	clip-path	50%	shared .odd-visually-hidden	legend hand-copies the utility at base.css:79
 src/css/components/choice.css	font-weight	600	missing-scale font-weight	segment label weight; 600 also at tabs.css:46
 src/css/components/choice.css	gap	2px	shared --segment-gap	gap between segments; tabs.css:19 repeats 2px
 src/css/components/choice.css	inline-size	1.125rem	shared --checkbox-size	native checkbox and forced-colors switch size; table.css:87 repeats 1.125rem
+src/css/components/choice.css	inline-size	1.75	none one-off value	switch track is 1.75 thumbs long; only the switch derives a track from its thumb
 src/css/components/choice.css	inline-size	1px	shared .odd-visually-hidden	legend hand-copies the utility at base.css:76
 src/css/components/choice.css	min-block-size	24px	shared --target-min	WCAG 2.5.8 floor outside --control-height; table.css:98 and menu.css:21 repeat it
-src/css/components/choice.css	opacity	0	exception intrinsic value	native radio kept in place but invisible over its label
+src/css/components/choice.css	opacity	0	none intrinsic value	native radio kept in place but invisible over its label
 src/css/components/choice.css	opacity	0.55	shared --disabled-opacity	disabled dim; same 0.55 at button.css:86 and tabs.css:82
 src/css/components/choice.css	outline	2px	shared --forced-selected-outline	forced-colors selected segment outline; tabs.css:91 repeats 2px Highlight
 src/css/components/choice.css	outline-offset	1px	chrome --focus-offset	segment focus ring replaces the chrome offset (calm.css:37 2px); tabs.css:77 does the same
 src/css/components/choice.css	padding	3px	shared --inset-tight	segmented track padding; tabs.css:20 repeats 3px
-src/css/components/dialog.css	inline-size	100%	exception intrinsic value	containing-block term of the gutter cap; the 2rem gutter carries the finding
+src/css/components/dialog.css	inline-size	100%	none intrinsic value	containing-block term of the gutter cap; the 2rem gutter carries the finding
 src/css/components/dialog.css	inline-size	2rem	shared --overlay-gutter	viewport gutter; same 2rem at popover.css:45, menu.css:12, toast.css:10. Equals --space-6 by value
 src/css/components/dialog.css	inline-size	32rem	shared --overlay-width-*	dialog width cap; sheet.css:26 caps at 24rem for the same job (the plan's rule 6 example)
-src/css/components/dialog.css	max-block-size	100dvh	exception intrinsic value	viewport term of the gutter cap; the 2rem gutter carries the finding
+src/css/components/dialog.css	max-block-size	100dvh	none intrinsic value	viewport term of the gutter cap; the 2rem gutter carries the finding
 src/css/components/dialog.css	max-block-size	2rem	shared --overlay-gutter	viewport gutter; same 2rem at popover.css:33
-src/css/components/dialog.css	max-block-size	40rem	exception one-off value	dialog height cap; no other overlay caps its height in rem
-src/css/components/dialog.css	opacity	0	exception intrinsic value	enter and exit fade endpoint
-src/css/components/dialog.css	opacity	1	exception intrinsic value	open-state fade endpoint
+src/css/components/dialog.css	max-block-size	40rem	none one-off value	dialog height cap; no other overlay caps its height in rem
+src/css/components/dialog.css	opacity	0	none intrinsic value	enter and exit fade endpoint
+src/css/components/dialog.css	opacity	1	none intrinsic value	open-state fade endpoint
 src/css/components/dialog.css	scale	0.96	shared --overlay-enter-scale	enter scale; popover.css:67 and popover.css:82 repeat 0.96 for popover, menu, hover card, tooltip
-src/css/components/dialog.css	scale	1	exception intrinsic value	identity scale for the open state and reduced motion
+src/css/components/dialog.css	scale	1	none intrinsic value	identity scale for the open state and reduced motion
 src/css/components/dialog.css	translate	0.5rem	shared --overlay-enter-offset	enter rise; toast.css:53 rises 0.75rem for the same job
 src/css/components/disclosure.css	block-size	0.55rem	exception glyph geometry	disclosure chevron box; the plan names this glyph
 src/css/components/disclosure.css	border-block-end	2px	exception glyph geometry	chevron stroke drawn with borders
@@ -89,20 +96,21 @@ src/css/components/disclosure.css	font-weight	600	missing-scale font-weight	head
 src/css/components/disclosure.css	inline-size	0.55rem	exception glyph geometry	disclosure chevron box; the plan names this glyph
 src/css/components/disclosure.css	translate	-25%	exception glyph geometry	optical centering of the rotated chevron
 src/css/components/disclosure.css	translate	25%	exception glyph geometry	optical centering of the open chevron
-src/css/components/estop.css	--_rim	30%	exception one-off value	rim shade mix strength; only the e-stop draws a rim
+src/css/components/estop.css	--_rim	30%	none one-off value	rim shade mix strength; only the e-stop draws a rim
 src/css/components/estop.css	--_rim	black	color raw black	color-mix into black for the rim shade; use a palette token or a shade derived from --danger and --foreground
-src/css/components/estop.css	border	0.5rem	exception one-off value	warning-yellow collar width, the e-stop's own artwork, not the chrome edge role
-src/css/components/estop.css	border-radius	50%	exception platform floor	the e-stop is always round, the 50% analogue of the 999px pill
-src/css/components/estop.css	box-shadow	-0.35rem	exception one-off value	inset rim artwork layered before --shadow-control at estop.css:23, so the chrome shadow still applies
+src/css/components/estop.css	border	0.5rem	none one-off value	warning-yellow collar width, the e-stop's own artwork, not the chrome edge role
+src/css/components/estop.css	border-radius	50%	none intrinsic value	circle; 50% is geometry, not a design value
+src/css/components/estop.css	box-shadow	-0.35rem	none one-off value	inset rim artwork layered before --shadow-control at estop.css:23, so the chrome shadow still applies
 src/css/components/estop.css	box-shadow	0.5rem	chrome --shadow-*	latched inset shading replaces --shadow-control-active, which button.css:77 reads (bubblegum.css:26)
 src/css/components/estop.css	box-shadow	1rem	chrome --shadow-*	latched inset shading replaces --shadow-control-active, which button.css:77 reads
-src/css/components/estop.css	box-shadow	3px	exception one-off value	inset rim ring artwork; at estop.css:23 and :41 it is layered before the chrome shadow
+src/css/components/estop.css	box-shadow	3px	none one-off value	inset rim ring artwork; at estop.css:23 and :41 it is layered before the chrome shadow
 src/css/components/estop.css	font-weight	800	missing-scale font-weight	800 again at field.css:54
-src/css/components/estop.css	inline-size	8rem	exception one-off value	documented default size, set inline-size to change it
+src/css/components/estop.css	inline-size	8rem	none one-off value	documented default size, set inline-size to change it
 src/css/components/estop.css	letter-spacing	0.06em	missing-scale tracking	label-font text skips --label-tracking (CSS-10); 0.06em again at typography.css:37
 src/css/components/estop.css	line-height	1.1	missing-scale line-height	off the two-step leading scale; other off-scale values at badge.css:21 and log.css:25
 src/css/components/estop.css	outline	2px	chrome --focus-width	adds 2px to --focus-width; every other ring uses the chrome width as is (base.css:57)
 src/css/components/estop.css	outline-offset	4px	chrome --focus-offset	replaces the chrome offset (calm.css:37 2px, bubblegum.css:34 3px)
+src/css/components/estop.css	transform	0.95	chrome --press-transform	pressed e-stop ignores the chrome press motion that button.css:76 reads (bubblegum.css:30 translates instead of scaling)
 src/css/components/field.css	--_stroke	0.6px	exception glyph geometry	select chevron stroke, named in the plan
 src/css/components/field.css	--_stroke	0.8px	exception glyph geometry	select chevron stroke antialias edge, named in the plan
 src/css/components/field.css	--_stroke	50%	exception glyph geometry	select chevron stroke center line
@@ -110,108 +118,119 @@ src/css/components/field.css	background-position	0.8rem	exception glyph geometry
 src/css/components/field.css	background-position	1.15rem	exception glyph geometry	select chevron placement
 src/css/components/field.css	background-size	0.35rem	exception glyph geometry	select chevron stroke box
 src/css/components/field.css	block-size	1.25em	exception glyph geometry	error "!" badge drawn in CSS, sized to the error text
-src/css/components/field.css	border-color	50%	exception one-off value	input hover edge mixed toward foreground; no other control darkens its edge on hover
+src/css/components/field.css	border-color	50%	none one-off value	input hover edge mixed toward foreground; no other control darkens its edge on hover
 src/css/components/field.css	border-radius	50%	exception glyph geometry	error "!" badge circle
 src/css/components/field.css	font-size	0.8em	exception glyph geometry	"!" glyph size inside the error badge
 src/css/components/field.css	font-weight	500	missing-scale font-weight	500 again at popover.css:58
 src/css/components/field.css	font-weight	600	missing-scale font-weight	label and checked option weight; 600 also at badge.css:20 and tabs.css:46
 src/css/components/field.css	font-weight	800	missing-scale font-weight	"!" glyph weight; 800 again at estop.css:27
 src/css/components/field.css	inline-size	1.25em	exception glyph geometry	error "!" badge drawn in CSS, sized to the error text
-src/css/components/field.css	inline-size	100%	exception intrinsic value	input fills its field
+src/css/components/field.css	inline-size	100%	none intrinsic value	input fills its field
+src/css/components/field.css	min-block-size	2.5	none one-off value	textarea minimum height as 2.5 control heights; no other component sizes from a multiple of --control-height
 src/css/components/field.css	opacity	0.7	shared --disabled-opacity	disabled dim; button.css:86, choice.css:26, tabs.css:82 use 0.55 for the same job (CSS-07)
-src/css/components/field.css	opacity	1	exception intrinsic value	resets the UA placeholder opacity
+src/css/components/field.css	opacity	1	none intrinsic value	resets the UA placeholder opacity
+src/css/components/field.css	padding	0.85	shared --input-padding-inline	input inline padding as 0.85 of --control-padding-inline; search.css:18 and search.css:27 repeat it
+src/css/components/field.css	padding-inline-end	0.85	shared --input-padding-inline	select end padding; the same 0.85 factor as field.css:62 and search.css:18
 src/css/components/field.css	padding-inline-end	2.5rem	exception glyph geometry	room for the drawn select chevron at field.css:123
-src/css/components/log.css	border-inline-start	3px	exception one-off value	tone accent stripe, not the edge role; only the log draws one
+src/css/components/log.css	border-inline-start	3px	none one-off value	tone accent stripe, not the edge role; only the log draws one
 src/css/components/log.css	line-height	1.45	missing-scale line-height	off the two-step leading scale; other off-scale values at badge.css:21 and estop.css:28
-src/css/components/log.css	max-block-size	20rem	exception one-off value	documented default log height
-src/css/components/log.css	padding	0.0625rem	exception one-off value	1px line padding in the log; no spacing step that small
+src/css/components/log.css	max-block-size	20rem	none one-off value	documented default log height
+src/css/components/log.css	padding	0.0625rem	none one-off value	1px line padding in the log; no spacing step that small
 src/css/components/menu.css	block-size	1rem	missing-scale icon-size	menu icon; 1rem icons also at tabs.css:62 and search.css:20. Equals --space-4 by value only
 src/css/components/menu.css	font-size	0.625rem	exception glyph geometry	radio dot drawn as a text glyph; only menu draws it
 src/css/components/menu.css	font-weight	600	missing-scale font-weight	group label weight; 600 also at tabs.css:46
 src/css/components/menu.css	font-weight	700	missing-scale font-weight	check glyph weight; 700 again at avatar.css:25
-src/css/components/menu.css	inline-size	100%	exception intrinsic value	item fills the menu
+src/css/components/menu.css	inline-size	100%	none intrinsic value	item fills the menu
 src/css/components/menu.css	inline-size	1rem	missing-scale icon-size	icon and indicator slot; 1rem icons also at tabs.css:61 and search.css:19. Equals --space-4 by value only
 src/css/components/menu.css	letter-spacing	0.04em	missing-scale tracking	shortcut tracking; other tracking literals at avatar.css:27 and estop.css:31
-src/css/components/menu.css	max-inline-size	100vw	exception intrinsic value	viewport term of the gutter cap; the 2rem gutter carries the finding
+src/css/components/menu.css	max-inline-size	100vw	none intrinsic value	viewport term of the gutter cap; the 2rem gutter carries the finding
 src/css/components/menu.css	max-inline-size	20rem	shared --overlay-width-*	menu width cap; the hover card at popover.css:46 caps at 20rem too
 src/css/components/menu.css	max-inline-size	2rem	shared --overlay-gutter	viewport gutter; same 2rem at dialog.css:11 and toast.css:10
-src/css/components/menu.css	min-block-size	2.25rem	exception one-off value	menu item height, a fourth control height between --control-height-sm and --control-height (CSS-06)
+src/css/components/menu.css	min-block-size	2.25rem	none one-off value	menu item height, a fourth control height between --control-height-sm and --control-height (CSS-06)
 src/css/components/menu.css	min-block-size	24px	shared --target-min	WCAG 2.5.8 floor outside --control-height; choice.css:12 and table.css:98 repeat it
-src/css/components/menu.css	min-inline-size	12rem	exception one-off value	menu minimum width; no other overlay sets one
-src/css/components/meter.css	background	100%	exception intrinsic value	sweep band fills the bar height
-src/css/components/meter.css	background	40%	exception one-off value	indeterminate sweep band width
-src/css/components/meter.css	background-position	-70%	exception intrinsic value	sweep starts with the band off the bar
-src/css/components/meter.css	background-position	170%	exception intrinsic value	sweep ends with the band off the bar
+src/css/components/menu.css	min-inline-size	12rem	none one-off value	menu minimum width; no other overlay sets one
+src/css/components/meter.css	animation	4	none one-off value	sweep period as 4x --duration-slow; skeleton.css:16 uses 5x for its pulse, so no shared value
+src/css/components/meter.css	animation	ease-in-out	shared --ease-loop	loading-loop easing; skeleton.css:16 repeats ease-in-out. Not --ease, whose overshoot at bubblegum.css:37 suits state changes
+src/css/components/meter.css	background	100%	none intrinsic value	sweep band fills the bar height
+src/css/components/meter.css	background	40%	none one-off value	indeterminate sweep band width
+src/css/components/meter.css	background-position	-70%	none intrinsic value	sweep starts with the band off the bar
+src/css/components/meter.css	background-position	170%	none intrinsic value	sweep ends with the band off the bar
 src/css/components/meter.css	block-size	0.5rem	exception density-scaled private size	bar height times --density, written inline instead of a --_name; equals --space-2 by value only
-src/css/components/meter.css	block-size	100%	exception intrinsic value	bar spans the meter height
+src/css/components/meter.css	block-size	100%	none intrinsic value	bar spans the meter height
 src/css/components/meter.css	border	1px	shared --forced-hairline	forced-colors outline; same 1px at popover.css:112, slider.css:123, skeleton.css:33
 src/css/components/meter.css	font-weight	600	missing-scale font-weight	stat value weight; 600 also at table.css:73
-src/css/components/meter.css	inline-size	100%	exception intrinsic value	bar fills its container
+src/css/components/meter.css	inline-size	100%	none intrinsic value	bar fills its container
 src/css/components/popover.css	border	1px	shared --forced-hairline	tooltip forced-colors outline; same 1px at meter.css:129 and slider.css:123
 src/css/components/popover.css	font-weight	500	missing-scale font-weight	tooltip weight (parked); 500 again at field.css:40
-src/css/components/popover.css	inline-size	100vw	exception intrinsic value	viewport term of the gutter cap; the 2rem gutter carries the finding
+src/css/components/popover.css	inline-size	100vw	none intrinsic value	viewport term of the gutter cap; the 2rem gutter carries the finding
 src/css/components/popover.css	inline-size	18rem	shared --overlay-width-*	popover width cap; the tooltip at popover.css:50 repeats 18rem, dialog.css:11 caps at 32rem
 src/css/components/popover.css	inline-size	20rem	shared --overlay-width-*	hover card width cap (parked); menu.css:12 repeats 20rem
 src/css/components/popover.css	inline-size	2rem	shared --overlay-gutter	viewport gutter; same 2rem at dialog.css:11, menu.css:12, toast.css:10
 src/css/components/popover.css	line-height	1.4	missing-scale line-height	tooltip (parked); 1.4 again at badge.css:21
-src/css/components/popover.css	max-block-size	100dvh	exception intrinsic value	viewport term of the gutter cap; the 2rem gutter carries the finding
+src/css/components/popover.css	max-block-size	100dvh	none intrinsic value	viewport term of the gutter cap; the 2rem gutter carries the finding
 src/css/components/popover.css	max-block-size	2rem	shared --overlay-gutter	viewport gutter; same 2rem at dialog.css:12
-src/css/components/popover.css	max-inline-size	100vw	exception intrinsic value	viewport term of the gutter cap; the 2rem gutter carries the finding
+src/css/components/popover.css	max-inline-size	100vw	none intrinsic value	viewport term of the gutter cap; the 2rem gutter carries the finding
 src/css/components/popover.css	max-inline-size	18rem	shared --overlay-width-*	tooltip width cap (parked); popover.css:45 repeats 18rem for the popover, dialog.css:11 caps at 32rem
 src/css/components/popover.css	max-inline-size	2rem	shared --overlay-gutter	viewport gutter; same 2rem at menu.css:12
-src/css/components/popover.css	opacity	0	exception intrinsic value	enter and exit fade endpoint
-src/css/components/popover.css	opacity	1	exception intrinsic value	open-state fade endpoint
+src/css/components/popover.css	opacity	0	none intrinsic value	enter and exit fade endpoint
+src/css/components/popover.css	opacity	1	none intrinsic value	open-state fade endpoint
+src/css/components/popover.css	padding	0.67	shared --surface-padding-compact	compact surface padding as 0.67 of --surface-padding; alert.css:18 repeats it
 src/css/components/popover.css	scale	0.96	shared --overlay-enter-scale	enter scale; dialog.css:23 and dialog.css:40 repeat 0.96
-src/css/components/popover.css	scale	1	exception intrinsic value	identity scale for the open state
-src/css/components/range-field.css	flex	6.5rem	exception one-off value	number input basis in the range row
-src/css/components/range-field.css	flex	8rem	exception one-off value	slider basis in the range row
+src/css/components/popover.css	scale	1	none intrinsic value	identity scale for the open state
+src/css/components/range-field.css	flex	6.5rem	none one-off value	number input basis in the range row
+src/css/components/range-field.css	flex	8rem	none one-off value	slider basis in the range row
 src/css/components/search.css	block-size	1rem	missing-scale icon-size	magnifier and clear icons; 1rem icons also at menu.css:38 and tabs.css:62. Equals --space-4 by value only
 src/css/components/search.css	inline-size	1rem	missing-scale icon-size	magnifier and clear icons; 1rem icons also at menu.css:37 and tabs.css:61. Equals --space-4 by value only
-src/css/components/search.css	inset-block-start	50%	exception intrinsic value	vertical centering of the icon
+src/css/components/search.css	inset-block-start	50%	none intrinsic value	vertical centering of the icon
+src/css/components/search.css	inset-inline-start	0.85	shared --input-padding-inline	magnifier aligned to the input text inset; field.css:62 pads inputs by the same 0.85 factor
+src/css/components/search.css	padding-inline-start	0.85	shared --input-padding-inline	text start padding past the magnifier; field.css:62 pads inputs by the same 0.85 factor
 src/css/components/search.css	padding-inline-start	1.5rem	missing-scale icon-size	room for the 1rem icon (search.css:19, also menu.css:37) plus a gap; derive it from the icon size. Equals --space-5 by value only
-src/css/components/search.css	translate	-50%	exception intrinsic value	vertical centering of the icon
-src/css/components/separator.css	min-block-size	1em	exception intrinsic value	vertical separator at least one line tall
-src/css/components/sheet.css	--_hide	-100%	exception intrinsic value	panel parked fully off its edge
-src/css/components/sheet.css	--_hide	100%	exception intrinsic value	panel parked fully off its edge
-src/css/components/sheet.css	block-size	100dvh	exception intrinsic value	side sheet spans the viewport height
-src/css/components/sheet.css	inline-size	100%	exception intrinsic value	containing-block term of the gutter cap, and full width for top and bottom sheets
+src/css/components/search.css	translate	-50%	none intrinsic value	vertical centering of the icon
+src/css/components/separator.css	min-block-size	1em	none intrinsic value	vertical separator at least one line tall
+src/css/components/sheet.css	--_hide	-100%	none intrinsic value	panel parked fully off its edge
+src/css/components/sheet.css	--_hide	100%	none intrinsic value	panel parked fully off its edge
+src/css/components/sheet.css	block-size	100dvh	none intrinsic value	side sheet spans the viewport height
+src/css/components/sheet.css	inline-size	100%	none intrinsic value	containing-block term of the gutter cap, and full width for top and bottom sheets
 src/css/components/sheet.css	inline-size	24rem	shared --overlay-width-*	sheet width cap; dialog.css:11 caps at 32rem (the plan's rule 6 example)
 src/css/components/sheet.css	inline-size	3rem	shared --overlay-gutter	gutter is 3rem here and 2rem at dialog.css:11 with no recorded reason. Equals --space-8 by value
-src/css/components/sheet.css	max-block-size	85dvh	exception one-off value	top and bottom sheet height cap
-src/css/components/sheet.css	opacity	0	exception intrinsic value	backdrop fade endpoint
-src/css/components/sheet.css	opacity	1	exception intrinsic value	backdrop open endpoint
-src/css/components/shell.css	@container	40rem	exception one-off value	grid container breakpoint; no breakpoint scale and no other component queries its width
-src/css/components/shell.css	@container	64rem	exception one-off value	grid container breakpoint; no breakpoint scale and no other component queries its width
-src/css/components/shell.css	min-block-size	100dvh	exception intrinsic value	shell fills the viewport
-src/css/components/skeleton.css	block-size	1em	exception intrinsic value	a text-line placeholder is one line tall
+src/css/components/sheet.css	max-block-size	85dvh	none one-off value	top and bottom sheet height cap
+src/css/components/sheet.css	opacity	0	none intrinsic value	backdrop fade endpoint
+src/css/components/sheet.css	opacity	1	none intrinsic value	backdrop open endpoint
+src/css/components/shell.css	@container	40rem	none one-off value	grid container breakpoint; no breakpoint scale and no other component queries its width
+src/css/components/shell.css	@container	64rem	none one-off value	grid container breakpoint; no breakpoint scale and no other component queries its width
+src/css/components/shell.css	min-block-size	100dvh	none intrinsic value	shell fills the viewport
+src/css/components/skeleton.css	animation	5	none one-off value	pulse period as 5x --duration-slow; meter.css:82 uses 4x for its sweep, so no shared value
+src/css/components/skeleton.css	animation	ease-in-out	shared --ease-loop	loading-loop easing; meter.css:82 repeats ease-in-out for the sweep
+src/css/components/skeleton.css	block-size	1em	none intrinsic value	a text-line placeholder is one line tall
 src/css/components/skeleton.css	border	1px	shared --forced-hairline	forced-colors outline; same 1px at meter.css:129 and popover.css:112
 src/css/components/skeleton.css	inline-size	2.5rem	shared --avatar-size	avatar placeholder copies avatar.css:10 (2.5rem times --density)
-src/css/components/skeleton.css	opacity	0.45	exception one-off value	pulse low point
+src/css/components/skeleton.css	opacity	0.45	none one-off value	pulse low point
 src/css/components/slider.css	--_rail	0.375rem	exception density-scaled private size	rail thickness times --density
 src/css/components/slider.css	--_thumb	1.25rem	exception density-scaled private size	thumb size times --density
-src/css/components/slider.css	animation-range	0%	exception intrinsic value	scroll-driven timeline range endpoint
-src/css/components/slider.css	animation-range	100%	exception intrinsic value	scroll-driven timeline range endpoint
-src/css/components/slider.css	background	100%	exception intrinsic value	full track length in the progress fill math
-src/css/components/slider.css	block-size	0.5rem	exception one-off value	room for the 4px hover halo (slider.css:71) on both sides; equals --space-2 by value only
+src/css/components/slider.css	animation	linear	none intrinsic value	scroll-driven fill maps the thumb timeline one to one; any curve would desync the fill from the thumb
+src/css/components/slider.css	animation-range	0%	none intrinsic value	scroll-driven timeline range endpoint
+src/css/components/slider.css	animation-range	100%	none intrinsic value	scroll-driven timeline range endpoint
+src/css/components/slider.css	background	100%	none intrinsic value	full track length in the progress fill math
+src/css/components/slider.css	block-size	0.5rem	none one-off value	room for the 4px hover halo (slider.css:71) on both sides; equals --space-2 by value only
 src/css/components/slider.css	block-size	24px	shared --target-min	WCAG 2.5.8 floor outside --control-height; choice.css:12 and table.css:98 repeat it
 src/css/components/slider.css	border	1px	shared --forced-hairline	forced-colors track outline; same 1px at meter.css:129 and popover.css:112
 src/css/components/slider.css	border	2px	chrome --border-width	thumb ring ignores --border-width (calm.css:17 1px, bubblegum.css:16 2px) (CSS-17)
 src/css/components/slider.css	box-shadow	30%	chrome --focus-glow	hand-rolled halo in --ring; glass.css:41 sets the same kind of ring as --focus-glow (CSS-03)
 src/css/components/slider.css	box-shadow	4px	chrome --focus-glow	hand-rolled 4px halo ignores --focus-glow and --focus-color; glass.css:41 owns this ring (CSS-03)
-src/css/components/slider.css	inline-size	100%	exception intrinsic value	slider fills its container
+src/css/components/slider.css	inline-size	100%	none intrinsic value	slider fills its container
 src/css/components/slider.css	opacity	0.55	shared --disabled-opacity	disabled dim; same 0.55 at button.css:86 and tabs.css:82
-src/css/components/stepper.css	flex	5rem	exception one-off value	number input basis in the stepper
-src/css/components/stepper.css	min-inline-size	4rem	exception one-off value	number input minimum width; equals --space-10 by value only
-src/css/components/table.css	background	55%	exception one-off value	row hover wash; menu.css:44 hovers with plain --muted instead
+src/css/components/stepper.css	flex	5rem	none one-off value	number input basis in the stepper
+src/css/components/stepper.css	min-inline-size	4rem	none one-off value	number input minimum width; equals --space-10 by value only
+src/css/components/table.css	background	55%	none one-off value	row hover wash; menu.css:44 hovers with plain --muted instead
 src/css/components/table.css	block-size	1.125rem	shared --checkbox-size	row checkbox size; choice.css:18 repeats 1.125rem
 src/css/components/table.css	font-weight	600	missing-scale font-weight	header and footer weight; 600 also at badge.css:20 and tabs.css:46
 src/css/components/table.css	gap	0.35em	shared --icon-gap	sort-indicator gap in em; button.css:16 (0.5em) and badge.css:12 (0.4em) do the same job
 src/css/components/table.css	inline-size	1.125rem	shared --checkbox-size	row checkbox size; choice.css:17 repeats 1.125rem
-src/css/components/table.css	inline-size	100%	exception intrinsic value	table fills its wrapper
-src/css/components/table.css	inline-size	1px	exception intrinsic value	shrink-to-fit trick for the checkbox column
+src/css/components/table.css	inline-size	100%	none intrinsic value	table fills its wrapper
+src/css/components/table.css	inline-size	1px	none intrinsic value	shrink-to-fit trick for the checkbox column
 src/css/components/table.css	min-block-size	24px	shared --target-min	WCAG 2.5.8 floor outside --control-height; choice.css:12 and menu.css:21 repeat it
-src/css/components/table.css	opacity	0.5	exception one-off value	unsorted indicator dimmed
-src/css/components/table.css	opacity	1	exception intrinsic value	sorted indicator at full strength
+src/css/components/table.css	opacity	0.5	none one-off value	unsorted indicator dimmed
+src/css/components/table.css	opacity	1	none intrinsic value	sorted indicator at full strength
 src/css/components/tabs.css	block-size	1rem	missing-scale icon-size	tab icon; 1rem icons also at menu.css:38 and search.css:20. Equals --space-4 by value only
 src/css/components/tabs.css	border-radius	3px	shared --inset-tight	outer radius is --radius-control plus the 3px padding; choice.css:74 repeats it
 src/css/components/tabs.css	font-weight	600	missing-scale font-weight	tab label weight; 600 also at choice.css:97 and button.css:27
@@ -222,15 +241,15 @@ src/css/components/tabs.css	outline	2px	shared --forced-selected-outline	forced-
 src/css/components/tabs.css	outline-offset	1px	chrome --focus-offset	tab focus ring replaces the chrome offset (calm.css:37 2px); choice.css:127 does the same
 src/css/components/tabs.css	padding	3px	shared --inset-tight	tablist padding; choice.css:72 repeats 3px
 src/css/components/toast.css	block-size	0.5rem	shared --tone-dot-size	tone dot; badge.css:30 draws the same dot at 0.5em. Equals --space-2 by value only
-src/css/components/toast.css	border-radius	50%	exception platform floor	circle shape for the tone dot, the 50% analogue of the 999px pill
+src/css/components/toast.css	border-radius	50%	none intrinsic value	circle; 50% is geometry, not a design value
 src/css/components/toast.css	font-weight	600	missing-scale font-weight	title weight outside the label role; 600 also at badge.css:20
 src/css/components/toast.css	inline-size	0.5rem	shared --tone-dot-size	tone dot; badge.css:29 draws the same dot at 0.5em. Equals --space-2 by value only
-src/css/components/toast.css	inline-size	100vw	exception intrinsic value	viewport term of the gutter cap; the 2rem gutter carries the finding
+src/css/components/toast.css	inline-size	100vw	none intrinsic value	viewport term of the gutter cap; the 2rem gutter carries the finding
 src/css/components/toast.css	inline-size	22rem	shared --overlay-width-*	toaster width cap; popover.css:45 caps at 18rem and menu.css:12 at 20rem for the same job
 src/css/components/toast.css	inline-size	2rem	shared --overlay-gutter	viewport gutter; same 2rem at popover.css:45 and menu.css:12
-src/css/components/toast.css	opacity	0	exception intrinsic value	enter and exit fade endpoint
+src/css/components/toast.css	opacity	0	none intrinsic value	enter and exit fade endpoint
 src/css/components/toast.css	translate	0.75rem	shared --overlay-enter-offset	enter rise; dialog.css:24 rises 0.5rem for the same job
-src/css/components/toast.css	translate	1rem	exception one-off value	closing slide toward the edge; no other overlay exits sideways
+src/css/components/toast.css	translate	1rem	none one-off value	closing slide toward the edge; no other overlay exits sideways
 src/css/components/typography.css	font-weight	600	missing-scale font-weight	eyebrow weight (typography is deferred); 600 also at badge.css:20
 src/css/components/typography.css	letter-spacing	0.06em	missing-scale tracking	eyebrow tracking floor (deferred); 0.06em again at estop.css:31
 src/css/preferences.css	--duration-base	0ms	exception token definition	reduced motion redefines the duration token; preferences.css is a token layer
@@ -254,7 +273,7 @@ stories/Foundations.stories.ts	box-shadow	1px	story contrast swatch outline	inse
 stories/Foundations.stories.ts	font-weight	600	story swatch label weight	no weight scale; same 600 as the component literals
 stories/Foundations.stories.ts	grid-template-columns	12rem	story demo grid column minimum	hand-written auto-fill grid; no odd-* class for a min-column grid
 stories/Foundations.stories.ts	grid-template-columns	26rem	story demo grid column minimum	hand-written auto-fit grid set from script
-stories/Foundations.stories.ts	inline-size	100%	exception intrinsic value	contrast table fills the story
+stories/Foundations.stories.ts	inline-size	100%	none intrinsic value	contrast table fills the story
 stories/Foundations.stories.ts	inline-size	2.4em	story contrast swatch size	hand-styled sample in the contrast table
 stories/Foundations.stories.ts	max-inline-size	48rem	story demo width cap	no width token or odd-* class; 48rem repeats in the Table story
 stories/Foundations.stories.ts	padding	0.15em	story contrast swatch padding	hand-styled chip padding
@@ -268,7 +287,7 @@ stories/Showcase.stories.ts	inline-size	1.15em	story logo icon size	copies the b
 stories/Showcase.stories.ts	line-height	1	story logo tile line height	hand-built tile copies the button's line-height 1 (button.css:28) instead of using odd-button
 stories/Showcase.stories.ts	max-inline-size	44rem	story demo width cap	no width token or odd-* class
 stories/Showcase.stories.ts	max-inline-size	72rem	story page width cap	no width token or odd-* class
-stories/Showcase.stories.ts	min-block-size	100dvh	exception intrinsic value	sample app fills the viewport, like base.css:15
+stories/Showcase.stories.ts	min-block-size	100dvh	none intrinsic value	sample app fills the viewport, like base.css:15
 stories/Showcase.stories.ts	padding	1rem	story page padding floor	clamp() floor should be var(--space-4)
 stories/Showcase.stories.ts	padding	3rem	story page padding cap	clamp() cap should be var(--space-8)
 stories/Showcase.stories.ts	padding	4vw	story page padding fluid term	fluid middle of the clamp; no fluid spacing token

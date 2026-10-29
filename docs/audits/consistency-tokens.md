@@ -57,32 +57,35 @@ Not mapped to a component:
 
 <!-- audit:stats -->
 
-347 literals in 46 files, 292 distinct (file, property, value) keys.
+366 literals in 46 files, 311 distinct (file, property, value) keys.
 
 | Category | Literals |
 | --- | --- |
 | color | 14 |
-| spacing | 21 |
-| size | 164 |
+| spacing | 30 |
+| size | 166 |
 | radius | 9 |
 | border-width | 22 |
-| font-size | 2 |
+| font-size | 3 |
 | font-weight | 24 |
 | tracking | 4 |
 | line-height | 7 |
 | shadow | 15 |
-| motion | 22 |
+| motion | 29 |
 | focus | 7 |
 | other | 36 |
 
 | Verdict | Literals |
 | --- | --- |
-| chrome | 19 |
+| chrome | 20 |
 | color | 1 |
-| exception | 165 |
+| exception | 50 |
 | missing-scale | 44 |
-| shared | 70 |
+| none | 125 |
+| shared | 78 |
 | story | 48 |
+
+`none` means no rule in the plan applies, so the literal is not a finding.
 
 | Token graph | Count |
 | --- | --- |
@@ -102,37 +105,46 @@ Not mapped to a component:
 
 | Category | `file:line` | Property | Value | Matching token | Verdict |
 | --- | --- | --- | --- | --- | --- |
-| color | `src/css/base.css:62` | `background` | `30%` |  | exception one-off value |
+| color | `src/css/base.css:62` | `background` | `30%` |  | none one-off value |
 | color | `src/css/components/alert.css:19` | `border` | `45%` |  | shared --tone-edge-mix |
-| color | `src/css/components/alert.css:37` | `color` | `70%` |  | exception one-off value |
+| color | `src/css/components/alert.css:37` | `color` | `70%` |  | none one-off value |
 | color | `src/css/components/avatar.css:18` | `border` | `40%` |  | shared --tone-edge-mix |
 | color | `src/css/components/badge.css:14` | `border` | `35%` |  | shared --tone-edge-mix |
-| color | `src/css/components/button.css:67` | `background-color` | `88%` |  | exception one-off value |
-| color | `src/css/components/button.css:71` | `background-color` | `8%` |  | exception one-off value |
-| color | `src/css/components/button.css:121` | `background-color` | `10%` |  | exception one-off value |
-| color | `src/css/components/choice.css:31` | `--_track` | `45%` |  | exception one-off value |
-| color | `src/css/components/choice.css:39` | `border` | `60%` |  | exception one-off value |
+| color | `src/css/components/button.css:67` | `background-color` | `88%` |  | none one-off value |
+| color | `src/css/components/button.css:71` | `background-color` | `8%` |  | none one-off value |
+| color | `src/css/components/button.css:121` | `background-color` | `10%` |  | none one-off value |
+| color | `src/css/components/choice.css:31` | `--_track` | `45%` |  | none one-off value |
+| color | `src/css/components/choice.css:39` | `border` | `60%` |  | none one-off value |
 | color | `src/css/components/estop.css:12` | `--_rim` | `black` |  | color raw black |
-| color | `src/css/components/estop.css:12` | `--_rim` | `30%` |  | exception one-off value |
-| color | `src/css/components/field.css:90` | `border-color` | `50%` |  | exception one-off value |
-| color | `src/css/components/table.css:63` | `background` | `55%` |  | exception one-off value |
+| color | `src/css/components/estop.css:12` | `--_rim` | `30%` |  | none one-off value |
+| color | `src/css/components/field.css:90` | `border-color` | `50%` |  | none one-off value |
+| color | `src/css/components/table.css:63` | `background` | `55%` |  | none one-off value |
 
-### Spacing (21)
+### Spacing (30)
 
 | Category | `file:line` | Property | Value | Matching token | Verdict |
 | --- | --- | --- | --- | --- | --- |
 | spacing | `src/css/base.css:48` | `text-underline-offset` | `0.2em` |  | shared --underline-offset |
+| spacing | `src/css/components/alert.css:18` | `padding` | `0.67` |  | shared --surface-padding-compact |
 | spacing | `src/css/components/alert.css:36` | `margin-block-start` | `0.05em` |  | exception glyph geometry |
+| spacing | `src/css/components/avatar.css:51` | `margin-inline-start` | `-0.2` |  | none one-off value |
 | spacing | `src/css/components/badge.css:12` | `gap` | `0.4em` |  | shared --icon-gap |
-| spacing | `src/css/components/badge.css:13` | `padding` | `0.2em` |  | exception one-off value |
-| spacing | `src/css/components/badge.css:13` | `padding` | `0.65em` |  | exception one-off value |
+| spacing | `src/css/components/badge.css:13` | `padding` | `0.2em` |  | none one-off value |
+| spacing | `src/css/components/badge.css:13` | `padding` | `0.65em` |  | none one-off value |
 | spacing | `src/css/components/button.css:16` | `gap` | `0.5em` |  | shared --icon-gap |
+| spacing | `src/css/components/button.css:53` | `padding-inline` | `0.75` |  | none one-off value |
+| spacing | `src/css/components/button.css:58` | `padding-inline` | `1.4` |  | none one-off value |
 | spacing | `src/css/components/button.css:123` | `text-underline-offset` | `0.4em` |  | shared --underline-offset |
 | spacing | `src/css/components/choice.css:70` | `gap` | `2px` |  | shared --segment-gap |
 | spacing | `src/css/components/choice.css:72` | `padding` | `3px` |  | shared --inset-tight |
+| spacing | `src/css/components/field.css:62` | `padding` | `0.85` |  | shared --input-padding-inline |
 | spacing | `src/css/components/field.css:119` | `padding-inline-end` | `2.5rem` |  | exception glyph geometry |
-| spacing | `src/css/components/log.css:33` | `padding` | `0.0625rem` |  | exception one-off value |
-| spacing | `src/css/components/search.css:17` | `inset-block-start` | `50%` |  | exception intrinsic value |
+| spacing | `src/css/components/field.css:137` | `padding-inline-end` | `0.85` |  | shared --input-padding-inline |
+| spacing | `src/css/components/log.css:33` | `padding` | `0.0625rem` |  | none one-off value |
+| spacing | `src/css/components/popover.css:35` | `padding` | `0.67` |  | shared --surface-padding-compact |
+| spacing | `src/css/components/search.css:17` | `inset-block-start` | `50%` |  | none intrinsic value |
+| spacing | `src/css/components/search.css:18` | `inset-inline-start` | `0.85` |  | shared --input-padding-inline |
+| spacing | `src/css/components/search.css:27` | `padding-inline-start` | `0.85` |  | shared --input-padding-inline |
 | spacing | `src/css/components/search.css:27` | `padding-inline-start` | `1.5rem` | `--space-5` | missing-scale icon-size |
 | spacing | `src/css/components/table.css:97` | `gap` | `0.35em` |  | shared --icon-gap |
 | spacing | `src/css/components/tabs.css:19` | `gap` | `2px` |  | shared --segment-gap |
@@ -143,22 +155,22 @@ Not mapped to a component:
 | spacing | `stories/Showcase.stories.ts:43` | `padding` | `4vw` |  | story page padding fluid term |
 | spacing | `stories/Showcase.stories.ts:43` | `padding` | `3rem` | `--space-8` | story page padding cap |
 
-### Size (164)
+### Size (166)
 
 | Category | `file:line` | Property | Value | Matching token | Verdict |
 | --- | --- | --- | --- | --- | --- |
-| size | `src/css/base.css:15` | `min-block-size` | `100dvh` |  | exception intrinsic value |
-| size | `src/css/base.css:49` | `text-decoration-thickness` | `1px` |  | exception one-off value |
+| size | `src/css/base.css:15` | `min-block-size` | `100dvh` |  | none intrinsic value |
+| size | `src/css/base.css:49` | `text-decoration-thickness` | `1px` |  | none one-off value |
 | size | `src/css/base.css:53` | `text-decoration-thickness` | `2px` |  | shared --underline-strong |
-| size | `src/css/base.css:76` | `inline-size` | `1px` |  | exception intrinsic value |
-| size | `src/css/base.css:77` | `block-size` | `1px` |  | exception intrinsic value |
+| size | `src/css/base.css:76` | `inline-size` | `1px` |  | none intrinsic value |
+| size | `src/css/base.css:77` | `block-size` | `1px` |  | none intrinsic value |
 | size | `src/css/components/alert.css:34` | `inline-size` | `1.25rem` |  | missing-scale icon-size |
 | size | `src/css/components/alert.css:35` | `block-size` | `1.25rem` |  | missing-scale icon-size |
 | size | `src/css/components/avatar.css:10` | `--_size` | `2.5rem` |  | shared --avatar-size |
 | size | `src/css/components/avatar.css:32` | `--_size` | `2rem` | `--space-6` | exception density-scaled private size |
 | size | `src/css/components/avatar.css:33` | `--_size` | `3.5rem` |  | exception density-scaled private size |
-| size | `src/css/components/avatar.css:36` | `inline-size` | `100%` |  | exception intrinsic value |
-| size | `src/css/components/avatar.css:37` | `block-size` | `100%` |  | exception intrinsic value |
+| size | `src/css/components/avatar.css:36` | `inline-size` | `100%` |  | none intrinsic value |
+| size | `src/css/components/avatar.css:37` | `block-size` | `100%` |  | none intrinsic value |
 | size | `src/css/components/badge.css:29` | `inline-size` | `0.5em` |  | shared --tone-dot-size |
 | size | `src/css/components/badge.css:30` | `block-size` | `0.5em` |  | shared --tone-dot-size |
 | size | `src/css/components/button.css:91` | `inline-size` | `1.15em` |  | missing-scale icon-size |
@@ -170,13 +182,14 @@ Not mapped to a component:
 | size | `src/css/components/choice.css:17` | `inline-size` | `1.125rem` |  | shared --checkbox-size |
 | size | `src/css/components/choice.css:18` | `block-size` | `1.125rem` |  | shared --checkbox-size |
 | size | `src/css/components/choice.css:32` | `--_size` | `1.5rem` | `--space-5` | exception density-scaled private size |
-| size | `src/css/components/choice.css:42` | `background` | `92%` |  | exception intrinsic value |
-| size | `src/css/components/choice.css:42` | `background` | `100%` |  | exception intrinsic value |
+| size | `src/css/components/choice.css:36` | `inline-size` | `1.75` |  | none one-off value |
+| size | `src/css/components/choice.css:42` | `background` | `92%` |  | none intrinsic value |
+| size | `src/css/components/choice.css:42` | `background` | `100%` |  | none intrinsic value |
 | size | `src/css/components/choice.css:43` | `background` | `1px` |  | chrome --border-width |
 | size | `src/css/components/choice.css:43` | `background` | `4px` |  | chrome --border-width |
 | size | `src/css/components/choice.css:43` | `background` | `4px` |  | chrome --border-width |
-| size | `src/css/components/choice.css:52` | `background` | `92%` |  | exception intrinsic value |
-| size | `src/css/components/choice.css:52` | `background` | `100%` |  | exception intrinsic value |
+| size | `src/css/components/choice.css:52` | `background` | `92%` |  | none intrinsic value |
+| size | `src/css/components/choice.css:52` | `background` | `100%` |  | none intrinsic value |
 | size | `src/css/components/choice.css:53` | `background` | `1px` |  | chrome --border-width |
 | size | `src/css/components/choice.css:53` | `background` | `4px` |  | chrome --border-width |
 | size | `src/css/components/choice.css:53` | `background` | `4px` |  | chrome --border-width |
@@ -185,85 +198,86 @@ Not mapped to a component:
 | size | `src/css/components/choice.css:80` | `inline-size` | `1px` |  | shared .odd-visually-hidden |
 | size | `src/css/components/choice.css:81` | `block-size` | `1px` |  | shared .odd-visually-hidden |
 | size | `src/css/components/dialog.css:11` | `inline-size` | `32rem` |  | shared --overlay-width-* |
-| size | `src/css/components/dialog.css:11` | `inline-size` | `100%` |  | exception intrinsic value |
+| size | `src/css/components/dialog.css:11` | `inline-size` | `100%` |  | none intrinsic value |
 | size | `src/css/components/dialog.css:11` | `inline-size` | `2rem` | `--space-6` | shared --overlay-gutter |
-| size | `src/css/components/dialog.css:12` | `max-block-size` | `40rem` |  | exception one-off value |
-| size | `src/css/components/dialog.css:12` | `max-block-size` | `100dvh` |  | exception intrinsic value |
+| size | `src/css/components/dialog.css:12` | `max-block-size` | `40rem` |  | none one-off value |
+| size | `src/css/components/dialog.css:12` | `max-block-size` | `100dvh` |  | none intrinsic value |
 | size | `src/css/components/dialog.css:12` | `max-block-size` | `2rem` | `--space-6` | shared --overlay-gutter |
 | size | `src/css/components/disclosure.css:32` | `inline-size` | `0.55rem` |  | exception glyph geometry |
 | size | `src/css/components/disclosure.css:33` | `block-size` | `0.55rem` |  | exception glyph geometry |
-| size | `src/css/components/estop.css:16` | `inline-size` | `8rem` |  | exception one-off value |
+| size | `src/css/components/estop.css:16` | `inline-size` | `8rem` |  | none one-off value |
 | size | `src/css/components/field.css:48` | `inline-size` | `1.25em` |  | exception glyph geometry |
 | size | `src/css/components/field.css:49` | `block-size` | `1.25em` |  | exception glyph geometry |
-| size | `src/css/components/field.css:60` | `inline-size` | `100%` |  | exception intrinsic value |
+| size | `src/css/components/field.css:60` | `inline-size` | `100%` |  | none intrinsic value |
+| size | `src/css/components/field.css:76` | `min-block-size` | `2.5` |  | none one-off value |
 | size | `src/css/components/field.css:123` | `background-position` | `1.15rem` |  | exception glyph geometry |
 | size | `src/css/components/field.css:123` | `background-position` | `0.8rem` |  | exception glyph geometry |
 | size | `src/css/components/field.css:124` | `background-size` | `0.35rem` |  | exception glyph geometry |
 | size | `src/css/components/field.css:124` | `background-size` | `0.35rem` |  | exception glyph geometry |
-| size | `src/css/components/log.css:15` | `max-block-size` | `20rem` |  | exception one-off value |
-| size | `src/css/components/menu.css:10` | `min-inline-size` | `12rem` |  | exception one-off value |
+| size | `src/css/components/log.css:15` | `max-block-size` | `20rem` |  | none one-off value |
+| size | `src/css/components/menu.css:10` | `min-inline-size` | `12rem` |  | none one-off value |
 | size | `src/css/components/menu.css:12` | `max-inline-size` | `20rem` |  | shared --overlay-width-* |
-| size | `src/css/components/menu.css:12` | `max-inline-size` | `100vw` |  | exception intrinsic value |
+| size | `src/css/components/menu.css:12` | `max-inline-size` | `100vw` |  | none intrinsic value |
 | size | `src/css/components/menu.css:12` | `max-inline-size` | `2rem` | `--space-6` | shared --overlay-gutter |
-| size | `src/css/components/menu.css:20` | `inline-size` | `100%` |  | exception intrinsic value |
+| size | `src/css/components/menu.css:20` | `inline-size` | `100%` |  | none intrinsic value |
 | size | `src/css/components/menu.css:21` | `min-block-size` | `24px` |  | shared --target-min |
-| size | `src/css/components/menu.css:21` | `min-block-size` | `2.25rem` |  | exception one-off value |
+| size | `src/css/components/menu.css:21` | `min-block-size` | `2.25rem` |  | none one-off value |
 | size | `src/css/components/menu.css:37` | `inline-size` | `1rem` | `--space-4` | missing-scale icon-size |
 | size | `src/css/components/menu.css:38` | `block-size` | `1rem` | `--space-4` | missing-scale icon-size |
 | size | `src/css/components/menu.css:58` | `inline-size` | `1rem` | `--space-4` | missing-scale icon-size |
-| size | `src/css/components/meter.css:20` | `inline-size` | `100%` |  | exception intrinsic value |
+| size | `src/css/components/meter.css:20` | `inline-size` | `100%` |  | none intrinsic value |
 | size | `src/css/components/meter.css:21` | `block-size` | `0.5rem` | `--space-2` | exception density-scaled private size |
-| size | `src/css/components/meter.css:47` | `block-size` | `100%` |  | exception intrinsic value |
-| size | `src/css/components/meter.css:55` | `block-size` | `100%` |  | exception intrinsic value |
-| size | `src/css/components/meter.css:80` | `background` | `40%` |  | exception one-off value |
-| size | `src/css/components/meter.css:80` | `background` | `100%` |  | exception intrinsic value |
-| size | `src/css/components/meter.css:92` | `background-position` | `-70%` |  | exception intrinsic value |
-| size | `src/css/components/meter.css:93` | `background-position` | `170%` |  | exception intrinsic value |
-| size | `src/css/components/popover.css:33` | `max-block-size` | `100dvh` |  | exception intrinsic value |
+| size | `src/css/components/meter.css:47` | `block-size` | `100%` |  | none intrinsic value |
+| size | `src/css/components/meter.css:55` | `block-size` | `100%` |  | none intrinsic value |
+| size | `src/css/components/meter.css:80` | `background` | `40%` |  | none one-off value |
+| size | `src/css/components/meter.css:80` | `background` | `100%` |  | none intrinsic value |
+| size | `src/css/components/meter.css:92` | `background-position` | `-70%` |  | none intrinsic value |
+| size | `src/css/components/meter.css:93` | `background-position` | `170%` |  | none intrinsic value |
+| size | `src/css/components/popover.css:33` | `max-block-size` | `100dvh` |  | none intrinsic value |
 | size | `src/css/components/popover.css:33` | `max-block-size` | `2rem` | `--space-6` | shared --overlay-gutter |
 | size | `src/css/components/popover.css:45` | `inline-size` | `18rem` |  | shared --overlay-width-* |
-| size | `src/css/components/popover.css:45` | `inline-size` | `100vw` |  | exception intrinsic value |
+| size | `src/css/components/popover.css:45` | `inline-size` | `100vw` |  | none intrinsic value |
 | size | `src/css/components/popover.css:45` | `inline-size` | `2rem` | `--space-6` | shared --overlay-gutter |
 | size | `src/css/components/popover.css:46` | `inline-size` | `20rem` |  | shared --overlay-width-* |
-| size | `src/css/components/popover.css:46` | `inline-size` | `100vw` |  | exception intrinsic value |
+| size | `src/css/components/popover.css:46` | `inline-size` | `100vw` |  | none intrinsic value |
 | size | `src/css/components/popover.css:46` | `inline-size` | `2rem` | `--space-6` | shared --overlay-gutter |
 | size | `src/css/components/popover.css:50` | `max-inline-size` | `18rem` |  | shared --overlay-width-* |
-| size | `src/css/components/popover.css:50` | `max-inline-size` | `100vw` |  | exception intrinsic value |
+| size | `src/css/components/popover.css:50` | `max-inline-size` | `100vw` |  | none intrinsic value |
 | size | `src/css/components/popover.css:50` | `max-inline-size` | `2rem` | `--space-6` | shared --overlay-gutter |
-| size | `src/css/components/range-field.css:25` | `flex` | `8rem` |  | exception one-off value |
-| size | `src/css/components/range-field.css:31` | `flex` | `6.5rem` |  | exception one-off value |
+| size | `src/css/components/range-field.css:25` | `flex` | `8rem` |  | none one-off value |
+| size | `src/css/components/range-field.css:31` | `flex` | `6.5rem` |  | none one-off value |
 | size | `src/css/components/search.css:19` | `inline-size` | `1rem` | `--space-4` | missing-scale icon-size |
 | size | `src/css/components/search.css:20` | `block-size` | `1rem` | `--space-4` | missing-scale icon-size |
 | size | `src/css/components/search.css:32` | `inline-size` | `1rem` | `--space-4` | missing-scale icon-size |
 | size | `src/css/components/search.css:33` | `block-size` | `1rem` | `--space-4` | missing-scale icon-size |
-| size | `src/css/components/separator.css:19` | `min-block-size` | `1em` |  | exception intrinsic value |
+| size | `src/css/components/separator.css:19` | `min-block-size` | `1em` |  | none intrinsic value |
 | size | `src/css/components/sheet.css:26` | `inline-size` | `24rem` |  | shared --overlay-width-* |
-| size | `src/css/components/sheet.css:26` | `inline-size` | `100%` |  | exception intrinsic value |
+| size | `src/css/components/sheet.css:26` | `inline-size` | `100%` |  | none intrinsic value |
 | size | `src/css/components/sheet.css:26` | `inline-size` | `3rem` | `--space-8` | shared --overlay-gutter |
-| size | `src/css/components/sheet.css:28` | `block-size` | `100dvh` |  | exception intrinsic value |
-| size | `src/css/components/sheet.css:64` | `inline-size` | `100%` |  | exception intrinsic value |
-| size | `src/css/components/sheet.css:66` | `max-block-size` | `85dvh` |  | exception one-off value |
-| size | `src/css/components/shell.css:23` | `min-block-size` | `100dvh` |  | exception intrinsic value |
-| size | `src/css/components/shell.css:79` | `@container` | `64rem` |  | exception one-off value |
-| size | `src/css/components/shell.css:86` | `@container` | `40rem` |  | exception one-off value |
-| size | `src/css/components/skeleton.css:13` | `block-size` | `1em` |  | exception intrinsic value |
+| size | `src/css/components/sheet.css:28` | `block-size` | `100dvh` |  | none intrinsic value |
+| size | `src/css/components/sheet.css:64` | `inline-size` | `100%` |  | none intrinsic value |
+| size | `src/css/components/sheet.css:66` | `max-block-size` | `85dvh` |  | none one-off value |
+| size | `src/css/components/shell.css:23` | `min-block-size` | `100dvh` |  | none intrinsic value |
+| size | `src/css/components/shell.css:79` | `@container` | `64rem` |  | none one-off value |
+| size | `src/css/components/shell.css:86` | `@container` | `40rem` |  | none one-off value |
+| size | `src/css/components/skeleton.css:13` | `block-size` | `1em` |  | none intrinsic value |
 | size | `src/css/components/skeleton.css:20` | `inline-size` | `2.5rem` |  | shared --avatar-size |
 | size | `src/css/components/slider.css:27` | `--_thumb` | `1.25rem` |  | exception density-scaled private size |
-| size | `src/css/components/slider.css:33` | `inline-size` | `100%` |  | exception intrinsic value |
+| size | `src/css/components/slider.css:33` | `inline-size` | `100%` |  | none intrinsic value |
 | size | `src/css/components/slider.css:34` | `block-size` | `24px` |  | shared --target-min |
-| size | `src/css/components/slider.css:34` | `block-size` | `0.5rem` | `--space-2` | exception one-off value |
-| size | `src/css/components/slider.css:54` | `background` | `100%` |  | exception intrinsic value |
-| size | `src/css/components/stepper.css:32` | `flex` | `5rem` |  | exception one-off value |
-| size | `src/css/components/stepper.css:33` | `min-inline-size` | `4rem` | `--space-10` | exception one-off value |
-| size | `src/css/components/table.css:25` | `inline-size` | `100%` |  | exception intrinsic value |
-| size | `src/css/components/table.css:83` | `inline-size` | `1px` |  | exception intrinsic value |
+| size | `src/css/components/slider.css:34` | `block-size` | `0.5rem` | `--space-2` | none one-off value |
+| size | `src/css/components/slider.css:54` | `background` | `100%` |  | none intrinsic value |
+| size | `src/css/components/stepper.css:32` | `flex` | `5rem` |  | none one-off value |
+| size | `src/css/components/stepper.css:33` | `min-inline-size` | `4rem` | `--space-10` | none one-off value |
+| size | `src/css/components/table.css:25` | `inline-size` | `100%` |  | none intrinsic value |
+| size | `src/css/components/table.css:83` | `inline-size` | `1px` |  | none intrinsic value |
 | size | `src/css/components/table.css:87` | `inline-size` | `1.125rem` |  | shared --checkbox-size |
 | size | `src/css/components/table.css:88` | `block-size` | `1.125rem` |  | shared --checkbox-size |
 | size | `src/css/components/table.css:98` | `min-block-size` | `24px` |  | shared --target-min |
 | size | `src/css/components/tabs.css:61` | `inline-size` | `1rem` | `--space-4` | missing-scale icon-size |
 | size | `src/css/components/tabs.css:62` | `block-size` | `1rem` | `--space-4` | missing-scale icon-size |
 | size | `src/css/components/toast.css:10` | `inline-size` | `22rem` |  | shared --overlay-width-* |
-| size | `src/css/components/toast.css:10` | `inline-size` | `100vw` |  | exception intrinsic value |
+| size | `src/css/components/toast.css:10` | `inline-size` | `100vw` |  | none intrinsic value |
 | size | `src/css/components/toast.css:10` | `inline-size` | `2rem` | `--space-6` | shared --overlay-gutter |
 | size | `src/css/components/toast.css:84` | `inline-size` | `0.5rem` | `--space-2` | shared --tone-dot-size |
 | size | `src/css/components/toast.css:85` | `block-size` | `0.5rem` | `--space-2` | shared --tone-dot-size |
@@ -275,7 +289,7 @@ Not mapped to a component:
 | size | `stories/CustomPalette.stories.ts:61` | `grid-template-columns` | `24rem` |  | story demo grid column minimum |
 | size | `stories/Feedback.stories.ts:28` | `max-inline-size` | `40rem` |  | story demo width cap |
 | size | `stories/Feedback.stories.ts:29` | `max-block-size` | `12rem` |  | exception story input data |
-| size | `stories/Foundations.stories.ts:33` | `inline-size` | `100%` |  | exception intrinsic value |
+| size | `stories/Foundations.stories.ts:33` | `inline-size` | `100%` |  | none intrinsic value |
 | size | `stories/Foundations.stories.ts:46` | `inline-size` | `2.4em` |  | story contrast swatch size |
 | size | `stories/Foundations.stories.ts:46` | `block-size` | `1.5em` |  | story contrast swatch size |
 | size | `stories/Foundations.stories.ts:70` | `grid-template-columns` | `26rem` |  | story demo grid column minimum |
@@ -287,7 +301,7 @@ Not mapped to a component:
 | size | `stories/Overlays.stories.ts:50` | `max-inline-size` | `36rem` |  | story demo width cap |
 | size | `stories/Showcase.stories.ts:31` | `inline-size` | `1.15em` |  | story logo icon size |
 | size | `stories/Showcase.stories.ts:31` | `block-size` | `1.15em` |  | story logo icon size |
-| size | `stories/Showcase.stories.ts:42` | `min-block-size` | `100dvh` |  | exception intrinsic value |
+| size | `stories/Showcase.stories.ts:42` | `min-block-size` | `100dvh` |  | none intrinsic value |
 | size | `stories/Showcase.stories.ts:46` | `max-inline-size` | `72rem` |  | story page width cap |
 | size | `stories/Showcase.stories.ts:59` | `max-inline-size` | `44rem` |  | story demo width cap |
 | size | `stories/Showcase.stories.ts:78` | `grid-template-columns` | `16rem` |  | story demo grid column minimum |
@@ -316,13 +330,13 @@ Not mapped to a component:
 
 | Category | `file:line` | Property | Value | Matching token | Verdict |
 | --- | --- | --- | --- | --- | --- |
-| radius | `src/css/components/badge.css:31` | `border-radius` | `50%` | `--radius-*` | exception platform floor |
+| radius | `src/css/components/badge.css:31` | `border-radius` | `50%` | `--radius-*` | none intrinsic value |
 | radius | `src/css/components/button.css:105` | `border-radius` | `50%` | `--radius-*` | exception glyph geometry |
 | radius | `src/css/components/choice.css:74` | `border-radius` | `3px` | `--radius-*` | shared --inset-tight |
-| radius | `src/css/components/estop.css:20` | `border-radius` | `50%` | `--radius-*` | exception platform floor |
+| radius | `src/css/components/estop.css:20` | `border-radius` | `50%` | `--radius-*` | none intrinsic value |
 | radius | `src/css/components/field.css:50` | `border-radius` | `50%` | `--radius-*` | exception glyph geometry |
 | radius | `src/css/components/tabs.css:22` | `border-radius` | `3px` | `--radius-*` | shared --inset-tight |
-| radius | `src/css/components/toast.css:86` | `border-radius` | `50%` | `--radius-*` | exception platform floor |
+| radius | `src/css/components/toast.css:86` | `border-radius` | `50%` | `--radius-*` | none intrinsic value |
 | radius | `stories/Foundations.stories.ts:46` | `border-radius` | `6px` | `--radius-*` | story contrast swatch radius |
 | radius | `stories/Foundations.stories.ts:47` | `border-radius` | `6px` | `--radius-*` | story contrast swatch radius |
 
@@ -333,7 +347,7 @@ Not mapped to a component:
 | border-width | `src/css/components/button.css:103` | `border` | `2px` | `--border-width (= bubblegum)` | exception glyph geometry |
 | border-width | `src/css/components/disclosure.css:34` | `border-inline-end` | `2px` | `--border-width (= bubblegum)` | exception glyph geometry |
 | border-width | `src/css/components/disclosure.css:35` | `border-block-end` | `2px` | `--border-width (= bubblegum)` | exception glyph geometry |
-| border-width | `src/css/components/estop.css:19` | `border` | `0.5rem` | `--border-width` | exception one-off value |
+| border-width | `src/css/components/estop.css:19` | `border` | `0.5rem` | `--border-width` | none one-off value |
 | border-width | `src/css/components/field.css:121` | `--_stroke` | `50%` | `--border-width` | exception glyph geometry |
 | border-width | `src/css/components/field.css:121` | `--_stroke` | `0.8px` | `--border-width` | exception glyph geometry |
 | border-width | `src/css/components/field.css:121` | `--_stroke` | `50%` | `--border-width` | exception glyph geometry |
@@ -342,7 +356,7 @@ Not mapped to a component:
 | border-width | `src/css/components/field.css:121` | `--_stroke` | `0.6px` | `--border-width` | exception glyph geometry |
 | border-width | `src/css/components/field.css:121` | `--_stroke` | `50%` | `--border-width` | exception glyph geometry |
 | border-width | `src/css/components/field.css:121` | `--_stroke` | `0.8px` | `--border-width` | exception glyph geometry |
-| border-width | `src/css/components/log.css:34` | `border-inline-start` | `3px` | `--border-width` | exception one-off value |
+| border-width | `src/css/components/log.css:34` | `border-inline-start` | `3px` | `--border-width` | none one-off value |
 | border-width | `src/css/components/meter.css:129` | `border` | `1px` | `--border-width (= calm, darkmatter, expressive, glass)` | shared --forced-hairline |
 | border-width | `src/css/components/popover.css:112` | `border` | `1px` | `--border-width (= calm, darkmatter, expressive, glass)` | shared --forced-hairline |
 | border-width | `src/css/components/skeleton.css:33` | `border` | `1px` | `--border-width (= calm, darkmatter, expressive, glass)` | shared --forced-hairline |
@@ -353,10 +367,11 @@ Not mapped to a component:
 | border-width | `stories/Foundations.stories.ts:41` | `border-block-start` | `1px` | `--border-width (= calm, darkmatter, expressive, glass)` | story table row rule |
 | border-width | `stories/Foundations.stories.ts:46` | `border` | `3px` | `--border-width` | story contrast swatch stroke |
 
-### Font-size (2)
+### Font-size (3)
 
 | Category | `file:line` | Property | Value | Matching token | Verdict |
 | --- | --- | --- | --- | --- | --- |
+| font-size | `src/css/components/avatar.css:24` | `font-size` | `0.38` |  | none one-off value |
 | font-size | `src/css/components/field.css:53` | `font-size` | `0.8em` |  | exception glyph geometry |
 | font-size | `src/css/components/menu.css:63` | `font-size` | `0.625rem` |  | exception glyph geometry |
 
@@ -415,13 +430,13 @@ Not mapped to a component:
 | Category | `file:line` | Property | Value | Matching token | Verdict |
 | --- | --- | --- | --- | --- | --- |
 | shadow | `src/css/components/avatar.css:48` | `box-shadow` | `2px` | `--shadow-*` | chrome --shadow-* |
-| shadow | `src/css/components/estop.css:23` | `box-shadow` | `3px` | `--shadow-*` | exception one-off value |
-| shadow | `src/css/components/estop.css:23` | `box-shadow` | `-0.35rem` | `--shadow-*` | exception one-off value |
-| shadow | `src/css/components/estop.css:23` | `box-shadow` | `3px` | `--shadow-*` | exception one-off value |
-| shadow | `src/css/components/estop.css:41` | `box-shadow` | `3px` | `--shadow-*` | exception one-off value |
-| shadow | `src/css/components/estop.css:41` | `box-shadow` | `-0.35rem` | `--shadow-*` | exception one-off value |
-| shadow | `src/css/components/estop.css:41` | `box-shadow` | `3px` | `--shadow-*` | exception one-off value |
-| shadow | `src/css/components/estop.css:47` | `box-shadow` | `3px` | `--shadow-*` | exception one-off value |
+| shadow | `src/css/components/estop.css:23` | `box-shadow` | `3px` | `--shadow-*` | none one-off value |
+| shadow | `src/css/components/estop.css:23` | `box-shadow` | `-0.35rem` | `--shadow-*` | none one-off value |
+| shadow | `src/css/components/estop.css:23` | `box-shadow` | `3px` | `--shadow-*` | none one-off value |
+| shadow | `src/css/components/estop.css:41` | `box-shadow` | `3px` | `--shadow-*` | none one-off value |
+| shadow | `src/css/components/estop.css:41` | `box-shadow` | `-0.35rem` | `--shadow-*` | none one-off value |
+| shadow | `src/css/components/estop.css:41` | `box-shadow` | `3px` | `--shadow-*` | none one-off value |
+| shadow | `src/css/components/estop.css:47` | `box-shadow` | `3px` | `--shadow-*` | none one-off value |
 | shadow | `src/css/components/estop.css:47` | `box-shadow` | `0.5rem` | `--shadow-*` | chrome --shadow-* |
 | shadow | `src/css/components/estop.css:47` | `box-shadow` | `1rem` | `--shadow-*` | chrome --shadow-* |
 | shadow | `src/css/components/slider.css:71` | `box-shadow` | `4px` | `--shadow-*` | chrome --focus-glow |
@@ -430,29 +445,36 @@ Not mapped to a component:
 | shadow | `src/css/components/slider.css:96` | `box-shadow` | `30%` | `--shadow-*` | chrome --focus-glow |
 | shadow | `stories/Foundations.stories.ts:47` | `box-shadow` | `1px` | `--shadow-*` | story contrast swatch outline |
 
-### Motion (22)
+### Motion (29)
 
 | Category | `file:line` | Property | Value | Matching token | Verdict |
 | --- | --- | --- | --- | --- | --- |
-| motion | `src/css/base.css:92` | `translate` | `-200%` |  | exception intrinsic value |
-| motion | `src/css/components/button.css:106` | `animation` | `700ms` | `--duration-*` | exception one-off value |
-| motion | `src/css/components/button.css:115` | `animation-duration` | `2.4s` | `--duration-*` | exception one-off value |
+| motion | `src/css/base.css:92` | `translate` | `-200%` |  | none intrinsic value |
+| motion | `src/css/components/button.css:106` | `animation` | `700ms` | `--duration-*` | none one-off value |
+| motion | `src/css/components/button.css:106` | `animation` | `linear` | `--ease` | none intrinsic value |
+| motion | `src/css/components/button.css:115` | `animation-duration` | `2.4s` | `--duration-*` | none one-off value |
 | motion | `src/css/components/dialog.css:23` | `scale` | `0.96` |  | shared --overlay-enter-scale |
 | motion | `src/css/components/dialog.css:24` | `translate` | `0.5rem` |  | shared --overlay-enter-offset |
-| motion | `src/css/components/dialog.css:33` | `scale` | `1` |  | exception intrinsic value |
+| motion | `src/css/components/dialog.css:33` | `scale` | `1` |  | none intrinsic value |
 | motion | `src/css/components/dialog.css:40` | `scale` | `0.96` |  | shared --overlay-enter-scale |
 | motion | `src/css/components/dialog.css:41` | `translate` | `0.5rem` |  | shared --overlay-enter-offset |
-| motion | `src/css/components/dialog.css:83` | `scale` | `1` |  | exception intrinsic value |
+| motion | `src/css/components/dialog.css:83` | `scale` | `1` |  | none intrinsic value |
 | motion | `src/css/components/disclosure.css:37` | `translate` | `-25%` |  | exception glyph geometry |
 | motion | `src/css/components/disclosure.css:43` | `translate` | `25%` |  | exception glyph geometry |
+| motion | `src/css/components/estop.css:46` | `transform` | `0.95` | `--press-transform` | chrome --press-transform |
+| motion | `src/css/components/meter.css:82` | `animation` | `4` |  | none one-off value |
+| motion | `src/css/components/meter.css:82` | `animation` | `ease-in-out` | `--ease` | shared --ease-loop |
 | motion | `src/css/components/popover.css:67` | `scale` | `0.96` |  | shared --overlay-enter-scale |
-| motion | `src/css/components/popover.css:76` | `scale` | `1` |  | exception intrinsic value |
+| motion | `src/css/components/popover.css:76` | `scale` | `1` |  | none intrinsic value |
 | motion | `src/css/components/popover.css:82` | `scale` | `0.96` |  | shared --overlay-enter-scale |
-| motion | `src/css/components/search.css:21` | `translate` | `-50%` |  | exception intrinsic value |
-| motion | `src/css/components/slider.css:110` | `animation-range` | `100%` |  | exception intrinsic value |
-| motion | `src/css/components/slider.css:110` | `animation-range` | `0%` |  | exception intrinsic value |
+| motion | `src/css/components/search.css:21` | `translate` | `-50%` |  | none intrinsic value |
+| motion | `src/css/components/skeleton.css:16` | `animation` | `5` |  | none one-off value |
+| motion | `src/css/components/skeleton.css:16` | `animation` | `ease-in-out` | `--ease` | shared --ease-loop |
+| motion | `src/css/components/slider.css:108` | `animation` | `linear` | `--ease` | none intrinsic value |
+| motion | `src/css/components/slider.css:110` | `animation-range` | `100%` |  | none intrinsic value |
+| motion | `src/css/components/slider.css:110` | `animation-range` | `0%` |  | none intrinsic value |
 | motion | `src/css/components/toast.css:53` | `translate` | `0.75rem` |  | shared --overlay-enter-offset |
-| motion | `src/css/components/toast.css:59` | `translate` | `1rem` |  | exception one-off value |
+| motion | `src/css/components/toast.css:59` | `translate` | `1rem` |  | none one-off value |
 | motion | `src/css/preferences.css:27` | `--duration-fast` | `0ms` | `--duration-*` | exception token definition |
 | motion | `src/css/preferences.css:28` | `--duration-base` | `0ms` | `--duration-*` | exception token definition |
 | motion | `src/css/preferences.css:29` | `--duration-slow` | `0ms` | `--duration-*` | exception token definition |
@@ -473,40 +495,40 @@ Not mapped to a component:
 
 | Category | `file:line` | Property | Value | Matching token | Verdict |
 | --- | --- | --- | --- | --- | --- |
-| other | `src/css/base.css:79` | `clip-path` | `50%` |  | exception intrinsic value |
+| other | `src/css/base.css:79` | `clip-path` | `50%` |  | none intrinsic value |
 | other | `src/css/components/button.css:86` | `opacity` | `0.55` |  | shared --disabled-opacity |
 | other | `src/css/components/choice.css:26` | `opacity` | `0.55` |  | shared --disabled-opacity |
 | other | `src/css/components/choice.css:83` | `clip-path` | `50%` |  | shared .odd-visually-hidden |
-| other | `src/css/components/choice.css:111` | `opacity` | `0` |  | exception intrinsic value |
-| other | `src/css/components/dialog.css:22` | `opacity` | `0` |  | exception intrinsic value |
-| other | `src/css/components/dialog.css:32` | `opacity` | `1` |  | exception intrinsic value |
-| other | `src/css/components/dialog.css:39` | `opacity` | `0` |  | exception intrinsic value |
-| other | `src/css/components/dialog.css:47` | `opacity` | `0` |  | exception intrinsic value |
-| other | `src/css/components/dialog.css:54` | `opacity` | `1` |  | exception intrinsic value |
-| other | `src/css/components/dialog.css:59` | `opacity` | `0` |  | exception intrinsic value |
-| other | `src/css/components/field.css:84` | `opacity` | `1` |  | exception intrinsic value |
+| other | `src/css/components/choice.css:111` | `opacity` | `0` |  | none intrinsic value |
+| other | `src/css/components/dialog.css:22` | `opacity` | `0` |  | none intrinsic value |
+| other | `src/css/components/dialog.css:32` | `opacity` | `1` |  | none intrinsic value |
+| other | `src/css/components/dialog.css:39` | `opacity` | `0` |  | none intrinsic value |
+| other | `src/css/components/dialog.css:47` | `opacity` | `0` |  | none intrinsic value |
+| other | `src/css/components/dialog.css:54` | `opacity` | `1` |  | none intrinsic value |
+| other | `src/css/components/dialog.css:59` | `opacity` | `0` |  | none intrinsic value |
+| other | `src/css/components/field.css:84` | `opacity` | `1` |  | none intrinsic value |
 | other | `src/css/components/field.css:113` | `opacity` | `0.7` |  | shared --disabled-opacity |
-| other | `src/css/components/popover.css:66` | `opacity` | `0` |  | exception intrinsic value |
-| other | `src/css/components/popover.css:75` | `opacity` | `1` |  | exception intrinsic value |
-| other | `src/css/components/popover.css:81` | `opacity` | `0` |  | exception intrinsic value |
-| other | `src/css/components/sheet.css:21` | `--_hide` | `100%` |  | exception intrinsic value |
-| other | `src/css/components/sheet.css:48` | `--_hide` | `-100%` |  | exception intrinsic value |
-| other | `src/css/components/sheet.css:51` | `--_hide` | `-100%` |  | exception intrinsic value |
-| other | `src/css/components/sheet.css:60` | `--_hide` | `100%` |  | exception intrinsic value |
-| other | `src/css/components/sheet.css:72` | `--_hide` | `100%` |  | exception intrinsic value |
-| other | `src/css/components/sheet.css:81` | `--_hide` | `-100%` |  | exception intrinsic value |
-| other | `src/css/components/sheet.css:103` | `opacity` | `0` |  | exception intrinsic value |
-| other | `src/css/components/sheet.css:109` | `opacity` | `1` |  | exception intrinsic value |
-| other | `src/css/components/sheet.css:113` | `opacity` | `0` |  | exception intrinsic value |
-| other | `src/css/components/skeleton.css:27` | `opacity` | `0.45` |  | exception one-off value |
+| other | `src/css/components/popover.css:66` | `opacity` | `0` |  | none intrinsic value |
+| other | `src/css/components/popover.css:75` | `opacity` | `1` |  | none intrinsic value |
+| other | `src/css/components/popover.css:81` | `opacity` | `0` |  | none intrinsic value |
+| other | `src/css/components/sheet.css:21` | `--_hide` | `100%` |  | none intrinsic value |
+| other | `src/css/components/sheet.css:48` | `--_hide` | `-100%` |  | none intrinsic value |
+| other | `src/css/components/sheet.css:51` | `--_hide` | `-100%` |  | none intrinsic value |
+| other | `src/css/components/sheet.css:60` | `--_hide` | `100%` |  | none intrinsic value |
+| other | `src/css/components/sheet.css:72` | `--_hide` | `100%` |  | none intrinsic value |
+| other | `src/css/components/sheet.css:81` | `--_hide` | `-100%` |  | none intrinsic value |
+| other | `src/css/components/sheet.css:103` | `opacity` | `0` |  | none intrinsic value |
+| other | `src/css/components/sheet.css:109` | `opacity` | `1` |  | none intrinsic value |
+| other | `src/css/components/sheet.css:113` | `opacity` | `0` |  | none intrinsic value |
+| other | `src/css/components/skeleton.css:27` | `opacity` | `0.45` |  | none one-off value |
 | other | `src/css/components/slider.css:28` | `--_rail` | `0.375rem` |  | exception density-scaled private size |
 | other | `src/css/components/slider.css:44` | `opacity` | `0.55` |  | shared --disabled-opacity |
-| other | `src/css/components/table.css:114` | `opacity` | `0.5` |  | exception one-off value |
-| other | `src/css/components/table.css:116` | `opacity` | `1` |  | exception intrinsic value |
-| other | `src/css/components/table.css:117` | `opacity` | `1` |  | exception intrinsic value |
+| other | `src/css/components/table.css:114` | `opacity` | `0.5` |  | none one-off value |
+| other | `src/css/components/table.css:116` | `opacity` | `1` |  | none intrinsic value |
+| other | `src/css/components/table.css:117` | `opacity` | `1` |  | none intrinsic value |
 | other | `src/css/components/tabs.css:82` | `opacity` | `0.55` |  | shared --disabled-opacity |
-| other | `src/css/components/toast.css:52` | `opacity` | `0` |  | exception intrinsic value |
-| other | `src/css/components/toast.css:58` | `opacity` | `0` |  | exception intrinsic value |
+| other | `src/css/components/toast.css:52` | `opacity` | `0` |  | none intrinsic value |
+| other | `src/css/components/toast.css:58` | `opacity` | `0` |  | none intrinsic value |
 | other | `src/css/preferences.css:8` | `--surface-alpha` | `100%` |  | exception token definition |
 | other | `src/css/preferences.css:19` | `--surface-alpha` | `100%` |  | exception token definition |
 
