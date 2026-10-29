@@ -1,3 +1,4 @@
+import { defaultToButtonType } from "./button-type.ts";
 import { roving } from "./roving.ts";
 
 const holders = new WeakMap<HTMLElement, { count: number; tablist: HTMLElement; stop: () => void }>();
@@ -16,6 +17,7 @@ const holders = new WeakMap<HTMLElement, { count: number; tablist: HTMLElement; 
  * and shows the chosen tab's panel. By default a tab is chosen as focus reaches it. For panels that
  * are slow to fill, set data-activation="manual" on the tablist so Enter or Space chooses instead.
  * aria-orientation="vertical" on the tablist switches to Up and Down.
+ * A tab with no type gets type="button", so a tab inside a form does not submit it.
  * Fires a bubbling "odd-tab-change" event with { tab, panel } in its detail.
  * A root is wired once however many callers enhance it, and its listeners go when the last caller
  * cleans up. A root with no tablist yet is
@@ -44,6 +46,10 @@ export function enhanceTabs(root: HTMLElement): () => void {
   };
 }
 
+export function typeTabs(root: ParentNode): void {
+  root.querySelectorAll('[role="tablist"] [role="tab"]').forEach(defaultToButtonType);
+}
+
 function wire(root: HTMLElement, tablist: HTMLElement): () => void {
   const tabs = () => [...tablist.querySelectorAll<HTMLElement>('[role="tab"]')];
   const panelOf = (tab: HTMLElement) => document.getElementById(tab.getAttribute("aria-controls") ?? "");
@@ -63,6 +69,8 @@ function wire(root: HTMLElement, tablist: HTMLElement): () => void {
     show(tab);
     root.dispatchEvent(new CustomEvent("odd-tab-change", { bubbles: true, detail: { tab, panel: panelOf(tab) } }));
   };
+
+  typeTabs(root);
 
   // A panel with nothing focusable inside takes focus itself, so Tab from the tab list reaches its content.
   for (const tab of tabs()) {

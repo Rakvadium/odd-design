@@ -9,7 +9,7 @@ These codes apply to `odd-table-wrap`, `odd-table`, and `odd-table-sort`. Shared
     <thead>
       <tr>
         <th scope="col"><input type="checkbox" data-select-all aria-label="Select all decks"></th>
-        <th scope="col" aria-sort="ascending"><button class="odd-table-sort">Deck</button></th>
+        <th scope="col" aria-sort="ascending"><button class="odd-table-sort" type="button">Deck</button></th>
         <th scope="col" data-numeric>Cards</th>
       </tr>
     </thead>
@@ -20,7 +20,7 @@ These codes apply to `odd-table-wrap`, `odd-table`, and `odd-table-sort`. Shared
 </div>
 ```
 
-The wrap scrolls sideways when the table is wider than the page. `tabindex="0"`, `role="region"`, and a name let a keyboard user reach and scroll it. Drop all three if the table can never overflow. `data-numeric` goes on a `th` and its `td` cells. `aria-sort` goes on the sorted column's `th` only, and the page sorts the rows and moves `aria-sort`. `enhanceSelectAll`, which `enhance()` runs on every `table:has([data-select-all])`, makes the header box check or clear every row and show checked, mixed, or unchecked. It clicks each row it changes, so row listeners and React's `onChange` see the change.
+The wrap scrolls sideways when the table is wider than the page. `tabindex="0"`, `role="region"`, and a name let a keyboard user reach and scroll it. Drop all three if the table can never overflow. `data-numeric` goes on a `th` and its `td` cells. `aria-sort` goes on the sorted column's `th` only, and the page sorts the rows and moves `aria-sort`. No script wires a sort button, so write `type="button"` on it, or a click inside a form submits the form. `TableSort` writes it for you. `enhanceSelectAll`, which `enhance()` runs on every `table:has([data-select-all])`, makes the header box check or clear every row and show checked, mixed, or unchecked. It clicks each row it changes, so row listeners and React's `onChange` see the change.
 
 In React, `TableWrap` renders the `div`, `Table` renders the `table` and runs `enhanceSelectAll` on it after every commit, and `TableSort` renders each sort `button`. Write the caption, sections, rows, cells, and checkboxes as plain elements. Leave the header box uncontrolled, with no `checked`, because `Table` owns it. Row boxes can be uncontrolled or controlled with `onChange`, and a header click reaches each changed row's `onChange` once.
 

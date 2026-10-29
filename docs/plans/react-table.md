@@ -150,7 +150,7 @@ Each item is the default the build uses. Each one can be reversed after review.
 4. **`row.click()` for everyone.** Without it, controlled React rows snap back and the header shows "all" over one checked row (measured in both engines).
 5. **Per-commit resync over a `MutationObserver`.** An observer does not see React's property writes (measured stale after Clear).
 6. **`RoleWithName` shared with Popover.** One type for the same three-row shape, not two copies.
-7. **No `type="button"` pin on `TableSort`.** One cross-part fix for every button part, in the existing follow-up.
+7. **No `type="button"` pin on `TableSort`.** One cross-part fix for every button part, in the existing follow-up. `docs/plans/post-port-followups.md` is that fix.
 8. **One preview line, not `enhance(canvasElement)`.** The Menu decision.
 
 ## Capture the baseline (no source change)

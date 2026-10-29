@@ -3,23 +3,23 @@
 These codes apply to `odd-menu` and `odd-menu-item`. A menu is an auto popover, so it shares [ODD-POPOVER-002](popover.md#odd-popover-002) with `odd-popover`. Shared codes are in [General usage rules](general.md).
 
 ```html
-<button class="odd-button" commandfor="deck-actions" command="toggle-popover" aria-haspopup="menu">Deck actions</button>
+<button class="odd-button" type="button" commandfor="deck-actions" command="toggle-popover" aria-haspopup="menu">Deck actions</button>
 <div class="odd-menu" id="deck-actions" popover role="menu" aria-label="Deck actions">
-  <button class="odd-menu-item" role="menuitem">Rename</button>
-  <button class="odd-menu-item" role="menuitem" aria-disabled="true">Merge</button>
+  <button class="odd-menu-item" type="button" role="menuitem">Rename</button>
+  <button class="odd-menu-item" type="button" role="menuitem" aria-disabled="true">Merge</button>
   <hr class="odd-separator">
-  <button class="odd-menu-item" role="menuitemcheckbox" aria-checked="true">Show prices</button>
+  <button class="odd-menu-item" type="button" role="menuitemcheckbox" aria-checked="true">Show prices</button>
   <p class="odd-menu-label" aria-hidden="true">Sort by</p>
   <div role="group" aria-label="Sort by">
-    <button class="odd-menu-item" role="menuitemradio" aria-checked="true">Name</button>
-    <button class="odd-menu-item" role="menuitemradio" aria-checked="false">Card count</button>
+    <button class="odd-menu-item" type="button" role="menuitemradio" aria-checked="true">Name</button>
+    <button class="odd-menu-item" type="button" role="menuitemradio" aria-checked="false">Card count</button>
   </div>
   <hr class="odd-separator">
-  <button class="odd-menu-item" role="menuitem" data-tone="danger">Delete deck</button>
+  <button class="odd-menu-item" type="button" role="menuitem" data-tone="danger">Delete deck</button>
 </div>
 ```
 
-The browser opens and closes the menu. `command="toggle-popover"` opens it under its trigger, and Escape or a click outside closes it and returns focus. `enhanceMenu`, which `enhance()` runs on every `.odd-menu[role="menu"]`, adds the menu keyboard. Focus lands on the first item, the arrows, Home, End, and typing move between items, and Tab closes. ArrowDown or ArrowUp on the trigger opens it at the first or last item. A `menuitem` closes the menu when chosen. Checkbox and radio items flip `aria-checked` and stay open. Listen for `click` on the items to act on them.
+The browser opens and closes the menu. `command="toggle-popover"` opens it under its trigger, and Escape or a click outside closes it and returns focus. `enhanceMenu`, which `enhance()` runs on every `.odd-menu[role="menu"]`, adds the menu keyboard. Focus lands on the first item, the arrows, Home, End, and typing move between items, and Tab closes. ArrowDown or ArrowUp on the trigger opens it at the first or last item. A `menuitem` closes the menu when chosen. Checkbox and radio items flip `aria-checked` and stay open. Listen for `click` on the items to act on them. `enhanceMenu` also gives an item with no `type` the type `button` when it wires the menu and each time it opens, so an item inside a form does not submit it.
 
 In React, `Menu` renders the `div` and runs `enhanceMenu` on it, and `MenuItem` renders each `button`. `Button` is the trigger. `enhanceMenu` owns `aria-checked` after the first render, so pass the first value and read the new one in `onClick`, where it has already flipped.
 

@@ -2,7 +2,7 @@
 
 import { createElement, type ComponentProps, type MouseEvent, type ReactElement } from "react";
 import { WRAPPERS, type ButtonRule } from "../js/usage/contract.ts";
-import { lower, type Contract, type Message, type Values } from "./part.ts";
+import { elementTag, lower, type Contract, type Message, type Values } from "./part.ts";
 
 export type ButtonVariant = Values<ButtonRule, "data-variant">;
 export type ButtonSize = Values<ButtonRule, "data-size">;
@@ -41,6 +41,5 @@ export function Button<const P extends ButtonProps>(props: CurrentOnLink<NamedWh
 export function Button(props: ButtonProps): ReactElement {
   const blocked = props["aria-disabled"] === true || props["aria-disabled"] === "true";
   const attributes = { ...props, onClick: blocked ? swallow : props.onClick };
-  if (attributes.href === undefined) return createElement(WRAPPERS.Button.element.absent, lower("Button", { ...attributes, type: attributes.type ?? "button" }));
-  return createElement(WRAPPERS.Button.element.present, lower("Button", attributes));
+  return createElement(elementTag(WRAPPERS.Button.element, attributes), lower("Button", attributes));
 }

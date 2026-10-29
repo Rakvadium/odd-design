@@ -5,15 +5,15 @@ These codes apply to `odd-tabs`. Shared codes are in [General usage rules](gener
 ```html
 <div class="odd-tabs">
   <div role="tablist" aria-label="Deck view">
-    <button role="tab" id="tab-cards" aria-controls="panel-cards" aria-selected="true">Cards</button>
-    <button role="tab" id="tab-stats" aria-controls="panel-stats" aria-selected="false">Stats</button>
+    <button role="tab" type="button" id="tab-cards" aria-controls="panel-cards" aria-selected="true">Cards</button>
+    <button role="tab" type="button" id="tab-stats" aria-controls="panel-stats" aria-selected="false">Stats</button>
   </div>
   <div role="tabpanel" id="panel-cards" aria-labelledby="tab-cards">…</div>
   <div role="tabpanel" id="panel-stats" aria-labelledby="tab-stats" hidden>…</div>
 </div>
 ```
 
-A tab set is a `div` with a `role="tablist"` as a direct child and the panels after it. Each tab is a `button` whose `aria-controls` names its panel's `id`. `enhanceTabs` adds the keyboard and switches the panels. `aria-orientation="vertical"` and `data-activation="manual"` go on the tablist. In React, `Tabs` renders the `div` and runs `enhanceTabs` itself, and you write the tablist, the tabs, and the panels.
+A tab set is a `div` with a `role="tablist"` as a direct child and the panels after it. Each tab is a `button` whose `aria-controls` names its panel's `id`. `enhanceTabs` adds the keyboard and switches the panels. It also gives a tab with no `type` the type `button` when it wires the set, so a tab inside a form does not submit it. `aria-orientation="vertical"` and `data-activation="manual"` go on the tablist. In React, `Tabs` renders the `div` and runs `enhanceTabs` itself, and you write the tablist, the tabs, and the panels.
 
 ## ODD-TABS-001
 

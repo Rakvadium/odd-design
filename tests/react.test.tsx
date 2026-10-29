@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, test } from "bun:test";
 import { fileURLToPath } from "node:url";
-import { act, StrictMode, useState, type ReactElement } from "react";
+import { act, StrictMode, useState, type ReactElement, type ReactNode } from "react";
 import { createRoot, type Root } from "react-dom/client";
 import { renderToStaticMarkup } from "react-dom/server";
 import { enhance, enhanceTabs, toast } from "../src/js/enhance.ts";
@@ -262,7 +262,7 @@ const markup: readonly [string, ReactElement, string][] = [
         Delete
       </MenuItem>
     </Menu>,
-    '<div id="deck-actions" popover="auto" role="menu" aria-label="Deck actions" class="odd-menu"><button role="menuitem" class="odd-menu-item">Rename</button><button role="menuitem" aria-disabled="true" class="odd-menu-item" data-tone="danger">Delete</button></div>',
+    '<div id="deck-actions" popover="auto" role="menu" aria-label="Deck actions" class="odd-menu"><button role="menuitem" type="button" class="odd-menu-item">Rename</button><button role="menuitem" aria-disabled="true" type="button" class="odd-menu-item" data-tone="danger">Delete</button></div>',
   ],
   [
     "sheet from the start edge around its header and footer",
@@ -290,7 +290,7 @@ const markup: readonly [string, ReactElement, string][] = [
         <tbody />
       </Table>
     </TableWrap>,
-    '<div tabindex="0" role="region" aria-labelledby="decks-caption" class="odd-table-wrap"><table class="odd-table"><caption id="decks-caption">Your decks</caption><thead><tr><th scope="col" aria-sort="ascending"><button class="odd-table-sort">Deck</button></th></tr></thead><tbody></tbody></table></div>',
+    '<div tabindex="0" role="region" aria-labelledby="decks-caption" class="odd-table-wrap"><table class="odd-table"><caption id="decks-caption">Your decks</caption><thead><tr><th scope="col" aria-sort="ascending"><button type="button" class="odd-table-sort">Deck</button></th></tr></thead><tbody></tbody></table></div>',
   ],
 ];
 
@@ -580,6 +580,90 @@ describe("Toaster", () => {
     await act(async () => root.unmount());
     mounted = undefined;
     expect(() => toast({ title: "Deck saved" })).toThrow("toast() found no toaster");
+  });
+});
+
+async function mountInForm() {
+  const counts = { submits: 0 };
+  const host = document.createElement("form");
+  host.addEventListener("submit", (event) => {
+    event.preventDefault();
+    counts.submits += 1;
+  });
+  document.body.append(host);
+  const root = createRoot(host);
+  mounted = root;
+  return { counts, host, render: (children: ReactNode) => act(async () => root.render(children)) };
+}
+
+describe("Buttons in a form", () => {
+  test.each([
+    ["MenuItem", <MenuItem role="menuitem">Rename</MenuItem>, <MenuItem role="menuitem" type="submit">Archive</MenuItem>],
+    ["TableSort", <TableSort>Deck</TableSort>, <TableSort type="submit">Deck</TableSort>],
+  ])('%s submits its form only when written type="submit"', async (_name, plain, submit) => {
+    const { counts, host, render } = await mountInForm();
+    await render(
+      <>
+        {plain}
+        {submit}
+      </>,
+    );
+    const [first, second] = host.querySelectorAll("button");
+    await act(async () => first!.click());
+    expect(counts.submits).toBe(0);
+    await act(async () => second!.click());
+    expect(counts.submits).toBe(1);
+  });
+
+  test('Tabs types every untyped tab, including one mounted later, and keeps a written type="submit"', async () => {
+    const { counts, host, render } = await mountInForm();
+    const tabs = (later: ReactNode) => (
+      <Tabs>
+        <div role="tablist" aria-label="Deck view">
+          <button role="tab" id="tab-cards" aria-controls="panel-cards" aria-selected="true">
+            Cards
+          </button>
+          <button role="tab" id="tab-stats" aria-controls="panel-stats" aria-selected="false" type="submit">
+            Stats
+          </button>
+          {later}
+        </div>
+      </Tabs>
+    );
+    await render(tabs(null));
+    await render(
+      tabs(
+        <button role="tab" id="tab-notes" aria-controls="panel-notes" aria-selected="false">
+          Notes
+        </button>,
+      ),
+    );
+    expect([...host.querySelectorAll('[role="tab"]')].map((tab) => tab.getAttribute("type"))).toEqual(["button", "submit", "button"]);
+    await act(async () => document.getElementById("tab-notes")!.click());
+    expect(counts.submits).toBe(0);
+    await act(async () => document.getElementById("tab-stats")!.click());
+    expect(counts.submits).toBe(1);
+  });
+
+  test('enhance() keeps menu items and toast buttons from submitting, and keeps a written type="submit"', () => {
+    const form = document.createElement("form");
+    let submits = 0;
+    form.addEventListener("submit", (event) => {
+      event.preventDefault();
+      submits += 1;
+    });
+    form.innerHTML =
+      '<div class="odd-menu" id="row-actions" popover role="menu" aria-label="Row actions"><button class="odd-menu-item" role="menuitem">Rename</button><button class="odd-menu-item" role="menuitem" type="submit">Archive</button></div><section class="odd-toaster" popover="manual" aria-label="Notifications"></section>';
+    document.body.append(form);
+    const unwire = enhance(document);
+    toast({ title: "Deck archived", action: { label: "Undo", onClick() {} } });
+    toast({ title: "Link copied" });
+    const button = (name: string) => [...form.querySelectorAll("button")].find((each) => each.textContent === name || each.getAttribute("aria-label") === name)!;
+    for (const name of ["Rename", "Undo", "Dismiss: Link copied"]) button(name).click();
+    expect(submits).toBe(0);
+    button("Archive").click();
+    expect(submits).toBe(1);
+    unwire();
   });
 });
 

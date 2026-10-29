@@ -161,6 +161,7 @@ function wire(region: HTMLElement): { show: Show; stop: () => void } {
 
     if (action) {
       const button = document.createElement("button");
+      button.type = "button";
       button.className = "odd-button";
       button.dataset.size = "sm";
       button.textContent = action.label;
@@ -172,6 +173,7 @@ function wire(region: HTMLElement): { show: Show; stop: () => void } {
     }
 
     const close = document.createElement("button");
+    close.type = "button";
     close.className = "odd-button";
     close.dataset.variant = "ghost";
     close.dataset.size = "sm";
