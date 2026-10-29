@@ -10,7 +10,7 @@ Appearance has three independent axes:
 | Palette | `data-palette` | Color roles: surfaces, text, brand, status, borders, focus ring |
 | Mode | `data-mode` | `light`, `dark`, or `system` |
 
-Any chrome pairs with any palette. Chromes: `calm`, `glass`, `bubblegum`, `holoterminal`, `expressive`, `darkmatter`. Palettes: `default`, `aurora`, `sorbet`, `calm-storm`, `cyberpunk`, `cotton-candy`, `caffeine`, `singularity`. You can also generate a palette from your own brand colors (see Custom palettes).
+Any chrome pairs with any palette. Chromes: `calm`, `glass`, `bubblegum`, `expressive`, `darkmatter`. Palettes: `default`, `aurora`, `sorbet`, `calm-storm`, `cyberpunk`, `cotton-candy`, `caffeine`, `singularity`. You can also generate a palette from your own brand colors (see Custom palettes).
 
 ## Commands
 

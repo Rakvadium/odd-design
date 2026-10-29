@@ -4,6 +4,8 @@
 
 `button.tsx`, `tabs.tsx`, `toast.tsx`, `menu.tsx`, and `table.tsx` start with `"use client"`, so a React Server Components app can render `Button`, `Tabs`, `Toaster`, `Menu`, `MenuItem`, `TableWrap`, `Table`, and `TableSort` from a server component. `Tabs`, `Toaster`, `Menu`, and `Table` wire themselves in a layout effect. The Field parts, the Choice parts, `Badge`, the Alert parts, the Avatar parts, `Separator`, `Skeleton`, the Card parts, `Disclosure`, `Search`, `Slider`, `Meter`, `Progress`, `Popover`, `Dialog`, `DialogActions`, `Sheet`, `SheetHeader`, and `SheetFooter` hold no state and no handlers, so `field.tsx`, `choice.tsx`, `badge.tsx`, `alert.tsx`, `avatar.tsx`, `separator.tsx`, `skeleton.tsx`, `card.tsx`, `disclosure.tsx`, `search.tsx`, `slider.tsx`, `meter.tsx`, `popover.tsx`, `dialog.tsx`, and `sheet.tsx` have no directive. A component that holds the disclosure's, the popover's, the dialog's, or the sheet's state puts the directive in its own file.
 
+When `Button`, `MenuItem`, or `TableSort` renders a `button`, it defaults to `type="button"` unless you pass `type`, so it does not submit a form around it. Pass `type="submit"` or `type="reset"` to opt in.
+
 ## Render a button or a link
 
 ```tsx
@@ -344,7 +346,7 @@ import { Tabs } from "odd-design/react";
 </Tabs>;
 ```
 
-`Tabs` renders a `div` with the class `odd-tabs` and runs `enhanceTabs` on it, so arrows, Home, End, clicks, and the panel switch work with no other call. Write the tablist as its direct child. Each tab is a `button` with `role="tab"` and an `aria-controls` that names its panel. Each panel has `role="tabpanel"`, that `id`, and an `aria-labelledby` that names its tab. `enhanceTabs` finds a panel by its `id`, so keep the ids unique on the page. `aria-selected` and `hidden` in the JSX set the first choice only. After mount, `enhanceTabs` owns them, as the browser owns `open` on a `Disclosure`. `aria-orientation="vertical"` and `data-activation="manual"` go on the tablist. A disabled tab takes native `disabled`, and the arrows skip it. An `enhance()` call elsewhere in the app does not wire the set twice.
+`Tabs` renders a `div` with the class `odd-tabs` and runs `enhanceTabs` on it, so arrows, Home, End, clicks, and the panel switch work with no other call. Write the tablist as its direct child. Each tab is a `button` with `role="tab"` and an `aria-controls` that names its panel. Each panel has `role="tabpanel"`, that `id`, and an `aria-labelledby` that names its tab. `enhanceTabs` finds a panel by its `id`, so keep the ids unique on the page. `aria-selected` and `hidden` in the JSX set the first choice only. After mount, `enhanceTabs` owns them, as the browser owns `open` on a `Disclosure`. `aria-orientation="vertical"` and `data-activation="manual"` go on the tablist. A disabled tab takes native `disabled`, and the arrows skip it. `Tabs` gives a tab with no `type` the type `button` each time `Tabs` renders, so a tab inside a form does not submit it. A tab you write as `type="submit"` keeps it. A tab that a child component adds while `Tabs` does not render stays untyped until `Tabs` renders again, so write `type="button"` on it. An `enhance()` call elsewhere in the app does not wire the set twice.
 
 To read the choice, listen for `odd-tab-change` on the forwarded ref. React 19 does not attach a custom-event prop on a `div`, so the listener goes through `addEventListener`. To choose a tab from code, call `.click()` on its button. The click goes through `enhanceTabs`, so the tab stop moves too.
 

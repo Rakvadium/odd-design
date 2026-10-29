@@ -1,13 +1,13 @@
 # Data display
 
-Data display components present content: the `.odd-table` inside a focusable, scrollable `.odd-table-wrap`, where checking a row's checkbox tints the row and `.odd-table-sort` buttons show the `aria-sort` state; `.odd-avatar` images and initials (alone or in a `.odd-avatar-group`) whose shape follows the chrome; and `.odd-separator` lines, horizontal or vertical, announced as separators.
+Data display components present content: the `.odd-table` inside a focusable, scrollable `.odd-table-wrap`, where checking a row's checkbox tints the row and `.odd-table-sort` buttons show the `aria-sort` state; `.odd-avatar` images and initials, alone or in a `.odd-avatar-group`; and `.odd-separator` lines, horizontal or vertical, announced as separators.
 
 ## Sub-features
 
 - `table-select`: clicking a row's checkbox checks it and tints that row; unchecked rows stay clear.
 - `table-structure`: the wrapper is a named, focusable region; the sorted column shows an arrow and the others a neutral indicator; numeric columns right-align.
 - `avatar-names`: image avatars are named by `alt`, initials avatars by `aria-label`, and an avatar next to a visible name is hidden.
-- `avatar-shape`: avatars are round in calm and bubblegum and nearly square in holoterminal. Grouped avatars overlap without covering each other's initials.
+- `avatar-group`: grouped avatars overlap without covering each other's initials.
 - `separator`: each `<hr class="odd-separator">` is a `separator` in the tree, and vertical ones sit between inline links.
 
 ## How to get to it (user POV)
@@ -23,7 +23,7 @@ Preconditions:
 - **Row selection.** Run `bun $S goto components-data-display--table "mode:light"` and capture `data/table-before.png`. Run `bun $S click 'input[aria-label="Select Tidecaller"]'`. `bun $S eval '[...document.querySelectorAll(".odd-table tbody tr")].map(r => [r.querySelector("th").textContent, r.matches(":has(input:checked)")])'` shows `Ember Aggro` and `Tidecaller` as `true`. Capture `data/table-after.png`: both rows are tinted.
 - **Table structure.** Run `bun $S aria data/table.aria.txt`. It shows `region "Your decks, sorted by name"` containing `table "Your decks, sorted by name"`, `button "Deck"`, and `checkbox "Select Ember Aggro" [checked=true]`. Run `bun $S press Tab` once from a fresh `goto`. Focus lands on the `.odd-table-wrap` region first.
 - **Avatar names.** Run `bun $S goto components-data-display--avatar` and `bun $S aria data/avatar.aria.txt`. It shows `image "Ana Rojas"`, `image "Kai Nakamura"`, `group "Collaborators"`, and `image "and 3 more"`. The `MO` avatar beside "Mira Okafor" is absent.
-- **Avatar shape and group.** Capture `data/avatar-calm.png` with `chrome:calm` and `data/avatar-holo.png` with `chrome:holoterminal`. Read both: the avatars are round, then nearly square. In the group, every avatar's initials are fully visible. `bun $S eval '[...document.querySelectorAll(".odd-avatar-group > .odd-avatar")].map(a => Math.round(a.getBoundingClientRect().left))'` steps evenly (`[16, 48, 80, 112]` in calm).
+- **Avatar group.** Run `bun $S goto components-data-display--avatar "chrome:calm"` and capture `data/avatar-calm.png`. In the group, every avatar's initials are fully visible. `bun $S eval '[...document.querySelectorAll(".odd-avatar-group > .odd-avatar")].map(a => Math.round(a.getBoundingClientRect().left))'` steps evenly (`[16, 48, 80, 112]` in calm).
 - **Separator.** Run `bun $S goto components-data-display--separator` and `bun $S aria data/separator.aria.txt`. It lists four `separator` entries, two of them between the links `Edit`, `Duplicate`, and `Export`.
 
 ## React Avatar

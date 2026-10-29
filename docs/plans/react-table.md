@@ -112,7 +112,7 @@ Popover's private conditional type moves to `part.ts` and takes the rule as a pa
 ### `enhanceSelectAll`
 
 - The header box is found with `thead input[type="checkbox"][data-select-all]` on every sync and every `change`, not once at call time (graft from the Grok runner through the judge). A table with no header box stays a no-op in outcome.
-- A header change reads `all.checked` once, then calls `row.click()` on each enabled row that differs. A click fires `click`, `input`, and `change` as a user's click does, so React raises `onChange`. A row `click` listener that calls `preventDefault` now keeps that row unchanged, as it would for a user. Disabled rows are still skipped.
+- A header change reads `all.checked` once, then calls `row.click()` on each enabled row that differs. A click fires `click`, `input`, and `change` as a user's click does, so React raises `onChange`. A row `click` listener that calls `preventDefault` now keeps that row unchanged, as it would for a user. Confirmed by Caleb after review. Keep it. Disabled rows are still skipped.
 - No holder. Two wires converge because the loop clicks only rows that differ, measured with `StrictMode` beside `enhance(document)`.
 
 ### The parts
@@ -147,10 +147,10 @@ Each item is the default the build uses. Each one can be reversed after review.
 1. **Three parts, `TableWrap`, `Table`, and `TableSort`.** Each classed element carries a rule its type enforces. Native cells stay plain.
 2. **Conditional region contract.** A bare wrap passes, as the CSS comment allows. `tabindex` or a name requires `role="region"`, and the region requires a name.
 3. **Five codes from existing kinds.** The three descendant failures the Grok runner measured go to follow-ups, not three new kinds in this port.
-4. **`row.click()` for everyone.** Without it, controlled React rows snap back and the header shows "all" over one checked row (measured in both engines).
+4. **`row.click()` for everyone.** Without it, controlled React rows snap back and the header shows "all" over one checked row (measured in both engines). Confirmed by Caleb after review. Keep it.
 5. **Per-commit resync over a `MutationObserver`.** An observer does not see React's property writes (measured stale after Clear).
 6. **`RoleWithName` shared with Popover.** One type for the same three-row shape, not two copies.
-7. **No `type="button"` pin on `TableSort`.** One cross-part fix for every button part, in the existing follow-up.
+7. **No `type="button"` pin on `TableSort`.** One cross-part fix for every button part, in the existing follow-up. `docs/plans/post-port-followups.md` is that fix.
 8. **One preview line, not `enhance(canvasElement)`.** The Menu decision.
 
 ## Capture the baseline (no source change)

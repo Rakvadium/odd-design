@@ -1,7 +1,7 @@
 "use client";
 
 import { createElement, useImperativeHandle, useLayoutEffect, useRef, type ReactElement } from "react";
-import { enhanceTabs } from "../js/tabs.ts";
+import { enhanceTabs, typeTabs } from "../js/tabs.ts";
 import { WRAPPERS, type TabsRule } from "../js/usage/contract.ts";
 import { lower, type Contract, type Native } from "./part.ts";
 
@@ -16,5 +16,6 @@ export function Tabs({ ref, ...props }: TabsProps): ReactElement {
   const root = useRef<HTMLDivElement>(null);
   useImperativeHandle(ref, () => root.current!, []);
   useLayoutEffect(() => enhanceTabs(root.current!), []);
+  useLayoutEffect(() => typeTabs(root.current!));
   return createElement(WRAPPERS.Tabs.element, { ...lower("Tabs", props), ref: root });
 }

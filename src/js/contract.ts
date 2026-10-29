@@ -3,7 +3,7 @@
 // contract test fail until every palette or chrome supplies it.
 
 export const PALETTES = ["default", "aurora", "sorbet", "calm-storm", "cyberpunk", "cotton-candy", "caffeine", "singularity"] as const;
-export const CHROMES = ["calm", "glass", "bubblegum", "holoterminal", "expressive", "darkmatter"] as const;
+export const CHROMES = ["calm", "glass", "bubblegum", "expressive", "darkmatter"] as const;
 export const MODES = ["system", "light", "dark"] as const;
 
 export type Palette = (typeof PALETTES)[number];
@@ -164,14 +164,6 @@ export const PAGE_BACKGROUNDS: Record<Chrome, { solids: PageSolid[]; washes: { t
     ],
   },
   bubblegum: { solids: ["background"], washes: [{ token: "foreground", percent: 14 }] },
-  holoterminal: {
-    solids: ["background"],
-    washes: [
-      { token: "foreground", percent: 6 },
-      { token: "primary", percent: 7 },
-      { token: "primary", percent: 7 },
-    ],
-  },
   expressive: {
     solids: ["background", { mix: "muted", percent: 20, into: "background" }],
     washes: [

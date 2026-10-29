@@ -1,5 +1,5 @@
 import { createElement, type ComponentProps, type ReactElement } from "react";
-import { WRAPPERS, type APPEARANCE_AXES, type HEADLESS_ALLOWLIST, type VOCABULARY, type Wrapper } from "../js/usage/contract.ts";
+import { WRAPPERS, type APPEARANCE_AXES, type HEADLESS_ALLOWLIST, type VOCABULARY, type Wrapper, type WrapperElement } from "../js/usage/contract.ts";
 import type { MESSAGES } from "../js/usage/format.ts";
 
 type Name = keyof typeof WRAPPERS;
@@ -86,9 +86,15 @@ type Tag<N extends Part> = (typeof WRAPPERS)[N]["element"];
 
 export type Native<N extends Part, Replaced extends PropertyKey = never> = Omit<ComponentProps<Tag<N>>, Replaced>;
 
+export function elementTag(element: WrapperElement, props: Readonly<Record<string, unknown>>): string {
+  if (typeof element === "string") return element;
+  return props[element.attribute] === undefined ? element.absent : element.present;
+}
+
 export function lower(name: Name, props: Record<string, unknown>): Record<string, unknown> {
   const wrapper: Wrapper = WRAPPERS[name];
   const { className, ...attributes } = props;
+  if (elementTag(wrapper.element, attributes) === "button") attributes.type ??= "button";
   const data: Record<string, unknown> = {};
   for (const [prop, attribute] of Object.entries(wrapper.props)) {
     const value = attributes[prop];

@@ -1,3 +1,4 @@
+import { defaultToButtonType } from "./button-type.ts";
 import { roving } from "./roving.ts";
 
 const holders = new WeakMap<HTMLElement, { count: number; stop: () => void }>();
@@ -19,6 +20,8 @@ const holders = new WeakMap<HTMLElement, { count: number; stop: () => void }>();
  * move between items, and Tab closes. ArrowDown or ArrowUp on the trigger opens it at the first or
  * last item. A menuitem closes the menu when chosen; checkbox and radio items toggle and stay open.
  * Listen for click on the items to act on them. By then enhanceMenu has already flipped aria-checked.
+ * An item with no type gets type="button" when the menu is wired and each time it opens, so an item
+ * inside a form does not submit it.
  *
  * Disable an item with aria-disabled="true", not the disabled attribute. It stays reachable with the
  * arrows, so a screen-reader user hears that it exists and that it's unavailable (the APG's default
@@ -56,11 +59,15 @@ function wire(menu: HTMLElement): () => void {
   let openAt: "first" | "last" = "first";
   let lastTrigger: HTMLElement | undefined;
 
+  for (const el of items()) defaultToButtonType(el);
   const stopRoving = roving(menu, { items, orientation: "vertical", typeahead: true });
 
   const onToggle = (event: Event) => {
     if ((event as ToggleEvent).newState !== "open") return;
-    for (const el of items()) el.tabIndex = -1;
+    for (const el of items()) {
+      el.tabIndex = -1;
+      defaultToButtonType(el);
+    }
     (openAt === "last" ? enabled().at(-1) : enabled()[0])?.focus();
     openAt = "first";
   };
