@@ -148,7 +148,7 @@ Each commit ends with `bun run check`. The boxes under a commit name its extra c
 
 ### Commit 3. `docs(table): confirm select-all row clicks`
 
-- [ ] Mark decision 4 and the cancelled-row behavior in `docs/plans/react-table.md` as confirmed.
+- [x] Mark decision 4 and the cancelled-row behavior in `docs/plans/react-table.md` as confirmed. Result: decision 4 and the `preventDefault` sentence in the `enhanceSelectAll` section each end "Confirmed by Caleb after review. Keep it." No code or test changed. `bun run check` passes 647 tests (`.verify/ppf/build/check-commit3.txt`).
 
 ## Verify on the real surface
 
