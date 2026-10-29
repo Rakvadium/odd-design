@@ -22,7 +22,6 @@
 @import "./chromes/calm.css" layer(chrome);
 @import "./chromes/glass.css" layer(chrome);
 @import "./chromes/bubblegum.css" layer(chrome);
-@import "./chromes/holoterminal.css" layer(chrome);
 @import "./chromes/expressive.css" layer(chrome);
 @import "./chromes/darkmatter.css" layer(chrome);
 @import "./preferences.css" layer(preferences);

@@ -79,7 +79,7 @@ bun $S axe                                   # accessibility sweep: every story,
 
 Rules for driving:
 
-- Valid globals are `chrome` ∈ `calm glass bubblegum holoterminal expressive darkmatter`, `palette` ∈ `default aurora sorbet calm-storm cyberpunk cotton-candy caffeine singularity`, and `mode` ∈ `system light dark`. The toolbar defaults are `calm`, `default`, and `system`.
+- Valid globals are `chrome` ∈ `calm glass bubblegum expressive darkmatter`, `palette` ∈ `default aurora sorbet calm-storm cyberpunk cotton-candy caffeine singularity`, and `mode` ∈ `system light dark`. The toolbar defaults are `calm`, `default`, and `system`.
 - Prefer stable handles: ids and `commandfor`/`command` attributes in the stories, `input[name=…][value=…]`, `[role=switch]`, `aria-*`, and `.odd-*` classes. Do not use coordinates or nth-child.
 - Change state with `click`, `press`, and `type`, which send real input events. Use `eval` only to read state, never to set it. Setting `.value`, calling `.showModal()`, or toggling attributes bypasses exactly what you are trying to prove: `:user-invalid`, invoker commands, `closedby`, and the native radio behavior.
 - `mode:system` follows the browser's `prefers-color-scheme`, so pair it with `emulate`. `emulate` lasts until it is cleared or the run goes `down`.

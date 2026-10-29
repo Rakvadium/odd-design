@@ -28,7 +28,7 @@ Preconditions:
 - **Scope overrides page.** Open `bun $S goto showcase--matrix "chrome:calm;palette:default;mode:light"` and run `bun $S state`. `html` shows `calm/default/light`. `scopes` lists 12 entries, one for each chrome × palette pair, each with its own values.
 - **Matrix proof.** Run `bun $S screenshot matrix/light.png --full`, then `goto` again with `mode:dark` and take `matrix/dark.png --full`. Rows are chromes and columns are palettes. Every tile shows a badge, an input, buttons, and a switch with no missing text.
 - **Reduced motion.** Run `bun $S emulate prefers-reduced-motion=reduce`, then `bun $S goto components-button--variants "chrome:bubblegum"`, then `bun $S eval 'getComputedStyle(document.documentElement).getPropertyValue("--press-transform")'`. The value is `none`. Without the emulation, bubblegum's value is `translate(3px, 3px)`.
-- **More contrast.** Run `bun $S emulate prefers-contrast=more` and `bun $S goto showcase--sample-app "chrome:holoterminal;mode:dark"`, then read `--focus-width` (it should be `3px`) and `--page-background` (it should contain no `gradient`, because more contrast flattens the page) with `eval` on `getComputedStyle(document.documentElement)`.
+- **More contrast.** Run `bun $S emulate prefers-contrast=more` and `bun $S goto showcase--sample-app "chrome:expressive;mode:dark"`, then read `--focus-width` (it should be `3px`) and `--page-background` (it should contain no `gradient`, because more contrast flattens the page) with `eval` on `getComputedStyle(document.documentElement)`.
 
 ## Gotchas
 

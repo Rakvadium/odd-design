@@ -13,7 +13,7 @@ This directory is the maintained source for verifying the user-facing behavior o
 ## Driving conventions
 
 - Every recipe starts with `goto <storyId> "<globals>"`. A `goto` re-renders the story and resets in-page state.
-- Globals are `chrome:<calm|glass|bubblegum|holoterminal|expressive|darkmatter>;palette:<default|aurora|sorbet|calm-storm|cyberpunk|cotton-candy|caffeine|singularity>;mode:<system|light|dark>`. Leave out an axis to keep its default (`calm`, `default`, `system`).
+- Globals are `chrome:<calm|glass|bubblegum|expressive|darkmatter>;palette:<default|aurora|sorbet|calm-storm|cyberpunk|cotton-candy|caffeine|singularity>;mode:<system|light|dark>`. Leave out an axis to keep its default (`calm`, `default`, `system`).
 - Change state only through `click`, `hover`, `press`, `type`, and `focus`. Use `wait <ms>` for browser delays such as `interestfor`. Use `eval` and `state` only for reading.
 - Select by ids, `commandfor`, `name`/`value`, `role`, `aria-*`, and `.odd-*` classes, or add `--text` with visible text. Do not use coordinates.
 - Commands in the recipes leave out `--run <id>` for brevity. Add it to every call, or export `VERIFY_RUN=<id>`.
