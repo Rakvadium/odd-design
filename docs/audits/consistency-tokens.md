@@ -10,7 +10,7 @@ The chrome renders are in [the drift results](consistency-tokens-drift/results.m
 
 ## Summary
 
-The audit verified 69 findings, 59 CONFIRMED and 10 PLAUSIBLE, and rejected 12. Section 2 holds 13 consistency findings, section 3 holds 23 findings about hardcoded values, and section 4 holds 33 other anti-patterns. Twelve findings were rendered under all 5 chromes in light and dark. Eleven renders measured drift, and one (JS-03) was inconclusive because no story renders the case. The scanner found 366 literals in 46 files. Of those, 125 match no rule and 50 are plan exceptions. The rest are 78 shared values, 44 missing-scale values, 48 story values, 20 chrome-owned values, and 1 raw color.
+The audit verified 70 findings, 60 CONFIRMED and 10 PLAUSIBLE, and rejected 13. Section 2 holds 13 consistency findings, section 3 holds 24 findings about hardcoded values, and section 4 holds 33 other anti-patterns. Twelve findings got a render sweep under all 5 chromes in light and dark. Eleven sweeps measured drift. JS-03's sweep was inconclusive, because no story has the `aria-disabled` tab it needed. The scanner found 366 literals in 46 files. Of those, 125 match no rule and 50 are exceptions, 9 of them under a widened plan exception that section 3 explains. The rest are 78 shared values, 44 missing-scale values, 48 story values, 20 chrome-owned values, and 1 raw color.
 
 The backlog groups the findings into 36 fixes. The top three each score 9, from expansion 3 and drift 3.
 
@@ -52,7 +52,17 @@ The generated matrix in section 2 lists every component. This table counts the s
 
 ### Parked
 
-Typography is deferred, and tooltip and hover-card are parked (`docs/plans/consistency-tokens-audit.md:48` (`Typography is deferred`)). The report names a parked item only where it causes a finding elsewhere, and marks it parked. Typography causes DOC-02, because no body-text helper exists for stories to use. Tooltip and hover-card appear as extra sites in CSS-01, CSS-02, CSS-09, CSS-12, JS-07, and JS-08. No backlog item changes a parked component.
+Typography is deferred, and tooltip and hover-card are parked (`docs/plans/consistency-tokens-audit.md:48` (`Typography is deferred`)). The report names a parked item only where it causes a finding elsewhere, and marks it parked. Typography causes DOC-02, because no body-text helper exists for stories to use. Tooltip and hover-card appear as extra sites in CSS-01, CSS-02, CSS-09, CSS-12, JS-07, and JS-08. No backlog item targets a parked component's own unfinished work, but seven items edit a rule or a file that a parked component shares:
+
+- B-08 tokenizes the tooltip's own forced-colors outline (`src/css/components/popover.css:112` (`1px solid CanvasText`)).
+- B-09 changes the radius token that the shared popover rule reads, and that rule also styles the hover card (`src/css/components/popover.css:32` (`.odd-hover-card {`)).
+- B-14 changes how `interestForFallback`, the fallback that opens the tooltip and the hover card, resolves ids (`src/js/fallbacks.ts:14` (`export function interestForFallback`)).
+- B-16 moves that fallback onto the shared wiring helper.
+- B-25 makes the HTML preview run every fallback, including `interestForFallback`, on every story.
+- B-27 tokenizes the overlay gutter, the width caps, and the enter scale. That reaches the hover card's and the tooltip's own width lines and the enter rules that cover both (`src/css/components/popover.css:46` (`.odd-hover-card { inline-size`), `src/css/components/popover.css:50` (`max-inline-size: min(18rem, 100vw - 2rem);`), `src/css/components/popover.css:65` (`.odd-tooltip {`)).
+- B-32 tokenizes the compact padding in the shared popover rule, which the hover card reads (`src/css/components/popover.css:35` (`* 0.67`)).
+
+None of the seven changes the tooltip's or the hover card's markup or API. Separately, B-12 puts the deferred `odd-heading` class on the Showcase wordmark without changing `typography.css`.
 
 ## 2. Consistency gaps
 
@@ -242,9 +252,11 @@ A `none` verdict means no rule in the plan applies, so the literal is not a find
 | Glyph geometry in `em` | 29 | One component draws an icon in CSS, such as the disclosure chevron and the select arrow strokes. |
 | Platform or spec floors | 0 | `exception platform floor` has 0 rows. The 24px floor outside `--control-height` repeats in four components, so rule 6 applies instead (CSS-06). |
 | Density-scaled private sizes | 6 | A `--_name` that multiplies one component's base size by `var(--density)`. |
-| Input data in stories | 9 | Sizes a story passes as content, such as skeleton line widths. |
+| Input data in stories, widened to documented sizing knobs | 9 | A story passes a value to a sizing property that the component's own comment names as its API: the e-stop's `inline-size` (`src/css/components/estop.css:9` (`Set inline-size to change it`)), the log's `max-block-size` (`src/css/components/log.css:11-12` (`max-block-size to change that`)), and each skeleton block's size (`src/css/components/skeleton.css:8` (`Size each block with inline-size / block-size`)). |
 
-The entries below cover every missing scale, every shared name, and every chrome-owned literal. Each lists its uses. Where a verified finding backs the entry, the finding follows it. Shared names with no finding came from the classifier only, and no verifier read them.
+The plan's fifth exception type is narrower than that row. It names only the seed colors in `CustomPalette.stories.ts` as story input data, and those seeds are `value="${args.primary}"` interpolations that the scanner never reads as literals. The classifier widened the exception to documented knob values passed by a story, and labeled those 9 rows `exception story input data`. The lead accepted the widening, which matches the reason DOC-17 was rejected. Caleb can overrule it, and then those 9 rows become `story` findings.
+
+The entries below cover every missing scale, every shared name, every chrome-owned literal, and the raw color. Each lists its uses. Where a verified finding backs the entry, the finding follows it. Shared names with no finding came from the classifier only, and no verifier read them.
 
 ### Missing scales
 
@@ -358,7 +370,7 @@ The uses are `src/css/components/menu.css:37` (`1rem`), `src/css/components/menu
 - **Rule.** 6, and the consistency check on how states are hooked.
 - **Evidence.** Four components dim to 0.55 and field dims to 0.7 with no comment, the uses above. Button and menu skip hover on disabled items (`src/css/components/button.css:66` (`:not([aria-disabled="true"], :disabled)`), `src/css/components/menu.css:43` (`:not(:disabled, [aria-disabled="true"])`)), and menu records why it dims by color (`src/css/components/menu.css:77` (`aria-disabled items stay focusable`)). Field and tab hover rules have no guard (`src/css/components/field.css:87` (`.odd-input:hover,`), `src/css/components/tabs.css:66` (`.odd-tabs [role="tab"]:hover {`)).
 - **Verdict.** CONFIRMED. The verifier added disabled tab hover to the blast radius.
-- **Drift.** Measured in [the drift results, "CSS-07. Disabled strength and hover guard"](consistency-tokens-drift/results.md#css-07-disabled-strength-and-hover-guard). A disabled input dims to 0.7 and a disabled button to 0.55 in all 10 cells. Hovering the disabled input moves its border to the enabled-hover color, lightness 0.55 to 0.385 in light and 0.61 to 0.78 in dark, in every chrome except bubblegum, whose control edge is already `--foreground`. The result does not depend on the chrome.
+- **Drift.** Measured in [the drift results, "CSS-07. Disabled strength and hover guard"](consistency-tokens-drift/results.md#css-07-disabled-strength-and-hover-guard). A disabled input dims to 0.7 and a disabled button to 0.55 in all 10 cells, so those two opacities do not depend on the chrome. Hovering the disabled input moves its border to the enabled-hover color, lightness 0.55 to 0.385 in light and 0.61 to 0.78 in dark, in every chrome except bubblegum, whose control edge is already `--foreground`.
 - **Scores.** Expansion 3, drift 3.
 - **Tag.** new. Related known items "`odd-segmented` has no disabled styling." (`docs/follow-ups.md:64` (`has no disabled styling.`)) and "A bare `input.odd-switch` with `disabled` does not dim." (`docs/follow-ups.md:65` (`does not dim.`)).
 - **Fix.** B-01.
@@ -485,7 +497,7 @@ No seam reviewer raised these, and no verifier read them. They carry no verdict.
 - **Drift.** Measured for the thumb in [the drift results, "CSS-17. Slider thumb border"](consistency-tokens-drift/results.md#css-17-slider-thumb-border). The thumb border is 2px in all 10 cells, twice the chrome's 1px border in calm, glass, expressive, and darkmatter. The forced-colors lines have no visual effect outside forced colors.
 - **Scores.** Expansion 2, drift 3.
 - **Tag.** new.
-- **Fix.** B-09.
+- **Fix.** B-08.
 
 #### Press transform, 1 literal
 
@@ -503,7 +515,7 @@ No seam reviewer raised these, and no verifier read them. They carry no verdict.
 
 #### Shadow, 3 literals
 
-`--shadow-*` covers `src/css/components/avatar.css:48` (`0 0 0 2px var(--background)`) and the e-stop's inset rim at `src/css/components/estop.css:47` (`inset 0 0.5rem 1rem`), two literals. The classifier marked the rim chrome-owned. The CSS seam reviewer judged it the e-stop's own glyph geometry, and no finding covers it.
+`--shadow-*` covers `src/css/components/avatar.css:48` (`0 0 0 2px var(--background)`) and the e-stop's latched shading at `src/css/components/estop.css:47` (`inset 0 0.5rem 1rem`), two literals. The rim artwork at `src/css/components/estop.css:23` (`var(--shadow-control)`) and `src/css/components/estop.css:41` (`var(--shadow-control-hover)`) is not a finding, because it is layered before the chrome shadow, and the verdicts file labels those rows `none`.
 
 ##### CSS-16. Grouped avatars drop the chrome shadow for a page-colored ring
 
@@ -514,6 +526,15 @@ No seam reviewer raised these, and no verifier read them. They carry no verdict.
 - **Scores.** Expansion 1, drift 3.
 - **Tag.** new.
 - **Fix.** B-19.
+
+##### CSS-L2. The latched e-stop drops the chrome's active shadow
+
+- **Rule.** 2 (shadow is chrome-owned).
+- **Evidence.** The pressed button reads the chrome role (`src/css/components/button.css:77` (`box-shadow: var(--shadow-control-active);`)), and each chrome sets it (`src/css/chromes/calm.css:27` (`--shadow-control-active: var(--shadow-control);`), `src/css/chromes/bubblegum.css:26` (`--shadow-control-active: 0 0 0 var(--foreground);`)). The e-stop's `:active` and latched rule replaces the whole shadow with its rim and an inset shade, the use above, so no chrome shadow remains while it is pressed or latched. Under calm, a pressed button keeps its control shadow and a pressed e-stop loses it.
+- **Verdict.** CONFIRMED by the source. The classifier marked this line chrome-owned, and the CSS seam reviewer called it glyph geometry. The lead sided with the classifier during the report review.
+- **Scores.** Expansion 2, because a new pressable or latching control that copies the e-stop would drop the active shadow too. Drift 2 (latent), because the CSS-14 sweep recorded only `transform` for the held e-stop.
+- **Tag.** new.
+- **Fix.** B-05.
 
 #### Heading weight
 
@@ -541,7 +562,7 @@ No chrome-kind row exists here. The literals are the tracking rows above, the up
 - **Drift.** Measured in [the drift results, "CSS-10. Label tracking and case"](consistency-tokens-drift/results.md#css-10-label-tracking-and-case). The badge follows the chrome at 0.010em, 0, 0, 0.080em, and 0.010em. The avatar stays at 0.020em and uppercase, and the e-stop at 0.060em and uppercase, in all 10 cells. Under calm, glass, bubblegum, and darkmatter the e-stop is uppercased while `--label-case` is `none`.
 - **Scores.** Expansion 2, drift 3.
 - **Tag.** new. Related known item "Uppercase chromes change accessible names." (`docs/follow-ups.md:167` (`Uppercase chromes change accessible names.`)), which names the mechanism behind the e-stop's forced uppercase.
-- **Fix.** B-08.
+- **Fix.** B-07.
 
 ##### CSS-M3. The toast title and the stat label skip the label role
 
@@ -550,7 +571,7 @@ No chrome-kind row exists here. The literals are the tracking rows above, the up
 - **Verdict.** CONFIRMED. Found by the CSS verifier and checked against the source.
 - **Scores.** Expansion 2, drift 2 (latent, not rendered).
 - **Tag.** new.
-- **Fix.** B-08.
+- **Fix.** B-07.
 
 #### Chrome-owned literals in stories
 
@@ -563,18 +584,18 @@ No chrome-kind row exists here. The literals are the tracking rows above, the up
 - **Tag.** new.
 - **Fix.** B-22.
 
-##### DOC-M2. The custom-palette color wells use a raw length that is a space token
+### Raw color, 1 literal
 
-- **Rule.** 3 (a literal equal to a foundations scale step in that step's role).
-- **Evidence.** `stories/CustomPalette.stories.ts:53` (`inline-size: 4rem`) and `stories/CustomPalette.stories.ts:57` (`inline-size: 4rem`) equal `src/css/foundations.css:25` (`--space-10: 4rem;`).
-- **Verdict.** CONFIRMED. Found by the docs verifier and checked against the source.
-- **Scores.** Expansion 1, drift 1. The space scale does not change across chromes.
+`src/css/components/estop.css:12` (`black 30%`) mixes `black` into the e-stop rim. The classifier marked it `color raw black`.
+
+#### CSS-L1. The e-stop rim mixes in a raw `black`
+
+- **Rule.** 1 (a color other than `transparent`, `currentColor`, `inherit`, or a forced-colors system color).
+- **Evidence.** `src/css/components/estop.css:12` (`--_rim: color-mix(in oklab, var(--danger), black 30%);`). The rim shade is the same black in every palette and mode, so it ignores the palette's own dark ink.
+- **Verdict.** CONFIRMED by the source. The CSS seam reviewer had left the literal to the scanner as an exception. No plan exception covers a raw color, so the lead made it a finding during the report review.
+- **Scores.** Expansion 1, because only the e-stop draws a rim. Drift 2 (latent), because no render compared the rim across palettes.
 - **Tag.** new.
-- **Fix.** B-22.
-
-#### Raw color, 1 literal
-
-`src/css/components/estop.css:12` (`black 30%`) mixes `black` into the e-stop rim. The classifier marked it `color raw black`. The CSS seam reviewer left it to the scanner as an exception, and no finding covers it.
+- **Fix.** B-05.
 
 <!-- audit:stats -->
 
@@ -1184,7 +1205,7 @@ Names built at runtime (`var(--${…})`) are invisible to this count. Files that
 - **Drift.** Measured in [the drift results, "CSS-12. Overlay radius split"](consistency-tokens-drift/results.md#css-12-overlay-radius-split). Popover, menu, and toast follow `--radius-surface`, and dialog and sheet follow `--radius-overlay`. The gap is 4px in calm, glass, bubblegum, and darkmatter, and 2px in expressive. Both families track the chrome, so the drift is the split, not a literal.
 - **Scores.** Expansion 2, drift 3.
 - **Tag.** new.
-- **Fix.** B-06.
+- **Fix.** B-09.
 
 ### Token graph faults
 
@@ -1337,7 +1358,7 @@ Names built at runtime (`var(--${…})`) are invisible to this count. Files that
 - **Drift.** Measured in [the drift results, "JS-10. Close glyph stroke widths"](consistency-tokens-drift/results.md#js-10-close-glyph-stroke-widths). The toast close renders 1.15px of stroke with no line join, and the search clear renders 1.67px. The search glyph is 45% heavier in all 10 cells.
 - **Scores.** Expansion 2, drift 3.
 - **Tag.** new.
-- **Fix.** B-07.
+- **Fix.** B-06.
 
 #### RX-01. Four self-enhancing parts repeat one hook body
 
@@ -1490,32 +1511,32 @@ Names built at runtime (`var(--${…})`) are invisible to this count. Files that
 
 Each item is one fix. A fix may close several findings across seams. An item's expansion and drift are the highest among the findings it closes, and its score is their product. Items sort by score, highest first. Ties go to the item that touches fewer files, and an item with a breaking public API change sorts after a non-breaking item of the same size. Drift 3 means [the drift results](consistency-tokens-drift/results.md) measured it. The scores are judgments, and the inputs sit beside each one so they can be argued with.
 
-The ranking puts three changes with measured drift at the top, and that order holds up. They are small, they touch tokens rather than APIs, and every later component would copy the gap each one closes. The one-file items with measured drift, B-04, B-05, B-18, and B-19, cost little enough to fold into a nearby PR. B-16 scores 4, but JS-01 double-steps a stepper when `enhance()` runs twice, which is a behavior bug a user can hit. It deserves a slot earlier than its score gives it. B-10 and B-17 are the two items that need a product decision before code, a tone vocabulary and a disabled model, so their PRs should start with a short plan.
+The ranking puts three changes with measured drift at the top, and that order holds up. They are small, they touch tokens rather than APIs, and every later component would copy the gap each one closes. The one-file and two-file items with measured drift, B-04, B-05, B-18, and B-19, cost little enough to fold into a nearby PR. B-16 scores 4, but JS-01 double-steps a stepper when `enhance()` runs twice, which is a behavior bug a user can hit. It deserves a slot earlier than its score gives it. B-10 and B-17 are the two items that need a product decision before code, a tone vocabulary and a disabled model, so their PRs should start with a short plan.
 
 | Id | Fix | Closes | Expansion | Drift | Score | Blast radius | Depends on |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| B-01 | `--disabled-opacity` token and a disabled guard on hover | CSS-07 | 3 | 3 | 9 | 6 CSS files. Visual yes, disabled fields and tabs in every chrome. API none. | none |
+| B-01 | `--disabled-opacity` token and a disabled guard on hover | CSS-07 | 3 | 3 | 9 | 6 CSS files. Visual yes, disabled fields and tabs in every chrome. API additive. | none |
 | B-02 | One focus recipe that reads the chrome's offset, width, and glow | CSS-03 | 3 | 3 | 9 | 6 CSS files. Visual yes, every chrome. API none. | none |
-| B-03 | `--weight-*` scale and a `--label-weight` chrome role | CSS-01, DOC-02 | 3 | 3 | 9 | About 22 files across components, chromes, contract, and stories. Visual only if a chrome moves label weight. API additive. | none |
+| B-03 | `--weight-*` scale and a `--label-weight` chrome role | CSS-01, DOC-02 | 3 | 3 | 9 | 23 files across components, chromes, contract, and stories. Visual only if a chrome moves label weight. API additive. | none |
 | B-04 | Disclosure summary reads `--heading-weight` | CSS-11 | 2 | 3 | 6 | 1 CSS file. Visual yes, calm, glass, bubblegum, expressive. API none. | none |
-| B-05 | E-stop press reads `--press-transform`, card drops the dead transform | CSS-14 | 2 | 3 | 6 | 2 CSS files. Visual yes, every chrome and reduced motion. API none. | none |
-| B-06 | One overlay radius rule | CSS-12 | 2 | 3 | 6 | 2 CSS files, or 8 with a new chrome role. Visual yes, every chrome. API none or additive. | none |
-| B-07 | One close glyph | JS-10 | 2 | 3 | 6 | 3 files. Visual yes, toast or search, every chrome. API none. | none |
-| B-08 | Label-like text reads the label role | CSS-10, CSS-M3 | 2 | 3 | 6 | 4 CSS files. Visual yes, every chrome, most under expressive. API none. | B-03 |
-| B-09 | Slider thumb reads `--border-width`, forced-colors widths get tokens | CSS-17 | 2 | 3 | 6 | 7 CSS files. Visual yes, calm, glass, expressive, darkmatter. API none. | none |
-| B-10 | One tone vocabulary and one tone mapping | CSS-05, DOC-01, DOC-M3 | 3 | 2 | 6 | About 20 files across CSS, contract, format, docs, and stories. Visual no. API additive, or breaking if MenuItem `tone` is renamed. | none |
+| B-05 | E-stop press, latched shadow, and rim color read tokens, and card drops the dead transform | CSS-14, CSS-L2, CSS-L1 | 2 | 3 | 6 | 2 CSS files. Visual yes, the press in every chrome and under reduced motion, the latched shadow in calm, glass, expressive, and darkmatter, and the rim in every palette. API none. | none |
+| B-06 | One close glyph | JS-10 | 2 | 3 | 6 | 4 files. Visual yes, toast or search, every chrome. API none. | none |
+| B-07 | Label-like text reads the label role | CSS-10, CSS-M3 | 2 | 3 | 6 | 5 CSS files. Visual yes, every chrome, most under expressive. API none. | B-03 |
+| B-08 | Slider thumb reads `--border-width`, forced-colors widths get tokens | CSS-17 | 2 | 3 | 6 | 7 CSS files. Visual yes, calm, glass, expressive, darkmatter. API additive. | none |
+| B-09 | One overlay radius rule | CSS-12 | 2 | 3 | 6 | 2 CSS files, or 8 files with a new chrome role, plus `field.css` if the select picker joins. Sorted by the 8-file option. Visual yes, every chrome. API none, or additive for a new role. | none |
+| B-10 | One tone vocabulary and one tone mapping | CSS-05, DOC-01, DOC-M3 | 3 | 2 | 6 | About 23 files across CSS, contract, format, docs, and stories. Visual no. API additive, or breaking if MenuItem `tone` is renamed. | none |
 | B-11 | One rule set for the segmented control and the tab list | CSS-04, CSS-19 | 2 | 2 | 4 | 2 CSS files. Visual yes, segmented gains disabled dimming in every chrome. API none. | B-01 |
-| B-12 | Showcase uses the components, and the README documents the layout classes | DOC-08, DOC-09 | 2 | 2 | 4 | 2 files. Visual possible on the Showcase logo. API none. | none |
-| B-13 | Type and check `data-span` values | RX-12 | 2 | 2 | 4 | 3 source files plus fixtures. Visual no. API breaking for TypeScript callers outside 1 to 12. | none |
+| B-12 | Showcase uses the components, and the README documents the layout classes | DOC-08, DOC-09 | 2 | 2 | 4 | 2 files. Visual yes on the Showcase wordmark in all 5 chromes, and possible on the logo. API none. | none |
+| B-13 | Type and check `data-span` values | RX-12 | 2 | 2 | 4 | 3 files plus fixtures. Visual no. API breaking for TypeScript callers outside 1 to 12. | none |
 | B-14 | Root-aware id and modal lookup | JS-08, JS-M1 | 2 | 2 | 4 | 6 files in `src/js/`. Visual only inside shadow roots. API none. | none |
 | B-15 | One reduced-motion policy and a named loop easing | CSS-13 | 2 | 2 | 4 | 7 CSS files. Visual only under reduced motion and on backdrops. API additive. | none |
 | B-16 | One wiring helper for enhancers | JS-01, JS-02, JS-06, JS-07, JS-M2 | 2 | 2 | 4 | 10 files. Behavior change on a second call and after cleanup. API none. | none |
 | B-17 | One disabled model for roving widgets and button-shaped parts | JS-03, DOC-15, RX-08 | 2 | 2 | 4 | About 12 files. Visual only for an `aria-disabled` tab. API additive, or breaking with new codes. | none |
 | B-18 | Switch thumb geometry from `--border-width` | CSS-15 | 1 | 3 | 3 | 1 CSS file. Visual yes, bubblegum only. API none. | none |
-| B-19 | Grouped avatars keep the chrome shadow | CSS-16 | 1 | 3 | 3 | 1 CSS file. Visual yes, every chrome. API none. | none |
+| B-19 | Grouped avatars keep the chrome shadow | CSS-16 | 1 | 3 | 3 | 1 CSS file. Visual yes, every chrome. API additive if the ring color becomes a token. | none |
 | B-20 | Scope the vertical tab selector | CSS-24 | 2 | 1 | 2 | 1 CSS file. Visual no in odd-design's stories. API none. | none |
 | B-21 | Typed rule lookup and derived fix text in `format.ts` | RX-07 | 2 | 1 | 2 | 1 file. Visual no. API none if messages stay byte-equal. | none |
-| B-22 | Tokens for the story literals | DOC-07, DOC-M2 | 1 | 2 | 2 | 2 story files. Visual yes in the Contrast story under chromes whose border or radius differ. API none. | none |
+| B-22 | Tokens for the story literals | DOC-07 | 1 | 2 | 2 | 1 story file. Visual yes in the Contrast story under chromes whose border or radius differ. API none. | none |
 | B-23 | One shape for usage pages and `react.md` sections | DOC-11, DOC-12 | 2 | 1 | 2 | 3 doc files. Visual no. API none. | none |
 | B-24 | Shared rename table for the ESLint lowering, and report raw mapped attributes | RX-16, RX-M2 | 2 | 1 | 2 | 3 files. Visual no. ESLint output changes. API none. | none |
 | B-25 | One enhancer registry | JS-04, DOC-10 | 2 | 1 | 2 | 4 files. Behavior change in the HTML preview. API additive. | B-16 |
@@ -1526,10 +1547,10 @@ The ranking puts three changes with measured drift at the top, and that order ho
 | B-30 | `part.ts` derives enum props, role-gated names, and required-prop messages | RX-03, RX-04, RX-06 | 2 | 1 | 2 | About 13 React files. Visual no. API none for valid code. | none |
 | B-31 | One name for the action row | DOC-14 | 2 | 1 | 2 | About 13 files. Visual no. API breaking if renamed, additive if aliased. | none |
 | B-32 | Shared size tokens in `foundations.css` | CSS-06, CSS-08, CSS-09, CSS-18, CSS-M2, CSS-M4 | 2 | 1 | 2 | About 17 CSS files. Visual no if values are kept. API additive. | none |
-| B-33 | Story layout helpers | DOC-04, DOC-05, DOC-06, DOC-M1 | 2 | 1 | 2 | About 22 files across stories, previews, and layout CSS. Visual small if widths snap. API additive. | none |
+| B-33 | Story layout helpers | DOC-04, DOC-05, DOC-06, DOC-M1 | 2 | 1 | 2 | About 23 files across stories, previews, and layout CSS. Visual small if widths snap. API additive. | none |
 | B-34 | Contract rows and pages for the five uncovered components | RX-17, DOC-18 | 2 | 1 | 2 | Many files, new code families. Visual no. API additive. | B-13 for shell, B-28 for log |
-| B-35 | Import `DEFAULT_APPEARANCE` in the Storybook config | DOC-19 | 1 | 1 | 1 | 3 files. Visual no. API none. | none |
-| B-36 | `system-data` rules for Field and Choice | RX-02 | 1 | 1 | 1 | About 8 files plus fixtures. Visual no. API breaking for TypeScript callers. | none |
+| B-35 | Import `DEFAULT_APPEARANCE` in the Storybook config | DOC-19 | 1 | 1 | 1 | 2 files. Visual no. API none. | none |
+| B-36 | `system-data` rules for Field and Choice | RX-02 | 1 | 1 | 1 | 6 files plus fixtures. Visual no. API breaking for TypeScript callers. | none |
 
 ### B-01. `--disabled-opacity` token and a disabled guard on hover
 
@@ -1579,31 +1600,19 @@ The ranking puts three changes with measured drift at the top, and that order ho
 - **Tests.** None.
 - **Verification.** Rerun the CSS-11 cells. The summary weight equals `--heading-weight` in all 10 cells.
 
-### B-05. E-stop press reads `--press-transform`, card drops the dead transform
+### B-05. E-stop press, latched shadow, and rim color read tokens, and card drops the dead transform
 
-- **Fix.** Use `var(--press-transform)` for the e-stop's `:active`. Keep a fixed inset for the latched state only. Remove `transform` from card's transition list, or wire a hover lift.
-- **Scores.** Expansion 2 and drift 3, both from CSS-14.
+- **Fix.** Use `var(--press-transform)` for the e-stop's `:active`. Keep a fixed inset for the latched state only. In the pressed and latched shadow, keep the rim layers and add `var(--shadow-control-active)` after them, as the resting rule does with `--shadow-control`. Derive the rim shade from a palette token instead of `black`, and check it in light and dark. Remove `transform` from card's transition list, or wire a hover lift.
+- **Scores.** Expansion 2 and drift 3 from CSS-14. CSS-L2 adds expansion 2 and drift 2, and CSS-L1 adds expansion 1 and drift 2, so the score stays 6.
 - **Files.** `src/css/components/estop.css`, `src/css/components/card.css`.
 - **Components.** E-stop, Card.
-- **Visual change.** Yes. The held e-stop follows each chrome, translates under bubblegum, and stops moving under reduced motion.
+- **Visual change.** Yes. The held e-stop follows each chrome, translates under bubblegum, and stops moving under reduced motion. The pressed and latched e-stop regains an outer shadow in calm, glass, expressive, and darkmatter, where `--shadow-control-active` equals `--shadow-control`. Bubblegum's active shadow has no offset, so it does not change there. The rim shade changes in every palette and mode. The shadow and rim changes are inferred from the source, not rendered.
 - **Public API.** None.
 - **Codes and checkers.** None.
 - **Tests.** None.
-- **Verification.** Rerun the CSS-14 cells with a held pointer, including the reduced-motion pair. The e-stop transform equals the button's in every cell.
+- **Verification.** Rerun the CSS-14 cells with a held pointer, including the reduced-motion pair. The e-stop transform equals the button's in every cell. Record the e-stop's `box-shadow` while held and while latched, and confirm it ends with the chrome's `--shadow-control-active` in all 10 cells. Screenshot the latched e-stop in light and dark under two palettes to check the rim shade.
 
-### B-06. One overlay radius rule
-
-- **Fix.** Move popover, menu, and toast to `--radius-overlay`, or add a chrome role for small overlays and record the split in `contract.ts`. Decide whether the select picker joins the rule.
-- **Scores.** Expansion 2 and drift 3, both from CSS-12.
-- **Files.** `src/css/components/popover.css`, `toast.css`, maybe `field.css`. With a new role, also `src/js/contract.ts` and the 5 chromes.
-- **Components.** Popover, Menu, Toast, and the parked hover card and tooltip, which share the popover rule.
-- **Visual change.** Yes in every chrome. Small overlays gain 2px to 4px of radius if they move to `--radius-overlay`.
-- **Public API.** None, or additive for a new role.
-- **Codes and checkers.** None.
-- **Tests.** `tests/contract.test.ts` if a role is added.
-- **Verification.** Rerun the CSS-12 cells. The five overlays read one radius per chrome, or two radii that match a recorded rule.
-
-### B-07. One close glyph
+### B-06. One close glyph
 
 - **Fix.** Keep one close glyph, as one exported string or one CSS mask on a shared custom property, with one stroke width and one line join.
 - **Scores.** Expansion 2 and drift 3, both from JS-10. JS-10 is PLAUSIBLE.
@@ -1615,7 +1624,7 @@ The ranking puts three changes with measured drift at the top, and that order ho
 - **Tests.** None.
 - **Verification.** Rerun the JS-10 cells. The effective stroke of the toast close and the search clear match within rounding.
 
-### B-08. Label-like text reads the label role
+### B-07. Label-like text reads the label role
 
 - **Fix.** Avatar and e-stop read `--label-case` and `--label-tracking`, or a named `--tracking-caps` token with a comment that says why they ignore the chrome. The toast title and the stat label read the label font, case, tracking, and the weight from B-03.
 - **Scores.** Expansion 2 and drift 3 from CSS-10. CSS-M3 adds expansion 2 and drift 2.
@@ -1627,17 +1636,29 @@ The ranking puts three changes with measured drift at the top, and that order ho
 - **Tests.** None.
 - **Verification.** Rerun the CSS-10 cells, and add the toast title. Tracking and case equal the badge's in all 10 cells, or equal the caps token.
 
-### B-09. Slider thumb reads `--border-width`, forced-colors widths get tokens
+### B-08. Slider thumb reads `--border-width`, forced-colors widths get tokens
 
 - **Fix.** Read `--border-width` or a stated multiple for the slider thumb. Add `--forced-hairline` and `--forced-selected-outline`, or one forced-colors rule that components opt into.
 - **Scores.** Expansion 2 and drift 3, both from CSS-17.
 - **Files.** `src/css/components/slider.css`, `meter.css`, `popover.css`, `skeleton.css`, `choice.css`, `tabs.css`, and `src/css/foundations.css` or `preferences.css`.
-- **Components.** Slider, Meter, Popover, Skeleton, Segmented, Tabs.
+- **Components.** Slider, Meter, Skeleton, Segmented, Tabs, and the parked tooltip, whose forced-colors outline is the `popover.css` line.
 - **Visual change.** Yes for the slider thumb under calm, glass, expressive, and darkmatter, where it drops from 2px to 1px unless a multiple keeps it. No change in forced colors if the values are kept.
 - **Public API.** Additive for the forced-colors tokens.
 - **Codes and checkers.** None.
 - **Tests.** None.
 - **Verification.** Rerun the CSS-17 cells. The thumb border equals `--border-width` or its stated multiple in all 10 cells. Check forced colors in Chrome emulation.
+
+### B-09. One overlay radius rule
+
+- **Fix.** Move popover, menu, and toast to `--radius-overlay`, or add a chrome role for small overlays and record the split in `contract.ts`. Decide whether the select picker joins the rule.
+- **Scores.** Expansion 2 and drift 3, both from CSS-12.
+- **Files.** `src/css/components/popover.css`, `toast.css`, maybe `field.css`. With a new role, also `src/js/contract.ts` and the 5 chromes.
+- **Components.** Popover, Menu, Toast, and the parked hover card, which shares the popover radius rule. The parked tooltip has its own `--radius-control` rule and does not change.
+- **Visual change.** Yes in every chrome. Small overlays gain 2px to 4px of radius if they move to `--radius-overlay`.
+- **Public API.** None, or additive for a new role.
+- **Codes and checkers.** None.
+- **Tests.** `tests/contract.test.ts` if a role is added.
+- **Verification.** Rerun the CSS-12 cells. The five overlays read one radius per chrome, or two radii that match a recorded rule.
 
 ### B-10. One tone vocabulary and one tone mapping
 
@@ -1669,7 +1690,7 @@ The ranking puts three changes with measured drift at the top, and that order ho
 - **Scores.** Expansion 2 and drift 2 from DOC-08. DOC-09 adds expansion 2 and drift 1.
 - **Files.** `stories/Showcase.stories.ts`, `README.md`.
 - **Components.** The Showcase sample app.
-- **Visual change.** Possible on the logo and wordmark if the classes differ from the copy.
+- **Visual change.** Yes on the wordmark in all 5 chromes. It is a `<strong>` at 700 today, and `odd-heading` reads `--heading-weight`, which is 650, 550, 800, 750, and 600. Possible on the logo if the button classes differ from the copy. Both are inferred from the source, not rendered.
 - **Public API.** None.
 - **Codes and checkers.** None.
 - **Tests.** `tests/stories.test.ts` and the axe sweep cover the Showcase story.
@@ -1785,15 +1806,15 @@ The ranking puts three changes with measured drift at the top, and that order ho
 
 ### B-22. Tokens for the story literals
 
-- **Fix.** Use `var(--border-width)` and `var(--radius-control)` for the Contrast samples, and `--focus-width` for the non-text sample's wider border. Use `var(--space-10)` for the color wells.
-- **Scores.** Expansion 1 and drift 2 from DOC-07. DOC-M2 adds expansion 1 and drift 1.
-- **Files.** `stories/Foundations.stories.ts`, `stories/CustomPalette.stories.ts`.
-- **Components.** None. The Contrast and Generator stories.
+- **Fix.** Use `var(--border-width)` and `var(--radius-control)` for the Contrast samples, and `--focus-width` for the non-text sample's wider border.
+- **Scores.** Expansion 1 and drift 2, both from DOC-07.
+- **Files.** `stories/Foundations.stories.ts`.
+- **Components.** None. The Contrast story.
 - **Visual change.** Yes in the Contrast story under chromes whose border width or radius differ from 1px and 6px.
 - **Public API.** None.
 - **Codes and checkers.** None.
 - **Tests.** `tests/stories.test.ts` if it pins the Contrast markup.
-- **Verification.** Screenshot `foundations--contrast` under all 5 chromes. The scanner shows no chrome-owned rows for the two files.
+- **Verification.** Screenshot `foundations--contrast` under all 5 chromes. The scanner shows no chrome-owned rows for the file.
 
 ### B-23. One shape for usage pages and `react.md` sections
 
@@ -1965,7 +1986,7 @@ The ranking puts three changes with measured drift at the top, and that order ho
 
 ## Rejected during verification
 
-The cross-provider verifiers rejected 12 findings. None of them appears in sections 2 to 5.
+The cross-provider verifiers rejected 12 findings, and the lead rejected DOC-M2 during the report review. None of the 13 appears in sections 2 to 5.
 
 - CSS-23. Every chrome restates `--radius-chip` and the two font roles, which is the chrome contract. The token-file check is a scale gap or a role left to a default, and `999px` is the pill exception.
 - JS-05. Typing menu items, typing tabs, syncing a header box, and pinning log scroll are different jobs. The three symptoms stay separate known items.
@@ -1979,6 +2000,7 @@ The cross-provider verifiers rejected 12 findings. None of them appears in secti
 - DOC-13. Two phrasings of one checker rule across the usage pages do not ship two attributes.
 - DOC-16. The sidebar titles and the `Progress` export keep story ids that `tests/stories.test.ts` pins, and the plans record that.
 - DOC-17. The estop and log stylesheet comments name `inline-size` and `max-block-size` as the sizing API.
+- DOC-M2. The custom-palette color wells are 4rem wide (`stories/CustomPalette.stories.ts:53` (`inline-size: 4rem`)). That equals `--space-10` by value only. A color-well width is not a spacing role, so rule 3 does not apply, and the verdicts file says the same.
 
 ## Outside this rubric
 
@@ -1989,7 +2011,6 @@ The seams found these problems, and no rule in the plan covers them. They are li
 - `avatarFallback` has a platform-fallback name and lives in `enhance.ts`, though it is a component enhancer (`src/js/enhance.ts:23` (`export function avatarFallback`)). `enhanceSelectAll` is the only `enhanceX` without its own module, and `typeTabs` is a third name shape. The verifier rejected this as a one-off API (JS-09), and the facts stand as a naming note.
 - Showcase writes the three modes as a literal instead of importing `MODES` (`stories/Showcase.stories.ts:114`). The verifier split it from DOC-19.
 - `src/js/fallbacks.ts` has no unit test, so no call-twice or cleanup case covers the fallbacks.
-- The classifier marked the e-stop's inset rim shadow chrome-owned (`src/css/components/estop.css:47` (`inset 0 0.5rem 1rem`)), while the CSS seam reviewer judged it glyph geometry. One of the two verdicts should change.
 
 ## Limits
 
