@@ -91,7 +91,7 @@ const STATIC_STATE: Readonly<Record<string, string>> = {
   ":checked": ":is(:checked, option[selected])",
   ":required": "[required]",
   ":indeterminate": "progress:not([value])",
-  ":dir(rtl)": ':is([dir="rtl"], [dir="rtl"] *)',
+  ":dir(rtl)": '[dir="rtl"], [dir="rtl"] *',
 };
 
 const STATE_ATTRIBUTE: Readonly<Record<string, string>> = { ":disabled": "disabled", ":checked": "checked", ":required": "required", ":open": "open" };
