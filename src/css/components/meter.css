@@ -3,11 +3,8 @@
  *                       Leave out value for an indeterminate bar.
  * A measurement:        <meter class="odd-meter" min="0" max="60" value="24"></meter>
  *                       With low/high/optimum it colors itself: success, warning, danger.
- * Stat (label, value, bar):
- *   <div class="odd-stat">
- *     <label for="units">Units</label><span class="odd-stat-value">24 <span class="odd-muted">(40%)</span></span>
- *     <meter class="odd-meter" id="units" min="0" max="60" value="24"></meter>
- *   </div>
+ * The value as text:    <span class="odd-stat-value">24 <span class="odd-muted">(40%)</span></span>
+ *                       docs/recipes/stat-row.md sets it beside a label above a bar.
  * Always show the value as text too; the bar alone isn't enough. data-tone="success|warning|danger|info"
  * recolors a bar that has no low/high.
  */
@@ -93,22 +90,9 @@
   to { background-position: 170% 0, 0 0; }
 }
 
-.odd-stat {
-  display: grid;
-  grid-template-columns: 1fr auto;
-  align-items: baseline;
-  gap: var(--space-1) var(--space-3);
-  font-size: var(--text-sm);
-}
-.odd-stat > label {
-  color: var(--muted-foreground);
-}
 .odd-stat-value {
   font-weight: 600;
   font-variant-numeric: tabular-nums;
-}
-.odd-stat > :is(meter, progress) {
-  grid-column: 1 / -1;
 }
 
 /*

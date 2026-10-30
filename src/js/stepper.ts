@@ -1,15 +1,22 @@
-/*
- * Stepper: markup and data-step are described in src/css/components/stepper.css.
- *
- * enhanceStepper steps the number input with its own stepUp and stepDown, so min, max, and step
- * clamp and snap the value. A click or a keyboard press steps once. A held pointer press steps,
- * waits REPEAT_DELAY_MS, then steps every REPEAT_INTERVAL_MS until release or a limit. Each step
- * fires a bubbling input event on the number input. A change event follows once the press ends,
- * so a listener on change sees one event per press, however long it was held.
- */
 const REPEAT_DELAY_MS = 400;
 const REPEAT_INTERVAL_MS = 100;
 
+/**
+ * Number stepper, laid out in docs/recipes/number-stepper.md. Reads the first input[type="number"]
+ * under root and every button[data-step] under root:
+ *   <div class="odd-row" role="group" aria-labelledby="base-label">
+ *     <button class="odd-button" type="button" data-step="-1">−1</button>
+ *     <input class="odd-input" type="number" id="base" min="-90" max="90" step="1" value="0">
+ *     <button class="odd-button" type="button" data-step="1">+1</button>
+ *   </div>
+ * data-step counts the input's steps, so data-step="10" with step="0.5" moves by 5. Each step uses
+ * the input's own stepUp and stepDown, so min, max, and step clamp and snap the value. A click or a
+ * keyboard press steps once. A held pointer press steps, waits REPEAT_DELAY_MS, then steps every
+ * REPEAT_INTERVAL_MS until release or a limit. Each step fires a bubbling input event on the number
+ * input. A change event follows once the press ends, so a listener on change sees one event per
+ * press, however long it was held. Buttons at a limit, and every button while the input is disabled
+ * or read-only, get aria-disabled="true". enhance() does not find steppers, so call this on each root.
+ */
 export function enhanceStepper(root: HTMLElement): () => void {
   const input = root.querySelector<HTMLInputElement>('input[type="number"]');
   if (!input) return () => {};

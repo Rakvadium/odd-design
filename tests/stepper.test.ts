@@ -1,7 +1,7 @@
 import { afterEach, expect, test } from "bun:test";
 import { enhanceStepper } from "../src/js/stepper.ts";
 
-const markup = (inputAttributes: string) => /* html */ `<div class="odd-stepper" role="group" aria-label="Base">
+const markup = (inputAttributes: string) => /* html */ `<div class="odd-row" role="group" aria-label="Base">
   <button class="odd-button" type="button" data-step="-10">−10</button>
   <button class="odd-button" type="button" data-step="-1">−1</button>
   <input class="odd-input" type="number" ${inputAttributes}>
@@ -11,7 +11,7 @@ const markup = (inputAttributes: string) => /* html */ `<div class="odd-stepper"
 
 function mount(inputAttributes: string) {
   document.body.innerHTML = markup(inputAttributes);
-  const root = document.querySelector<HTMLElement>(".odd-stepper")!;
+  const root = document.querySelector<HTMLElement>('[role="group"]')!;
   const input = root.querySelector("input")!;
   const button = (step: string) => root.querySelector<HTMLButtonElement>(`[data-step="${step}"]`)!;
   const events: string[] = [];
