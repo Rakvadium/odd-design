@@ -71,7 +71,7 @@ A subtree can have its own appearance: add `class="odd-scope"` and set all three
 
 `src/css/index.css` declares the cascade layers in order:
 
-1. `foundations`: fixed scales (type, space, durations, z-index), derived tokens, and default status colors.
+1. `foundations`: fixed scales (type, weight, space, durations, z-index), derived tokens, and default status colors.
 2. `palette`: `palettes/*.css`. Each color is `light-dark(light, dark)`, so mode is just `color-scheme` and `system` follows the OS without JS.
 3. `chrome`: `chromes/*.css`. Feel tokens only. A chrome can reference palette colors, such as a primary-tinted glow, but never contains a hue of its own.
 4. `preferences`: `prefers-contrast`, `prefers-reduced-motion`, `prefers-reduced-transparency`, and `forced-colors`. This layer beats palette and chrome.

@@ -1,6 +1,6 @@
 /*
  * Layer order is the ownership model:
- *   foundations  fixed scales nobody themes (type, space, motion durations, z)
+ *   foundations  fixed scales nobody themes (type, weight, space, motion durations, z)
  *   palette      color roles           [data-palette]
  *   chrome       feel roles            [data-chrome]
  *   preferences  user/OS overrides     prefers-contrast, forced-colors

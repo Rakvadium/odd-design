@@ -16,7 +16,7 @@
 .odd-label {
   font-family: var(--font-label);
   font-size: var(--text-sm);
-  font-weight: 600;
+  font-weight: var(--label-weight);
   text-transform: var(--label-case);
   letter-spacing: var(--label-tracking);
 }
@@ -37,7 +37,7 @@
   gap: var(--space-2);
   align-items: baseline;
   font-size: var(--text-sm);
-  font-weight: 500;
+  font-weight: var(--weight-medium);
   color: var(--danger);
 }
 .odd-error::before {
@@ -51,7 +51,7 @@
   background: var(--danger);
   color: var(--danger-foreground);
   font-size: 0.8em;
-  font-weight: 800;
+  font-weight: var(--weight-extrabold);
 }
 
 .odd-input,
@@ -88,18 +88,16 @@
   opacity: 1;
 }
 
-.odd-input:hover,
-.odd-select:hover,
-.odd-textarea:hover {
+.odd-input:hover:where(:not(:disabled, [aria-disabled="true"])),
+.odd-select:hover:where(:not(:disabled, [aria-disabled="true"])),
+.odd-textarea:hover:where(:not(:disabled, [aria-disabled="true"])) {
   border-color: color-mix(in oklch, var(--edge-control) 50%, var(--foreground));
 }
 
 .odd-input:focus-visible,
 .odd-select:focus-visible,
 .odd-textarea:focus-visible {
-  outline-offset: 0;
   border-color: var(--focus-color);
-  box-shadow: var(--focus-glow);
 }
 
 /* :user-invalid only matches after the user has interacted, so pristine forms are never red. */
@@ -114,7 +112,7 @@
 .odd-textarea:disabled {
   cursor: not-allowed;
   background-color: var(--muted);
-  opacity: 0.7;
+  opacity: var(--disabled-opacity);
 }
 
 /* Native select with a drawn chevron. Upgraded below where customizable <select> exists. */
@@ -164,9 +162,10 @@
   .odd-select option:is(:hover, :focus-visible) {
     background: var(--muted);
     outline: none;
+    box-shadow: none;
   }
   .odd-select option:checked {
-    font-weight: 600;
+    font-weight: var(--weight-semibold);
   }
   .odd-select option::checkmark {
     color: var(--primary);

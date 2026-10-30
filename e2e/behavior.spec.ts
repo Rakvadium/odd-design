@@ -393,6 +393,23 @@ test.describe("machine controls", () => {
   });
 });
 
+test.describe("form fields", () => {
+  test("hover darkens an enabled input's border but leaves a disabled one at rest", async ({ page }) => {
+    await openStory(page, "components-forms--text-fields", "mode:light");
+    const border = (selector: string) =>
+      page.locator(selector).evaluate(async (el) => {
+        await Promise.all(el.getAnimations().map((a) => a.finished));
+        return getComputedStyle(el).borderTopColor;
+      });
+    const enabled = await border("#name");
+    await hoverFresh(page, "#name");
+    expect(await border("#name")).not.toBe(enabled);
+    const disabled = await border("#disabled");
+    await hoverFresh(page, "#disabled");
+    expect(await border("#disabled")).toBe(disabled);
+  });
+});
+
 test.describe("engine-specific CSS", () => {
   for (const storybook of ["html", "react"] as const) {
     test(`the slider moves by keyboard and its fill follows the thumb (${storybook})`, async ({ page }, testInfo) => {

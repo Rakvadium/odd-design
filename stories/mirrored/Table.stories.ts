@@ -56,7 +56,7 @@ export const Table = mirrored({
               of: "tr",
               children: [
                 { of: "td", children: [{ of: "input", props: { type: "checkbox", "aria-label": `Select ${name}`, defaultChecked: i === 1 } }] },
-                { of: "th", props: { scope: "row", style: { fontWeight: "600" } }, children: [{ of: "a", props: { href: "#" }, children: [name] }] },
+                { of: "th", props: { scope: "row", style: { fontWeight: "var(--weight-semibold)" } }, children: [{ of: "a", props: { href: "#" }, children: [name] }] },
                 { of: "td", children: [format] },
                 { of: "td", props: { "data-numeric": "" }, children: [String(cards)] },
                 { of: "td", props: { "data-numeric": "" }, children: [String(versions)] },

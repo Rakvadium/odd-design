@@ -48,6 +48,7 @@ export const CHROME_TOKENS = [
   "heading-weight",
   "heading-case",
   "heading-tracking",
+  "label-weight",
   "label-case",
   "label-tracking",
   // Shape
