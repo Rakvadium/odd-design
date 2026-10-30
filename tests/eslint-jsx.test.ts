@@ -172,6 +172,29 @@ const places: Record<string, readonly (readonly [string, number, number, string]
     ["ODD-TABLE-004", 13, 12, 'data-numeric=""'],
     ["ODD-TABLE-004", 14, 16, 'data-numeric=""'],
     ["ODD-TABLE-005", 15, 16, 'aria-sort="ascending"'],
+    ["ODD-TABLE-006", 17, 5, "<Table>"],
+  ],
+  "base.tsx": [
+    ["ODD-SCOPE-001", 8, 5, '<div className="odd-scope"'],
+    ["ODD-SCOPE-001", 8, 5, '<div className="odd-scope"'],
+    ["ODD-SKIP-001", 9, 13, "className"],
+    ["ODD-SKIP-001", 10, 5, "<a"],
+    ["ODD-SKIP-001", 11, 34, 'href="#"'],
+  ],
+  "grid.tsx": [
+    ["ODD-GRID-001", 7, 5, '<main className="odd-grid">'],
+    ["ODD-GRID-001", 8, 5, '<div className="odd-grid">'],
+  ],
+  "shell.tsx": [
+    ["ODD-SHELL-001", 5, 10, "className"],
+    ["ODD-SHELL-001", 6, 14, "className"],
+  ],
+  "typography.tsx": [
+    ["ODD-TYPOGRAPHY-001", 7, 10, "className"],
+    ["ODD-TYPOGRAPHY-002", 8, 33, 'data-size="md"'],
+    ["ODD-TYPOGRAPHY-002", 9, 33, 'data-size="3xl"'],
+    ["ODD-TYPOGRAPHY-003", 10, 32, 'data-tone="danger"'],
+    ["ODD-STATIC-001", 11, 33, "data-size={size}"],
   ],
   "meter.tsx": [
     ["ODD-METER-001", 10, 10, "className"],

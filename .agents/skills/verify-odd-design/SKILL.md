@@ -56,9 +56,9 @@ Stories render in isolation at `iframe.html?id=<storyId>`, which skips the manag
 | Data Display | `components-data-display--table`, `--table-parts`, `--table-states`, `--table-overflow`, `--avatar`, `--separator` |
 | Overlays | `components-overlays--popover`, `--tooltip`, `--hover-card`, `--sheet`, `--sheet-end`, `--sheet-start`, `--sheet-top`, `--sheet-bottom`, `--sheet-right-to-left`, `--alert-dialog` |
 | Interactive | `components-interactive--menu`, `--menu-open`, `--tabs`, `--tabs-vertical`, `--toast`, `--toast-variants`, `--toast-parts`, `--toast-states` |
-| Controls | `components-controls--emergency-stop` |
 | Recipes | `recipes-number-stepper--single-field`, `--jog-row`, `recipes-slider-with-number--slider-with-number`, `recipes-stat-row--stat-row` |
 | Layout | `components-layout--app-shell` |
+| Base utilities, Grid, Shell, Typography | `components-base-utilities--parts`, `components-grid--variants`, `components-shell--parts`, `components-typography--sizes`, `--variants` |
 | Docs | `introduction--docs` (MDX; `goto` targets stories, so open docs via the manager URL if needed) |
 
 The current list is always at `curl -s http://127.0.0.1:<port>/index.json`.

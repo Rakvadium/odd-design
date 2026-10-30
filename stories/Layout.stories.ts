@@ -12,7 +12,7 @@ export const AppShell: Story = {
     docs: {
       description: {
         story:
-          "`odd-shell` is a full-height page with a sticky header: title, a status slot that takes the free space, and actions. The main area is an `odd-grid` of `odd-card` panels sized with `data-span`. The grid measures itself: narrow the window and the 4-column panels take half, then every panel takes the full row. One `enhance()` call wires the log, and `enhanceStepper` and `enhanceRangeField` wire the jog controls.",
+          "`odd-shell` is a full-height page with a sticky header: title, a status slot that takes the free space, and actions. The main area is an `odd-grid` of `odd-card` panels sized with `data-span`. The grid measures itself: narrow the window and the 4-column panel takes half, then every panel takes the full row. One `enhance()` call wires the log, and `enhanceStepper` and `enhanceRangeField` wire the jog controls.",
       },
     },
   },
@@ -52,15 +52,11 @@ export const AppShell: Story = {
             </div>
           </div>
         </section>
-        <section class="odd-card" data-span="4" aria-labelledby="shell-stop-title" style="justify-items: center">
-          <h2 class="odd-card-title" id="shell-stop-title">Stop</h2>
-          <button class="odd-estop" type="button" aria-pressed="false">Stop</button>
-        </section>
         <section class="odd-card" data-span="4" aria-labelledby="shell-pose-title">
           <h2 class="odd-card-title" id="shell-pose-title">Pose</h2>
           <p class="odd-muted">Base 0, shoulder 45, elbow −30, wrist 10, gripper 12 mm.</p>
         </section>
-        <section class="odd-card" data-span="8" aria-labelledby="shell-log-title">
+        <section class="odd-card" data-span="12" aria-labelledby="shell-log-title">
           <h2 class="odd-card-title" id="shell-log-title">Log</h2>
           <div class="odd-log" role="log" aria-labelledby="shell-log-title" tabindex="0" style="max-block-size: 8rem">
             <div class="odd-log-line" data-tone="success"><time>14:02:02</time> Connected to NexArm</div>

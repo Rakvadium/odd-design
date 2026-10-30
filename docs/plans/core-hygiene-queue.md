@@ -54,8 +54,9 @@ The audit gave `odd-estop` `demote-to-composed-recipe-or-app` at distance 7. Its
 
 - Delete `src/css/components/estop.css` and its import.
 - Drop `odd-estop` from `CLASS_REGISTRY` and `estop` from VOCABULARY.
-- Delete the e-stop story in `stories/Controls.stories.ts`, the e-stop in the app shell story (`stories/Layout.stories.ts:57`), and any test or fixture that names it. Remove the `README.md:191` row.
-- Add `docs/handoffs/odd-nexarm.md`. It holds the e-stop CSS as it stood at `main`, the stepper, range-field, and stat-row CSS removed in item 2, and the one-line `enhanceStepper` and `enhanceRangeField` calls the drive page needs. The robot-arm app's repository (`Rakvadium/odd-nexarm`) is the documented home. This queue does not edit it.
+- Delete `stories/Controls.stories.ts`, whose only story is the e-stop, and any test or fixture that names it. Remove the `README.md:191` row.
+- Delete the Stop panel in the app shell story (`stories/Layout.stories.ts:55-58`) and widen the Log panel to `data-span="12"`. The grid test in `e2e/behavior.spec.ts` then expects three panels.
+- Add an E-stop section to `docs/handoffs/odd-nexarm.md`, which item 2 added with the stepper, range-field, and stat-row CSS. It holds the e-stop CSS as it stood at `main` under the app's `arm-estop` class, and the markup change for the drive page's Stop button. The robot-arm app's repository (`Rakvadium/odd-nexarm`) is the documented home. This queue does not edit it.
 - Keep the latched forced-colors drawing (`estop.css:55-65`) in the handoff, as the audit asks.
 
 ### Check
