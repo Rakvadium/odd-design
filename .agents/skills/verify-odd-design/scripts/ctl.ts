@@ -488,7 +488,7 @@ html data: ${JSON.stringify(html)}`);
           '#storybook-root [command="show-modal"], #storybook-root [command="toggle-popover"], #storybook-root [popovertarget], #storybook-root [interestfor]'
         )].map((el, i) => { el.dataset.a11yOpener = i; return { kind: el.hasAttribute("interestfor") ? "hover" : "click", label: (el.textContent.trim() || el.getAttribute("aria-label") || el.getAttribute("aria-labelledby") || "").slice(0, 40) }; })`);
         for (const [i, opener] of openers.entries()) {
-          const box = await page.eval(`(() => { const el = document.querySelector('[data-a11y-opener="${i}"]'); if (!el || !el.checkVisibility()) return null; el.scrollIntoView({ block: "center" }); const r = el.getBoundingClientRect(); return { x: r.x + r.width / 2, y: r.y + r.height / 2 }; })()`);
+          const box = await page.eval(`(() => { const el = document.querySelector('[data-a11y-opener="${i}"]'); if (!el || !el.checkVisibility()) return null; const target = document.getElementById(el.getAttribute("commandfor") ?? el.getAttribute("popovertarget") ?? el.getAttribute("interestfor") ?? ""); if (target?.matches("[open], :popover-open")) return null; el.scrollIntoView({ block: "center" }); const r = el.getBoundingClientRect(); return { x: r.x + r.width / 2, y: r.y + r.height / 2 }; })()`);
           if (!box) continue;
           if (opener.kind === "hover") {
             await page.send("Input.dispatchMouseEvent", { type: "mouseMoved", x: box.x, y: box.y });
