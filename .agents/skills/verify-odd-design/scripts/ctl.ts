@@ -208,7 +208,7 @@ const keyFor = (name: string) => {
   return undefined;
 };
 
-/** Opens a story in the iframe and waits until it has rendered and its fonts have loaded. */
+/** Opens a story in the iframe and waits until it has rendered, its play has returned, and its fonts have loaded. */
 async function render(page: Page, s: State, id: string, globals?: string, args?: string) {
   // Storybook expects literal ":" and ";" in globals/args, so build the query by hand.
   const url = `${s.storybook.url}/iframe.html?id=${id}&viewMode=story${globals ? `&globals=${globals}` : ""}${args ? `&args=${args}` : ""}`;
@@ -220,7 +220,10 @@ async function render(page: Page, s: State, id: string, globals?: string, args?:
       if (document.body.classList.contains("sb-show-errordisplay")) return { error: document.querySelector("#error-message")?.textContent || "story error" };
       if (document.body.classList.contains("sb-show-nopreview")) return { error: "no preview (bad story id?)" };
       const root = document.querySelector("#storybook-root");
-      return root && root.childElementCount > 0 ? { ok: true } : null;
+      if (!root || root.childElementCount === 0) return null;
+      // Past play, not "finished": the phases after play wait up to 5s for running animations, as in e2e/story.ts.
+      const phase = window.__STORYBOOK_PREVIEW__?.currentRender?.phase;
+      return phase && !["preparing", "loading", "beforeEach", "rendering", "playing"].includes(phase) ? { ok: true } : null;
     })()`);
     return r ?? undefined;
   });
@@ -488,7 +491,7 @@ html data: ${JSON.stringify(html)}`);
           '#storybook-root [command="show-modal"], #storybook-root [command="toggle-popover"], #storybook-root [popovertarget], #storybook-root [interestfor]'
         )].map((el, i) => { el.dataset.a11yOpener = i; return { kind: el.hasAttribute("interestfor") ? "hover" : "click", label: (el.textContent.trim() || el.getAttribute("aria-label") || el.getAttribute("aria-labelledby") || "").slice(0, 40) }; })`);
         for (const [i, opener] of openers.entries()) {
-          const box = await page.eval(`(() => { const el = document.querySelector('[data-a11y-opener="${i}"]'); if (!el || !el.checkVisibility()) return null; el.scrollIntoView({ block: "center" }); const r = el.getBoundingClientRect(); return { x: r.x + r.width / 2, y: r.y + r.height / 2 }; })()`);
+          const box = await page.eval(`(() => { const el = document.querySelector('[data-a11y-opener="${i}"]'); if (!el || !el.checkVisibility()) return null; const target = document.getElementById(el.getAttribute("commandfor") ?? el.getAttribute("popovertarget") ?? el.getAttribute("interestfor") ?? ""); if (target?.matches("[open], :popover-open")) return null; el.scrollIntoView({ block: "center" }); const r = el.getBoundingClientRect(); return { x: r.x + r.width / 2, y: r.y + r.height / 2 }; })()`);
           if (!box) continue;
           if (opener.kind === "hover") {
             await page.send("Input.dispatchMouseEvent", { type: "mouseMoved", x: box.x, y: box.y });

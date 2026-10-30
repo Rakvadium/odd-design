@@ -58,6 +58,19 @@ test("the catalog has every story file's stories, and Button, Field, Choice, Bad
       "components-overlays--sheet",
       "components-interactive--menu",
       "components-data-display--table",
+      "components-data-display--table-parts",
+      "components-data-display--table-states",
+      "components-data-display--table-overflow",
+      "components-interactive--menu-open",
+      "components-interactive--tabs-vertical",
+      "components-overlays--sheet-end",
+      "components-overlays--sheet-start",
+      "components-overlays--sheet-top",
+      "components-overlays--sheet-bottom",
+      "components-overlays--sheet-right-to-left",
+      "components-interactive--toast-variants",
+      "components-interactive--toast-parts",
+      "components-interactive--toast-states",
     ]),
   );
   expect(react.every((entry) => html.some((item) => item.id === entry.id))).toBe(true);
@@ -105,6 +118,29 @@ for (const entry of react) {
     expectSameDom(entry.mirror.scene(merged), entry.label);
   });
 }
+
+function bothRoots(id: string): ParentNode[] {
+  const entry = react.find((item) => item.id === id) ?? fail(`${id} is not mirrored`);
+  const htmlEntry = html.find((item) => item.id === id) ?? fail(`${id} has no HTML story`);
+  return [asRoot(renderHtml(htmlEntry), htmlEntry.label), reactRoot(entry)];
+}
+
+test("TableParts puts aria-sort on each sorted column's header", () => {
+  for (const root of bothRoots("components-data-display--table-parts")) {
+    const sorted = [...root.querySelectorAll("th[aria-sort]")].map((th) => [th.closest("table")?.querySelector("caption")?.textContent, th.textContent?.trim(), th.getAttribute("aria-sort")]);
+    expect(sorted).toEqual([
+      ["Sorted by deck, A to Z", "Deck", "ascending"],
+      ["Sorted by cards, most first", "Cards", "descending"],
+      ["Not sorted", "Deck", "none"],
+    ]);
+  }
+});
+
+test("TabsVertical's tablist is vertical", () => {
+  for (const root of bothRoots("components-interactive--tabs-vertical")) {
+    expect(root.querySelector('[role="tablist"]')?.getAttribute("aria-orientation")).toBe("vertical");
+  }
+});
 
 for (const entry of html) {
   test(entry.label, () => {

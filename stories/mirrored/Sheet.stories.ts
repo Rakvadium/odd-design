@@ -84,3 +84,123 @@ export const Sheet = mirrored({
 - button "Start"
 - button "Bottom"`,
 });
+
+const opened = (id: string, label: string, side: PropsOf<"Sheet">["side"], aria: string, dir?: "rtl") => ({
+  ...mirrored({
+    scene: () => ({
+      of: "div",
+      props: { className: "odd-row", dir },
+      children: [{ of: "Button", props: { commandfor: id, command: "show-modal" }, children: [label] }, sheet(id, side)],
+    }),
+    aria,
+  }),
+  play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+    canvasElement.querySelector<HTMLButtonElement>(`[commandfor="${id}"]`)!.click();
+    await Promise.all(canvasElement.querySelector(`#${id}`)!.getAnimations({ subtree: true }).map((animation) => animation.finished));
+  },
+});
+
+export const SheetEnd = opened("sheet-open-end", "End", undefined, `
+- button "End"
+- dialog "Filters":
+  - heading "Filters" [level=2]
+  - button "Close"
+  - text: Format
+  - combobox "Format":
+    - option "Any" [selected]
+    - option "Standard"
+    - option "Extended"
+  - group "Status":
+    - text: Status
+    - checkbox "Legal" [checked]
+    - text: Legal
+    - checkbox "Rotating"
+    - text: Rotating
+    - checkbox "Banned"
+    - text: Banned
+  - button "Reset"
+  - button "Show 12 decks"`);
+
+export const SheetStart = opened("sheet-open-start", "Start", "start", `
+- button "Start"
+- dialog "Filters":
+  - heading "Filters" [level=2]
+  - button "Close"
+  - text: Format
+  - combobox "Format":
+    - option "Any" [selected]
+    - option "Standard"
+    - option "Extended"
+  - group "Status":
+    - text: Status
+    - checkbox "Legal" [checked]
+    - text: Legal
+    - checkbox "Rotating"
+    - text: Rotating
+    - checkbox "Banned"
+    - text: Banned
+  - button "Reset"
+  - button "Show 12 decks"`);
+
+export const SheetTop = opened("sheet-open-top", "Top", "top", `
+- button "Top"
+- dialog "Filters":
+  - heading "Filters" [level=2]
+  - button "Close"
+  - text: Format
+  - combobox "Format":
+    - option "Any" [selected]
+    - option "Standard"
+    - option "Extended"
+  - group "Status":
+    - text: Status
+    - checkbox "Legal" [checked]
+    - text: Legal
+    - checkbox "Rotating"
+    - text: Rotating
+    - checkbox "Banned"
+    - text: Banned
+  - button "Reset"
+  - button "Show 12 decks"`);
+
+export const SheetBottom = opened("sheet-open-bottom", "Bottom", "bottom", `
+- button "Bottom"
+- dialog "Filters":
+  - heading "Filters" [level=2]
+  - button "Close"
+  - text: Format
+  - combobox "Format":
+    - option "Any" [selected]
+    - option "Standard"
+    - option "Extended"
+  - group "Status":
+    - text: Status
+    - checkbox "Legal" [checked]
+    - text: Legal
+    - checkbox "Rotating"
+    - text: Rotating
+    - checkbox "Banned"
+    - text: Banned
+  - button "Reset"
+  - button "Show 12 decks"`);
+
+export const SheetRightToLeft = opened("sheet-open-rtl", "End, right to left", undefined, `
+- button "End, right to left"
+- dialog "Filters":
+  - heading "Filters" [level=2]
+  - button "Close"
+  - text: Format
+  - combobox "Format":
+    - option "Any" [selected]
+    - option "Standard"
+    - option "Extended"
+  - group "Status":
+    - text: Status
+    - checkbox "Legal" [checked]
+    - text: Legal
+    - checkbox "Rotating"
+    - text: Rotating
+    - checkbox "Banned"
+    - text: Banned
+  - button "Reset"
+  - button "Show 12 decks"`, "rtl");
