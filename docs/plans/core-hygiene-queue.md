@@ -4,9 +4,9 @@ The core primitives fitness audit (PR #42, `docs/audits/core-primitives-fitness.
 
 | Item | PR | Branch | Parent |
 | --- | --- | --- | --- |
-| 2 | Meter split, Stepper and Range field recipes | `chore/core-hygiene-queue` | `main` |
-| 3 | E-stop leaves core | `chore/core-hygiene-estop` | item 2 |
-| 4 | B-01 to B-03 token fixes | `chore/core-hygiene-tokens` | item 3 |
+| 2 | Meter split, Stepper and Range field recipes | `chore/core-hygiene-queue` | `main` | Alternative (Scout). |
+| 3 | E-stop leaves core | `chore/core-hygiene-estop` | item 2 | Default (Scout). |
+| 4 | B-01 to B-03 token fixes | `chore/core-hygiene-tokens` | item 3 | Default (Scout). |
 | 5 | Usage codes and stories for Base utilities, Grid, Shell, Typography, and Table | `chore/core-hygiene-codes` | item 4 |
 | 6 | Story depth for Table, Menu, Tabs, Sheet, and Toast | `chore/core-hygiene-stories` | item 5 |
 
@@ -34,6 +34,7 @@ The recipes follow the main proposal in the audit's Appendix A. A recipe adds no
 
 - Delete `src/css/components/stepper.css` and `range-field.css`, and their imports in `src/css/index.css`.
 - Delete the `.odd-stat` rules from `meter.css`. `.odd-stat-value` stays.
+- Add `.odd-input[type="number"] { font-variant-numeric: tabular-nums; }` to `field.css`, so every number input lines up its digits. The spin buttons come back, and the centered digits and fixed widths go to the handoff (fork 2).
 - Drop `odd-stepper`, `odd-range-field`, and `odd-stat` from `CLASS_REGISTRY` and drop `stepper` and `range-field` from VOCABULARY in `src/js/usage/contract.ts`.
 - `enhanceStepper` and `enhanceRangeField` stay in `src/js/` and stay exported from `enhance.ts`. `enhance()` stops finding them by class (`enhance.ts:113-114`), because the classes are gone. A page calls each on its root. The JSDoc of each names the markup it reads.
 - Add `stories/recipes/NumberStepper.stories.ts`, `SliderWithNumber.stories.ts`, and `StatRow.stories.ts`, titled `Recipes/Number stepper`, `Recipes/Slider with number`, and `Recipes/Stat row`. Number stepper has two stories, the single plus-and-minus field and the jog row. Move the stepper and range-field stories out of `stories/Controls.stories.ts`.
@@ -107,11 +108,15 @@ Each family gets stories of a Button kind (`Variants`, `Sizes`, `States`, or `Pa
 
 ## Forks for Scout
 
-These calls change what ships. The plan above takes the default in each row. The build waits on Scout's answer for items 2 and 3, and on fork 4 for item 4.
+Scout and Caleb answered all four on 2026-10-30, and the build follows the Answer column.
 
-| # | Fork | Default | Alternative |
-| --- | --- | --- | --- |
-| 1 | The robot-arm drive page (`Rakvadium/odd-nexarm`, `src/odd_nexarm/web/static/index.html:22`, `:160`, `:188`, `:196`) uses `odd-estop`, `odd-stepper`, `odd-range-field`, and `odd-stat`, and calls `enhance()` (`drive.js:306`). It loads CSS and JS from the `../odd-design` checkout. Once items 2 and 3 land and that checkout pulls and builds, the e-stop loses its look, the jog steppers lose their layout and their buttons stop stepping, and the range fields stop syncing. | Merge items 2 and 3 as they go green. `docs/handoffs/odd-nexarm.md` holds the exact CSS and JS the app needs, and Dispatch schedules that app PR. | Hold the merges of items 2 and 3 until the odd-nexarm PR is ready. Items 4 to 6 keep building on the stack meanwhile. |
-| 2 | A recipe with no stylesheet drops what `stepper.css` and `range-field.css` add beyond layout. The number input shows its spin buttons again, loses centered tabular numbers, and loses its fixed widths. | Drop all of it. The recipe uses `odd-row`, and the app copies the rules from the handoff. | Move `font-variant-numeric: tabular-nums` to `.odd-input[type="number"]` in `field.css`, as a rule every number input gets. Spin buttons still show. |
-| 3 | `enhance()` finds steppers and range fields by the classes item 2 deletes. | `enhance()` stops wiring them. A page calls `enhanceStepper(root)` and `enhanceRangeField(root)` itself, as Appendix A says. | `enhance()` finds them by a new data attribute, such as `data-enhance="stepper"`, which adds a public attribute to the contract. |
-| 4 | B-01 picks one disabled strength. Fields dim to 0.7 and everything else to 0.55. | 0.55 for every control. Disabled inputs get fainter. | Keep fields at 0.7 through a second token, with a comment that says why. |
+- Fork 1. Merges do not wait for the odd-nexarm PR. The handoff also carries the stepper's centered digits, fixed widths, and spin-button rules.
+- Fork 2. `field.css` gets `.odd-input[type="number"] { font-variant-numeric: tabular-nums; }`, so item 2 changes that line in the Recipes section. Spin buttons return in the recipe.
+- Fork 4. After B-01 lands, the verify skill checks that disabled field text stays readable under every chrome in light and dark. A second field token gets added only if that text fails, for example under glass or in dark mode.
+
+| # | Fork | Default | Alternative | Answer |
+| --- | --- | --- | --- | --- |
+| 1 | The robot-arm drive page (`Rakvadium/odd-nexarm`, `src/odd_nexarm/web/static/index.html:22`, `:160`, `:188`, `:196`) uses `odd-estop`, `odd-stepper`, `odd-range-field`, and `odd-stat`, and calls `enhance()` (`drive.js:306`). It loads CSS and JS from the `../odd-design` checkout. Once items 2 and 3 land and that checkout pulls and builds, the e-stop loses its look, the jog steppers lose their layout and their buttons stop stepping, and the range fields stop syncing. | Merge items 2 and 3 as they go green. `docs/handoffs/odd-nexarm.md` holds the exact CSS and JS the app needs, and Dispatch schedules that app PR. | Hold the merges of items 2 and 3 until the odd-nexarm PR is ready. Items 4 to 6 keep building on the stack meanwhile. | Default (Caleb). |
+| 2 | A recipe with no stylesheet drops what `stepper.css` and `range-field.css` add beyond layout. The number input shows its spin buttons again, loses centered tabular numbers, and loses its fixed widths. | Drop all of it. The recipe uses `odd-row`, and the app copies the rules from the handoff. | Move `font-variant-numeric: tabular-nums` to `.odd-input[type="number"]` in `field.css`, as a rule every number input gets. Spin buttons still show. | Alternative (Scout). |
+| 3 | `enhance()` finds steppers and range fields by the classes item 2 deletes. | `enhance()` stops wiring them. A page calls `enhanceStepper(root)` and `enhanceRangeField(root)` itself, as Appendix A says. | `enhance()` finds them by a new data attribute, such as `data-enhance="stepper"`, which adds a public attribute to the contract. | Default (Scout). |
+| 4 | B-01 picks one disabled strength. Fields dim to 0.7 and everything else to 0.55. | 0.55 for every control. Disabled inputs get fainter. | Keep fields at 0.7 through a second token, with a comment that says why. | Default (Scout). |
