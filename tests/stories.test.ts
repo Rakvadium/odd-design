@@ -119,6 +119,29 @@ for (const entry of react) {
   });
 }
 
+function bothRoots(id: string): ParentNode[] {
+  const entry = react.find((item) => item.id === id) ?? fail(`${id} is not mirrored`);
+  const htmlEntry = html.find((item) => item.id === id) ?? fail(`${id} has no HTML story`);
+  return [asRoot(renderHtml(htmlEntry), htmlEntry.label), reactRoot(entry)];
+}
+
+test("TableParts puts aria-sort on each sorted column's header", () => {
+  for (const root of bothRoots("components-data-display--table-parts")) {
+    const sorted = [...root.querySelectorAll("th[aria-sort]")].map((th) => [th.closest("table")?.querySelector("caption")?.textContent, th.textContent?.trim(), th.getAttribute("aria-sort")]);
+    expect(sorted).toEqual([
+      ["Sorted by deck, A to Z", "Deck", "ascending"],
+      ["Sorted by cards, most first", "Cards", "descending"],
+      ["Not sorted", "Deck", "none"],
+    ]);
+  }
+});
+
+test("TabsVertical's tablist is vertical", () => {
+  for (const root of bothRoots("components-interactive--tabs-vertical")) {
+    expect(root.querySelector('[role="tablist"]')?.getAttribute("aria-orientation")).toBe("vertical");
+  }
+});
+
 for (const entry of html) {
   test(entry.label, () => {
     checkRoot(asRoot(renderHtml(entry), entry.label));
