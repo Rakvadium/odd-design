@@ -263,7 +263,7 @@ function kebab(name: string): string {
 }
 
 function storyKind(name: string, controls: boolean): StoryKind {
-  const kind = STORY_KINDS.find((candidate) => candidate === name);
+  const kind = STORY_KINDS.find((candidate) => name.endsWith(candidate));
   if (kind === undefined || (kind === "Playground" && !controls)) return "assembled";
   return kind;
 }
