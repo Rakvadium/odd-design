@@ -75,6 +75,8 @@ const FAMILIES: readonly Family[] = [
 
 const DOMAIN_WORDS = ["robot", "arm", "machine", "jog", "servo", "gripper", "wrist", "NexArm", "COM3", "baud", "firmware", "deck", "card game", "format", "banned"];
 
+const DOMAIN = new RegExp(`\\b(?:${DOMAIN_WORDS.map((word) => word.replace(" ", "\\s+") + "(?:e?s)?").join("|")})\\b`, "gi");
+
 const STORY_KINDS = ["Playground", "Variants", "Sizes", "States", "Parts"] as const;
 
 type StoryKind = (typeof STORY_KINDS)[number] | "assembled";
@@ -175,7 +177,7 @@ function parseCss(css: string): Rule[] {
       }
     } else {
       const closing = stack.pop();
-      if (chunk.trim() !== "" && (closing === "rule" || closing === "skip")) declare(chunk, startLine);
+      if (closing === "rule" || closing === "skip") declare(chunk, startLine);
       if (closing === "rule" || (closing === "skip" && stack.at(-1) === "skip")) rules.push({ selector, line: selectorLine, decls });
       decls = [];
     }
@@ -228,25 +230,19 @@ function classPattern(className: string): RegExp {
   return new RegExp(`(?<![\\w-])${className}(?![\\w-])`);
 }
 
-function domainPattern(): RegExp {
-  const words = DOMAIN_WORDS.map((word) => word.replace(" ", "\\s+") + "(?:e?s)?");
-  return new RegExp(`\\b(?:${words.join("|")})\\b`, "gi");
-}
-
 function domainHits(where: string, text: string): Hit[] {
-  return [...text.matchAll(domainPattern())].map((match) => ({ where, text: match[0] }));
+  return [...text.matchAll(DOMAIN)].map((match) => ({ where, text: match[0] }));
 }
 
 function codeHits(src: Source): Hit[] {
-  const code = read(src.file)
-    .replace(/\/\*[\s\S]*?\*\/|(?<!:)\/\/[^\n]*/g, (comment) => comment.replace(/[^\n]/g, " "))
-    .split("\n");
-  return read(src.file)
+  const content = read(src.file);
+  const code = content.replace(/\/\*[\s\S]*?\*\/|(?<!:)\/\/[^\n]*/g, (comment) => comment.replace(/[^\n]/g, " ")).split("\n");
+  return content
     .split("\n")
     .slice(src.from - 1, src.to)
     .flatMap((text, index) => {
       const line = src.from + index;
-      return [...text.matchAll(domainPattern())].map((match) => ({
+      return [...text.matchAll(DOMAIN)].map((match) => ({
         where: `${src.file}:${line}`,
         text: match[0],
         comment: code[line - 1]!.slice(match.index, match.index + match[0].length).trim() === "",
@@ -574,7 +570,7 @@ function code(values: readonly string[]): string {
 }
 
 function hits(list: readonly Hit[]): string {
-  return list.map((hit) => `${hit.text} @ ${hit.where}${hit.comment === true ? " (comment)" : ""}`).join("; ");
+  return list.map((hit) => `${hit.text} @ ${hit.where}${hit.comment ? " (comment)" : ""}`).join("; ");
 }
 
 function table(title: string, head: readonly string[], body: readonly (readonly string[])[]): string {
