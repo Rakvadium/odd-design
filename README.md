@@ -172,6 +172,7 @@ The five palettes ported from uvs-decks-gg went through the same repair. Their i
 | `odd-dialog`, `odd-dialog-body`, `odd-dialog-title`, `odd-dialog-actions` | `<dialog>` with a `<div>` or `<form>` body, a heading title, and a `<div>` of actions | Open with `commandfor`/`command="show-modal"`, no JS. Name it with `aria-labelledby` or `aria-label`. Leave out `open`. `Dialog` and `DialogActions` from `odd-design/react` render the dialog and the actions. |
 | `odd-disclosure` | `<details>` | The question is a `<summary>` directly inside it, and the answer is one element after it. Disclosures that share a `name` form an exclusive accordion. |
 | `odd-heading`, `odd-eyebrow` | `<h1>`–`<h6>`, `<p>` | `data-size` (xs–2xl, hero) sets size apart from level. The eyebrow takes `data-tone`. |
+| `odd-grid` | any container, often `<main class="odd-shell-main odd-grid">` | 12 columns. `data-span="1"`–`"12"` on a child, usually an `odd-card`. Under 64rem of grid width, narrow children take half; under 40rem, all take the full row. `--gap` sets the gutter. |
 | `odd-alert`, `odd-alert-title` | `<div>`, `<p>` | `data-tone` is `info`, `success`, `warning`, or `danger`. Leaving it out is the neutral tint. The title is a `p`. Static alerts need no role; insert later ones into an existing `role="status"` or `role="alert"` container. |
 | `odd-progress`, `odd-meter`, `odd-stat` | `<progress>`, `<meter>`, and a native `<div>` stat row | `data-tone` is `success`, `warning`, `danger`, or `info`. A meter with `low`/`high`/`optimum` colors itself by range. Always show the value as text too. `Progress` and `Meter` from `odd-design/react` render the bars. |
 | `odd-skeleton` | `<div aria-hidden="true">` | Put `aria-busy` and "Loading" text on the region, not on the block. The block takes no `role` or name. `data-shape="avatar"`. |
@@ -193,7 +194,6 @@ The five palettes ported from uvs-decks-gg went through the same repair. Their i
 | `odd-range-field` | `<div>` holding an `odd-slider`, an `odd-input type="number"`, and an optional unit | `enhanceRangeField` copies min, max, and step from the slider and keeps both in sync. Listen to the slider. A bad number shows an `odd-error` on commit. |
 | `odd-log`, `odd-log-line` | `<div role="log" tabindex="0">` of line `<div>`s, each with an optional `<time>` | Mono, scrolls past 20rem. `data-tone` on a line. Append with `appendLogLine`; `enhanceLog` keeps the newest line in view unless the reader scrolled up. |
 | `odd-shell`, `odd-shell-header`, `odd-shell-status`, `odd-shell-actions`, `odd-shell-main` | `<div>`, `<header>`, `<main>` | A full-height page under a sticky header bar: title, a status slot that takes the free space, and actions. |
-| `odd-grid` | any container, often `<main class="odd-shell-main odd-grid">` | 12 columns. `data-span="1"`–`"12"` on a child, usually an `odd-card`. Under 64rem of grid width, narrow children take half; under 40rem, all take the full row. `--gap` sets the gutter. |
 
 ## Behaviors
 

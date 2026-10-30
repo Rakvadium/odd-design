@@ -66,11 +66,11 @@ const FAMILIES: readonly Family[] = [
   {
     name: "Shell",
     classes: ["odd-shell", "odd-shell-header", "odd-shell-status", "odd-shell-actions", "odd-shell-main"],
-    css: "components/shell.css:1-56",
+    css: "components/shell.css:1-52",
     js: [],
     react: [],
   },
-  { name: "Grid", classes: ["odd-grid"], css: "components/shell.css:58-90", js: [], react: [] },
+  { name: "Grid", classes: ["odd-grid"], css: "base.css:115-153", js: [], react: [] },
 ];
 
 const DOMAIN_WORDS = ["robot", "arm", "machine", "jog", "servo", "gripper", "wrist", "NexArm", "COM3", "baud", "firmware", "deck", "card game", "format", "banned"];
@@ -500,7 +500,7 @@ const report = FAMILIES.map((family) => {
   const codes = allCodes.filter((code) => prefixes.has(code.replace(/-\d+$/, "")));
   const borrowed = [...new Set(groups.flatMap((group) => group.map((rule) => rule.code)))].filter((code) => !codes.includes(code)).sort();
   const fixture = (code: string, kind: "good" | "bad") => existsSync(`tests/fixtures/usage/${code.toLowerCase()}.${kind}.html`);
-  const vocabularyKey = basename(src.file, ".css");
+  const vocabularyKey = [kebab(family.name), basename(src.file, ".css")].find((key) => Object.hasOwn(VOCABULARY, key));
 
   const familyTests = (files: readonly string[]) =>
     files.filter((file) => {
@@ -549,7 +549,7 @@ const report = FAMILIES.map((family) => {
       good: codes.filter((code) => fixture(code, "good")).length,
       bad: codes.filter((code) => fixture(code, "bad")).length,
       missingFixtures: codes.flatMap((code) => (["good", "bad"] as const).filter((kind) => !fixture(code, kind)).map((kind) => `${code}.${kind}`)),
-      vocabulary: Object.hasOwn(VOCABULARY, vocabularyKey) ? { key: vocabularyKey, attributes: VOCABULARY[vocabularyKey as keyof typeof VOCABULARY] } : undefined,
+      vocabulary: vocabularyKey !== undefined ? { key: vocabularyKey, attributes: VOCABULARY[vocabularyKey as keyof typeof VOCABULARY] } : undefined,
       wrappers: Object.entries(WRAPPERS)
         .filter(([, wrapper]) => family.classes.includes(wrapper.className))
         .map(([name]) => name),

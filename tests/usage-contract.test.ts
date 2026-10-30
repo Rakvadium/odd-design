@@ -138,14 +138,16 @@ test("messages include the code, Fix:, a docs heading in the named file, and no 
   expect(dataCodes.sort()).toEqual([...USAGE_CODES].sort());
 });
 
-test("vocabulary matches the data attributes in each component stylesheet", () => {
+const BASE_FAMILIES: Readonly<Record<string, string>> = { grid: "base.css" };
+
+test("vocabulary matches the data attributes in each component stylesheet and each base family", () => {
   const dir = fileURLToPath(new URL("../src/css/components/", import.meta.url));
   const files = readdirSync(dir).filter((name) => name.endsWith(".css")).sort();
   const components = Object.keys(VOCABULARY).sort();
-  expect(components).toEqual(files.map((name) => name.replace(/\.css$/, "")));
+  expect(components).toEqual([...files.map((name) => name.replace(/\.css$/, "")), ...Object.keys(BASE_FAMILIES)].sort());
   for (const component of components) {
     const listed = [...VOCABULARY[component as keyof typeof VOCABULARY]].sort().join(" ");
-    const found = dataAttributes(read(`components/${component}.css`)).join(" ");
+    const found = dataAttributes(read(BASE_FAMILIES[component] ?? `components/${component}.css`)).join(" ");
     expect([component, listed]).toEqual([component, found]);
   }
   const vocabulary: Record<string, readonly string[]> = VOCABULARY;
