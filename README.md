@@ -204,16 +204,6 @@ A recipe is an arrangement of core classes for one task. It adds no class and no
 | [Slider with number](docs/recipes/slider-with-number.md) | An `odd-row` holding an `odd-slider`, an `odd-input type="number"`, and an optional `odd-muted` unit | `enhanceRangeField` |
 | [Stat row](docs/recipes/stat-row.md) | An `odd-stack` holding an `odd-row` of a label and an `odd-stat-value`, then an `odd-meter` or `odd-progress` | None |
 
-## Recipes
-
-A recipe is an arrangement of core classes for one task. It adds no class and no stylesheet. Each recipe has a page under `docs/recipes/` and stories under **Recipes** in the HTML Storybook.
-
-| Recipe | Built from | Behavior |
-| --- | --- | --- |
-| [Number stepper](docs/recipes/number-stepper.md) | An `odd-row` with `role="group"`, `odd-button`s with `data-step`, and an `odd-input type="number"` | `enhanceStepper` |
-| [Slider with number](docs/recipes/slider-with-number.md) | An `odd-row` holding an `odd-slider`, an `odd-input type="number"`, and an optional `odd-muted` unit | `enhanceRangeField` |
-| [Stat row](docs/recipes/stat-row.md) | An `odd-stack` holding an `odd-row` of a label and an `odd-stat-value`, then an `odd-meter` or `odd-progress` | None |
-
 ## Behaviors
 
 Menus, tabs, toasts, steppers, range fields, and logs need behavior HTML doesn't have yet, so `odd-design/enhance` (`src/js/enhance.ts`) adds them on top of native markup. Each function takes an element and returns a cleanup function. No dependencies. There is no framework, and the React wrapper is optional.
