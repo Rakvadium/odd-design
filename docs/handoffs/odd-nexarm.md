@@ -9,7 +9,9 @@ The drive page in [Rakvadium/odd-nexarm](https://github.com/Rakvadium/odd-nexarm
 - The Pose rows lose their two-column grid, so each value runs on right after its label.
 - The jog inputs show their spin buttons again, and their digits are no longer centered.
 
-This guide moves the removed CSS into the app under its own `arm-` names and wires the two behaviors from `drive.js`. The page then looks and works as it did. The file paths below are in `src/odd_nexarm/web/static/`.
+One older break comes first. `drive.js` imports `createToaster`, which odd-design removed in PR #34, so against odd-design's `main` the module throws at load and nothing on the page runs.
+
+This guide moves the removed CSS into the app under its own `arm-` names, wires the two behaviors from `drive.js`, and replaces the toaster with `toast()`. The page then looks and works as it did. The file paths below are in `src/odd_nexarm/web/static/`. Each line number is from the file as it is today, before any step in this guide.
 
 ## Add the removed CSS to `drive.css`
 
@@ -78,7 +80,7 @@ The `#pose-stat` template uses a `span.odd-muted`, not a `label`, and holds no b
 
 ## Rename the classes in `index.html`
 
-Change four class names. The rest of the markup stays the same.
+Change four class names. [Replace the toaster](#replace-the-toaster-with-toast) adds one element later.
 
 | Line | Element | Change |
 | --- | --- | --- |
@@ -93,11 +95,13 @@ Leave `odd-stat-value` in `#pose-stat`. odd-design still ships it.
 
 `drive.js` clones the `#joint-row` and `#move-field` templates in `buildJoints`, then calls `enhance()` once near the end of the file. Until now, that one call wired every cloned stepper and slider row. It no longer wires steppers or slider rows, so wire each one yourself.
 
-1. Add the two functions to the import from `/odd-design/js/enhance.js`:
+1. Change the import from `/odd-design/js/enhance.js`. Add the two functions, and swap `createToaster` for `toast`:
 
    ```js
-   import { appendLogLine, createToaster, enhance, enhanceRangeField, enhanceStepper } from "/odd-design/js/enhance.js";
+   import { appendLogLine, enhance, enhanceRangeField, enhanceStepper, toast } from "/odd-design/js/enhance.js";
    ```
+
+   `drive.js` still uses `createToaster` and `toaster` after this change. [Replace the toaster](#replace-the-toaster-with-toast) removes each use. The page does not load until that section is done too.
 
 2. In `buildJoints`, change the selector that names the jog group to the new class:
 
@@ -132,14 +136,61 @@ Each call returns a cleanup function. The rows live as long as the page does, so
 
 The stepper still fires `input` on each step and one `change` per press, so the `jog` listeners on each stepper input need no change. The slider still fires `input` for typed numbers, so the `touched` listener needs no change.
 
+## Replace the toaster with `toast()`
+
+`toast(options)` takes the same `title`, `description`, and `tone` as `toaster.show(options)` did. It shows the toast on the `section.odd-toaster` that `enhance()` wires, and it throws when the page has none. Every call below runs after a request or a server message, so `enhance()` has wired the region by then.
+
+1. In `index.html`, add the region once, after the `</div>` that closes `.odd-shell` and before the `#overwrite` dialog:
+
+   ```html
+   <section class="odd-toaster" popover="manual" aria-label="Notifications"></section>
+   ```
+
+2. In `drive.js`, delete line 34:
+
+   ```js
+   const toaster = createToaster();
+   ```
+
+3. In `drive.js`, change `toaster.show(` to `toast(` in three places. The options stay the same.
+
+   | Line | Where |
+   | --- | --- |
+   | 63 | `complain` |
+   | 258 | The `#move` submit listener in `wire`, for **Nothing to move** |
+   | 294 | `record`, for **Recorded** |
+
+4. In `drive.js`, stop passing the toaster to `createLiveDrive` on line 305:
+
+   ```js
+   const live = createLiveDrive({ send, stop });
+   ```
+
+5. In `live.js`, add the import after the header comment, above `const MAX_VELOCITY`. `live.js` has no imports yet.
+
+   ```js
+   import { toast } from "/odd-design/js/enhance.js";
+   ```
+
+6. In `live.js`, drop `toaster` from the parameters of `createLiveDrive` on line 50:
+
+   ```js
+   export function createLiveDrive({ send, stop }) {
+   ```
+
+7. In `live.js`, change `toaster.show(` to `toast(` in `refused` on line 160:
+
+   ```js
+   if (!complained) toast({ title: "Drive refused", description: message, tone: "danger" });
+   ```
+
+After these steps, neither file names `toaster` or `createToaster`.
+
 ## Check the page
 
 1. In the odd-design checkout, pull, then run `bun run build`.
-2. Restart the odd-nexarm server, and open the drive page.
+2. Restart the odd-nexarm server, and open the drive page. The console shows no error.
 3. In the Joints table, click **+10** on a joint. The jog input moves by 10, and one jog request goes out when you release the button.
 4. In Move to, drag a slider. Its number follows. Type a number past the safe range and press Tab. The slider stays put, and an error shows under the row.
 5. In Pose, each value sits on the end of its label's line.
-
-## Fix the toaster import too
-
-This break is older than this change. odd-design removed `createToaster` in PR #34, so the import line in step 1 already fails against odd-design's `main`. To fix it, write a `section.odd-toaster` with `popover="manual"` and an `aria-label` in `index.html`, let `enhance()` wire it, and replace each `toaster.show(options)` call with `toast(options)` from `/odd-design/js/enhance.js`. Then drop `createToaster` from the import.
+6. With no slider moved since the last move, press **Move**. A **Nothing to move** toast shows.
