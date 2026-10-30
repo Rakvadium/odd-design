@@ -112,3 +112,43 @@ a:hover {
   background: var(--page-background);
   accent-color: var(--primary);
 }
+
+/*
+ * <main class="odd-grid"><section class="odd-card" data-span="8">…</section></main>
+ * A 12-column grid. data-span="1"–"12" on a child sets its width; a child without one
+ * spans the row. The grid measures itself, not the viewport: under 64rem a child narrower than half
+ * takes half, and under 40rem every child takes the full row. Set --gap to change the gutter.
+ */
+.odd-grid {
+  container-type: inline-size;
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  align-content: start;
+  gap: var(--gap, var(--space-4));
+}
+
+.odd-grid > * { grid-column: span 12; }
+.odd-grid > [data-span="1"] { grid-column: span 1; }
+.odd-grid > [data-span="2"] { grid-column: span 2; }
+.odd-grid > [data-span="3"] { grid-column: span 3; }
+.odd-grid > [data-span="4"] { grid-column: span 4; }
+.odd-grid > [data-span="5"] { grid-column: span 5; }
+.odd-grid > [data-span="6"] { grid-column: span 6; }
+.odd-grid > [data-span="7"] { grid-column: span 7; }
+.odd-grid > [data-span="8"] { grid-column: span 8; }
+.odd-grid > [data-span="9"] { grid-column: span 9; }
+.odd-grid > [data-span="10"] { grid-column: span 10; }
+.odd-grid > [data-span="11"] { grid-column: span 11; }
+
+@container (inline-size < 64rem) {
+  .odd-grid > :is([data-span="1"], [data-span="2"], [data-span="3"], [data-span="4"], [data-span="5"]) {
+    grid-column: span 6;
+  }
+}
+
+/* :is() gives this rule the specificity of the data-span rules above, so it beats them. */
+@container (inline-size < 40rem) {
+  .odd-grid > :is(*, [data-span]) {
+    grid-column: 1 / -1;
+  }
+}

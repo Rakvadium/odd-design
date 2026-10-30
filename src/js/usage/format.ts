@@ -107,6 +107,14 @@ export const USAGE_CODES = [
   "ODD-TABLE-003",
   "ODD-TABLE-004",
   "ODD-TABLE-005",
+  "ODD-TABLE-006",
+  "ODD-SCOPE-001",
+  "ODD-SKIP-001",
+  "ODD-GRID-001",
+  "ODD-SHELL-001",
+  "ODD-TYPOGRAPHY-001",
+  "ODD-TYPOGRAPHY-002",
+  "ODD-TYPOGRAPHY-003",
   "ODD-STATIC-001",
   "ODD-STATIC-002",
   "ODD-STATIC-003",
@@ -174,6 +182,8 @@ const sheetAttributes = WRAPPERS.Sheet.props.side;
 const menuToneRule = USAGE.menuItem[3] satisfies { kind: "enum"; attribute: "data-tone" };
 const menuItemRoles = comma((USAGE.menuItem[2] satisfies { kind: "enum"; attribute: "role" }).values);
 const menuAttributes = WRAPPERS.MenuItem.props.tone;
+const headingSizeRule = USAGE.heading[1];
+const headingSizeAllowed = enumAllowed(headingSizeRule.values, headingSizeRule.omit);
 const appearanceAxes = comma(APPEARANCE_AXES);
 const headlessAllowlist = comma(HEADLESS_ALLOWLIST);
 
@@ -939,6 +949,62 @@ export const MESSAGES = {
     "aria-sort on the th around the button",
     "move aria-sort to the th that holds the button, on the sorted column only.",
     "docs/usage/table.md#odd-table-005",
+  ),
+  "ODD-TABLE-006": text(
+    "ODD-TABLE-006",
+    "a data-select-all box in this table has no aria-label or aria-labelledby. A screen reader announces only checkbox, so nothing says the box selects every row.",
+    "aria-label or aria-labelledby on the data-select-all box",
+    "set aria-label on the header box, such as Select all decks, or point aria-labelledby at text that says what it selects.",
+    "docs/usage/table.md#odd-table-006",
+  ),
+  "ODD-SCOPE-001": text(
+    "ODD-SCOPE-001",
+    "odd-scope needs all three of data-chrome, data-palette, and data-mode. A chrome token that reads a palette color resolves on the element that sets it, so a scope that leaves out an axis paints with a mix of its own colors and the outer page's.",
+    `${appearanceAxes}, all on the odd-scope element`,
+    "set the missing attributes on the odd-scope element. Copy the outer value to keep an axis the same.",
+    "docs/usage/base.md#odd-scope-001",
+  ),
+  "ODD-SKIP-001": text(
+    "ODD-SKIP-001",
+    "odd-skip-link is not on an anchor whose href points at an id on this page. A button, a missing href, or a link to another page does not move focus past the navigation.",
+    "odd-skip-link on a, with href=#id",
+    "put odd-skip-link on an a whose href is # and the id of the main content, such as #main, and give that element the id.",
+    "docs/usage/base.md#odd-skip-001",
+  ),
+  "ODD-GRID-001": text(
+    "ODD-GRID-001",
+    "a child of odd-grid has a data-span outside 1 to 12. The grid reads only those values, so the child spans the full row.",
+    "1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12",
+    "set data-span to a whole number from 1 to 12, or remove data-span for a child that spans the full row.",
+    "docs/usage/grid.md#odd-grid-001",
+  ),
+  "ODD-SHELL-001": text(
+    "ODD-SHELL-001",
+    "a shell part is on the wrong element. A div.odd-shell-header is not a banner landmark and a div.odd-shell-main is not a main landmark, so landmark navigation skips both.",
+    "odd-shell-header on header, odd-shell-main on main",
+    "put odd-shell-header on a header and odd-shell-main on a main.",
+    "docs/usage/shell.md#odd-shell-001",
+  ),
+  "ODD-TYPOGRAPHY-001": text(
+    "ODD-TYPOGRAPHY-001",
+    "odd-heading is not on a heading element. The text looks like a title, but heading navigation and the outline skip it.",
+    "h1, h2, h3, h4, h5, h6",
+    "move odd-heading onto the heading level the outline needs, and set the look with data-size.",
+    "docs/usage/typography.md#odd-typography-001",
+  ),
+  "ODD-TYPOGRAPHY-002": text(
+    headingSizeRule.code,
+    "data-size has a value this heading does not take, so it renders at the md size.",
+    headingSizeAllowed,
+    "set xs, sm, lg, xl, 2xl, or hero, or remove data-size for the md size.",
+    "docs/usage/typography.md#odd-typography-002",
+  ),
+  "ODD-TYPOGRAPHY-003": text(
+    "ODD-TYPOGRAPHY-003",
+    "data-tone has a value this eyebrow does not take, so it stays muted.",
+    "primary, foreground",
+    "set primary or foreground, or remove data-tone for the muted eyebrow.",
+    "docs/usage/typography.md#odd-typography-003",
   ),
   "ODD-STATIC-001": text(
     "ODD-STATIC-001",
