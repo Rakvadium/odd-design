@@ -112,6 +112,9 @@ export const USAGE_CODES = [
   "ODD-SKIP-001",
   "ODD-GRID-001",
   "ODD-SHELL-001",
+  "ODD-TYPOGRAPHY-001",
+  "ODD-TYPOGRAPHY-002",
+  "ODD-TYPOGRAPHY-003",
   "ODD-STATIC-001",
   "ODD-STATIC-002",
   "ODD-STATIC-003",
@@ -179,6 +182,8 @@ const sheetAttributes = WRAPPERS.Sheet.props.side;
 const menuToneRule = USAGE.menuItem[3] satisfies { kind: "enum"; attribute: "data-tone" };
 const menuItemRoles = comma((USAGE.menuItem[2] satisfies { kind: "enum"; attribute: "role" }).values);
 const menuAttributes = WRAPPERS.MenuItem.props.tone;
+const headingSizeRule = USAGE.heading[1];
+const headingSizeAllowed = enumAllowed(headingSizeRule.values, headingSizeRule.omit);
 const appearanceAxes = comma(APPEARANCE_AXES);
 const headlessAllowlist = comma(HEADLESS_ALLOWLIST);
 
@@ -979,6 +984,27 @@ export const MESSAGES = {
     "odd-shell-header on header, odd-shell-main on main",
     "put odd-shell-header on a header and odd-shell-main on a main.",
     "docs/usage/shell.md#odd-shell-001",
+  ),
+  "ODD-TYPOGRAPHY-001": text(
+    "ODD-TYPOGRAPHY-001",
+    "odd-heading is not on a heading element. The text looks like a title, but heading navigation and the outline skip it.",
+    "h1, h2, h3, h4, h5, h6",
+    "move odd-heading onto the heading level the outline needs, and set the look with data-size.",
+    "docs/usage/typography.md#odd-typography-001",
+  ),
+  "ODD-TYPOGRAPHY-002": text(
+    headingSizeRule.code,
+    "data-size has a value this heading does not take, so it renders at the md size.",
+    headingSizeAllowed,
+    "set xs, sm, lg, xl, 2xl, or hero, or remove data-size for the md size.",
+    "docs/usage/typography.md#odd-typography-002",
+  ),
+  "ODD-TYPOGRAPHY-003": text(
+    "ODD-TYPOGRAPHY-003",
+    "data-tone has a value this eyebrow does not take, so it stays muted.",
+    "primary, foreground",
+    "set primary or foreground, or remove data-tone for the muted eyebrow.",
+    "docs/usage/typography.md#odd-typography-003",
   ),
   "ODD-STATIC-001": text(
     "ODD-STATIC-001",

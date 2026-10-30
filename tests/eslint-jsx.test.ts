@@ -189,6 +189,13 @@ const places: Record<string, readonly (readonly [string, number, number, string]
     ["ODD-SHELL-001", 5, 10, "className"],
     ["ODD-SHELL-001", 6, 14, "className"],
   ],
+  "typography.tsx": [
+    ["ODD-TYPOGRAPHY-001", 7, 10, "className"],
+    ["ODD-TYPOGRAPHY-002", 8, 33, 'data-size="md"'],
+    ["ODD-TYPOGRAPHY-002", 9, 33, 'data-size="3xl"'],
+    ["ODD-TYPOGRAPHY-003", 10, 32, 'data-tone="danger"'],
+    ["ODD-STATIC-001", 11, 33, "data-size={size}"],
+  ],
   "meter.tsx": [
     ["ODD-METER-001", 10, 10, "className"],
     ["ODD-METER-001", 11, 15, "className"],

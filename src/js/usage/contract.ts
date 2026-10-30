@@ -291,6 +291,14 @@ export const USAGE = {
     { kind: "element", code: "ODD-SHELL-001", className: "odd-shell-header", elements: ["header"] },
     { kind: "element", code: "ODD-SHELL-001", className: "odd-shell-main", elements: ["main"] },
   ] as const satisfies readonly UsageRule[],
+  heading: [
+    { kind: "element", code: "ODD-TYPOGRAPHY-001", className: "odd-heading", elements: ["h1", "h2", "h3", "h4", "h5", "h6"] },
+    { kind: "enum", code: "ODD-TYPOGRAPHY-002", attribute: "data-size", values: ["xs", "sm", "lg", "xl", "2xl", "hero"], omit: ["md"] },
+  ] as const satisfies readonly UsageRule[],
+  eyebrow: [
+    { kind: "class", code: "ODD-TYPOGRAPHY-003", className: "odd-eyebrow" },
+    { kind: "enum", code: "ODD-TYPOGRAPHY-003", attribute: "data-tone", values: ["primary", "foreground"], omit: [] },
+  ] as const satisfies readonly UsageRule[],
   shared: [
     { kind: "unknown-class", code: "ODD-CLASS-001" },
     { kind: "computed-value", code: "ODD-STATIC-001" },
