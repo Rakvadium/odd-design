@@ -74,7 +74,10 @@
 }
 
 .odd-tabs [role="tab"]:focus-visible {
-  outline-offset: 1px;
+  outline-offset: calc(var(--focus-offset) / 2);
+}
+.odd-tabs [role="tab"][aria-selected="true"]:focus-visible {
+  box-shadow: var(--shadow-control), var(--focus-glow);
 }
 
 .odd-tabs [role="tab"]:disabled {

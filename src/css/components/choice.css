@@ -124,7 +124,11 @@
 
 .odd-segmented > label:has(:focus-visible) {
   outline: var(--focus-width) solid var(--focus-color);
-  outline-offset: 1px;
+  outline-offset: calc(var(--focus-offset) / 2);
+  box-shadow: var(--focus-glow);
+}
+.odd-segmented > label:has(:checked:focus-visible) {
+  box-shadow: var(--shadow-control), var(--focus-glow);
 }
 
 @media (forced-colors: active) {

@@ -97,9 +97,7 @@
 .odd-input:focus-visible,
 .odd-select:focus-visible,
 .odd-textarea:focus-visible {
-  outline-offset: 0;
   border-color: var(--focus-color);
-  box-shadow: var(--focus-glow);
 }
 
 /* :user-invalid only matches after the user has interacted, so pristine forms are never red. */
@@ -164,6 +162,7 @@
   .odd-select option:is(:hover, :focus-visible) {
     background: var(--muted);
     outline: none;
+    box-shadow: none;
   }
   .odd-select option:checked {
     font-weight: 600;

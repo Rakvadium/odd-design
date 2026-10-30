@@ -27,6 +27,7 @@
   --_thumb: calc(1.25rem * var(--density));
   --_rail: calc(0.375rem * var(--density));
   --_to: right;
+  --_halo: 0 0 0 calc(var(--focus-width) * 2) color-mix(in oklch, var(--focus-color) 30%, transparent);
 
   appearance: none;
   display: block;
@@ -38,6 +39,10 @@
   cursor: pointer;
 }
 .odd-slider:dir(rtl) { --_to: left; }
+
+.odd-slider:focus-visible {
+  box-shadow: none;
+}
 
 .odd-slider:disabled {
   cursor: not-allowed;
@@ -67,8 +72,11 @@
   box-shadow: var(--shadow-control);
   transition: box-shadow var(--duration-fast) var(--ease);
 }
-.odd-slider:is(:hover, :focus-visible):not(:disabled)::-webkit-slider-thumb {
-  box-shadow: var(--shadow-control), 0 0 0 4px color-mix(in oklch, var(--ring) 30%, transparent);
+.odd-slider:hover:not(:disabled)::-webkit-slider-thumb {
+  box-shadow: var(--shadow-control), var(--_halo);
+}
+.odd-slider:focus-visible::-webkit-slider-thumb {
+  box-shadow: var(--shadow-control), var(--_halo), var(--focus-glow);
 }
 
 /* Rail, progress, and thumb, Firefox. */
@@ -92,8 +100,11 @@
   box-shadow: var(--shadow-control);
   transition: box-shadow var(--duration-fast) var(--ease);
 }
-.odd-slider:is(:hover, :focus-visible):not(:disabled)::-moz-range-thumb {
-  box-shadow: var(--shadow-control), 0 0 0 4px color-mix(in oklch, var(--ring) 30%, transparent);
+.odd-slider:hover:not(:disabled)::-moz-range-thumb {
+  box-shadow: var(--shadow-control), var(--_halo);
+}
+.odd-slider:focus-visible::-moz-range-thumb {
+  box-shadow: var(--shadow-control), var(--_halo), var(--focus-glow);
 }
 
 /*
