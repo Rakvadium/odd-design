@@ -92,6 +92,8 @@ const STATIC_STATE: Readonly<Record<string, string>> = {
   ":dir(rtl)": ':is([dir="rtl"], [dir="rtl"] *)',
 };
 
+const STATE_ATTRIBUTE: Readonly<Record<string, string>> = { ":disabled": "disabled", ":checked": "checked", ":required": "required", ":open": "open" };
+
 const NAMED_COLORS = /\b(?:white|black|red|green|blue|gray|grey|silver|yellow|orange|purple|pink)\b/gi;
 
 const SYSTEM_COLORS =
@@ -102,7 +104,7 @@ const CHROMES = globSync("src/css/chromes/*.css").map(normalize).sort();
 type Hit = { readonly where: string; readonly text: string; readonly comment?: boolean };
 type Decl = { readonly property: string; readonly value: string; readonly line: number };
 type Rule = { readonly selector: string | undefined; readonly line: number; readonly decls: readonly Decl[] };
-type Axis = { readonly axis: string; readonly kind: "attribute" | "part" | "state" | "interaction"; readonly renderedBy: readonly string[] };
+type Axis = { readonly axis: string; readonly kind: "attribute" | "part" | "state" | "interaction" | "forbidden"; readonly renderedBy: readonly string[] };
 type Story = { readonly id: string; readonly kind: StoryKind; readonly controls: boolean; readonly mirrored: boolean };
 type Rendered = { readonly entry: Entry; readonly host: HTMLElement; readonly classes: ReadonlySet<string> };
 
@@ -389,7 +391,7 @@ function subjects(stories: readonly Rendered[], owner: ReadonlyMap<string, strin
   return bySubject;
 }
 
-function axesOf(rules: readonly Rule[], family: Family, stories: readonly Rendered[]): Axis[] {
+function axesOf(rules: readonly Rule[], family: Family, stories: readonly Rendered[], forbidden: ReadonlySet<string>): Axis[] {
   const found = new Map<string, Axis["kind"]>();
   for (const rule of rules) {
     if (rule.selector === undefined) continue;
@@ -399,16 +401,17 @@ function axesOf(rules: readonly Rule[], family: Family, stories: readonly Render
         found.set(value === undefined ? `[${match[1]}]` : `[${match[1]}=${value.startsWith('"') ? value : `"${value}"`}]`, "attribute");
       }
       for (const className of classTokens(complex)) if (family.classes.includes(className)) found.set(`.${className}`, "part");
-      for (const match of complex.matchAll(/(?<!:):(-?[\w-]+)(\([^()]*\))?/g)) {
+      for (const match of complex.matchAll(/(?<!:):(-?[\w-]+)(?=(\([^()]*\))?)/g)) {
         const name = match[1]!;
         if (STRUCTURAL.has(name) || name.startsWith("-")) continue;
-        found.set(`:${name}${name === "dir" ? (match[2] ?? "") : ""}`, INTERACTION.has(name) ? "interaction" : "state");
+        const attribute = STATE_ATTRIBUTE[`:${name}`];
+        found.set(`:${name}${name === "dir" ? (match[2] ?? "") : ""}`, attribute !== undefined && forbidden.has(attribute) ? "forbidden" : INTERACTION.has(name) ? "interaction" : "state");
       }
     }
   }
   const scope = family.classes.map((name) => `.${name}`).join(", ");
   return [...found].map(([axis, kind]) => {
-    if (kind === "interaction") return { axis, kind, renderedBy: [] };
+    if (kind === "interaction" || kind === "forbidden") return { axis, kind, renderedBy: [] };
     const test = STATIC_STATE[axis] ?? axis;
     const renderedBy = stories
       .filter((story) => [...story.host.querySelectorAll(test)].some((element) => element.closest(scope) !== null))
@@ -543,7 +546,7 @@ const report = FAMILIES.map((family) => {
         .filter((story) => !subjectIds.includes(story.entry.id) && family.classes.some((name) => story.classes.has(name)))
         .map((story) => story.entry.id),
     },
-    axes: axesOf(rules, family, stories).map((axis) => ({ ...axis, own: axis.renderedBy.some((id) => subjectIds.includes(id)) })),
+    axes: axesOf(rules, family, stories, new Set(groups.flat().flatMap((rule) => (rule.kind === "forbidden-attribute" ? [rule.attribute] : [])))).map((axis) => ({ ...axis, own: axis.renderedBy.some((id) => subjectIds.includes(id)) })),
     contract: {
       codes,
       borrowed,
@@ -632,15 +635,16 @@ const markdown = [
   ),
   table(
     "Axes",
-    ["Family", "Axes", "Rendered by its stories", "Rendered only by other stories", "No story renders", "Needs interaction"],
+    ["Family", "Axes", "Rendered by its stories", "Rendered only by other stories", "No story renders", "Forbidden by its contract", "Needs interaction"],
     report.map((r) => {
-      const counted = r.axes.filter((axis) => axis.kind !== "interaction");
+      const counted = r.axes.filter((axis) => axis.kind !== "interaction" && axis.kind !== "forbidden");
       return [
         r.family,
         String(counted.length),
         code(counted.filter((axis) => axis.own).map((axis) => axis.axis)),
         code(counted.filter((axis) => !axis.own && axis.renderedBy.length > 0).map((axis) => axis.axis)),
         code(counted.filter((axis) => axis.renderedBy.length === 0).map((axis) => axis.axis)),
+        code(r.axes.filter((axis) => axis.kind === "forbidden").map((axis) => axis.axis)),
         code(r.axes.filter((axis) => axis.kind === "interaction").map((axis) => axis.axis)),
       ];
     }),
