@@ -10,17 +10,7 @@ These codes apply to `odd-meter` and `odd-progress`. Shared codes are in [Genera
 
 A progress bar shows how far a task has run. Leave out `value` for an indeterminate bar. A meter shows a measurement inside a known range. With `low` or `high`, a meter colors itself by range, so it takes no `data-tone`. Without them, `data-tone` recolors either bar. Show the value as text too, because the bar alone is not enough. In React, `Progress` and `Meter` render the two bars, and `tone` sets `data-tone`.
 
-A stat lays out a label, a value, and a bar:
-
-```html
-<div class="odd-stat">
-  <label for="units">Units</label>
-  <span class="odd-stat-value">24 <span class="odd-muted">(40%)</span></span>
-  <meter class="odd-meter" id="units" min="0" max="60" value="24"></meter>
-</div>
-```
-
-The `label` is a bare `label`, a direct child of `odd-stat`, and names the bar through `for`. `odd-stat-value` goes on a `span`, or on an `output` that follows a control. The bar is a direct child, so it spans the full row. The stat has no codes and no React part. Write it as native markup, with a `Meter` or `Progress` inside.
+`odd-stat-value` sets a value shown as text bold, with tabular digits. Put it on a `span`, or on an `output` that follows a control. It has no codes. The [Stat row](../recipes/stat-row.md) recipe sets a label and a value above a bar.
 
 ## ODD-METER-001
 
