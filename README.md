@@ -173,7 +173,7 @@ The five palettes ported from uvs-decks-gg went through the same repair. Their i
 | `odd-disclosure` | `<details>` | The question is a `<summary>` directly inside it, and the answer is one element after it. Disclosures that share a `name` form an exclusive accordion. |
 | `odd-heading`, `odd-eyebrow` | `<h1>`–`<h6>`, `<p>` | `data-size` (xs–2xl, hero) sets size apart from level. The eyebrow takes `data-tone`. |
 | `odd-alert`, `odd-alert-title` | `<div>`, `<p>` | `data-tone` is `info`, `success`, `warning`, or `danger`. Leaving it out is the neutral tint. The title is a `p`. Static alerts need no role; insert later ones into an existing `role="status"` or `role="alert"` container. |
-| `odd-progress`, `odd-meter`, `odd-stat` | `<progress>`, `<meter>`, and a native `<div>` stat row | `data-tone` is `success`, `warning`, `danger`, or `info`. A meter with `low`/`high`/`optimum` colors itself by range. Always show the value as text too. `Progress` and `Meter` from `odd-design/react` render the bars. |
+| `odd-progress`, `odd-meter`, `odd-stat-value` | `<progress>`, `<meter>`, and a `<span>` or `<output>` value | `data-tone` is `success`, `warning`, `danger`, or `info`. A meter with `low`/`high`/`optimum` colors itself by range. Always show the value as text too. `odd-stat-value` sets it bold with tabular digits. `Progress` and `Meter` from `odd-design/react` render the bars. The [Stat row](docs/recipes/stat-row.md) recipe sets a label and a value above a bar. |
 | `odd-skeleton` | `<div aria-hidden="true">` | Put `aria-busy` and "Loading" text on the region, not on the block. The block takes no `role` or name. `data-shape="avatar"`. |
 | `odd-separator` | `<hr>` | `aria-orientation="vertical"` inside a row, not `data-orientation`. `role` takes only `separator`, and `aria-hidden` is not allowed. For a line that means nothing, use a border. |
 | `odd-avatar`, `odd-avatar-group` | `<span>` with `<img alt>` or `role="img"` initials, `<div role="group">` with a name | `data-size` on each avatar. |
@@ -189,11 +189,19 @@ The five palettes ported from uvs-decks-gg went through the same repair. Their i
 | `odd-tabs` | `<div>` with a direct `role="tablist"`, `<button role="tab">`, `role="tabpanel"` | Needs `enhanceTabs`, or `Tabs` from `odd-design/react`. Each tab's `aria-controls` names its panel. `data-activation="manual"` and `aria-orientation="vertical"` go on the tablist. |
 | `odd-toaster`, `odd-toast` | `<section popover="manual" aria-label="Notifications">`, once per page | Needs `enhanceToaster`, or `Toaster` from `odd-design/react`. `enhanceToaster` builds the list and a polite live region inside. `toast()` adds each `odd-toast`. A toast shown while a modal dialog is open moves the list inside the dialog, so the toasts stay live. Toasts already showing when it opens stay behind it until the next `toast()`. |
 | `odd-estop` | `<button>` | A big round stop. `aria-pressed="true"` draws it latched; the page sets it and owns any shortcut. Never disable it. |
-| `odd-stepper` | `<div role="group">` with step buttons around `<input type="number">` | Needs `enhanceStepper`. `data-step` counts input steps. Hold repeats; `input` per step, one `change` per press. Disable with `disabled` on the input. |
-| `odd-range-field` | `<div>` holding an `odd-slider`, an `odd-input type="number"`, and an optional unit | `enhanceRangeField` copies min, max, and step from the slider and keeps both in sync. Listen to the slider. A bad number shows an `odd-error` on commit. |
 | `odd-log`, `odd-log-line` | `<div role="log" tabindex="0">` of line `<div>`s, each with an optional `<time>` | Mono, scrolls past 20rem. `data-tone` on a line. Append with `appendLogLine`; `enhanceLog` keeps the newest line in view unless the reader scrolled up. |
 | `odd-shell`, `odd-shell-header`, `odd-shell-status`, `odd-shell-actions`, `odd-shell-main` | `<div>`, `<header>`, `<main>` | A full-height page under a sticky header bar: title, a status slot that takes the free space, and actions. |
 | `odd-grid` | any container, often `<main class="odd-shell-main odd-grid">` | 12 columns. `data-span="1"`–`"12"` on a child, usually an `odd-card`. Under 64rem of grid width, narrow children take half; under 40rem, all take the full row. `--gap` sets the gutter. |
+
+## Recipes
+
+A recipe is an arrangement of core classes for one task. It adds no class and no stylesheet. Each recipe has a page under `docs/recipes/` and stories under **Recipes** in the HTML Storybook.
+
+| Recipe | Built from | Behavior |
+| --- | --- | --- |
+| [Number stepper](docs/recipes/number-stepper.md) | An `odd-row` with `role="group"`, `odd-button`s with `data-step`, and an `odd-input type="number"` | `enhanceStepper` |
+| [Slider with number](docs/recipes/slider-with-number.md) | An `odd-row` holding an `odd-slider`, an `odd-input type="number"`, and an optional `odd-muted` unit | `enhanceRangeField` |
+| [Stat row](docs/recipes/stat-row.md) | An `odd-stack` holding an `odd-row` of a label and an `odd-stat-value`, then an `odd-meter` or `odd-progress` | None |
 
 ## Behaviors
 
@@ -202,11 +210,13 @@ Menus, tabs, toasts, steppers, range fields, and logs need behavior HTML doesn't
 ```js
 import { enhance, toast } from "odd-design/enhance";
 
-enhance();                   // menus, tab sets, toasters, steppers, range fields, logs, select-all tables, and the fallbacks below, under document
+enhance();                   // menus, tab sets, toasters, logs, select-all tables, and the fallbacks below, under document
 toast({ title: "Deck saved", tone: "success" });
 ```
 
-- `enhanceMenu(menu)`, `enhanceTabs(root)`, `enhanceToaster(region)`, `enhanceSelectAll(table)`, `enhanceStepper(root)`, `enhanceRangeField(root, { message })`, `enhanceLog(log)`: one widget each. Call them for elements added after `enhance()`.
+- `enhanceMenu(menu)`, `enhanceTabs(root)`, `enhanceToaster(region)`, `enhanceSelectAll(table)`, `enhanceLog(log)`: one widget each. Call them for elements added after `enhance()`.
+- `enhanceStepper(root)` wires the `button[data-step]`s under `root` to the first number input under it. `enhance()` does not find steppers, so call it on each one. The markup is in [Number stepper](docs/recipes/number-stepper.md).
+- `enhanceRangeField(root, { message })` syncs the first range input and the first number input under `root`, and shows an `odd-error` for a number the slider can't take. `enhance()` does not find these rows, so call it on each one. The markup is in [Slider with number](docs/recipes/slider-with-number.md).
 - `enhanceTabs(root)` wires a tab set once, however many times it is called. Each call returns its own cleanup, and the last cleanup unwires. A React `Tabs` runs it on itself, so `enhance()` beside it does not wire the set twice.
 - `enhanceToaster(region)` wires a `section.odd-toaster` once, however many times it is called, as `enhanceTabs` does. `toast({ title, description, tone, duration, action })` shows a toast on the newest wired region still in the document and returns `{ dismiss }`. It throws when no region is wired.
 - `appendLogLine(log, text, { tone, time, max })`: adds a line as text, with `time` as a `Date` or a string, and drops the oldest lines past `max` (500).

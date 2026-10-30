@@ -467,9 +467,11 @@ import { Meter, Progress, type MeterTone } from "odd-design/react";
 <Progress id="import" value={40} max={100} aria-label="Importing decks" />;
 <Progress id="sync" aria-label="Syncing collection" />;
 
-<div className="odd-stat">
-  <label htmlFor="actions">Actions</label>
-  <span className="odd-stat-value">22 <span className="odd-muted">(37%)</span></span>
+<div className="odd-stack">
+  <div className="odd-row">
+    <label className="odd-muted" htmlFor="actions">Actions</label>
+    <span className="odd-stat-value">22 <span className="odd-muted">(37%)</span></span>
+  </div>
   <Meter id="actions" min={0} max={60} value={22} tone="info" />
 </div>;
 
@@ -485,7 +487,7 @@ import { Meter, Progress, type MeterTone } from "odd-design/react";
 
 `MeterTone` is the type of `tone`, for both bars. It has no `primary` and no `neutral`, and either one is a type error. Passing `data-tone` yourself is a type error, and the part drops the raw attribute. A system `data-` attribute other than `data-tone`, such as `data-size`, is a type error (`ODD-METER-003`). With `low` or `high`, a `Meter` colors itself by range, so give it no `tone`. No checker reads the two together yet. A computed `tone`, such as `<Meter tone={toneOf[kind]}>`, gives the `ODD-STATIC-001` warning, the same as a computed `tone` on `Badge`.
 
-The stat row has no part. Write `div.odd-stat` with a bare `label`, an `odd-stat-value` on a `span` or an `output`, and the bar, as above. `Label` adds `odd-label` and is not the stat's label. Keep the bar a direct child of `odd-stat`, so it spans the whole row.
+The `Meter` above sits in the [Stat row](../recipes/stat-row.md) recipe, which has no part. Write it as native markup around the bar. `Label` adds `odd-label` and is not the stat's label.
 
 ## Show a toast
 

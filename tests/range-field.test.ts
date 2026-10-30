@@ -4,14 +4,14 @@ import { enhanceRangeField } from "../src/js/range-field.ts";
 function mount() {
   document.body.innerHTML = /* html */ `<div class="odd-field">
     <label class="odd-label" id="speed-label" for="speed">Speed</label>
-    <div class="odd-range-field">
+    <div class="odd-row" id="speed-row">
       <input class="odd-slider" type="range" id="speed" min="0" max="200" step="5" value="40">
       <input class="odd-input" type="number" id="speed-number" value="7" aria-labelledby="speed-label speed-unit" aria-describedby="speed-hint">
       <span class="odd-muted" id="speed-unit">mm/s</span>
     </div>
     <p class="odd-hint" id="speed-hint">0 to 200</p>
   </div>`;
-  const root = document.querySelector<HTMLElement>(".odd-range-field")!;
+  const root = document.getElementById("speed-row")!;
   const slider = root.querySelector<HTMLInputElement>('[type="range"]')!;
   const number = root.querySelector<HTMLInputElement>('[type="number"]')!;
   const events: string[] = [];

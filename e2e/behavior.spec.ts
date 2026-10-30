@@ -337,15 +337,15 @@ test.describe("keyboard widgets", () => {
 
 test.describe("machine controls", () => {
   test("a held stepper button repeats in whole steps of the input, and the press fires one change", async ({ page }) => {
-    await openStory(page, "components-controls--stepper", "mode:light");
+    await openStory(page, "recipes-number-stepper--jog-row", "mode:light");
     const wrist = page.locator("#jog-wrist");
     await page.evaluate(() => {
       const log: string[] = ((window as any).__changes = []);
       document.addEventListener("change", (event) => log.push((event.target as HTMLInputElement).value));
     });
-    await page.locator(".odd-stepper button", { hasText: "−5" }).click();
+    await page.locator('[role="group"] button', { hasText: "−5" }).click();
     await expect(wrist).toHaveValue("40");
-    await page.locator(".odd-stepper button", { hasText: "−0.5" }).hover();
+    await page.locator('[role="group"] button', { hasText: "−0.5" }).hover();
     await page.mouse.down();
     await page.waitForTimeout(900);
     await page.mouse.up();
@@ -353,7 +353,7 @@ test.describe("machine controls", () => {
     expect(held, "held for 900 ms: one step, then repeats after 400 ms every 100 ms").toBeLessThanOrEqual(38.5);
     expect(held % 0.5).toBe(0);
     expect(await page.evaluate(() => (window as any).__changes)).toEqual(["40", String(held)]);
-    await expect(page.locator(".odd-stepper button", { hasText: "+5" })).toHaveAttribute("aria-disabled", "false");
+    await expect(page.locator('[role="group"] button', { hasText: "+5" })).toHaveAttribute("aria-disabled", "false");
   });
 
   test("the log follows new lines until the reader scrolls up", async ({ page }) => {

@@ -44,6 +44,7 @@
   },
   "files": [
     "dist",
+    "docs/recipes",
     "docs/usage",
     "src/css",
     "src/js"

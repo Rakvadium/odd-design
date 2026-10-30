@@ -1,6 +1,6 @@
 # Feedback
 
-Feedback components tell the user about state: `.odd-alert` messages in a neutral tone or `data-tone` info, success, warning, or danger; `.odd-progress` and `.odd-meter` bars inside a `.odd-stat` label-and-value row; and `.odd-skeleton` placeholders inside an `aria-busy` region. Alert text stays `--foreground` on a soft tint in every tone. Progress and meter bars stay visible in forced-colors mode, and the skeleton pulse and indeterminate sweep stop under reduced motion.
+Feedback components tell the user about state: `.odd-alert` messages in a neutral tone or `data-tone` info, success, warning, or danger; `.odd-progress` and `.odd-meter` bars under a label and value in the Stat row recipe (`docs/recipes/stat-row.md`); and `.odd-skeleton` placeholders inside an `aria-busy` region. Alert text stays `--foreground` on a soft tint in every tone. Progress and meter bars stay visible in forced-colors mode, and the skeleton pulse and indeterminate sweep stop under reduced motion.
 
 ## Sub-features
 
@@ -38,7 +38,7 @@ In the same composed Storybook, open `http://127.0.0.1:6106/?path=/story/react_c
 
 ## React Progress
 
-In the same composed Storybook, open `http://127.0.0.1:6106/?path=/story/react_components-feedback--progress`. The preview is the Progress story built from two `Progress` and six `Meter` parts, each in a native `odd-stat` row, the same as `components-feedback--progress`. `#sync` has no `value`, so it sweeps. Actions is blue from `tone="info"` and Assets green from `tone="success"`. The Storage meters read green, amber, and red by range. The pair sweep matches the `aria` literal in `stories/mirrored/Meter.stories.ts`, and the two screenshots are byte-identical.
+In the same composed Storybook, open `http://127.0.0.1:6106/?path=/story/react_components-feedback--progress`. The preview is the Progress story built from two `Progress` and six `Meter` parts, each in a Stat row recipe of `odd-stack` and `odd-row`, the same as `components-feedback--progress`. `#sync` has no `value`, so it sweeps. Actions is blue from `tone="info"` and Assets green from `tone="success"`. The Storage meters read green, amber, and red by range. The pair sweep matches the `aria` literal in `stories/mirrored/Meter.stories.ts`, and the two screenshots are byte-identical.
 
 ## Gotchas
 

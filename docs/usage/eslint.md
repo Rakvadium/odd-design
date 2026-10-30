@@ -186,7 +186,7 @@ So `<Slider>` with no `type`, `<Slider type="number">`, and a raw `<input classN
 
 The plugin checks `Meter` as a `meter` with `odd-meter`, and `Progress` as a `progress` with `odd-progress`, from their entries of `WRAPPERS`. `tone` is read as `data-tone`. A raw `data-tone` gives nothing. Both parts set that attribute from `tone`, so they drop a raw one, and their types reject one. Every other prop is the attribute with the same name.
 
-So `<Meter tone="primary">` reports `ODD-METER-002`, and so does a raw `<progress className="odd-progress" data-tone="neutral">`. `<Progress data-size="sm">` reports `ODD-METER-003`. A raw `<div className="odd-progress">` or `<progress className="odd-meter">` reports `ODD-METER-001`. A computed `tone`, such as `<Meter tone={toneOf[kind]}>`, gives the `ODD-STATIC-001` warning, the same as a computed `tone` on `Badge`. The plugin does not read `low` and `high` beside `tone`, or the `odd-stat` around a bar.
+So `<Meter tone="primary">` reports `ODD-METER-002`, and so does a raw `<progress className="odd-progress" data-tone="neutral">`. `<Progress data-size="sm">` reports `ODD-METER-003`. A raw `<div className="odd-progress">` or `<progress className="odd-meter">` reports `ODD-METER-001`. A computed `tone`, such as `<Meter tone={toneOf[kind]}>`, gives the `ODD-STATIC-001` warning, the same as a computed `tone` on `Badge`. The plugin does not read `low` and `high` beside `tone`, or the stat row around a bar.
 
 ### Toaster from odd-design/react
 

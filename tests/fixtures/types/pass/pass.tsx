@@ -324,9 +324,13 @@ const typeTone: Record<"unit" | "action" | "asset", MeterTone | undefined> = { u
 export function DeckMix({ count, syncing }: { count: number; syncing: boolean }) {
   return (
     <>
-      <div className="odd-stat">
-        <label htmlFor="actions">Actions</label>
-        <span className="odd-stat-value">{count}</span>
+      <div className="odd-stack">
+        <div className="odd-row">
+          <label className="odd-muted" htmlFor="actions">
+            Actions
+          </label>
+          <span className="odd-stat-value">{count}</span>
+        </div>
         <Meter id="actions" min={0} max={60} value={count} tone={typeTone.action} />
       </div>
       <Meter id="store-high" value={0.93} low={0.6} high={0.85} optimum={0} aria-label="Storage" />
