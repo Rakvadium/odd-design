@@ -2,7 +2,7 @@ import { existsSync, globSync, readFileSync } from "node:fs";
 import { basename } from "node:path";
 import { GlobalRegistrator } from "@happy-dom/global-registrator";
 import { catalog, renderHtml, type Entry } from "../stories/catalog.ts";
-import { CLASS_REGISTRY, USAGE, VOCABULARY, WRAPPERS } from "../src/js/usage/contract.ts";
+import { CLASS_REGISTRY, USAGE, VOCABULARY, WRAPPERS, type UsageRule } from "../src/js/usage/contract.ts";
 
 type Family = {
   readonly name: string;
@@ -495,8 +495,9 @@ const report = FAMILIES.map((family) => {
   }
   const weak = subjectStories.flatMap((story) => domainHits(story.entry.id, storyText(story)));
 
-  const groups = Object.values(USAGE).filter((group) => group.some((rule) => rule.kind === "element" && family.classes.includes(rule.className)));
-  const prefixes = new Set(groups.flatMap((group) => group.filter((rule) => rule.kind === "element" && family.classes.includes(rule.className)).map((rule) => rule.code.replace(/-\d+$/, ""))));
+  const placed = (rule: UsageRule) => (rule.kind === "element" || rule.kind === "class") && family.classes.includes(rule.className);
+  const groups = Object.values(USAGE).filter((group) => group.some(placed));
+  const prefixes = new Set(groups.flatMap((group) => group.filter(placed).map((rule) => rule.code.replace(/-\d+$/, ""))));
   const codes = allCodes.filter((code) => prefixes.has(code.replace(/-\d+$/, "")));
   const borrowed = [...new Set(groups.flatMap((group) => group.map((rule) => rule.code)))].filter((code) => !codes.includes(code)).sort();
   const fixture = (code: string, kind: "good" | "bad") => existsSync(`tests/fixtures/usage/${code.toLowerCase()}.${kind}.html`);

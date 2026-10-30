@@ -461,6 +461,17 @@ const places: Record<string, readonly (readonly [string, number, number, string]
     ["ODD-TABLE-006", 2, 1, "<table"],
     ["ODD-TABLE-006", 3, 1, "<table"],
   ],
+  "odd-scope-001.bad.html": [
+    ["ODD-SCOPE-001", 2, 1, "<div"],
+    ["ODD-SCOPE-001", 3, 1, "<section"],
+    ["ODD-SCOPE-001", 3, 1, "<section"],
+  ],
+  "odd-skip-001.bad.html": [
+    ["ODD-SKIP-001", 2, 9, "class"],
+    ["ODD-SKIP-001", 3, 1, "<a"],
+    ["ODD-SKIP-001", 4, 26, "href"],
+    ["ODD-SKIP-001", 5, 26, "href"],
+  ],
   "odd-class-001.bad.html": [
     ["ODD-CLASS-001", 2, 6, "class"],
     ["ODD-CLASS-001", 3, 4, "class"],

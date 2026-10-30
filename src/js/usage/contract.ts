@@ -4,11 +4,13 @@ type ChildValue = { attribute?: never; value?: never } | { attribute: string; va
 
 export type UsageRule =
   | { kind: "element"; code: UsageCode; className: string; elements: readonly string[] }
+  | { kind: "class"; code: UsageCode; className: string }
   | { kind: "enum"; code: UsageCode; attribute: string; values: readonly string[]; omit: readonly string[] }
   | { kind: "boolean-attribute"; code: UsageCode; attribute: string; values: readonly string[] }
   | { kind: "aria-boolean"; code: UsageCode; attribute: string; values: readonly string[] }
   | { kind: "forbidden-attribute"; code: UsageCode; attribute: string }
-  | { kind: "required-attribute"; code: UsageCode; element: string; attribute: string }
+  | { kind: "required-attribute"; code: UsageCode; element?: string; attribute: string }
+  | { kind: "fragment-link"; code: UsageCode; attribute: string }
   | { kind: "forbidden-on-element"; code: UsageCode; element: string; attribute: string }
   | { kind: "forbidden-value"; code: UsageCode; attribute: string; value: string; when: { readonly attribute: string; readonly value: string } }
   | { kind: "enum-on-element"; code: UsageCode; element: string; attribute: string }
@@ -268,6 +270,17 @@ export const USAGE = {
     { kind: "element", code: "ODD-TABLE-001", className: "odd-table-sort", elements: ["button"] },
     { kind: "forbidden-attribute", code: "ODD-TABLE-005", attribute: "aria-sort" },
     { kind: "system-data", code: "ODD-TABLE-004" },
+  ] as const satisfies readonly UsageRule[],
+  scope: [
+    { kind: "class", code: "ODD-SCOPE-001", className: "odd-scope" },
+    { kind: "required-attribute", code: "ODD-SCOPE-001", attribute: "data-chrome" },
+    { kind: "required-attribute", code: "ODD-SCOPE-001", attribute: "data-palette" },
+    { kind: "required-attribute", code: "ODD-SCOPE-001", attribute: "data-mode" },
+  ] as const satisfies readonly UsageRule[],
+  skipLink: [
+    { kind: "element", code: "ODD-SKIP-001", className: "odd-skip-link", elements: ["a"] },
+    { kind: "required-attribute", code: "ODD-SKIP-001", element: "a", attribute: "href" },
+    { kind: "fragment-link", code: "ODD-SKIP-001", attribute: "href" },
   ] as const satisfies readonly UsageRule[],
   shared: [
     { kind: "unknown-class", code: "ODD-CLASS-001" },

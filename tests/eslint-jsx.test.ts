@@ -174,6 +174,13 @@ const places: Record<string, readonly (readonly [string, number, number, string]
     ["ODD-TABLE-005", 15, 16, 'aria-sort="ascending"'],
     ["ODD-TABLE-006", 17, 5, "<Table>"],
   ],
+  "base.tsx": [
+    ["ODD-SCOPE-001", 8, 5, '<div className="odd-scope"'],
+    ["ODD-SCOPE-001", 8, 5, '<div className="odd-scope"'],
+    ["ODD-SKIP-001", 9, 13, "className"],
+    ["ODD-SKIP-001", 10, 5, "<a"],
+    ["ODD-SKIP-001", 11, 34, 'href="#"'],
+  ],
   "meter.tsx": [
     ["ODD-METER-001", 10, 10, "className"],
     ["ODD-METER-001", 11, 15, "className"],

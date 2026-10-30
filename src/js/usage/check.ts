@@ -37,10 +37,14 @@ function ownAttributes(className: string): readonly string[] {
   return wrappers.flatMap((wrapper) => (wrapper.className === className ? Object.values(wrapper.props) : []));
 }
 
+function placesClass(rule: UsageRule): rule is Extract<UsageRule, { kind: "element" | "class" }> {
+  return rule.kind === "element" || rule.kind === "class";
+}
+
 const components: readonly Component[] = Object.values(byComponent).flatMap((rules: readonly UsageRule[]) =>
   rules.flatMap((rule) =>
-    rule.kind === "element"
-      ? [{ className: rule.className, rules: rules.filter((other) => other.kind !== "element" || other === rule), attributes: ownAttributes(rule.className) }]
+    placesClass(rule)
+      ? [{ className: rule.className, rules: rules.filter((other) => !placesClass(other) || other === rule), attributes: ownAttributes(rule.className) }]
       : [],
   ),
 );
@@ -245,6 +249,8 @@ function apply(rule: UsageRule, scope: Scope): Diagnostic[] {
   switch (rule.kind) {
     case "element":
       return tag !== undefined && !rule.elements.includes(tag) ? [diagnose(rule.code, scope.classAttribute, { found: tag })] : [];
+    case "class":
+      return [];
     case "enum":
       return checkValue(rule.code, find(node, rule.attribute), rule.values, rule.omit);
     case "boolean-attribute":
@@ -255,7 +261,12 @@ function apply(rule: UsageRule, scope: Scope): Diagnostic[] {
       return attribute === undefined ? [] : [diagnose(rule.code, attribute)];
     }
     case "required-attribute":
-      return tag === rule.element && find(node, rule.attribute) === undefined && !hasUnknownAttributes(node) ? [diagnose(rule.code)] : [];
+      return (rule.element === undefined || tag === rule.element) && find(node, rule.attribute) === undefined && !hasUnknownAttributes(node) ? [diagnose(rule.code)] : [];
+    case "fragment-link": {
+      const attribute = find(node, rule.attribute);
+      if (attribute === undefined || isComputed(attribute.value) || /^#./.test(attribute.value)) return [];
+      return [diagnose(rule.code, attribute, { found: attribute.value === "" ? "empty" : attribute.value })];
+    }
     case "forbidden-on-element": {
       const attribute = find(node, rule.attribute);
       return tag === rule.element && attribute !== undefined ? [diagnose(rule.code, attribute)] : [];

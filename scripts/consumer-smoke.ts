@@ -63,6 +63,7 @@ const REQUIRED = [
   "docs/usage/sheet.md",
   "docs/usage/menu.md",
   "docs/usage/table.md",
+  "docs/usage/base.md",
   "src/css/index.css",
   "src/js/appearance.ts",
   "src/js/enhance.ts",
