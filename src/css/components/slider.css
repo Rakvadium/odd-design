@@ -72,7 +72,7 @@
   box-shadow: var(--shadow-control);
   transition: box-shadow var(--duration-fast) var(--ease);
 }
-.odd-slider:hover:not(:disabled)::-webkit-slider-thumb {
+.odd-slider:hover:where(:not(:disabled))::-webkit-slider-thumb {
   box-shadow: var(--shadow-control), var(--_halo);
 }
 .odd-slider:focus-visible::-webkit-slider-thumb {
@@ -100,7 +100,7 @@
   box-shadow: var(--shadow-control);
   transition: box-shadow var(--duration-fast) var(--ease);
 }
-.odd-slider:hover:not(:disabled)::-moz-range-thumb {
+.odd-slider:hover:where(:not(:disabled))::-moz-range-thumb {
   box-shadow: var(--shadow-control), var(--_halo);
 }
 .odd-slider:focus-visible::-moz-range-thumb {
