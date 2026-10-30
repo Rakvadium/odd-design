@@ -457,6 +457,43 @@ const places: Record<string, readonly (readonly [string, number, number, string]
   "odd-table-005.bad.html": [
     ["ODD-TABLE-005", 2, 66, "aria-sort"],
   ],
+  "odd-table-006.bad.html": [
+    ["ODD-TABLE-006", 2, 1, "<table"],
+    ["ODD-TABLE-006", 3, 1, "<table"],
+  ],
+  "odd-scope-001.bad.html": [
+    ["ODD-SCOPE-001", 2, 1, "<div"],
+    ["ODD-SCOPE-001", 3, 1, "<section"],
+    ["ODD-SCOPE-001", 3, 1, "<section"],
+  ],
+  "odd-skip-001.bad.html": [
+    ["ODD-SKIP-001", 2, 9, "class"],
+    ["ODD-SKIP-001", 3, 1, "<a"],
+    ["ODD-SKIP-001", 4, 26, "href"],
+    ["ODD-SKIP-001", 5, 26, "href"],
+  ],
+  "odd-grid-001.bad.html": [
+    ["ODD-GRID-001", 2, 1, "<div"],
+    ["ODD-GRID-001", 2, 1, "<div"],
+    ["ODD-GRID-001", 2, 1, "<div"],
+  ],
+  "odd-shell-001.bad.html": [
+    ["ODD-SHELL-001", 3, 8, "class"],
+    ["ODD-SHELL-001", 4, 8, "class"],
+  ],
+  "odd-typography-001.bad.html": [
+    ["ODD-TYPOGRAPHY-001", 2, 6, "class"],
+    ["ODD-TYPOGRAPHY-001", 3, 4, "class"],
+  ],
+  "odd-typography-002.bad.html": [
+    ["ODD-TYPOGRAPHY-002", 2, 25, "data-size"],
+    ["ODD-TYPOGRAPHY-002", 3, 25, "data-size"],
+    ["ODD-TYPOGRAPHY-002", 4, 25, "data-size"],
+  ],
+  "odd-typography-003.bad.html": [
+    ["ODD-TYPOGRAPHY-003", 2, 24, "data-tone"],
+    ["ODD-TYPOGRAPHY-003", 3, 24, "data-tone"],
+  ],
   "odd-class-001.bad.html": [
     ["ODD-CLASS-001", 2, 6, "class"],
     ["ODD-CLASS-001", 3, 4, "class"],

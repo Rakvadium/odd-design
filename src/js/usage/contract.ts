@@ -4,11 +4,13 @@ type ChildValue = { attribute?: never; value?: never } | { attribute: string; va
 
 export type UsageRule =
   | { kind: "element"; code: UsageCode; className: string; elements: readonly string[] }
+  | { kind: "class"; code: UsageCode; className: string }
   | { kind: "enum"; code: UsageCode; attribute: string; values: readonly string[]; omit: readonly string[] }
   | { kind: "boolean-attribute"; code: UsageCode; attribute: string; values: readonly string[] }
   | { kind: "aria-boolean"; code: UsageCode; attribute: string; values: readonly string[] }
   | { kind: "forbidden-attribute"; code: UsageCode; attribute: string }
-  | { kind: "required-attribute"; code: UsageCode; element: string; attribute: string }
+  | { kind: "required-attribute"; code: UsageCode; element?: string; attribute: string }
+  | { kind: "fragment-link"; code: UsageCode; attribute: string }
   | { kind: "forbidden-on-element"; code: UsageCode; element: string; attribute: string }
   | { kind: "forbidden-value"; code: UsageCode; attribute: string; value: string; when: { readonly attribute: string; readonly value: string } }
   | { kind: "enum-on-element"; code: UsageCode; element: string; attribute: string }
@@ -22,6 +24,8 @@ export type UsageRule =
   | ({ kind: "required-child"; code: UsageCode; element: string; role: string } & ChildValue)
   | ({ kind: "required-child"; code: UsageCode; element: string; className: string } & ChildValue)
   | { kind: "role-descendant"; code: UsageCode; role: string; elements: readonly string[]; attribute: string }
+  | { kind: "child-value"; code: UsageCode; attribute: string; values: readonly string[] }
+  | { kind: "descendant-name"; code: UsageCode; attribute: string; names: readonly string[] }
   | { kind: "unknown-class"; code: UsageCode }
   | { kind: "computed-value"; code: UsageCode }
   | { kind: "untagged-template"; code: UsageCode };
@@ -261,11 +265,39 @@ export const USAGE = {
   table: [
     { kind: "element", code: "ODD-TABLE-001", className: "odd-table", elements: ["table"] },
     { kind: "system-data", code: "ODD-TABLE-004" },
+    { kind: "descendant-name", code: "ODD-TABLE-006", attribute: "data-select-all", names: ["aria-label", "aria-labelledby"] },
   ] as const satisfies readonly UsageRule[],
   tableSort: [
     { kind: "element", code: "ODD-TABLE-001", className: "odd-table-sort", elements: ["button"] },
     { kind: "forbidden-attribute", code: "ODD-TABLE-005", attribute: "aria-sort" },
     { kind: "system-data", code: "ODD-TABLE-004" },
+  ] as const satisfies readonly UsageRule[],
+  scope: [
+    { kind: "class", code: "ODD-SCOPE-001", className: "odd-scope" },
+    { kind: "required-attribute", code: "ODD-SCOPE-001", attribute: "data-chrome" },
+    { kind: "required-attribute", code: "ODD-SCOPE-001", attribute: "data-palette" },
+    { kind: "required-attribute", code: "ODD-SCOPE-001", attribute: "data-mode" },
+  ] as const satisfies readonly UsageRule[],
+  skipLink: [
+    { kind: "element", code: "ODD-SKIP-001", className: "odd-skip-link", elements: ["a"] },
+    { kind: "required-attribute", code: "ODD-SKIP-001", element: "a", attribute: "href" },
+    { kind: "fragment-link", code: "ODD-SKIP-001", attribute: "href" },
+  ] as const satisfies readonly UsageRule[],
+  grid: [
+    { kind: "class", code: "ODD-GRID-001", className: "odd-grid" },
+    { kind: "child-value", code: "ODD-GRID-001", attribute: "data-span", values: ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"] },
+  ] as const satisfies readonly UsageRule[],
+  shell: [
+    { kind: "element", code: "ODD-SHELL-001", className: "odd-shell-header", elements: ["header"] },
+    { kind: "element", code: "ODD-SHELL-001", className: "odd-shell-main", elements: ["main"] },
+  ] as const satisfies readonly UsageRule[],
+  heading: [
+    { kind: "element", code: "ODD-TYPOGRAPHY-001", className: "odd-heading", elements: ["h1", "h2", "h3", "h4", "h5", "h6"] },
+    { kind: "enum", code: "ODD-TYPOGRAPHY-002", attribute: "data-size", values: ["xs", "sm", "lg", "xl", "2xl", "hero"], omit: ["md"] },
+  ] as const satisfies readonly UsageRule[],
+  eyebrow: [
+    { kind: "class", code: "ODD-TYPOGRAPHY-003", className: "odd-eyebrow" },
+    { kind: "enum", code: "ODD-TYPOGRAPHY-003", attribute: "data-tone", values: ["primary", "foreground"], omit: [] },
   ] as const satisfies readonly UsageRule[],
   shared: [
     { kind: "unknown-class", code: "ODD-CLASS-001" },
@@ -413,6 +445,7 @@ export const VOCABULARY = {
   disclosure: [],
   estop: [],
   field: [],
+  grid: ["data-span"],
   log: ["data-tone"],
   menu: ["data-tone"],
   meter: ["data-tone"],
@@ -420,7 +453,7 @@ export const VOCABULARY = {
   search: [],
   separator: [],
   sheet: ["data-side"],
-  shell: ["data-span"],
+  shell: [],
   skeleton: ["data-shape"],
   slider: [],
   table: ["data-numeric"],
