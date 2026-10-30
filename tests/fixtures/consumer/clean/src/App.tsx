@@ -62,9 +62,13 @@ export function App() {
         <Label htmlFor="copies">Copies per card</Label>
         <Slider type="range" id="copies" min={1} max={4} defaultValue={3} />
       </Field>
-      <div className="odd-stat">
-        <label htmlFor="actions">Actions</label>
-        <span className="odd-stat-value">22</span>
+      <div className="odd-stack">
+        <div className="odd-row">
+          <label className="odd-muted" htmlFor="actions">
+            Actions
+          </label>
+          <span className="odd-stat-value">22</span>
+        </div>
         <Meter id="actions" min={0} max={60} value={22} tone="info" />
       </div>
       <Button variant="primary">Save</Button>

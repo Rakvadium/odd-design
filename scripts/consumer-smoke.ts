@@ -39,6 +39,9 @@ const REQUIRED = [
   "dist/js/palette.d.ts",
   "dist/eslint/plugin.js",
   "dist/eslint/plugin.d.ts",
+  "docs/recipes/number-stepper.md",
+  "docs/recipes/slider-with-number.md",
+  "docs/recipes/stat-row.md",
   "docs/usage/alert.md",
   "docs/usage/avatar.md",
   "docs/usage/badge.md",
@@ -69,7 +72,7 @@ const REQUIRED = [
   "src/js/palette.ts",
 ];
 
-const ALLOWED = ["dist/", "docs/usage/", "src/css/", "src/js/"];
+const ALLOWED = ["dist/", "docs/recipes/", "docs/usage/", "src/css/", "src/js/"];
 
 const PACK_EXCLUDED = ["dist/eslint/html.js", "dist/eslint/jsx.js", "dist/eslint/html.d.ts", "dist/eslint/jsx.d.ts"];
 

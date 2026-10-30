@@ -28,7 +28,7 @@ const FAMILIES: readonly Family[] = [
   { name: "Card", classes: ["odd-card", "odd-card-link", "odd-card-footer", "odd-card-title"], css: "components/card.css", js: [], react: ["Card", "CardLink", "CardFooter"] },
   { name: "Disclosure", classes: ["odd-disclosure"], css: "components/disclosure.css", js: [], react: ["Disclosure"] },
   { name: "Alert", classes: ["odd-alert", "odd-alert-title"], css: "components/alert.css", js: [], react: ["Alert", "AlertTitle"] },
-  { name: "Meter", classes: ["odd-meter", "odd-progress", "odd-stat", "odd-stat-value"], css: "components/meter.css", js: [], react: ["Meter", "Progress"] },
+  { name: "Meter", classes: ["odd-meter", "odd-progress", "odd-stat-value"], css: "components/meter.css", js: [], react: ["Meter", "Progress"] },
   { name: "Skeleton", classes: ["odd-skeleton"], css: "components/skeleton.css", js: [], react: ["Skeleton"] },
   { name: "Avatar", classes: ["odd-avatar", "odd-avatar-group"], css: "components/avatar.css", js: ["enhance.ts:18-45"], react: ["Avatar", "AvatarGroup"] },
   { name: "Separator", classes: ["odd-separator"], css: "components/separator.css", js: [], react: ["Separator"] },
@@ -60,8 +60,6 @@ const FAMILIES: readonly Family[] = [
     react: [],
   },
   { name: "E-stop", classes: ["odd-estop"], css: "components/estop.css", js: [], react: [] },
-  { name: "Stepper", classes: ["odd-stepper"], css: "components/stepper.css", js: ["stepper.ts"], react: [] },
-  { name: "Range field", classes: ["odd-range-field"], css: "components/range-field.css", js: ["range-field.ts"], react: [] },
   { name: "Log", classes: ["odd-log", "odd-log-line"], css: "components/log.css", js: ["log.ts"], react: [] },
   {
     name: "Shell",
