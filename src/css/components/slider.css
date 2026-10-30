@@ -41,7 +41,7 @@
 
 .odd-slider:disabled {
   cursor: not-allowed;
-  opacity: 0.55;
+  opacity: var(--disabled-opacity);
 }
 
 /* Rail and thumb, Chromium and WebKit. Each engine's pseudo-elements need their own rule. */

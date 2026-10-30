@@ -26,6 +26,8 @@
 
   --radius-pill: 999px;
 
+  --disabled-opacity: 0.55;
+
   --duration-fast: 120ms;
   --duration-base: 200ms;
   --duration-slow: 320ms;

@@ -88,9 +88,9 @@
   opacity: 1;
 }
 
-.odd-input:hover,
-.odd-select:hover,
-.odd-textarea:hover {
+.odd-input:hover:where(:not(:disabled, [aria-disabled="true"])),
+.odd-select:hover:where(:not(:disabled, [aria-disabled="true"])),
+.odd-textarea:hover:where(:not(:disabled, [aria-disabled="true"])) {
   border-color: color-mix(in oklch, var(--edge-control) 50%, var(--foreground));
 }
 
@@ -114,7 +114,7 @@
 .odd-textarea:disabled {
   cursor: not-allowed;
   background-color: var(--muted);
-  opacity: 0.7;
+  opacity: var(--disabled-opacity);
 }
 
 /* Native select with a drawn chevron. Upgraded below where customizable <select> exists. */

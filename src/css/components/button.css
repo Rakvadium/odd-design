@@ -83,7 +83,7 @@
 
 .odd-button:is([aria-disabled="true"], :disabled) {
   cursor: not-allowed;
-  opacity: 0.55;
+  opacity: var(--disabled-opacity);
   box-shadow: none;
 }
 

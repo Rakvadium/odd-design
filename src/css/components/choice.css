@@ -23,7 +23,7 @@
 
 .odd-choice:has(:disabled) {
   cursor: not-allowed;
-  opacity: 0.55;
+  opacity: var(--disabled-opacity);
 }
 
 /* Switch: track is the background color, thumb is a radial gradient that slides. */
