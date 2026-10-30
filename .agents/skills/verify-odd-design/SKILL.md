@@ -84,7 +84,7 @@ Rules for driving:
 - Prefer stable handles: ids and `commandfor`/`command` attributes in the stories, `input[name=…][value=…]`, `[role=switch]`, `aria-*`, and `.odd-*` classes. Do not use coordinates or nth-child.
 - Change state with `click`, `press`, and `type`, which send real input events. Use `eval` only to read state, never to set it. Setting `.value`, calling `.showModal()`, or toggling attributes bypasses exactly what you are trying to prove: `:user-invalid`, invoker commands, `closedby`, and the native radio behavior.
 - `mode:system` follows the browser's `prefers-color-scheme`, so pair it with `emulate`. `emulate` lasts until it is cleared or the run goes `down`.
-- `goto` returns before a story's `play` finishes. The `--menu-open`, `--sheet-*`, and `--toast-*` stories open their overlay in `play`, so run `wait 900` before you capture one.
+- `goto` and `axe` wait until a story's `play` has returned. The `--menu-open`, `--sheet-*`, and `--toast-*` stories open their overlay in `play`, so they are captured and scanned open.
 - Real feature recipes are in [`features/`](features/README.md). Read the matching file before driving.
 
 ## Evidence

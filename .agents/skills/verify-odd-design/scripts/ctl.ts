@@ -208,7 +208,7 @@ const keyFor = (name: string) => {
   return undefined;
 };
 
-/** Opens a story in the iframe and waits until it has rendered and its fonts have loaded. */
+/** Opens a story in the iframe and waits until it has rendered, its play has returned, and its fonts have loaded. */
 async function render(page: Page, s: State, id: string, globals?: string, args?: string) {
   // Storybook expects literal ":" and ";" in globals/args, so build the query by hand.
   const url = `${s.storybook.url}/iframe.html?id=${id}&viewMode=story${globals ? `&globals=${globals}` : ""}${args ? `&args=${args}` : ""}`;
@@ -220,7 +220,10 @@ async function render(page: Page, s: State, id: string, globals?: string, args?:
       if (document.body.classList.contains("sb-show-errordisplay")) return { error: document.querySelector("#error-message")?.textContent || "story error" };
       if (document.body.classList.contains("sb-show-nopreview")) return { error: "no preview (bad story id?)" };
       const root = document.querySelector("#storybook-root");
-      return root && root.childElementCount > 0 ? { ok: true } : null;
+      if (!root || root.childElementCount === 0) return null;
+      // Past play, not "finished": the phases after play wait up to 5s for running animations, as in e2e/story.ts.
+      const phase = window.__STORYBOOK_PREVIEW__?.currentRender?.phase;
+      return phase && !["preparing", "loading", "beforeEach", "rendering", "playing"].includes(phase) ? { ok: true } : null;
     })()`);
     return r ?? undefined;
   });
