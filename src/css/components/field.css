@@ -78,6 +78,10 @@
   resize: vertical;
 }
 
+.odd-input[type="number"] {
+  font-variant-numeric: tabular-nums;
+}
+
 .odd-input::placeholder,
 .odd-textarea::placeholder {
   color: var(--muted-foreground);
