@@ -58,6 +58,7 @@ Stories render in isolation at `iframe.html?id=<storyId>`, which skips the manag
 | Interactive | `components-interactive--menu`, `--tabs`, `--toast` |
 | Controls | `components-controls--emergency-stop`, `--stepper`, `--range-field` |
 | Layout | `components-layout--app-shell` |
+| Base utilities, Grid, Shell, Typography | `components-base-utilities--parts`, `components-grid--variants`, `components-shell--parts`, `components-typography--sizes`, `--variants` |
 | Docs | `introduction--docs` (MDX; `goto` targets stories, so open docs via the manager URL if needed) |
 
 The current list is always at `curl -s http://127.0.0.1:<port>/index.json`.
