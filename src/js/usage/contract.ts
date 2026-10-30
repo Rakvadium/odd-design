@@ -24,6 +24,7 @@ export type UsageRule =
   | ({ kind: "required-child"; code: UsageCode; element: string; role: string } & ChildValue)
   | ({ kind: "required-child"; code: UsageCode; element: string; className: string } & ChildValue)
   | { kind: "role-descendant"; code: UsageCode; role: string; elements: readonly string[]; attribute: string }
+  | { kind: "child-value"; code: UsageCode; attribute: string; values: readonly string[] }
   | { kind: "descendant-name"; code: UsageCode; attribute: string; names: readonly string[] }
   | { kind: "unknown-class"; code: UsageCode }
   | { kind: "computed-value"; code: UsageCode }
@@ -281,6 +282,14 @@ export const USAGE = {
     { kind: "element", code: "ODD-SKIP-001", className: "odd-skip-link", elements: ["a"] },
     { kind: "required-attribute", code: "ODD-SKIP-001", element: "a", attribute: "href" },
     { kind: "fragment-link", code: "ODD-SKIP-001", attribute: "href" },
+  ] as const satisfies readonly UsageRule[],
+  grid: [
+    { kind: "class", code: "ODD-GRID-001", className: "odd-grid" },
+    { kind: "child-value", code: "ODD-GRID-001", attribute: "data-span", values: ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"] },
+  ] as const satisfies readonly UsageRule[],
+  shell: [
+    { kind: "element", code: "ODD-SHELL-001", className: "odd-shell-header", elements: ["header"] },
+    { kind: "element", code: "ODD-SHELL-001", className: "odd-shell-main", elements: ["main"] },
   ] as const satisfies readonly UsageRule[],
   shared: [
     { kind: "unknown-class", code: "ODD-CLASS-001" },

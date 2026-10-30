@@ -472,6 +472,15 @@ const places: Record<string, readonly (readonly [string, number, number, string]
     ["ODD-SKIP-001", 4, 26, "href"],
     ["ODD-SKIP-001", 5, 26, "href"],
   ],
+  "odd-grid-001.bad.html": [
+    ["ODD-GRID-001", 2, 1, "<div"],
+    ["ODD-GRID-001", 2, 1, "<div"],
+    ["ODD-GRID-001", 2, 1, "<div"],
+  ],
+  "odd-shell-001.bad.html": [
+    ["ODD-SHELL-001", 3, 8, "class"],
+    ["ODD-SHELL-001", 4, 8, "class"],
+  ],
   "odd-class-001.bad.html": [
     ["ODD-CLASS-001", 2, 6, "class"],
     ["ODD-CLASS-001", 3, 4, "class"],

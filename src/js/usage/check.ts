@@ -202,6 +202,15 @@ function roleDescendantFindings(rule: Extract<UsageRule, { kind: "role-descendan
   });
 }
 
+function childValueFindings(rule: Extract<UsageRule, { kind: "child-value" }>, { node }: Scope): Diagnostic[] {
+  return node.children.flatMap((child) => {
+    if (typeof child === "string" || isComputed(child)) return [];
+    const attribute = find(child, rule.attribute);
+    if (attribute === undefined || isComputed(attribute.value) || rule.values.includes(attribute.value)) return [];
+    return [diagnose(rule.code, undefined, { found: `${rule.attribute}=${attribute.value === "" ? "empty" : attribute.value}` })];
+  });
+}
+
 function descendantNameFindings(rule: Extract<UsageRule, { kind: "descendant-name" }>, scope: Scope): Diagnostic[] {
   const { found } = descendants(scope.node, scope.components.map((component) => component.className));
   return found.flatMap((node) => {
@@ -301,6 +310,8 @@ function apply(rule: UsageRule, scope: Scope): Diagnostic[] {
       return requiredChildFindings(rule, scope);
     case "role-descendant":
       return roleDescendantFindings(rule, scope);
+    case "child-value":
+      return childValueFindings(rule, scope);
     case "descendant-name":
       return descendantNameFindings(rule, scope);
     case "unknown-class":

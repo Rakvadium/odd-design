@@ -181,6 +181,14 @@ const places: Record<string, readonly (readonly [string, number, number, string]
     ["ODD-SKIP-001", 10, 5, "<a"],
     ["ODD-SKIP-001", 11, 34, 'href="#"'],
   ],
+  "grid.tsx": [
+    ["ODD-GRID-001", 7, 5, '<main className="odd-grid">'],
+    ["ODD-GRID-001", 8, 5, '<div className="odd-grid">'],
+  ],
+  "shell.tsx": [
+    ["ODD-SHELL-001", 5, 10, "className"],
+    ["ODD-SHELL-001", 6, 14, "className"],
+  ],
   "meter.tsx": [
     ["ODD-METER-001", 10, 10, "className"],
     ["ODD-METER-001", 11, 15, "className"],

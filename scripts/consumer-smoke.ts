@@ -64,6 +64,8 @@ const REQUIRED = [
   "docs/usage/menu.md",
   "docs/usage/table.md",
   "docs/usage/base.md",
+  "docs/usage/grid.md",
+  "docs/usage/shell.md",
   "src/css/index.css",
   "src/js/appearance.ts",
   "src/js/enhance.ts",
