@@ -126,6 +126,11 @@ test("messages include the code, Fix:, a docs heading in the named file, and no 
         if (!text.includes(token)) absent.push(`${rule.code} ${token}`);
       }
     }
+    if (rule.kind === "descendant-name") {
+      for (const token of [rule.attribute, ...rule.names]) {
+        if (!text.includes(token)) absent.push(`${rule.code} ${token}`);
+      }
+    }
     if (rule.kind === "accessible-name") {
       for (const token of rule.names) {
         if (!text.includes(token)) absent.push(`${rule.code} ${token}`);

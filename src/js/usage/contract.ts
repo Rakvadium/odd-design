@@ -22,6 +22,7 @@ export type UsageRule =
   | ({ kind: "required-child"; code: UsageCode; element: string; role: string } & ChildValue)
   | ({ kind: "required-child"; code: UsageCode; element: string; className: string } & ChildValue)
   | { kind: "role-descendant"; code: UsageCode; role: string; elements: readonly string[]; attribute: string }
+  | { kind: "descendant-name"; code: UsageCode; attribute: string; names: readonly string[] }
   | { kind: "unknown-class"; code: UsageCode }
   | { kind: "computed-value"; code: UsageCode }
   | { kind: "untagged-template"; code: UsageCode };
@@ -261,6 +262,7 @@ export const USAGE = {
   table: [
     { kind: "element", code: "ODD-TABLE-001", className: "odd-table", elements: ["table"] },
     { kind: "system-data", code: "ODD-TABLE-004" },
+    { kind: "descendant-name", code: "ODD-TABLE-006", attribute: "data-select-all", names: ["aria-label", "aria-labelledby"] },
   ] as const satisfies readonly UsageRule[],
   tableSort: [
     { kind: "element", code: "ODD-TABLE-001", className: "odd-table-sort", elements: ["button"] },

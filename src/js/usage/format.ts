@@ -107,6 +107,7 @@ export const USAGE_CODES = [
   "ODD-TABLE-003",
   "ODD-TABLE-004",
   "ODD-TABLE-005",
+  "ODD-TABLE-006",
   "ODD-STATIC-001",
   "ODD-STATIC-002",
   "ODD-STATIC-003",
@@ -939,6 +940,13 @@ export const MESSAGES = {
     "aria-sort on the th around the button",
     "move aria-sort to the th that holds the button, on the sorted column only.",
     "docs/usage/table.md#odd-table-005",
+  ),
+  "ODD-TABLE-006": text(
+    "ODD-TABLE-006",
+    "a data-select-all box in this table has no aria-label or aria-labelledby. A screen reader announces only checkbox, so nothing says the box selects every row.",
+    "aria-label or aria-labelledby on the data-select-all box",
+    "set aria-label on the header box, such as Select all decks, or point aria-labelledby at text that says what it selects.",
+    "docs/usage/table.md#odd-table-006",
   ),
   "ODD-STATIC-001": text(
     "ODD-STATIC-001",

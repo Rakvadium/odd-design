@@ -457,6 +457,10 @@ const places: Record<string, readonly (readonly [string, number, number, string]
   "odd-table-005.bad.html": [
     ["ODD-TABLE-005", 2, 66, "aria-sort"],
   ],
+  "odd-table-006.bad.html": [
+    ["ODD-TABLE-006", 2, 1, "<table"],
+    ["ODD-TABLE-006", 3, 1, "<table"],
+  ],
   "odd-class-001.bad.html": [
     ["ODD-CLASS-001", 2, 6, "class"],
     ["ODD-CLASS-001", 3, 4, "class"],

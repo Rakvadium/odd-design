@@ -112,6 +112,7 @@ const RUNTIME_CODES = [
   "ODD-TABLE-003",
   "ODD-TABLE-004",
   "ODD-TABLE-005",
+  "ODD-TABLE-006",
   "ODD-CLASS-001",
 ];
 

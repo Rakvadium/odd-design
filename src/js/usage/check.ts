@@ -198,6 +198,14 @@ function roleDescendantFindings(rule: Extract<UsageRule, { kind: "role-descendan
   });
 }
 
+function descendantNameFindings(rule: Extract<UsageRule, { kind: "descendant-name" }>, scope: Scope): Diagnostic[] {
+  const { found } = descendants(scope.node, scope.components.map((component) => component.className));
+  return found.flatMap((node) => {
+    if (find(node, rule.attribute) === undefined || hasUnknownAttributes(node) || rule.names.some((name) => hasName(node, name))) return [];
+    return [diagnose(rule.code, undefined, { found: `${rule.attribute} without ${rule.names.join(" or ")}` })];
+  });
+}
+
 function valueReadAttributes(scope: Scope): Set<string> {
   return new Set(
     scope.components.flatMap((component) =>
@@ -282,6 +290,8 @@ function apply(rule: UsageRule, scope: Scope): Diagnostic[] {
       return requiredChildFindings(rule, scope);
     case "role-descendant":
       return roleDescendantFindings(rule, scope);
+    case "descendant-name":
+      return descendantNameFindings(rule, scope);
     case "unknown-class":
       return scope.words
         .filter((word) => word.startsWith("odd-") && !registry.includes(word))

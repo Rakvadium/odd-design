@@ -172,6 +172,7 @@ const places: Record<string, readonly (readonly [string, number, number, string]
     ["ODD-TABLE-004", 13, 12, 'data-numeric=""'],
     ["ODD-TABLE-004", 14, 16, 'data-numeric=""'],
     ["ODD-TABLE-005", 15, 16, 'aria-sort="ascending"'],
+    ["ODD-TABLE-006", 17, 5, "<Table>"],
   ],
   "meter.tsx": [
     ["ODD-METER-001", 10, 10, "className"],
