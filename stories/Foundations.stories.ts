@@ -44,7 +44,7 @@ const column = (mode: "light" | "dark", palette: string, chrome: string) => /* h
                 min < 4.5
                   ? // Borders and focus rings are non-text UI, so show them as a border, not as text held to the text minimum.
                     `<span class="pair-sample" data-nontext aria-hidden="true" style="display:inline-block; vertical-align: middle; inline-size: 2.4em; block-size: 1.5em; border-radius: 6px; border: 3px solid var(--${fg}); background: var(--${bg})"></span>`
-                  : `<span class="pair-sample" style="display:inline-block; padding: 0.15em 0.6em; border-radius: 6px; color: var(--${fg}); background: var(--${bg}); box-shadow: inset 0 0 0 1px var(--border); font-weight: 600">Aa</span>`
+                  : `<span class="pair-sample" style="display:inline-block; padding: 0.15em 0.6em; border-radius: 6px; color: var(--${fg}); background: var(--${bg}); box-shadow: inset 0 0 0 1px var(--border); font-weight: var(--weight-semibold)">Aa</span>`
               }
               <code style="margin-inline-start: var(--space-2)">${fg}</code> on <code>${bg}</code>
             </td>
@@ -91,7 +91,7 @@ export const Palette: Story = {
   render: () => `<div style="display:grid; gap: var(--space-4); grid-template-columns: repeat(auto-fill, minmax(12rem, 1fr))">
     ${SWATCHES.map(
       ([bg, fg]) => `<div style="border-radius: var(--radius-surface); overflow: hidden; border: var(--border-width) solid var(--edge-surface); box-shadow: var(--shadow-surface)">
-        <div style="block-size: 6rem; padding: var(--space-3); background: var(--${bg}); color: var(--${fg}); font-weight: 600">Aa</div>
+        <div style="block-size: 6rem; padding: var(--space-3); background: var(--${bg}); color: var(--${fg}); font-weight: var(--weight-semibold)">Aa</div>
         <div style="padding: var(--space-3); background: var(--surface); font-size: var(--text-sm)"><code>--${bg}</code></div>
       </div>`,
     ).join("")}

@@ -52,7 +52,7 @@ export const Avatar = mirrored({
           {
             of: "div",
             children: [
-              { of: "p", props: { style: { fontWeight: "600" } }, children: ["Mira Okafor"] },
+              { of: "p", props: { style: { fontWeight: "var(--weight-semibold)" } }, children: ["Mira Okafor"] },
               { of: "p", props: { className: "odd-muted", style: { fontSize: "var(--text-sm)" } }, children: ["Edited Midnight Control · 2 hours ago"] },
             ],
           },

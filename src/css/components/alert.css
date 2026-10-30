@@ -46,7 +46,7 @@
 
 .odd-alert-title {
   font-family: var(--font-label);
-  font-weight: 650;
+  font-weight: calc(var(--label-weight) + 50);
   text-transform: var(--label-case);
   letter-spacing: var(--label-tracking);
 }
