@@ -9,7 +9,7 @@ The drive page in [Rakvadium/odd-nexarm](https://github.com/Rakvadium/odd-nexarm
 - The Pose rows lose their two-column grid, so each value runs on right after its label.
 - The jog inputs show their spin buttons again, and their digits are no longer centered.
 
-This guide moves the removed CSS into the app under its own `arm-` names and wires the two behaviors from `drive.js`. The page then looks and works as it did. The file paths below are in `src/odd_nexarm/web/static/`.
+This guide moves the removed CSS into the app under its own `arm-` names and wires the two behaviors from `drive.js`. The page then looks and works as it did. The file paths below are in `src/odd_nexarm/web/static/`. The [E-stop](#e-stop) section does the same for `odd-estop`, which odd-design also removed.
 
 ## Add the removed CSS to `drive.css`
 
@@ -139,6 +139,86 @@ The stepper still fires `input` on each step and one `change` per press, so the 
 3. In the Joints table, click **+10** on a joint. The jog input moves by 10, and one jog request goes out when you release the button.
 4. In Move to, drag a slider. Its number follows. Type a number past the safe range and press Tab. The slider stays put, and an error shows under the row.
 5. In Pose, each value sits on the end of its label's line.
+
+## E-stop
+
+odd-design no longer ships `odd-estop`. Its look and its "never disable it" rule belong to a machine, so the stop moves into the app. The header's Stop button (`index.html:22`) carries `odd-estop arm-estop`. After the odd-design checkout pulls this change and builds, the button keeps only the size and text from the `.arm-estop` rule. It loses its round red cap, its yellow collar, and its pressed-in latched look, and in forced colors the latched state no longer shows.
+
+### Add the e-stop CSS to `drive.css`
+
+Add these rules near the top of `drive.css`, above the existing `.arm-estop` rule. They are the rules odd-design deleted, with `odd-estop` renamed to `arm-estop`. Keep the existing rule after them. It sets the 5rem size and small text that fit the header, and it wins because it comes later at the same specificity.
+
+```css
+.arm-estop {
+  --_rim: color-mix(in oklab, var(--danger), black 30%);
+
+  display: inline-grid;
+  place-items: center;
+  inline-size: 8rem;
+  aspect-ratio: 1;
+  padding: var(--space-1);
+  border: 0.5rem solid var(--warning);
+  border-radius: 50%;
+  background-color: var(--danger);
+  color: var(--danger-foreground);
+  box-shadow: inset 0 0 0 3px var(--_rim), inset 0 -0.35rem 0 3px var(--_rim), var(--shadow-control);
+  font: inherit;
+  font-family: var(--font-label);
+  font-size: var(--text-xl);
+  font-weight: 800;
+  line-height: 1.1;
+  text-align: center;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  cursor: pointer;
+  user-select: none;
+  touch-action: manipulation;
+  transition-property: box-shadow, transform;
+  transition-duration: var(--duration-fast);
+  transition-timing-function: var(--ease);
+}
+
+.arm-estop:hover {
+  box-shadow: inset 0 0 0 3px var(--_rim), inset 0 -0.35rem 0 3px var(--_rim), var(--shadow-control-hover);
+}
+
+.arm-estop:active,
+.arm-estop[aria-pressed="true"] {
+  transform: scale(0.95);
+  box-shadow: inset 0 0 0 3px var(--_rim), inset 0 0.5rem 1rem var(--_rim);
+}
+
+.arm-estop:focus-visible {
+  outline: calc(var(--focus-width) + 2px) solid var(--focus-color);
+  outline-offset: 4px;
+}
+
+@media (forced-colors: active) {
+  .arm-estop {
+    border-color: ButtonText;
+  }
+  .arm-estop[aria-pressed="true"] {
+    forced-color-adjust: none;
+    border-color: ButtonText;
+    background-color: Highlight;
+    color: HighlightText;
+    box-shadow: none;
+  }
+}
+```
+
+The forced-colors block keeps the latched state visible when the system replaces every color. Without it, the latched cap looks the same as the resting one.
+
+### Drop `odd-estop` from `index.html`
+
+On line 22, change `class="odd-estop arm-estop"` to `class="arm-estop"`. The rest of the button stays the same. `drive.js` already sets `aria-pressed` on `#stop` while the stop holds, and that attribute draws the latched cap. Never give the button `disabled` or `aria-disabled`.
+
+### Check the stop
+
+1. In the odd-design checkout, pull, then run `bun run build`.
+2. Restart the odd-nexarm server, and open the drive page.
+3. The Stop button in the header is a round red cap in a yellow collar. Click it. The cap sits pressed in for the one-second latch, then pops back out.
+4. In Chrome DevTools, open Rendering and set "Emulate CSS media feature forced-colors" to `active`. Click Stop. The latched cap fills with the highlight color.
 
 ## Fix the toaster import too
 
