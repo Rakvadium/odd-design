@@ -2,7 +2,7 @@
 
 This report scores every component family Odd Design ships against one bar. The bar asks for the smallest unit that is accessible, testable, themeable, chromeable, and lintable. Each family gets one of the four verdicts in [the plan](../plans/core-primitives-fitness.md#the-verdicts). The report changes no product code. It says what to keep, split, and move, and which stories and usage codes each keeper still needs.
 
-Four families leave core. `odd-estop` goes to the robot-arm app. `odd-stepper`, `odd-range-field`, and `odd-shell` become recipes, and the two behaviors they carry, `enhanceStepper` and `enhanceRangeField`, stay in core. Meter splits, so its bars stay and its stat row becomes a recipe. Every other family stays in core. Of the 28 families, only Button has stories of the kinds this bar asks for. Typography has one more if you count a Foundations story.
+Three families leave core. `odd-estop` goes to the robot-arm app. `odd-stepper` and `odd-range-field` become recipes, and the two behaviors they carry, `enhanceStepper` and `enhanceRangeField`, stay in core. Meter splits, so its bars and `odd-stat-value` stay and its stat row becomes a recipe. Every other family stays in core. Of the 28 families, only Button has stories of the kinds this bar asks for.
 
 ## How to read the evidence
 
@@ -14,30 +14,30 @@ The script judges nothing. Where a cell needed judgment, this report reads the c
 
 ## 1. The answer
 
-The table ranks families by distance from the bar. Distance is a count of six gaps, each read from a script cell or a file:
+The table ranks families by distance from the bar. Distance is a weighted sum of six gaps, each read from a script cell or a file. Each gap adds 1 to the sum, except L, which adds 1 or 2:
 
-- **D.** Strong domain coupling, meaning a class name or a rule that only makes sense in one app. Sample text does not count.
-- **Th.** A literal color that bypasses a token outside forced colors.
-- **L.** Lint. 1 when some class in the family has no usage rule, 2 when the family has no usage codes at all.
-- **T.** No unit or e2e test written for the family's own behavior or rendering. The two suites every wrapper and mirrored story gets (`tests/react.test.tsx` "React markup" and `tests/stories.test.ts`) do not count.
-- **S.** No story of a Button kind (Playground, Variants, Sizes, States, or Parts) after the hand corrections in section 3.
-- **X.** At least one axis that a new static story could show and no story renders.
+- **D.** Strong domain coupling, meaning a class name or a rule that only makes sense in one app. Sample text does not count. Adds 1.
+- **Th.** A literal color that bypasses a token outside forced colors. Adds 1.
+- **L.** Lint. Adds 1 when some class in the family has no usage rule, and 2 when the family has no usage codes at all. The table writes the second case as L2.
+- **T.** No unit or e2e test written for the family's own behavior or rendering. The two suites every wrapper and mirrored story gets (`tests/react.test.tsx` "React markup" and `tests/stories.test.ts`) do not count. Adds 1.
+- **S.** No story of a Button kind (Playground, Variants, Sizes, States, or Parts) among the family's own stories, after the hand corrections in section 3. A Foundations story is a consumer of the family, as the plan says, so it does not count. Adds 1.
+- **X.** At least one axis that a new static story could show and no story renders. An axis that the family's usage contract forbids does not count. Adds 1.
 
 Accessibility and chrome findings are in each family's section but are not scored. Forced-colors and chrome screenshots exist for seven stories only, so a score would favor the families nobody captured. Ties sort by verdict (demote, then split, then keep) and then by name.
 
-| Rank | Family | Verdict | Gaps | Reason |
+| Rank | Family | Verdict | Distance | Reason |
 | --- | --- | --- | --- | --- |
 | 1 | E-stop | `demote-to-composed-recipe-or-app` | 7 (D, Th, L2, T, S, X) | A real one-button atom whose name and "never disable it" rule belong to machine control, and whose cap ignores the chrome. |
-| 2 | Shell | `demote-to-composed-recipe-or-app` | 4 (L2, T, S) | Page layout slots filled by other families, with surface paint that `odd-card` already has. |
-| 3 | Base utilities | `keep-as-core-primitive` | 4 (L2, T, S) | Six small utilities that every story uses, with no usage codes and no story of their own. |
-| 4 | Grid | `keep-as-core-primitive` | 4 (L2, S, X) | A 12-column container-query grid that no other class gives. It belongs beside `odd-stack` and `odd-row`. |
-| 5 | Range field | `demote-to-composed-recipe-or-app` | 3 (L2, S) | Its CSS only lays out `odd-slider` and `odd-input`. Its sync behavior stays in core. |
-| 6 | Stepper | `demote-to-composed-recipe-or-app` | 3 (L2, S) | Its CSS only lays out `odd-button` and `odd-input`. Its hold-to-repeat behavior stays in core. |
-| 7 | Meter | `split-into-smaller-primitives` | 3 (L, S, X) | The two bars are atoms. The stat row is a label, value, and bar layout. |
-| 8 | Badge | `keep-as-core-primitive` | 3 (T, S, X) | One `span` with a tone dot. No story shows the neutral tone. |
-| 9 | Field | `keep-as-core-primitive` | 3 (L, T, S) | Three control atoms and their label, hint, and error parts. `odd-label` has no usage rule. |
-| 10 | Log | `keep-as-core-primitive` | 3 (L2, S) | A generic `role="log"` atom with tested behavior. It has no usage codes yet. |
-| 11 | Typography | `keep-as-core-primitive` | 3 (L2, T) | Heading sizes and eyebrow tones with a README row but no usage codes. |
+| 2 | Base utilities | `keep-as-core-primitive` | 5 (L2, T, S, X) | Six small utilities that every story uses, with no usage codes and no story of their own. No story renders `odd-skip-link`. |
+| 3 | Grid | `keep-as-core-primitive` | 4 (L2, S, X) | A 12-column container-query grid that no other class gives. It belongs beside `odd-stack` and `odd-row`. |
+| 4 | Shell | `keep-as-core-primitive` | 4 (L2, T, S) | A full-height page frame with a sticky header and a status slot that no other class gives. Demote is the closest alternative. |
+| 5 | Typography | `keep-as-core-primitive` | 4 (L2, T, S) | Heading sizes and eyebrow tones with a README row but no usage codes and no story of their own. |
+| 6 | Range field | `demote-to-composed-recipe-or-app` | 3 (L2, S) | Its CSS only lays out `odd-slider` and `odd-input`. Its sync behavior stays in core. |
+| 7 | Stepper | `demote-to-composed-recipe-or-app` | 3 (L2, S) | Its CSS only lays out `odd-button` and `odd-input`. Its hold-to-repeat behavior stays in core. |
+| 8 | Meter | `split-into-smaller-primitives` | 3 (L, S, X) | The two bars and the value style are atoms. The stat row is a label, value, and bar layout. |
+| 9 | Badge | `keep-as-core-primitive` | 3 (T, S, X) | One `span` with a tone dot. Its story shows the neutral look but never writes `data-tone="neutral"`. |
+| 10 | Field | `keep-as-core-primitive` | 3 (L, T, S) | Three control atoms and their label, hint, and error parts. `odd-label` has no usage rule. |
+| 11 | Log | `keep-as-core-primitive` | 3 (L2, S) | A generic `role="log"` atom with tested behavior. It has no usage codes yet. |
 | 12 | Alert | `keep-as-core-primitive` | 2 (T, S) | One message box with fixed parts. Every tone renders in its story. |
 | 13 | Card | `keep-as-core-primitive` | 2 (T, S) | A surface with a stretched-link pattern no other class has. |
 | 14 | Choice | `keep-as-core-primitive` | 2 (T, S) | Three atoms in one file: checkbox and radio label, switch, segmented group. |
@@ -56,12 +56,12 @@ Accessibility and chrome findings are in each family's section but are not score
 | 27 | Toast | `keep-as-core-primitive` | 1 (S) | A toaster region whose toasts `toast()` builds at runtime. |
 | 28 | Button | `keep-as-core-primitive` | 0 | The reference. |
 
-Meter's pieces get their own verdicts. `odd-meter` and `odd-progress` get `keep-as-core-primitive`. `odd-stat` and `odd-stat-value` get `demote-to-composed-recipe-or-app`.
+Meter's pieces get their own verdicts. `odd-meter`, `odd-progress`, and `odd-stat-value` get `keep-as-core-primitive`. `odd-stat` gets `demote-to-composed-recipe-or-app`.
 
 Two rules decide the close calls, and they apply the same way to every family.
 
 - A file that holds several atoms, each with its own class, gets one verdict when every atom would get the same one. Choice, Popover, Field, and Base utilities are recorded that way. A split is only for a family whose pieces would get different verdicts, which is Meter.
-- A family whose class renders several controls side by side, laid out from other families' classes, is a composition. Stepper and Range field render separate boxes in a row (`contact/components-controls--stepper.contact.png`). Search also targets `odd-input` (`search.css:26-45`), but it renders one box with an icon inside it, so it counts as one element with fixed parts.
+- A family whose class renders several controls side by side, laid out from other families' classes, is a composition. Stepper and Range field render separate boxes in a row (`contact/components-controls--stepper.contact.png`). Search also targets `odd-input` (`search.css:26-45`), but it renders one box with an icon inside it, so it counts as one element with fixed parts. Shell's selectors name only its own classes (`shell.css:20-56`), so the families its slots hold by markup do not make it a composition.
 
 ## 2. The composition map
 
@@ -79,7 +79,7 @@ A family is an atom when its own CSS or JS draws something no other class draws.
 | Card | `odd-card`, `odd-card-link`, `odd-card-title`, `odd-card-footer` | A surface and a stretched link that makes the whole card clickable (`card.css:28-39`). |
 | Disclosure | `odd-disclosure` | A chevron and an animated height on `details` (`disclosure.css:29-61`). |
 | Alert | `odd-alert`, `odd-alert-title` | A toned tint, border, and icon color (`alert.css:11-38`). |
-| Meter (bars) | `odd-meter`, `odd-progress` | Cross-engine bar drawing, range colors, an indeterminate sweep, and a forced-colors redraw (`meter.css:14-94`, `meter.css:118-130`). |
+| Meter (bars and value) | `odd-meter`, `odd-progress`, `odd-stat-value` | Cross-engine bar drawing, range colors, an indeterminate sweep, and a forced-colors redraw (`meter.css:14-94`, `meter.css:118-130`). `odd-stat-value` sets weight and tabular numbers (`meter.css:106-109`). |
 | Skeleton | `odd-skeleton` | A pulsing block and an avatar shape (`skeleton.css:11-28`). |
 | Avatar | `odd-avatar`, `odd-avatar-group` | Sized initials or image, an overlapping group, and `avatarFallback` (`enhance.ts:18-45`). |
 | Separator | `odd-separator` | A border line in either direction (`separator.css:7-22`). |
@@ -94,6 +94,7 @@ A family is an atom when its own CSS or JS draws something no other class draws.
 | Base utilities | `odd-stack`, `odd-row`, `odd-muted`, `odd-visually-hidden`, `odd-skip-link`, `odd-scope` | Flex layout with a `--gap` variable, hidden text, a skip link, and a nested appearance scope (`base.css:70-113`). |
 | E-stop | `odd-estop` | A round red cap in a yellow collar with a latched state (`estop.css:11-65`). |
 | Log | `odd-log`, `odd-log-line` | A scrolling mono log with toned lines (`log.css:14-52`), `enhanceLog`, and `appendLogLine` (`log.ts:25-60`). |
+| Shell | `odd-shell`, `odd-shell-header`, `odd-shell-status`, `odd-shell-actions`, `odd-shell-main` | A full-height two-row grid, a sticky header painted with the same surface tokens as `odd-card`, and a status slot that takes the free space (`shell.css:20-56`). Its slots hold `odd-heading`, `odd-badge`, `odd-button`, `odd-grid`, and `odd-card` by markup (`shell.css:1-12`). No selector names them. |
 | Grid | `odd-grid` | 12 columns with `data-span` and container-query collapse (`shell.css:58-90`). |
 
 ### Compositions
@@ -103,47 +104,46 @@ A family is an atom when its own CSS or JS draws something no other class draws.
 | Search | `odd-input`, plus a bare `svg` and an `odd-visually-hidden` label (`search.css:1-9`) | Icon placement inside the input and a restyled clear button (`search.css:15-45`). The result is one control, so the verdict is keep. |
 | Stepper | `odd-button`, `odd-input`, inside an `odd-field` (`stepper.css:1-11`) | Flex layout, centered tabular numbers, and hidden spin buttons (`stepper.css:18-42`). `enhanceStepper` adds hold-to-repeat, limit marking, and one `change` per press (`stepper.ts:13-108`). |
 | Range field | `odd-slider`, `odd-input`, `odd-muted`, inside an `odd-field` (`range-field.css:1-10`) | Flex layout and tabular numbers (`range-field.css:18-33`). `enhanceRangeField` adds two-way sync and an `odd-error` for a number the slider can't take (`range-field.ts:22-98`). |
-| Shell | `odd-heading`, `odd-badge`, `odd-button`, `odd-grid`, `odd-card` by markup (`shell.css:1-12`). No selector names them. | A full-height grid, a sticky header painted with the same surface tokens as `odd-card`, and two flex slots (`shell.css:20-56`). |
-| Meter (stat row) | `odd-meter` or `odd-progress`, a bare `label`, and `odd-muted` (`meter.css:6-10`) | A two-column grid and a value style (`meter.css:96-112`). It selects the bars by element, `:is(meter, progress)`, so the script does not see the reach. |
+| Meter (stat row) | `odd-meter` or `odd-progress`, a bare `label`, `odd-stat-value`, and `odd-muted` (`meter.css:6-10`) | A two-column grid (`meter.css:96-105`, `meter.css:110-112`). It selects the bars by element, `:is(meter, progress)`, so the script does not see the reach. |
 
 ## 3. Story depth against Button
 
-Button has a `Playground` with controls, then `Variants`, `Sizes`, and `States`, and every one is mirrored in HTML and React. The table holds every family against that. The counts come from `Story depth`, with two hand corrections marked. "Static" axes are ones a new story could show without interaction. "Needs interaction" lists axes that only appear after a click, a focus, or a `toast()` call. Pseudo-classes such as `:hover` are left out, as the plan says.
+Button has a `Playground` with controls, then `Variants`, `Sizes`, and `States`, and every one is mirrored in HTML and React. The table holds every family against that. The counts come from `Story depth`, with one hand correction marked. "Static" axes are ones a new story could show without interaction. "Forbidden" lists axes the CSS styles but the family's usage contract forbids, such as `:disabled` on a button. They do not count toward X. "Needs interaction" lists axes that only appear after a click, a focus, typing, or a `toast()` call. Pseudo-classes such as `:hover` are left out, as the plan says.
 
-| Family | Playground | Variants | Sizes | States | Parts | Assembled | Mirrored | Static axes no story renders | Needs interaction | Only assembled |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| Button | 1 | 1 | 1 | 1 | 0 | 1 | 5 of 5 | none | none | |
-| Field | 0 | 0 | 0 | 0 | 0 | 2 | 2 of 2 | none | `:open` on the select | flagged |
-| Choice | 0 | 0 | 0 | 0 | 0 | 3 | 3 of 3 | none | none | flagged |
-| Slider | 0 | 0 | 0 | 0 | 0 | 1 | 1 of 1 | `:dir(rtl)` | none | flagged |
-| Search | 0 | 0 | 0 | 0 | 0 | 1 | 1 of 1 | none | none | flagged |
-| Badge | 0 | 0 | 0 | 0 | 0 | 1 | 1 of 1 | `[data-tone="neutral"]` | none | flagged |
-| Card | 0 | 0 | 0 | 0 | 0 | 1 | 1 of 1 | none | none | flagged |
-| Disclosure | 0 | 0 | 0 | 0 | 0 | 1 | 1 of 1 | none | none | flagged |
-| Alert | 0 | 0 | 0 | 0 | 0 | 1 | 1 of 1 | none | none | flagged |
-| Meter | 0 | 0 | 0 | 0 | 0 | 1 | 1 of 1 | `[data-tone="warning"]`, `[data-tone="danger"]` | none | flagged |
-| Skeleton | 0 | 0 | 0 | 0 | 0 | 1 | 1 of 1 | none | none | flagged |
-| Avatar | 0 | 0 | 0 | 0 | 0 | 2 | 1 of 2 | none | none | flagged |
-| Separator | 0 | 0 | 0 | 0 | 0 | 1 | 1 of 1 | none | none | flagged |
-| Table | 0 | 0 | 0 | 0 | 0 | 1 | 1 of 1 | `[aria-sort="descending"]`, `[aria-sort="none"]` | none | flagged |
-| Popover | 0 | 0 | 0 | 0 | 0 | 3 | 1 of 3 | none | `:popover-open` on all three | flagged |
-| Dialog | 0 | 0 | 0 | 0 | 0 | 2 | 2 of 2 | none | `[open]` | flagged |
-| Sheet | 0 | 0 | 0 | 0 | 0 | 1 | 1 of 1 | none | `[open]`, `[data-side="top"]`, `:dir(rtl)` | flagged |
-| Menu | 0 | 0 | 0 | 0 | 0 | 1 | 1 of 1 | none | open menu | flagged |
-| Tabs | 0 | 0 | 0 | 0 | 0 | 1 | 1 of 1 | `[aria-orientation="vertical"]` | none | flagged |
-| Toast | 0 | 0 | 0 | 0 | 0 | 1 | 1 of 1 | none | every toast part, `[data-state="closing"]`, four tones | flagged |
-| Typography | 0 | 0 | 1, by hand | 0 | 0 | 0 | 0 | eyebrow tones render only in Foundations and Showcase | none | |
-| Base utilities | 0 | 0 | 0 | 0 | 0 | 0 | 0 | every class renders only inside other stories | `.odd-skip-link` | flagged, no story |
-| E-stop | 0 | 0 | 0 | 0 | 0 | 1 | 0 of 1 | `[aria-pressed="true"]` | none | flagged |
-| Stepper | 0 | 0 | 0 | 0 | 0 | 1 | 0 of 1 | none | none | flagged |
-| Range field | 0 | 0 | 0 | 0 | 0 | 1 | 0 of 1 | none | none | flagged |
-| Log | 0 | 0 | 0 | 0 | 0 | 1 | 0 of 1 | none | none | flagged |
-| Shell | 0 | 0 | 0 | 0 | 0 | 1 | 0 of 1 | none | none | flagged |
-| Grid | 0 | 0 | 0 | 0 | 0 | 1, by hand | 0 of 1 | `data-span` 1, 2, 3, 5, 6, 7, 9, 10, 11 | none | flagged |
+| Family | Playground | Variants | Sizes | States | Parts | Assembled | Mirrored | Static axes no story renders | Forbidden | Needs interaction | Only assembled |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| Button | 1 | 1 | 1 | 1 | 0 | 1 | 5 of 5 | none | `:disabled` | none | |
+| Field | 0 | 0 | 0 | 0 | 0 | 2 | 2 of 2 | none | none | `:user-invalid`, `:open` on the select | flagged |
+| Choice | 0 | 0 | 0 | 0 | 0 | 3 | 3 of 3 | none | none | none | flagged |
+| Slider | 0 | 0 | 0 | 0 | 0 | 1 | 1 of 1 | `:dir(rtl)` | none | none | flagged |
+| Search | 0 | 0 | 0 | 0 | 0 | 1 | 1 of 1 | none | none | none | flagged |
+| Badge | 0 | 0 | 0 | 0 | 0 | 1 | 1 of 1 | `[data-tone="neutral"]` | none | none | flagged |
+| Card | 0 | 0 | 0 | 0 | 0 | 1 | 1 of 1 | none | none | none | flagged |
+| Disclosure | 0 | 0 | 0 | 0 | 0 | 1 | 1 of 1 | none | none | none | flagged |
+| Alert | 0 | 0 | 0 | 0 | 0 | 1 | 1 of 1 | none | none | none | flagged |
+| Meter | 0 | 0 | 0 | 0 | 0 | 1 | 1 of 1 | `[data-tone="warning"]`, `[data-tone="danger"]` | none | none | flagged |
+| Skeleton | 0 | 0 | 0 | 0 | 0 | 1 | 1 of 1 | none | none | none | flagged |
+| Avatar | 0 | 0 | 0 | 0 | 0 | 2 | 1 of 2 | none | none | none | flagged |
+| Separator | 0 | 0 | 0 | 0 | 0 | 1 | 1 of 1 | none | none | none | flagged |
+| Table | 0 | 0 | 0 | 0 | 0 | 1 | 1 of 1 | `[aria-sort="descending"]`, `[aria-sort="none"]` | none | none | flagged |
+| Popover | 0 | 0 | 0 | 0 | 0 | 3 | 1 of 3 | none | none | `:popover-open` on all three | flagged |
+| Dialog | 0 | 0 | 0 | 0 | 0 | 2 | 2 of 2 | none | none | `[open]` | flagged |
+| Sheet | 0 | 0 | 0 | 0 | 0 | 1 | 1 of 1 | none | none | `[open]`, `[data-side="top"]`, `:dir(rtl)` | flagged |
+| Menu | 0 | 0 | 0 | 0 | 0 | 1 | 1 of 1 | none | `:disabled` | open menu | flagged |
+| Tabs | 0 | 0 | 0 | 0 | 0 | 1 | 1 of 1 | `[aria-orientation="vertical"]` | none | none | flagged |
+| Toast | 0 | 0 | 0 | 0 | 0 | 1 | 1 of 1 | none | none | every toast part, `[data-state="closing"]`, four tones | flagged |
+| Typography | 0 | 0 | 0 | 0 | 0 | 0 | 0 | none. Every axis renders only inside other stories | none | none | flagged, no story |
+| Base utilities | 0 | 0 | 0 | 0 | 0 | 0 | 0 | `.odd-skip-link`. Every other class renders only inside other stories | none | none | flagged, no story |
+| E-stop | 0 | 0 | 0 | 0 | 0 | 1 | 0 of 1 | `[aria-pressed="true"]` | none | none | flagged |
+| Stepper | 0 | 0 | 0 | 0 | 0 | 1 | 0 of 1 | none | none | none | flagged |
+| Range field | 0 | 0 | 0 | 0 | 0 | 1 | 0 of 1 | none | none | none | flagged |
+| Log | 0 | 0 | 0 | 0 | 0 | 1 | 0 of 1 | none | none | none | flagged |
+| Shell | 0 | 0 | 0 | 0 | 0 | 1 | 0 of 1 | none | none | none | flagged |
+| Grid | 0 | 0 | 0 | 0 | 0 | 1, by hand | 0 of 1 | `data-span` 1, 2, 3, 5, 6, 7, 9, 10, 11 | none | none | flagged |
 
 Three things stand out.
 
-- 26 of 28 families have only assembled stories, or none at all. Button is the exception, and Typography is one only if you count `foundations--headings`.
+- 27 of 28 families have only assembled stories, or none at all. Button is the exception.
 - Most families render every static axis already. Field, Choice, Card, Alert, Disclosure, Menu, and Search show all of theirs, and so do Dialog and Sheet apart from `[open]`. Their gap is the shape of the stories, not their coverage. A reader cannot see one part or one state alone.
 - The PR #23 set has no mirrored stories, so no aria snapshot check covers it. `e2e/usage.spec.ts:145-149` compares the expected aria snapshot only for mirrored stories.
 
@@ -153,17 +153,23 @@ Table's story is the plan's example of the shape to avoid. It renders selection,
 
 These cells were wrong or misleading, and the report uses the corrected reading. None of them changes a verdict, so the script stands.
 
-- `Story depth` gives Typography 0 stories. `foundations--headings` lays out all seven sizes in a column (`Foundations.stories.ts:114-130`), so it counts as a Sizes story.
 - `Story depth` gives Grid 0 stories. `components-layout--app-shell` renders it (`Layout.stories.ts:33`), so Grid has one assembled story, shared with Shell.
-- `Axes` misses `:required` in Field (`field.css:25`) and `:disabled` in Choice (`choice.css:24`), because both sit inside `:has()`. Both are rendered, by `Field.stories.ts:26` and `Choice.stories.ts:29`.
-- `Axes` counts Sheet's `[data-side="top"]` and `:dir(rtl)` as static. A closed sheet is off screen, and ODD-DIALOG-004 forbids a static `open`, so both need the sheet opened first.
+- `Axes` lists Dialog's and Sheet's `[open]`, Sheet's `[data-side="top"]` and `:dir(rtl)`, and every Toast axis except `.odd-toaster` under `No story renders`. ODD-DIALOG-004 forbids a static `open`, and a closed sheet is off screen, so the Dialog and Sheet axes need the dialog or sheet opened first. `toast()` builds every toast part at runtime (`toast.css:1-5`). Section 3 lists all of them under needs interaction.
 - `Tests` credits `e2e/behavior.spec.ts` to Shell and not to Grid. The only test there, "the app grid narrows panels to half, then to one column" (`behavior.spec.ts:379`), measures the grid.
 - `Tests` credits `e2e/behavior.spec.ts` to Badge. The only mention is a hover target inside the hover-card test (`behavior.spec.ts:112`).
 - `Tests` credits several tests to Base utilities that only use `odd-row` or `odd-stack` for layout.
 - `Tokens › Literal colors` lists `black` for Search (`search.css:35`). It is the stroke inside a mask image, and a mask uses only alpha. The drawn color is `--muted-foreground` (`search.css:34`), so no token is bypassed.
 - `Tokens › Chrome-varying tokens read` gives Log `--radius-surface`. Log caps it at `min(var(--radius-surface), var(--space-3))` (`log.css:20`), so the radius is the same in every chrome. The screenshots agree.
-- `Shape › JS` gives Button `src/js/button-type.ts`. That file is a helper that `menu.ts:1` and `tabs.ts:1` import to keep items from submitting forms. It does not style or wire `odd-button`.
+- `Shape › JS` gives Button `src/js/button-type.ts`. That file is a helper that `src/js/menu.ts:1` and `src/js/tabs.ts:1` import to keep items from submitting forms. It does not style or wire `odd-button`.
 - `Domain words › Strong` counts sample text in CSS header comments and usage-page examples as strong. By the plan's rule, only a class name or a rule is strong, so every strong hit in this audit is weak in kind except E-stop's. E-stop's coupling is a rule the word list cannot see. Its header says "Never disable it" (`estop.css:4`), and the README repeats it (`README.md:191`).
+
+### Open notes on the script
+
+The no-comments pass on the script left three reshape flags open. None of them changes a cell.
+
+- The family map writes Shell's and Grid's line ranges inside the CSS path string, such as `"components/shell.css:1-56"` (`scripts/primitive-fitness.ts:69`, `scripts/primitive-fitness.ts:73`), instead of in a field of their own.
+- `INTERACTION` files every `:open` as interaction (`scripts/primitive-fitness.ts:82`) because of one user, `.odd-select:open` (`field.css:143`).
+- When a story's name matches no family, `subjects` falls back to the family of the story's rarest class, and that fallback sits inline (`scripts/primitive-fitness.ts:384-388`).
 
 ## 4. Family by family
 
@@ -181,7 +187,7 @@ Each section covers the nine bar columns in the plan's order and ends with the v
 - **Themeable.** 29 tokens, no literal colors. The literal lengths are `em` icon and spinner sizes (`Tokens › Literal lengths`).
 - **Chromeable.** 16 chrome-varying tokens, including radius, shadow, press transform, and label case (`Tokens › Chrome-varying tokens read`). No screenshot was taken, because the script flagged nothing.
 - **Lintable.** 15 codes, 15 good and 15 bad fixtures, VOCABULARY `data-icon-only`, `data-size`, `data-variant`, and a `Button` wrapper (`Contract`).
-- **Story depth.** Five stories, four of them typed kinds, all mirrored, and all 11 static axes rendered (`Axes`).
+- **Story depth.** Five stories, four of them typed kinds, all mirrored, and all 11 static axes rendered (`Axes`). The CSS also styles `:disabled` (`button.css:84`), which ODD-BUTTON-007 forbids (`src/js/usage/contract.ts:52`), so it sits under `Axes › Forbidden by its contract`.
 
 **Verdict.** `keep-as-core-primitive`, by the keep row. One element, its own substance, and no gaps.
 
@@ -194,7 +200,7 @@ Each section covers the nine bar columns in the plan's order and ends with the v
 - **Testable.** No test of its own rendering. `tests/range-field.test.ts:55` checks that an `odd-error` appears for a bad number, and that is Range field's behavior. The rest is lint (`tests/eslint-jsx.test.ts`, `tests/usage-check.test.ts`).
 - **Themeable.** 30 tokens, no literal colors. The literal lengths draw the select chevron (`field.css:119-124`).
 - **Chromeable.** 14 chrome-varying tokens, including control radius, edge, focus glow, and the picker's overlay fill (`Tokens`). In glass the input becomes a pill (`contact/components-forms--search.contact.png`).
-- **Lintable.** 3 codes reach six of seven classes. `odd-label` has a `Label` wrapper but no element rule (`contract.ts:62-76`).
+- **Lintable.** 3 codes reach six of seven classes. `odd-label` has a `Label` wrapper but no element rule (`src/js/usage/contract.ts:62-76`).
 - **Story depth.** Two assembled stories, both mirrored. `TextFields` already renders required, invalid, and disabled (`Field.stories.ts:26`, `:34`, `:49`). What is missing is a Playground and a States story that sets those side by side.
 
 **Verdict.** `keep-as-core-primitive`, by the keep row. One element with fixed parts, plus control atoms that need no class change.
@@ -253,7 +259,7 @@ Each section covers the nine bar columns in the plan's order and ends with the v
 - **Themeable.** 25 tokens, no literal colors.
 - **Chromeable.** Label case, tracking, and border width change by chrome. Tone colors and the pill shape do not ([table-chromes.png](core-primitives-fitness/table-chromes.png)).
 - **Lintable.** 4 codes. ODD-BADGE-002 fixes the tone list.
-- **Story depth.** One assembled story. No story renders `data-tone="neutral"`.
+- **Story depth.** One assembled story. It renders the neutral look by leaving out `data-tone` (`Badge.stories.ts:17-33`, `badge.css:6-8`). No story writes the literal `data-tone="neutral"` that `badge.css:51` also selects.
 
 **Verdict.** `keep-as-core-primitive`, by the keep row.
 
@@ -266,7 +272,7 @@ Each section covers the nine bar columns in the plan's order and ends with the v
 - **Testable.** None found beyond the shared suites.
 - **Themeable.** 24 tokens, no literals.
 - **Chromeable.** 16 chrome-varying tokens. In the app-shell sheet, cards take radius 14, 24 in glass, and 16 in bubblegum and darkmatter (`contact/components-layout--app-shell.contact.png`, per the helper report).
-- **Lintable.** 7 codes. ODD-CARD-006 already allows `data-span` (`contract.ts:149`), which ties cards to Grid.
+- **Lintable.** 7 codes. ODD-CARD-006 already allows `data-span` (`src/js/usage/contract.ts:149`), which ties cards to Grid.
 - **Story depth.** One assembled story. Every static axis renders.
 
 **Verdict.** `keep-as-core-primitive`, by the keep row.
@@ -346,7 +352,7 @@ Each section covers the nine bar columns in the plan's order and ends with the v
 #### Meter
 
 - **Shape.** Two bars, `progress.odd-progress` and `meter.odd-meter`, and a stat row, `div.odd-stat` with a bare `label`, `odd-stat-value`, and a bar (`meter.css:1-13`).
-- **Atom or composition.** Two atoms and one layout. The bars have their own substance (`meter.css:14-94`). The stat row is a grid that places a label, a value, and a bar (`meter.css:96-112`). `odd-stat-value` is also used outside the row, on a slider's `output` (`Slider.stories.ts:31`, `docs/usage/react.md:442`).
+- **Atom or composition.** Two bar atoms, a value style, and one layout. The bars have their own substance (`meter.css:14-94`). The stat row is a grid that places a label, a value, and a bar (`meter.css:96-112`). `odd-stat-value` sets weight and tabular numbers (`meter.css:106-109`), and it is also used outside the row, on a slider's `output` (`Slider.stories.ts:31`, `docs/usage/react.md:442`).
 - **Domain coupling.** Weak only (`meter.css:2`, `docs/usage/meter.md:6`).
 - **Accessible.** Native elements, and the value must show as text (`meter.css:11`). Forced colors redraw the bars with a `Highlight` fill (`meter.css:114-130`). Low, high, and optimum colors are lost, and every bar is the same cyan ([progress-forced.png](core-primitives-fitness/progress-forced.png)). The text values carry the reading.
 - **Testable.** "progress and meter bars render, including in forced colors" (`behavior.spec.ts:417`) and the reduced-motion test (`behavior.spec.ts:431`). Nothing tests the stat row.
@@ -355,7 +361,7 @@ Each section covers the nine bar columns in the plan's order and ends with the v
 - **Lintable.** 3 codes reach the bars. The usage page says the stat has no codes and no React part (`docs/usage/meter.md:23`). A known follow-up says a wrapped bar loses its full row (`docs/follow-ups.md:115`).
 - **Story depth.** One assembled story. `data-tone="warning"` and `data-tone="danger"` are not rendered.
 
-**Verdict.** `split-into-smaller-primitives`, by the split row, because the file ships a second thing a consumer uses apart, a layout. `odd-meter` and `odd-progress` get `keep-as-core-primitive`. `odd-stat` and `odd-stat-value` get `demote-to-composed-recipe-or-app`, because their CSS only arranges a label and a bar.
+**Verdict.** `split-into-smaller-primitives`, by the split row, because the file ships a second thing a consumer uses apart, a layout. `odd-meter`, `odd-progress`, and `odd-stat-value` get `keep-as-core-primitive`. `odd-stat-value` stays because it is a value style that consumers use outside the row. `odd-stat` gets `demote-to-composed-recipe-or-app`, because its CSS only arranges a label, a value, and a bar.
 
 #### Skeleton
 
@@ -382,7 +388,7 @@ Each section covers the nine bar columns in the plan's order and ends with the v
 - **Testable.** Tooltip on hover and on focus, hover card, and popover placement (`behavior.spec.ts:75-121`).
 - **Themeable.** 17 tokens, no literal colors.
 - **Chromeable.** 10 chrome-varying tokens, including overlay fill, radius, and blur.
-- **Lintable.** 6 codes, all on `odd-popover`. `odd-tooltip` and `odd-hover-card` have no element rule and no wrapper. `src/js/usage/format.ts:749` already explains why a tooltip must use `popover="hint"`.
+- **Lintable.** 6 codes, all on `odd-popover`. `odd-tooltip` and `odd-hover-card` have no element rule and no wrapper. `src/js/usage/format.ts:749` says a hint popover suits `odd-tooltip` and `odd-hover-card`.
 - **Story depth.** Three assembled stories. Only Popover is mirrored. Tooltip and HoverCard are HTML only (`Overlays.stories.ts:19`, `:41`).
 
 **Verdict.** `keep-as-core-primitive`, by the keep row, for all three atoms.
@@ -419,24 +425,24 @@ Each section covers the nine bar columns in the plan's order and ends with the v
 
 #### Menu
 
-- **Shape.** `div.odd-menu` as a popover with `role="menu"`, holding `button.odd-menu-item`, `odd-menu-label`, `odd-menu-shortcut`, and `odd-separator` (`menu.ts:6-15`).
+- **Shape.** `div.odd-menu` as a popover with `role="menu"`, holding `button.odd-menu-item`, `odd-menu-label`, `odd-menu-shortcut`, and `odd-separator` (`src/js/menu.ts:6-15`).
 - **Atom or composition.** Atom. Item states and marks (`menu.css:16-104`) and `enhanceMenu`. Its panel comes from `popover.css`.
-- **Domain coupling.** Weak only. The 13 strong hits are "deck" in the example menu (`menu.ts:7-8`, `docs/usage/menu.md`).
-- **Accessible.** Arrow, Home, End, and type-ahead keys, and Tab closes (`menu.ts:17-21`). A disabled item stays reachable (`menu.ts:24-26`). Focus shows as a ring and a fill (`menu.css:7`). Forced colors use `Highlight` (`menu.css:110-115`).
+- **Domain coupling.** Weak only. The 13 strong hits are "deck" in the example menu (`src/js/menu.ts:7-8`, `docs/usage/menu.md`).
+- **Accessible.** Arrow, Home, End, and type-ahead keys, and Tab closes (`src/js/menu.ts:17-21`). A disabled item stays reachable (`src/js/menu.ts:24-26`). Focus shows as a ring and a fill (`menu.css:7`). Forced colors use `Highlight` (`menu.css:110-115`).
 - **Testable.** `behavior.spec.ts:200` and `:296`, and `tests/react.test.tsx:448`.
 - **Themeable.** 20 tokens, no literal colors.
 - **Chromeable.** 7 chrome-varying tokens of its own, plus the popover panel's.
 - **Lintable.** 7 codes plus ODD-POPOVER-002. `odd-menu-label` and `odd-menu-shortcut` have no rule.
-- **Story depth.** One assembled story. Every static axis renders.
+- **Story depth.** One assembled story. Every static axis renders. The CSS also styles `:disabled` on an item (`menu.css:80`), which ODD-MENU-007 forbids (`src/js/usage/contract.ts:251`), so it sits under `Axes › Forbidden by its contract`.
 
 **Verdict.** `keep-as-core-primitive`, by the keep row.
 
 #### Tabs
 
-- **Shape.** `div.odd-tabs` holding a tablist, tabs, and panels (`tabs.ts:6-13`).
+- **Shape.** `div.odd-tabs` holding a tablist, tabs, and panels (`src/js/tabs.ts:6-13`).
 - **Atom or composition.** Atom. Its tablist copies the segmented control's look (`tabs.css:2-3`, `tabs.css:16-24` against `choice.css:67-76`).
-- **Domain coupling.** Weak only (`tabs.ts:8`).
-- **Accessible.** One tab stop, arrow keys, and manual activation with `data-activation="manual"` (`tabs.ts:15-18`). Forced colors outline the selected tab (`tabs.css:89-92`).
+- **Domain coupling.** Weak only (`src/js/tabs.ts:8`).
+- **Accessible.** One tab stop, arrow keys, and manual activation with `data-activation="manual"` (`src/js/tabs.ts:15-18`). Forced colors outline the selected tab (`tabs.css:89-92`).
 - **Testable.** "tabs follow the arrow keys, and manual tabs wait for Enter" (`behavior.spec.ts:239`) and three React tests (`tests/react.test.tsx:375-428`).
 - **Themeable.** 19 tokens, no literal colors.
 - **Chromeable.** 10 chrome-varying tokens.
@@ -470,8 +476,8 @@ Each section covers the nine bar columns in the plan's order and ends with the v
 - **Testable.** None found (`Tests` is empty).
 - **Themeable.** 20 tokens, no literal colors.
 - **Chromeable.** 6 chrome-varying tokens, including heading case, weight, and the hero glow.
-- **Lintable.** 0 codes. VOCABULARY lists `data-size` and `data-tone` (`contract.ts:434`), and the README has a row (`README.md:174`), but no rule reads them. No React wrapper.
-- **Story depth.** `foundations--headings` is a Sizes story by hand. Eyebrow tones render only inside Foundations and Showcase stories.
+- **Lintable.** 0 codes. VOCABULARY lists `data-size` and `data-tone` (`src/js/usage/contract.ts:434`), and the README has a row (`README.md:174`), but no rule reads them. No React wrapper.
+- **Story depth.** No story of its own. Every axis renders only inside other stories (`Axes › Rendered only by other stories`). `foundations--headings` lays out all seven sizes in a column (`Foundations.stories.ts:114-130`), so a Sizes story is easy to add. It does not count, because a Foundations story is a consumer of the family.
 
 **Verdict.** `keep-as-core-primitive`, by the keep row. Its gaps close with codes and stories, not class changes.
 
@@ -485,7 +491,7 @@ Each section covers the nine bar columns in the plan's order and ends with the v
 - **Themeable.** 12 tokens, no literal colors.
 - **Chromeable.** Only `odd-scope` paints, through the page background and body font.
 - **Lintable.** 0 codes and no VOCABULARY entry.
-- **Story depth.** No story of their own. Every class except `odd-skip-link` renders inside other stories.
+- **Story depth.** No story of their own. Every class except `odd-skip-link` renders inside other stories. `odd-skip-link` is a static part class (`base.css:83`) that no story renders, so the family has an X gap.
 
 **Verdict.** `keep-as-core-primitive`, by the keep row, for all six.
 
@@ -502,7 +508,7 @@ The robot-arm app is the only known consumer of these five families and Grid. No
 - **Testable.** None found (`Tests` is empty).
 - **Themeable.** It mixes the rim from `--danger` and literal `black` (`estop.css:12`). The font weight 800 and tracking 0.06em are fixed (`estop.css:27`, `:31`).
 - **Chromeable.** The cap, collar, and STOP text look the same in all five chromes. Only the outer shadow and, in bubblegum, the font change ([estop-chromes.png](core-primitives-fitness/estop-chromes.png)).
-- **Lintable.** 0 codes. VOCABULARY has an empty `estop` entry (`contract.ts:417`).
+- **Lintable.** 0 codes. VOCABULARY has an empty `estop` entry (`src/js/usage/contract.ts:417`).
 - **Story depth.** One assembled story. No story renders `aria-pressed="true"` without a click.
 
 **Verdict.** `demote-to-composed-recipe-or-app`, by the demote row's second clause, because its purpose belongs to one app. It moves to the robot-arm app. The forced-colors latched drawing (`estop.css:55-65`) is the part worth keeping in view, since any toggle button that draws its pressed state with a fill needs the same fix.
@@ -511,7 +517,7 @@ The robot-arm app is the only known consumer of these five families and Grid. No
 
 - **Shape.** `div.odd-stepper role="group"` holding `odd-button`s with `data-step` around `odd-input type="number"` (`stepper.css:1-11`).
 - **Atom or composition.** Composition. Every rule but the container selects `odd-button` or `odd-input` (`stepper.css:24-42`). The behavior is real and generic. `enhanceStepper` steps with the input's own `stepUp` and `stepDown`, repeats on hold, marks limits, and fires one `change` per press (`stepper.ts:1-9`).
-- **Domain coupling.** Weak only. All 23 hits are jog, wrist, and gripper labels in the story (`Domain words › Weak hits`). The ±1 and ±10 jog row exists only in story markup (`Controls.stories.ts:71-75`). Neither the CSS nor the JS assumes it.
+- **Domain coupling.** Weak only. All 23 hits are jog, wrist, and gripper labels in the story (`Domain words › Weak hits`). The ±1 and ±10 jog row is the CSS header's example (`stepper.css:5-9`) and the story's markup (`Controls.stories.ts:71-75`). No rule and no code path assumes it. The CSS lays out any number of buttons, and `enhanceStepper` steps the first number input it finds and returns early when there is none (`stepper.ts:14-15`).
 - **Accessible.** The group is named by the label (`stepper.css:4`). Buttons at a limit get `aria-disabled` (`stepper.ts:19-28`). Without JS the number input still works (`stepper.css:15-16`).
 - **Testable.** Five unit tests (`tests/stepper.test.ts:30-70`) and "a held stepper button repeats in whole steps of the input" (`behavior.spec.ts:339`).
 - **Themeable.** 3 tokens, no literal colors.
@@ -544,7 +550,7 @@ The robot-arm app is the only known consumer of these five families and Grid. No
 - **Testable.** Three unit tests (`tests/log.test.ts:33-65`) and "the log follows new lines until the reader scrolls up" (`behavior.spec.ts:359`).
 - **Themeable.** 18 tokens, no literal colors.
 - **Chromeable.** The log body looks the same in all five chromes. Radius is capped (`log.css:20`), and the fill, font, and tints don't vary. Only the border turns 2px and dark in bubblegum ([log-chromes.png](core-primitives-fitness/log-chromes.png)).
-- **Lintable.** 0 codes. VOCABULARY lists `data-tone` (`contract.ts:419`).
+- **Lintable.** 0 codes. VOCABULARY lists `data-tone` (`src/js/usage/contract.ts:419`).
 - **Story depth.** One assembled story. All four tones render.
 
 **Verdict.** `keep-as-core-primitive`, by the keep row. One element with a fixed part, its own substance, and no strong coupling.
@@ -552,27 +558,27 @@ The robot-arm app is the only known consumer of these five families and Grid. No
 #### Shell
 
 - **Shape.** `div.odd-shell` with a header (title, status slot, actions) and a main area (`shell.css:1-14`). The story fills it with 12 other families (`Shape › Other families in its stories`).
-- **Atom or composition.** Composition. Its selectors name no other family, but its job is to place other families' classes in slots. The only paint is the header, and it uses the same surface tokens as `odd-card` (`shell.css:35-39` against `card.css:13-18`). Layout alone does not make an atom. `Showcase/SampleApp` builds a full page header from `odd-row` without it (`Showcase.stories.ts:46-56`).
+- **Atom or composition.** Atom. Its selectors name no other family (`Shape › Selects other families`). A two-row grid at full viewport height, a sticky header, and a status slot that takes the free space are its own (`shell.css:20-52`). The header uses the same surface tokens as `odd-card` (`shell.css:35-39` against `card.css:13-18`), which is shared paint, not an arrangement of `odd-card`. `Showcase/SampleApp` builds a full page header from `odd-row` without it (`Showcase.stories.ts:46-56`).
 - **Domain coupling.** Weak in kind. "NexArm" and "jog" sit in header comments (`shell.css:4`, `:9`).
 - **Accessible.** A `header` and `main` give landmarks. The status slot may take `role="status"` (`shell.css:13-14`). In the story it has no name (`aria/components-layout--app-shell.txt`).
 - **Testable.** None found of its own. The e2e test the script credits to it measures Grid.
 - **Themeable.** 11 tokens, no literal colors.
 - **Chromeable.** The header changes radius, border, shadow, and blur by chrome. The layout does not (`contact/components-layout--app-shell.contact.png`).
-- **Lintable.** 0 codes. VOCABULARY files `data-span` under `shell` (`contract.ts:427`), but Grid reads it.
+- **Lintable.** 0 codes. VOCABULARY files `data-span` under `shell` (`src/js/usage/contract.ts:427`), but Grid reads it.
 - **Story depth.** One assembled story.
 
-**Verdict.** `demote-to-composed-recipe-or-app`, by the demote row's first clause, as a page-layout recipe. This is the closest call in the PR #23 set. If Caleb wants a page frame in core, the header bar is one element with fixed parts and could stay.
+**Verdict.** `keep-as-core-primitive`, by the keep row. One element with fixed parts, its own layout and sticky header, and no strong coupling. The README row describes a generic page frame (`README.md:195`). The robot-arm app is its only known consumer, as it is for Log and Grid, which also stay. This is the closest call in the PR #23 set. The alternative is `demote-to-composed-recipe-or-app`, as a page-layout recipe, for a reader who holds that a page frame is an app-level assembly.
 
 #### Grid
 
 - **Shape.** Any container, with `data-span` on children (`shell.css:16-18`).
-- **Atom or composition.** Atom. A 12-column grid that measures itself, not the viewport (`shell.css:58-90`). No other class does this. `Showcase/SampleApp` writes its grids inline because none exists (`Showcase.stories.ts:78`, `:87`).
+- **Atom or composition.** Atom. A 12-column grid that measures itself, not the viewport (`shell.css:58-90`). No other class does this. `Showcase/SampleApp` writes its grids inline (`Showcase.stories.ts:78`, `:87`).
 - **Domain coupling.** None found.
 - **Accessible.** Spans don't reorder content, so reading order matches source order. Nothing else applies.
 - **Testable.** "the app grid narrows panels to half, then to one column, by its own width" (`behavior.spec.ts:379`).
 - **Themeable.** 2 tokens. `--gap` defaults to `--space-4` (`shell.css:63`).
 - **Chromeable.** It paints nothing, so it is the same in every chrome, as a layout utility should be.
-- **Lintable.** 0 codes. Its attribute sits under `shell` in VOCABULARY (`contract.ts:427`).
+- **Lintable.** 0 codes. Its attribute sits under `shell` in VOCABULARY (`src/js/usage/contract.ts:427`).
 - **Story depth.** No story of its own. AppShell renders spans 4 and 8 only.
 
 **Verdict.** `keep-as-core-primitive`, by the keep row. It belongs in `base.css` beside `odd-stack` and `odd-row`.
@@ -585,91 +591,93 @@ Each list is ranked by the distance score in section 1, highest first. Ties foll
 
 1. Base utilities. Add a story and codes first, since every other story leans on them.
 2. Grid. Move it to `base.css`, and give it its own VOCABULARY entry and story.
-3. Badge, Field, Log, Typography.
-4. Alert, Card, Choice, Disclosure, Menu, Popover, Separator, Slider, Table, Tabs.
-5. Avatar, Dialog, Search, Sheet, Skeleton, Toast.
-6. Button, which needs nothing.
-7. `odd-meter` and `odd-progress`, from the Meter split.
-8. `enhanceStepper` and `enhanceRangeField`, as behaviors without a layout class.
+3. Shell, Typography.
+4. Badge, Field, Log.
+5. Alert, Card, Choice, Disclosure, Menu, Popover, Separator, Slider, Table, Tabs.
+6. Avatar, Dialog, Search, Sheet, Skeleton, Toast.
+7. Button, which needs nothing.
+8. `odd-meter`, `odd-progress`, and `odd-stat-value`, from the Meter split.
+9. `enhanceStepper` and `enhanceRangeField`, as behaviors without a layout class.
 
 ### What splits
 
-1. Meter. `odd-meter` and `odd-progress` stay. `odd-stat` and `odd-stat-value` become a stat-row recipe over `odd-row` and a bar. `odd-stat-value` is also used on a slider's `output` (`Slider.stories.ts:31`). One open question is whether its tabular-number style should move to Typography so that use keeps working.
+1. Meter. `odd-meter`, `odd-progress`, and `odd-stat-value` stay. `odd-stat` becomes a stat-row recipe over `odd-row`, `odd-stat-value`, and a bar. `odd-stat-value` stays because it is also used on a slider's `output` (`Slider.stories.ts:31`). One open question is whether its tabular-number style should move to Typography.
 
 ### What moves to a recipe or an app
 
 1. E-stop moves to the robot-arm app. Keep the latched forced-colors drawing (`estop.css:55-65`) in mind for any pressed-state toggle in core.
-2. Shell becomes a page-layout recipe. Nothing behavioral to keep. Its header paint is the card surface.
-3. Range field becomes a recipe. Keep `enhanceRangeField` in core, with its markup contract in its own doc page.
-4. Stepper becomes a recipe with two stories, the single ± field and the jog row. Keep `enhanceStepper` in core.
-5. The stat row from Meter becomes a recipe.
+2. Range field becomes a recipe. Keep `enhanceRangeField` in core, with its markup contract in its own doc page.
+3. Stepper becomes a recipe with two stories, the single ± field and the jog row. Keep `enhanceStepper` in core.
+4. The stat row from Meter becomes a recipe.
 
 ### Stories and usage codes to add for each keeper
 
 Every keeper with only assembled stories needs a `Playground` with controls for its attribute axes, and a Variants, Sizes, or States story for each axis it has. That line is not repeated below. Each list names only what is specific to the family. Static stories come first, then stories that need interaction through a `play` function.
 
-1. **Base utilities.** Static stories to add: a Parts story with `odd-stack` and `odd-row` at two `--gap` values, `odd-muted`, and `odd-scope` nested in another chrome. Stories that need interaction: `odd-skip-link` on focus. Codes:
+1. **Base utilities.** Static stories to add: a Parts story with `odd-stack` and `odd-row` at two `--gap` values, `odd-muted`, `odd-skip-link`, and `odd-scope` nested in another chrome. Stories that need interaction: `odd-skip-link` shown on focus. Codes:
 	- ODD-SCOPE-001. `odd-scope` without all three of `data-chrome`, `data-palette`, and `data-mode`. It catches chrome tokens that reference palette colors resolving against the outer scope (`base.css:102-105`).
 	- ODD-SKIP-001. `odd-skip-link` not on an `a` with an `href` to an in-page id. It catches a skip link that does not move focus.
 2. **Grid.** Static stories to add: a Variants story with every `data-span` from 1 to 12 and the two container-width collapses. Codes:
 	- ODD-GRID-001. `data-span` outside 1 to 12. It catches a child that silently spans the full row.
 	- Move `data-span` from `shell` to a new `grid` VOCABULARY entry.
-3. **Badge.** Static stories to add: Variants with all six tones, soft and solid. No new codes.
-4. **Field.** Static stories to add: Parts with each control alone, then States with required, invalid, and disabled side by side. Stories that need interaction: `:user-invalid` after typing. Codes:
-	- ODD-FIELD-004. `odd-label` not on a `label`. It catches a control left with no accessible name and no click-to-focus.
-5. **Log.** Static stories to add: Variants with each tone and a line without a time. Mirror it in React once a wrapper exists. Codes:
-	- ODD-LOG-001. `odd-log` without `role="log"`. It catches new lines that are never announced.
-	- ODD-LOG-002. `odd-log` without `tabindex="0"`. It catches a capped log that keyboard users cannot scroll.
-	- ODD-LOG-003. `role="log"` without `aria-label` or `aria-labelledby`. It catches an unnamed live region.
-	- ODD-LOG-004. `data-tone` on a line outside info, success, warning, and danger. It catches a tone that silently draws nothing.
-6. **Typography.** Static stories to add: a `Components/` Variants story for eyebrow tones beside the existing headings story. Codes:
+3. **Shell.** Static stories to add: a Parts story with the header's title, status, and actions slots, each filled and empty. Codes:
+	- ODD-SHELL-001. `odd-shell-header` not on a `header`, or `odd-shell-main` not on a `main`. It catches a page frame with no banner or main landmark (`README.md:195`).
+4. **Typography.** Static stories to add: a `Components/` Sizes story, which can reuse the layout of `foundations--headings` (`Foundations.stories.ts:114-130`), and a Variants story for eyebrow tones. Codes:
 	- ODD-TYPOGRAPHY-001. `odd-heading` not on `h1` to `h6`. It catches a big title that heading navigation skips.
 	- ODD-TYPOGRAPHY-002. `data-size` outside xs, sm, lg, xl, 2xl, and hero, with `md` listed as an omitted value. It catches a size that silently renders as md.
 	- ODD-TYPOGRAPHY-003. Eyebrow `data-tone` outside primary and foreground. It catches a tone that silently stays muted.
-7. **Alert.** Static stories to add: a story that inserts an alert into an empty `role="status"` container, as `alert.css:6-8` asks. No new codes.
-8. **Card.** Static stories to add: Parts with title, link, and footer, and States with plain and `data-interactive`. No new codes.
-9. **Choice.** Static stories to add: Parts with checkbox, radio, switch, and segmented, each alone. No new codes.
-10. **Disclosure.** Static stories to add: States with closed, open, and a named group. No new codes.
-11. **Menu.** Stories that need interaction: an opened menu in a `play` function, so the items show in the aria snapshot. Codes:
+5. **Badge.** Static stories to add: Variants with all six tones, soft and solid, with neutral written once as the literal `data-tone="neutral"`. No new codes.
+6. **Field.** Static stories to add: Parts with each control alone, then States with required, invalid, and disabled side by side. Stories that need interaction: `:user-invalid` after typing. Codes:
+	- ODD-FIELD-004. `odd-label` not on a `label`. It catches, in HTML only, an `odd-label` whose `for` cannot point at the control and that gives no click-to-focus. The `Label` wrapper already renders a `label` (`src/js/usage/contract.ts:294`).
+7. **Log.** Static stories to add: Variants with each tone and a line without a time. Mirror it in React once a wrapper exists. Codes:
+	- ODD-LOG-001. `odd-log` without `role="log"`. It catches new lines that are never announced.
+	- ODD-LOG-002. `odd-log` without `tabindex="0"`. It catches a capped log that keyboard users cannot scroll.
+	- ODD-LOG-003. `role="log"` without `aria-label` or `aria-labelledby`. It catches an unnamed live region.
+	- ODD-LOG-004. `data-tone` on a line outside info, success, warning, and danger. It catches a tone that draws no tint and no stripe (`log.css:29`, `log.css:44-47`) but still recolors the line's time, because `log.css:50` matches any `data-tone`.
+8. **Alert.** Static stories to add: a story that inserts an alert into an empty `role="status"` container, as `alert.css:6-8` asks. No new codes.
+9. **Card.** Static stories to add: Parts with title, link, and footer, and States with plain and `data-interactive`. No new codes.
+10. **Choice.** Static stories to add: Parts with checkbox, radio, switch, and segmented, each alone. No new codes.
+11. **Disclosure.** Static stories to add: States with closed, open, and a named group. No new codes.
+12. **Menu.** Stories that need interaction: an opened menu in a `play` function, so the items show in the aria snapshot. Codes:
 	- ODD-MENU-008. `odd-menu-shortcut` without `aria-hidden="true"`. It catches a shortcut read twice, once as text and once from `aria-keyshortcuts`.
 	- ODD-MENU-009. A `role="group"` inside `odd-menu` without a name. It catches a group whose `odd-menu-label` is visual only (`menu.css:5-6`).
-12. **Popover.** Mirror Tooltip and HoverCard once wrappers exist. Stories that need interaction: each of the three opened. Codes:
-	- ODD-TOOLTIP-001. `odd-tooltip` without `popover="hint"` and `role="tooltip"`. It catches a tooltip that closes an open menu when it appears (`format.ts:749`).
-	- ODD-HOVER-CARD-001. `odd-hover-card` without `popover="hint"`. It catches the same failure for a hover card.
-13. **Separator.** Static stories to add: a Variants story with horizontal and vertical. No new codes.
-14. **Slider.** Static stories to add: a `dir="rtl"` story. No new codes.
-15. **Table.** Static stories to add: Parts with a plain table, numeric columns, and a sortable header in each `aria-sort` state. States with no rows selected, some selected, and all selected. A wrap that overflows next to one that doesn't. Codes:
+13. **Popover.** Mirror Tooltip and HoverCard once wrappers exist. Stories that need interaction: each of the three opened. Codes:
+	- ODD-TOOLTIP-001. `odd-tooltip` without `popover="hint"` and `role="tooltip"`. It catches a tooltip with `popover="auto"` or no popover, which misses the hint behavior the README requires (`README.md:184`). An auto popover closes an open menu or popover when it opens. `src/js/usage/format.ts:749` says a hint popover suits `odd-tooltip` and `odd-hover-card`.
+	- ODD-HOVER-CARD-001. `odd-hover-card` without `popover="hint"`. It catches the same failure for a hover card (`README.md:185`).
+14. **Separator.** Static stories to add: a Variants story with horizontal and vertical. No new codes.
+15. **Slider.** Static stories to add: a `dir="rtl"` story. No new codes.
+16. **Table.** Static stories to add: Parts with a plain table, numeric columns, and a sortable header in each `aria-sort` state. States with no rows selected, some selected, and all selected. A wrap that overflows next to one that doesn't. Codes:
 	- ODD-TABLE-006. A `data-select-all` box without `aria-label` or `aria-labelledby`. It catches an unnamed header checkbox.
-16. **Tabs.** Static stories to add: a vertical tabs story. No new codes.
-17. **Avatar.** Mirror AvatarFallback. Static stories to add: Sizes and an initials-versus-image Variants story. No new codes.
-18. **Dialog.** Stories that need interaction: each dialog opened in a `play` function, so the aria snapshot includes it. No new codes.
-19. **Search.** Static stories to add: the `form` variant inside `search`. No new codes.
-20. **Sheet.** Stories that need interaction: each of the four sides opened, and one in right-to-left. No new codes.
-21. **Skeleton.** No new stories or codes. Its one story already shows both shapes.
-22. **Toast.** Stories that need interaction: each tone, a toast with an action, and the closing state, through `toast()` in a `play` function. Add a forced-colors check for the tone dot. No new codes.
+17. **Tabs.** Static stories to add: a vertical tabs story. No new codes.
+18. **Avatar.** Mirror AvatarFallback. Static stories to add: Sizes and an initials-versus-image Variants story. No new codes.
+19. **Dialog.** Stories that need interaction: each dialog opened in a `play` function, so the aria snapshot includes it. No new codes.
+20. **Search.** Static stories to add: the `form` variant inside `search`. No new codes.
+21. **Sheet.** Stories that need interaction: each of the four sides opened, and one in right-to-left. No new codes.
+22. **Skeleton.** No new stories or codes. Its one story already shows both shapes.
+23. **Toast.** Stories that need interaction: each tone, a toast with an action, and the closing state, through `toast()` in a `play` function. Add a forced-colors check for the tone dot. No new codes.
 
 The recipes need their own checks once they exist. `enhanceStepper` and `enhanceRangeField` read fixed markup, so two codes would hold that markup to what the JS expects.
 
-- ODD-STEPPER-001. A stepper root without exactly one `input type="number"`. It catches buttons that do nothing.
+- ODD-STEPPER-001. A stepper root with no `input type="number"`. It catches a stepper whose step buttons are all inert, because `enhanceStepper` returns early when it finds no number input (`stepper.ts:14-15`).
 - ODD-RANGE-FIELD-001. A range-field root without one `input type="range"` and one `input type="number"`. It catches a sync that silently never starts (`range-field.ts:25`).
 
 ## 6. Hypotheses
 
-Six of the plan's eleven guesses held in full. Five held only in part or did not hold.
+Five of the plan's eleven guesses held in full. Six held only in part or did not hold.
 
 | Guess | Outcome | Evidence |
 | --- | --- | --- |
 | Table is an atom whose story is the anti-pattern. | Held for the verdict. "Largest story gap after the PR #23 set" did not hold by count. | Table misses two static axes. Grid misses nine. Table's story is still the one that packs every axis into one widget (`Table.stories.ts:28-152`). `enhanceSelectAll` needs no contract of its own. It already has an e2e test (`behavior.spec.ts:310`), and one code for the header box's name covers its gap. |
-| Meter bundles a layout. | Held. | `meter.css:96-112`. One addition: `odd-stat-value` is used outside the row (`Slider.stories.ts:31`). |
+| Meter bundles a layout. | Held. | `meter.css:96-112`. One addition: `odd-stat-value` is used outside the row (`Slider.stories.ts:31`), so it stays in core and only `odd-stat` becomes a recipe. |
 | Field is atoms plus a container, with story gaps for invalid, disabled, required, and each control alone. | Verdict held. The story gaps did not. | `TextFields` renders required, invalid, and disabled, and each control appears (`Field.stories.ts:26-49`). The gap is the story kinds and the missing `odd-label` rule. |
 | Popover's file holds three atoms. | Held. | `popover.css:30-107`. Tooltip and hover card also lack an element rule. |
 | Choice, Dialog, Sheet, Menu, Tabs, Toast, Card, and Alert are keepers whose one story cannot show their axes. | Verdicts held. The axis guess held only for Sheet, Tabs, and Toast. | Card's `data-interactive`, Menu's disabled items, Tabs' manual mode, and Alert's tones all render today (`Axes › Rendered by its stories`). |
-| Typography and the base utilities are keepers with no contract. | Held, with one correction. | `foundations--headings` is a Sizes story (`Foundations.stories.ts:114-130`). |
+| Typography and the base utilities are keepers with no contract. | Held. | Neither has a usage code or a story of its own (`Contract`, `Story depth`). `foundations--headings` lays out all seven sizes (`Foundations.stories.ts:114-130`), which shows a Sizes story is easy to add, but it does not count. |
 | `odd-estop` is a real atom with a domain name, demoted, with keep as the alternative. | Held. The alternative did not. | The cap ignores the chrome ([estop-chromes.png](core-primitives-fitness/estop-chromes.png)), it mixes in literal `black` (`estop.css:12`), and its rule only fits machines (`estop.css:4`). |
 | `odd-log` is the strongest PR #23 core candidate, with domain words only in story sample lines. | Verdict held. The domain guess did not. | Five robot-arm words sit in header comments (`log.css:2-4`, `log.ts:5-6`). New finding: the log body ignores the chrome ([log-chromes.png](core-primitives-fitness/log-chromes.png)). |
 | `odd-range-field` is a composition. | Held. | `range-field.css:24-33`. `enhanceRangeField` stays in core. |
-| `odd-stepper` bundles an atom with a jog arrangement and should split. | Did not hold. Demote instead. | The jog row is story markup only (`Controls.stories.ts:71-75`). `stepper.css` and `stepper.ts` accept any number of `data-step` buttons, so there is no second shipped thing to split off. The CSS arranges `odd-button` and `odd-input` (`stepper.css:24-42`). |
-| `odd-shell` is page chrome and `odd-grid` is a layout utility. | Held. | `contract.ts:427` files `data-span` under `shell`. `Showcase.stories.ts:46-56` builds a page header without `odd-shell`, and `Showcase.stories.ts:78` hand-writes a grid. |
+| `odd-stepper` bundles an atom with a jog arrangement and should split. | Did not hold. Demote instead. | The jog row is the CSS header's example and the story's markup (`stepper.css:5-9`, `Controls.stories.ts:71-75`), and no rule or code path assumes it. `stepper.css` and `stepper.ts` accept any number of `data-step` buttons, so there is no second shipped thing to split off. The CSS arranges `odd-button` and `odd-input` (`stepper.css:24-42`). |
+| `odd-shell` is page chrome and `odd-grid` is a layout utility. | Held for Grid. Did not hold for Shell. | Grid is a 12-column container-query grid no other class gives (`shell.css:58-90`), and `src/js/usage/contract.ts:427` files its `data-span` under `shell`. Shell's selectors name no other family, and its full-height two-row grid, sticky header, and status slot are its own (`shell.css:20-52`), so it stays in core. |
 
 ## Appendix A. Proposed text for later PRs
 
@@ -677,15 +685,17 @@ This appendix proposes text only. Nothing here is applied.
 
 ### Recipe location and naming
 
-> A recipe is a documented arrangement of core classes for one task. It lives in `stories/recipes/<Name>.stories.ts` with the title `Recipes/<Name>`, and its usage page lives in `docs/recipes/<name>.md`. Name a recipe for the task it does, in sentence case: "Number stepper", "Slider with number", "Stat row", "App shell".
+> A recipe is a documented arrangement of existing core classes for one task. It lives in `stories/recipes/<Name>.stories.ts` with the title `Recipes/<Name>`, and its usage page lives in `docs/recipes/<name>.md`. Name a recipe for the task it does, in sentence case: "Number stepper", "Slider with number", "Stat row".
 >
-> A recipe adds no class to `CLASS_REGISTRY`. When it needs layout rules that core classes and the `--gap` variable cannot give, those rules go in `src/css/recipes/<name>.css`, which `index.css` does not import. A recipe's classes keep the `odd-` prefix and are listed in a separate `RECIPE_CLASSES` array, so the `ODD-CLASS-001` check knows them without counting them as core.
+> A recipe adds no class and no stylesheet. It uses core classes, the `--gap` variable, and the attributes core classes already read.
 >
 > Behavior a recipe needs, such as `enhanceStepper`, stays in `src/js/` and is exported from `enhance.ts`. Its JSDoc names the markup it reads, and its usage codes check that markup.
 >
 > A component that only one app uses goes to that app's repository, not to a recipe.
 
-The plan defines a recipe as a composition of core classes. The proposal above lets a recipe keep a small CSS file, because Stepper and Shell carry rules that no core class gives, such as hiding the number input's spin buttons (`stepper.css:38-42`). Dropping those rules would change how the robot-arm app looks. Caleb can choose plain core classes only instead, at the cost of those rules.
+This follows the plan's default, where a recipe is a composition of core classes. It has a cost. Stepper and Range field carry rules that no core class gives, such as hiding the number input's spin buttons (`stepper.css:38-42`). A recipe made only of core classes drops them, and the robot-arm app's stepper shows its spin buttons again. `enhance.ts:113-114` also finds steppers and range fields by their classes, so a recipe calls `enhanceStepper` and `enhanceRangeField` on its root directly.
+
+Caleb can choose a recipe stylesheet instead. Each recipe would keep its rules in `src/css/recipes/<name>.css`, and its classes would keep the `odd-` prefix. That option has to change two things. `tests/usage-contract.test.ts:62-65` requires the `odd-` classes under `src/css`, subfolders included, to equal `CLASS_REGISTRY`, so the test would need a separate list of recipe classes. `src/css/index.css:51-52` imports the stepper and range-field rules today. A recipe stylesheet loads only if `index.css` or the app imports it.
 
 ### Story-depth rule a test can enforce
 
@@ -695,14 +705,32 @@ The plan defines a recipe as a composition of core classes. The proposal above l
 
 ### README and contract changes that follow from the verdicts
 
-- `README.md:191`. Remove the `odd-estop` row, and remove `odd-estop` from `CLASS_REGISTRY` and VOCABULARY (`contract.ts:417`) when the robot-arm app takes the file.
-- `README.md:192-193`, `README.md:195`. Move the Stepper, Range field, and Shell rows to a new "Recipes" section that links each recipe page. Keep a row each for `enhanceStepper` and `enhanceRangeField` under behaviors.
+- `README.md:191`. Remove the `odd-estop` row, and remove `odd-estop` from `CLASS_REGISTRY` and VOCABULARY (`src/js/usage/contract.ts:417`) when the robot-arm app takes the file.
+- `README.md:192-193`. Move the Stepper and Range field rows to a new "Recipes" section that links each recipe page. Keep a row each for `enhanceStepper` and `enhanceRangeField` under behaviors.
 - `README.md:196`. Move the `odd-grid` row beside `odd-stack` and `odd-row`, and move its CSS from `shell.css:58-90` into `base.css`.
-- `contract.ts:427`. Replace `shell: ["data-span"]` with `grid: ["data-span"]`.
+- `src/js/usage/contract.ts:427`. Replace `shell: ["data-span"]` with `grid: ["data-span"]`.
 - `README.md:176`. Drop `odd-stat` from the Meter row and point to the Stat row recipe.
 - `log.css:1-5` and `log.ts:4-6`. Replace the robot-arm sample text with neutral text, such as "Saved draft" and "Upload finished".
 - `avatar.css:5`. Say the shape is a pill in every chrome, since `--radius-chip` is the pill radius in all five chrome files.
 
 ## Appendix B. Reviewer objections and outcomes
 
-The cross-provider review is pending. The lead fills in this section after unit 4.
+The reviewer was `cursor grok-4.7`, at high reasoning. It read the plan, the report at `f0654cc`, the script output, and the code. The lead checked each objection against the cited code and decided its outcome. Rows L1 and L2 are the lead's own fixes from the unit 3 check.
+
+| # | Family or section | Objection | Outcome | Change in the report |
+| --- | --- | --- | --- | --- |
+| 1 | Shell | Shell's selectors name only its own classes, and its sticky header, full-height grid, and status slot are substance no other class has, so it is an atom. | Accepted. | Shell changes from demote to `keep-as-core-primitive`. Section 1, the close-call rules, the composition map, Shell's section, the recommendations, and the hypotheses follow. Shell's section keeps demote as the closest alternative. |
+| 2 | Meter | `odd-stat-value` is a value style used outside the stat row, on a slider's `output`, so it should not demote with `odd-stat`. | Accepted. | `odd-stat-value` gets `keep-as-core-primitive`, and only `odd-stat` demotes. Meter stays `split-into-smaller-primitives`. The question about moving the value style to Typography stays open. |
+| 3 | Section 1 | The distance is a weighted sum, not a count. Typography keeps its S gap because a Foundations story is a consumer, and Base utilities gets X because no story renders `.odd-skip-link`. | Accepted. | Section 1 describes the weighted sum and the weight of each gap. Typography rises to 4 and Base utilities to 5, and the ranks and the recommendation order follow. No verdict changes. The Typography item left "Corrections to the script". |
+| 4 | Badge | The Badge story renders the neutral look by leaving out `data-tone`. | Accepted. | Badge's reason and story depth say the neutral look renders and only the literal `data-tone="neutral"` is missing. The X gap stays for that literal value. |
+| 5 | Stepper | The jog row is also in the CSS header, and `enhanceStepper` steps the first number input it finds, so a second one does not break it. | Accepted. | The demote verdict stands. Stepper's domain line and its hypothesis row cite the header. ODD-STEPPER-001 now catches a stepper root with no number input. |
+| 6 | Popover | A missing `role="tooltip"` does not close a menu, so ODD-TOOLTIP-001 and ODD-HOVER-CARD-001 name the wrong failure. | Accepted. | Both codes now catch a tooltip or hover card with `popover="auto"` or no popover, which misses the hint behavior the README requires. |
+| 7 | Field | A `span.odd-label` does not take away an `aria-label` on the control, and the `Label` wrapper already renders a `label`. | Accepted. | ODD-FIELD-004 now catches, in HTML only, a label whose `for` cannot point at the control and that gives no click-to-focus. |
+| 8 | Appendix A | A recipe class under `src/css/recipes/` fails the registry test, and leaving recipe CSS out of `index.css` drops the spin-button rules. | Accepted. The lead confirmed the test. | The main proposal follows the plan's default, a recipe with no new class. A recipe stylesheet is the alternative for Caleb, and it names the registry test and the `index.css` import it would change. |
+| 9 | Script | The axis scanner skipped pseudo-classes nested in `:is`, `:not`, and `:has`, so it missed Table's `:checked` and the `:disabled` that Button's and Menu's contracts forbid. | Accepted. A builder fixed the script at `66fc40d`. | The report uses the rerun's `Axes` table. Section 3 has a Forbidden column that does not count toward X. The obsolete `:has()` item left "Corrections to the script", and the hand moves of Dialog, Sheet, and Toast axes are now stated there. |
+| 10 | Grid | `Showcase.stories.ts:78` is an `auto-fill` grid, a different grid from `odd-grid`, so "because none exists" is wrong. | Accepted. | Grid's section drops the phrase. |
+| 11 | Log | Any other `data-tone` still matches `log.css:50` and changes the time color, so ODD-LOG-004's "draws nothing" is wrong. | Accepted. | ODD-LOG-004 now catches a tone that draws no tint or stripe but still recolors the time. |
+| L1 | Citations | `src/js/contract.ts` and `src/js/usage/contract.ts` share a file name, and so do `src/js/menu.ts` and `src/js/tabs.ts` with their copies under `sr-scenarios`. A bare citation of any of those names was ambiguous. | Applied, as the lead's fix. | Every citation of the three gives the full repo path. |
+| L2 | Popover | `src/js/usage/format.ts:749` says a hint popover suits `odd-tooltip` and `odd-hover-card`. It does not explain why a tooltip must use hint. | Applied, as the lead's fix. | Popover's lint line and ODD-TOOLTIP-001 cite the line for what it says. |
+
+The reviewer found that every other verdict holds, and so do the other candidate codes in section 5. ODD-SHELL-001 is new in this revision, because Shell became a keeper, and no reviewer has read it.
