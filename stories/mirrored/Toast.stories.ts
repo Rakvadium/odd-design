@@ -183,8 +183,10 @@ export const ToastStates = {
   - paragraph: Draft saved.`),
   play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
     const [, upload] = showAll(canvasElement, states);
-    const closing = [...canvasElement.querySelectorAll(".odd-toast")].at(-1)!;
+    const closing = [...canvasElement.querySelectorAll<HTMLElement>(".odd-toast")].at(-1)!;
     await Promise.all(closing.getAnimations().map((animation) => animation.finished));
+    // Reduced motion makes --duration-base 0ms, so dismiss() would find no exit to wait on and remove the toast.
+    closing.style.transitionDuration = "1s";
     upload!.dismiss();
     freezeHalfwayOut(closing);
   },

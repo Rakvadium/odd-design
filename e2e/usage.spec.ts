@@ -237,6 +237,16 @@ test("usage and mirror: every story in both Storybooks, each pair, the Playgroun
   expect(findings, "usage diagnostics").toEqual([]);
 });
 
+test("under reduced motion, ToastStates still holds its closing toast in both Storybooks", async ({ page }, testInfo) => {
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  const entry = react.find((item) => item.id === "components-interactive--toast-states") ?? fail("ToastStates is not mirrored");
+  const findings: string[] = [];
+  const htmlSide = await see(page, "html", entry.id, "", entry.mirror.aria);
+  const reactSide = await see(page, "react", entry.id, "", entry.mirror.aria);
+  await comparePair(`${entry.id} [reduced motion]`, htmlSide, reactSide, findings, testInfo);
+  expect(findings, "usage diagnostics").toEqual([]);
+});
+
 async function loadStoryFromUrl(page: Page): Promise<void> {
   await page.reload();
 }
