@@ -383,12 +383,12 @@ test.describe("machine controls", () => {
         const content = grid.clientWidth - parseFloat(getComputedStyle(grid).paddingLeft) - parseFloat(getComputedStyle(grid).paddingRight);
         return [...grid.children].map((panel) => Math.round((panel.getBoundingClientRect().width / content) * 100));
       });
-    expect(await fractions()).toEqual([66, 32, 32, 66]);
+    expect(await fractions()).toEqual([66, 32, 100]);
     await shot(page, testInfo, "shell-wide.png", "#storybook-root");
     await page.setViewportSize({ width: 900, height: 900 });
-    expect(await fractions()).toEqual([66, 49, 49, 66]);
+    expect(await fractions()).toEqual([66, 49, 100]);
     await page.setViewportSize({ width: 560, height: 900 });
-    expect(await fractions()).toEqual([100, 100, 100, 100]);
+    expect(await fractions()).toEqual([100, 100, 100]);
     await shot(page, testInfo, "shell-narrow.png", "#storybook-root");
   });
 });

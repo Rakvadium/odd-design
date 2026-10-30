@@ -59,7 +59,6 @@ const FAMILIES: readonly Family[] = [
     js: [],
     react: [],
   },
-  { name: "E-stop", classes: ["odd-estop"], css: "components/estop.css", js: [], react: [] },
   { name: "Log", classes: ["odd-log", "odd-log-line"], css: "components/log.css", js: ["log.ts"], react: [] },
   {
     name: "Shell",
