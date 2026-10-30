@@ -53,9 +53,9 @@ Stories render in isolation at `iframe.html?id=<storyId>`, which skips the manag
 | Forms | `components-forms--text-fields`, `--select`, `--choices`, `--switch`, `--segmented`, `--slider`, `--search` |
 | Surfaces | `components-surfaces--card`, `--badge`, `--dialog`, `--disclosure` |
 | Feedback | `components-feedback--alert`, `--progress`, `--skeleton`, `--log` |
-| Data Display | `components-data-display--table`, `--avatar`, `--separator` |
-| Overlays | `components-overlays--popover`, `--tooltip`, `--hover-card`, `--sheet`, `--alert-dialog` |
-| Interactive | `components-interactive--menu`, `--tabs`, `--toast` |
+| Data Display | `components-data-display--table`, `--table-parts`, `--table-states`, `--table-overflow`, `--avatar`, `--separator` |
+| Overlays | `components-overlays--popover`, `--tooltip`, `--hover-card`, `--sheet`, `--sheet-end`, `--sheet-start`, `--sheet-top`, `--sheet-bottom`, `--sheet-right-to-left`, `--alert-dialog` |
+| Interactive | `components-interactive--menu`, `--menu-open`, `--tabs`, `--tabs-vertical`, `--toast`, `--toast-variants`, `--toast-parts`, `--toast-states` |
 | Controls | `components-controls--emergency-stop`, `--stepper`, `--range-field` |
 | Layout | `components-layout--app-shell` |
 | Docs | `introduction--docs` (MDX; `goto` targets stories, so open docs via the manager URL if needed) |
@@ -83,6 +83,7 @@ Rules for driving:
 - Prefer stable handles: ids and `commandfor`/`command` attributes in the stories, `input[name=…][value=…]`, `[role=switch]`, `aria-*`, and `.odd-*` classes. Do not use coordinates or nth-child.
 - Change state with `click`, `press`, and `type`, which send real input events. Use `eval` only to read state, never to set it. Setting `.value`, calling `.showModal()`, or toggling attributes bypasses exactly what you are trying to prove: `:user-invalid`, invoker commands, `closedby`, and the native radio behavior.
 - `mode:system` follows the browser's `prefers-color-scheme`, so pair it with `emulate`. `emulate` lasts until it is cleared or the run goes `down`.
+- `goto` returns before a story's `play` finishes. The `--menu-open`, `--sheet-*`, and `--toast-*` stories open their overlay in `play`, so run `wait 900` before you capture one.
 - Real feature recipes are in [`features/`](features/README.md). Read the matching file before driving.
 
 ## Evidence
