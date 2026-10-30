@@ -12,7 +12,6 @@ type Family = {
   readonly react: readonly string[];
 };
 
-// Paths are relative to src/css and src/js. A `:from-to` suffix limits a file to those lines.
 const FAMILIES: readonly Family[] = [
   { name: "Button", classes: ["odd-button"], css: "components/button.css", js: ["button-type.ts"], react: ["Button"] },
   {
@@ -80,7 +79,6 @@ const STORY_KINDS = ["Playground", "Variants", "Sizes", "States", "Parts"] as co
 
 type StoryKind = (typeof STORY_KINDS)[number] | "assembled";
 
-// Only the select picker selects on :open, and the picker opens on a click.
 const INTERACTION = new Set(["hover", "focus", "focus-visible", "focus-within", "active", "open", "popover-open", "user-invalid"]);
 
 const STRUCTURAL = new Set(["is", "where", "not", "has", "first-child", "last-child", "only-child", "nth-child", "nth-of-type", "first-of-type", "last-of-type", "root", "empty", "defined", "scope"]);
@@ -383,7 +381,6 @@ function subjects(stories: readonly Rendered[], owner: ReadonlyMap<string, strin
     const longest = matches.filter((m) => !matches.some((n) => n !== m && n.start <= m.start && m.end <= n.end && n.end - n.start > m.end - m.start));
     let families = [...new Set(longest.map((m) => m.family))];
     if (families.length === 0) {
-      // No family named: the rarest class it renders across Components stories is what it is about.
       const rarest = Math.min(...[...story.classes].map((name) => seen.get(name)!));
       families = [...new Set([...story.classes].filter((name) => seen.get(name) === rarest).map((name) => owner.get(name)!))];
     }
