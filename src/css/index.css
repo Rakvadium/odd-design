@@ -27,6 +27,7 @@
 @import "./preferences.css" layer(preferences);
 @import "./base.css" layer(base);
 @import "./components/typography.css" layer(components);
+@import "./components/link.css" layer(components);
 @import "./components/button.css" layer(components);
 @import "./components/field.css" layer(components);
 @import "./components/search.css" layer(components);
@@ -44,6 +45,7 @@
 @import "./components/alert.css" layer(components);
 @import "./components/meter.css" layer(components);
 @import "./components/skeleton.css" layer(components);
+@import "./components/spinner.css" layer(components);
 @import "./components/separator.css" layer(components);
 @import "./components/avatar.css" layer(components);
 @import "./components/table.css" layer(components);

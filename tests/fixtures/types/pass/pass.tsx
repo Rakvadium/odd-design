@@ -17,7 +17,9 @@ import { Separator } from "../../../../src/react/separator.tsx";
 import { Sheet, SheetFooter, SheetHeader, type SheetProps } from "../../../../src/react/sheet.tsx";
 import { Skeleton } from "../../../../src/react/skeleton.tsx";
 import { Slider } from "../../../../src/react/slider.tsx";
+import { Spinner } from "../../../../src/react/spinner.tsx";
 import { Tabs } from "../../../../src/react/tabs.tsx";
+import { TextLink } from "../../../../src/react/text-link.tsx";
 import { Toaster } from "../../../../src/react/toast.tsx";
 
 function save(event: MouseEvent<HTMLButtonElement>): void {
@@ -212,6 +214,28 @@ export function DeckPlaceholder({ loading }: { loading: boolean }) {
       <span className="odd-visually-hidden">Loading decks…</span>
       <Skeleton aria-hidden="true" shape="avatar" />
       <Skeleton aria-hidden="true" className="title" style={{ inlineSize: "60%" }} data-testid="deck-title" />
+    </div>
+  );
+}
+
+export function ProjectLinks({ href }: { href: string }) {
+  return (
+    <p>
+      Read the <TextLink href={href}>setup guide</TextLink>, then open <TextLink href="/projects" aria-current="page">Projects</TextLink> or the{" "}
+      <TextLink href="https://example.com/changelog" target="_blank" rel="noopener" className="external" data-testid="changelog">
+        changelog (opens in a new tab)
+      </TextLink>
+      .
+    </p>
+  );
+}
+
+export function ProjectsLoading({ loading }: { loading: boolean }) {
+  if (!loading) return null;
+  return (
+    <div className="odd-row" aria-busy="true">
+      <Spinner aria-hidden="true" className="slow" data-testid="projects-spinner" />
+      <span className="odd-visually-hidden">Loading projects…</span>
     </div>
   );
 }

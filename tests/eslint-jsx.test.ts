@@ -293,6 +293,22 @@ const places: Record<string, readonly (readonly [string, number, number, string]
     ["ODD-SKELETON-005", 11, 34, "data-size"],
     ["ODD-SKELETON-001", 12, 11, "className"],
   ],
+  "spinner.tsx": [
+    ["ODD-SPINNER-002", 8, 5, "<Spinner />"],
+    ["ODD-SPINNER-002", 9, 5, '<Spinner aria-hidden="true">'],
+    ["ODD-SPINNER-002", 10, 33, 'role="status"'],
+    ["ODD-SPINNER-003", 11, 33, "data-size"],
+    ["ODD-SPINNER-001", 12, 10, "className"],
+  ],
+  "text-link.tsx": [
+    ["ODD-LINK-002", 9, 5, "<TextLink>"],
+    ["ODD-LINK-003", 10, 31, 'aria-disabled="true"'],
+    ["ODD-LINK-005", 11, 32, 'aria-current="true"'],
+    ["ODD-LINK-007", 12, 49, 'target="_blank"'],
+    ["ODD-LINK-004", 13, 30, 'role="button"'],
+    ["ODD-LINK-001", 14, 11, "className"],
+    ["ODD-STATIC-001", 15, 5, "<Link"],
+  ],
   "wrapper.good.tsx": [],
 };
 

@@ -1,0 +1,33 @@
+/*
+ * <div class="odd-row" aria-busy="true"><span class="odd-spinner" aria-hidden="true"></span> Loading projects…</div>
+ * A turning ring, 1em across, in the text color, so it sizes and colors itself from where it sits.
+ * It is decoration, like a skeleton block: the region that is loading carries aria-busy="true" and says
+ * what is loading, in visible text beside the ring or in an odd-visually-hidden span. Keep the spinner empty.
+ * A button that is working is a Button with aria-busy="true", which draws its own ring.
+ * Reduced motion slows the turn instead of stopping it: a ring that doesn't move reads as a broken icon, not as loading.
+ */
+.odd-spinner {
+  display: inline-block;
+  flex: none;
+  inline-size: 1em;
+  block-size: 1em;
+  vertical-align: -0.125em;
+  border: 2px solid currentColor;
+  border-inline-end-color: transparent;
+  border-radius: 50%;
+  cursor: progress;
+  animation: odd-spinner-turn 700ms linear infinite;
+}
+
+@keyframes odd-spinner-turn {
+  to { rotate: 1turn; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .odd-spinner { animation-duration: 2.4s; }
+}
+
+/* Forced colors paints a transparent border in CanvasText, which closes the gap, so the ring no longer looks like it turns. */
+@media (forced-colors: active) {
+  .odd-spinner { border-inline-end-color: Canvas; }
+}

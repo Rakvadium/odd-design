@@ -46,7 +46,7 @@ Set `aria-disabled` to `true` or `false`, or remove it.
 
 Fails when `aria-busy` is not `true` or `false`.
 
-The attribute is an ARIA boolean. The button uses `true` while an action is in progress.
+The attribute is an ARIA boolean. The button uses `true` while an action is in progress, and draws its own turning ring, so don't put a Spinner inside it.
 
 Set `aria-busy` to `true` or `false`, or remove it.
 
