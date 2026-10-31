@@ -138,6 +138,33 @@ test("Escape stops only when it closes the list, so a dialog around a closed com
   expect(heard).toEqual(["ArrowDown", "Escape"]);
 });
 
+test("Escape before manual results land cancels the open, and lets the Escape through to a dialog", async () => {
+  const { root, list, key, type, shown, expanded } = mount('data-filter="manual"', []);
+  enhance(root);
+  const heard: [string, boolean][] = [];
+  document.addEventListener("keydown", (event) => heard.push([event.key, event.defaultPrevented]));
+  type("lov");
+  key("Escape");
+  list.innerHTML = `<div class="odd-combobox-option" role="option">Ada Lovelace</div>`;
+  await settle();
+  expect([expanded(), heard]).toEqual(["false", [["Escape", false]]]);
+  key("ArrowDown");
+  expect([expanded(), shown()]).toEqual(["true", ["Ada Lovelace"]]);
+});
+
+test("a choice on an input disabled while the list is open writes nothing and closes the list", () => {
+  const { root, input, list, key, expanded } = mount();
+  enhance(root);
+  const events: string[] = [];
+  input.addEventListener("input", () => events.push("input"));
+  input.addEventListener("change", () => events.push("change"));
+  key("ArrowDown");
+  expect(expanded()).toBe("true");
+  input.disabled = true;
+  list.children[2]!.dispatchEvent(new MouseEvent("click", { bubbles: true }));
+  expect([input.value, events, expanded()]).toEqual(["", [], "false"]);
+});
+
 test("a disabled input stays closed, and a disabled option's click never reaches the app", () => {
   const { root, input, list, key, type, expanded } = mount();
   enhance(root);

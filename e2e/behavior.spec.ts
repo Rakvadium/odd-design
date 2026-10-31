@@ -569,6 +569,24 @@ test.describe("combobox", () => {
       await waitOpen(page, "#assign-dialog", false);
     });
 
+    test(`Escape before async results land keeps the list closed when they land, and reaches the dialog unprevented (${storybook})`, async ({ page }) => {
+      await openStory(page, "components-combobox--async", "mode:light", "", storybook);
+      await page.locator('button[commandfor="assign-dialog"][command="show-modal"]').click();
+      await waitOpen(page, "#assign-dialog");
+      await page.locator("#assignee").focus();
+      const atEscape = await page.locator("#assignee").evaluate((el: HTMLInputElement) => {
+        let prevented: boolean | undefined;
+        document.addEventListener("keydown", (event) => (prevented = event.defaultPrevented), { once: true });
+        el.value = "lov";
+        el.dispatchEvent(new InputEvent("input", { bubbles: true, inputType: "insertText", data: "lov" }));
+        el.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape", bubbles: true, cancelable: true }));
+        return { options: document.querySelectorAll('#assignee-list [role="option"]').length, prevented };
+      });
+      expect(atEscape, "Escape came before any result and was left for the dialog").toEqual({ options: 0, prevented: false });
+      await expect(page.locator('#assignee-list [role="option"]')).toHaveText(["Ada Lovelace"]);
+      expect([await isOpen(page, "#assignee-list"), await page.locator("#assignee").getAttribute("aria-expanded")]).toEqual([false, "false"]);
+    });
+
     test(`the list anchors under its input at the input's width and flips above it near the viewport bottom (${storybook})`, async ({ page }, testInfo) => {
       await openStory(page, "components-combobox--open", "mode:light", "", storybook);
       await note(page, testInfo, "anchor positioning", `CSS.supports("position-area: block-end")`);

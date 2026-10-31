@@ -583,17 +583,49 @@ describe("Combobox", () => {
     expect(active(input)).toBe("Berlin");
   });
 
-  test("unmounting unwires the root", async () => {
+  test("unmounting closes an open list and unwires the root", async () => {
     const host = document.createElement("div");
     document.body.append(host);
     const root = createRoot(host);
     await act(async () => root.render(<CityField onChange={() => {}} />));
     const combobox = host.querySelector<HTMLElement>(".odd-combobox")!;
-    await act(async () => root.unmount());
-    document.body.append(combobox);
     const input = combobox.querySelector("input")!;
     key(input, "ArrowDown");
+    expect([input.getAttribute("aria-expanded"), active(input)]).toEqual(["true", "Amsterdam"]);
+    await act(async () => root.unmount());
     expect([input.getAttribute("aria-expanded"), input.hasAttribute("aria-activedescendant")]).toEqual(["false", false]);
+    document.body.append(combobox);
+    key(input, "ArrowDown");
+    expect([input.getAttribute("aria-expanded"), input.hasAttribute("aria-activedescendant")]).toEqual(["false", false]);
+  });
+
+  test("a render that changes the input's aria-expanded prop keeps an open list's state on the input", async () => {
+    function Collapsing() {
+      const [expanded, setExpanded] = useState<"true" | "false">("true");
+      return (
+        <>
+          <Combobox>
+            <Input id="city" role="combobox" aria-controls="city-list" aria-expanded={expanded} aria-autocomplete="list" aria-label="City" />
+            <ComboboxList id="city-list" popover="manual" role="listbox" aria-label="Cities">
+              <ComboboxOption role="option">Amsterdam</ComboboxOption>
+            </ComboboxList>
+          </Combobox>
+          <button type="button" onClick={() => setExpanded("false")}>
+            Collapse
+          </button>
+        </>
+      );
+    }
+    const host = document.createElement("div");
+    document.body.append(host);
+    const root = createRoot(host);
+    mounted = root;
+    await act(async () => root.render(<Collapsing />));
+    const input = host.querySelector("input")!;
+    expect(input.getAttribute("aria-expanded")).toBe("false");
+    key(input, "ArrowDown");
+    await act(async () => host.querySelector("button")!.click());
+    expect([input.getAttribute("aria-expanded"), active(input)]).toEqual(["true", "Amsterdam"]);
   });
 });
 
