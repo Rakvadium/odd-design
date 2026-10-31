@@ -1,0 +1,23 @@
+/*
+ * <p>Press <kbd class="odd-kbd">Ctrl</kbd> <kbd class="odd-kbd">K</kbd> to search.</p>
+ * A key on the keyboard, drawn as a keycap in running text and read aloud with it. One kbd per key. Write
+ * the key's name (Ctrl, Shift, Enter), since a screen reader reads a glyph such as ⌘ by its Unicode name.
+ * The cap scales with the text around it and leaves the line height alone.
+ * A shortcut hint at the end of a menu item is odd-menu-shortcut instead: the item's aria-keyshortcuts
+ * already says the shortcut, so that hint is hidden.
+ */
+.odd-kbd {
+  display: inline-block;
+  min-inline-size: 1.75em;
+  padding: 0 0.4em;
+  border: var(--border-width) solid var(--edge-control);
+  border-block-end-width: calc(var(--border-width) * 2);
+  border-radius: min(var(--radius-control), var(--space-1));
+  background-color: var(--surface);
+  color: var(--foreground);
+  font-family: var(--font-mono);
+  font-size: 0.8em;
+  line-height: 1.3;
+  text-align: center;
+  white-space: nowrap;
+}

@@ -1,13 +1,16 @@
 import type { AlertProps, AlertTitleProps } from "./alert.tsx";
 import type { AvatarGroupProps, AvatarProps } from "./avatar.tsx";
 import type { BadgeProps } from "./badge.tsx";
+import type { BreadcrumbProps } from "./breadcrumb.tsx";
 import type { ButtonProps } from "./button.tsx";
 import type { CardFooterProps, CardLinkProps, CardProps } from "./card.tsx";
 import type { ChoiceProps, SegmentedProps, SwitchProps } from "./choice.tsx";
+import type { CodeProps, PreProps } from "./code.tsx";
 import type { ComboboxListProps, ComboboxOptionProps, ComboboxProps } from "./combobox.tsx";
 import type { DialogActionsProps, DialogProps } from "./dialog.tsx";
 import type { DisclosureProps } from "./disclosure.tsx";
 import type { FieldErrorProps, FieldProps, HintProps, InputProps, LabelProps, SelectProps, TextareaProps } from "./field.tsx";
+import type { KbdProps } from "./kbd.tsx";
 import type { MenuItemProps, MenuProps } from "./menu.tsx";
 import type { MeterProps, ProgressProps } from "./meter.tsx";
 import type { PopoverProps } from "./popover.tsx";
@@ -67,4 +70,8 @@ export type WrapperProps = {
   Combobox: ComboboxProps;
   ComboboxList: ComboboxListProps;
   ComboboxOption: ComboboxOptionProps;
+  Breadcrumb: BreadcrumbProps;
+  Kbd: KbdProps;
+  Code: CodeProps;
+  Pre: PreProps;
 };

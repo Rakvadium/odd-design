@@ -321,6 +321,22 @@ const places: Record<string, readonly (readonly [string, number, number, string]
     ["ODD-COMBOBOX-010", 16, 35, 'aria-selected="true"'],
     ["ODD-STATIC-001", 17, 78, "data-filter"],
   ],
+  "breadcrumb.tsx": [
+    ["ODD-BREADCRUMB-003", 12, 5, '<Breadcrumb aria-label="Breadcrumb">'],
+    ["ODD-BREADCRUMB-002", 13, 5, "<Breadcrumb>"],
+    ["ODD-BREADCRUMB-004", 14, 41, 'data-tone="primary"'],
+    ["ODD-BREADCRUMB-001", 15, 10, "className"],
+  ],
+  "kbd.tsx": [
+    ["ODD-KBD-002", 6, 19, 'aria-hidden="true"'],
+    ["ODD-KBD-003", 7, 19, 'data-size="sm"'],
+    ["ODD-KBD-001", 8, 20, "className"],
+  ],
+  "code.tsx": [
+    ["ODD-CODE-002", 7, 10, 'data-size="sm"'],
+    ["ODD-CODE-001", 8, 18, "className"],
+    ["ODD-CODE-001", 9, 10, "className"],
+  ],
   "wrapper.good.tsx": [],
 };
 
