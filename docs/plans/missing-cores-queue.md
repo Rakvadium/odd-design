@@ -51,7 +51,7 @@ The bare `a` in `base.css` keeps the resting look. `link.css` holds one rule. Th
 | ODD-LINK-006 | `system-data` | a system `data-*` | `data-variant="ghost"` draws nothing. The message points to `odd-button`. |
 | ODD-LINK-007 | `name-requires` `rel` on `target` | `target` without `rel` | A link that opens a new tab says nothing about it. The message asks for `rel="noopener"` and words in the link text that say it opens a new tab. Scout's answer to fork 5. |
 
-`TextLink` is a `part()` on `a`. The export is `TextLink`, not `Link`, so it does not collide with router and framework `Link` exports (Scout, fork 4). The class stays `odd-link`. `Pinned` requires `href`, `Forbidden` types 003 and 004, and `aria-current` is hand-typed, as Separator types `role`. The existing JSX fixture `tests/fixtures/usage/jsx/link.tsx` (a router link) is renamed `router-link.tsx`, so the new `link.tsx` can take its name.
+`TextLink` is a `part()` on `a`. The export is `TextLink`, not `Link`, so it does not collide with router and framework `Link` exports (Scout, fork 4). The class stays `odd-link`. `Pinned` requires `href`, `Forbidden` types 003 and 004, and `aria-current` is hand-typed, as Separator types `role`. The existing router-link JSX fixture `tests/fixtures/usage/jsx/link.tsx` keeps its name, and the new fixture is `jsx/text-link.tsx`. ODD-LINK-007 is ESLint and runtime only, because the contract types do not reach `name-requires` on an attribute other than `role`.
 
 Stories, title `Components/Link`. `Playground` takes `label` and `current: "none" | "page"`, with the options read from `USAGE.link` and swept the way Button's are. `States` shows a resting and a current link. `InText` shows links inside a paragraph.
 
