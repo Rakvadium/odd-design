@@ -1,4 +1,5 @@
 import { expect, test, type Page, type TestInfo } from "@playwright/test";
+import { CHROMES } from "../src/js/contract.ts";
 import { openStory } from "./story.ts";
 
 // Behavior that depends on the engine: native features each browser may or may not have, the JS
@@ -606,6 +607,44 @@ test.describe("combobox", () => {
       const above = await rect(page, "#open-city-list");
       expect(Math.abs(raised.top - above.bottom - 4), "flipped to 4px above the input").toBeLessThan(1.5);
       await shot(page, testInfo, `combobox-flipped-${storybook}.png`);
+    });
+  }
+});
+
+test.describe("breadcrumb, keys, and code", () => {
+  for (const storybook of ["html", "react"] as const) {
+    test(`a breadcrumb draws a slash before every crumb but the first, and the tree reads no slash (${storybook})`, async ({ page }) => {
+      await openStory(page, "components-breadcrumb--parts", "mode:light", "", storybook);
+      const trail = page.getByRole("navigation", { name: "Breadcrumb", exact: true });
+      const separators = await trail.locator("li").evaluateAll((items) => items.map((li) => getComputedStyle(li, "::before").content));
+      expect(separators).toEqual(["none", '"/" / ""', '"/" / ""']);
+      const read = (await trail.ariaSnapshot()).split("\n").filter((line) => !line.trim().startsWith("- /url:"));
+      expect(read.filter((line) => line.includes("/"))).toEqual([]);
+    });
+
+    for (const chrome of CHROMES) {
+      test(`a line with keycaps is as tall as the same line without them in ${chrome} (${storybook})`, async ({ page }) => {
+        await openStory(page, "components-kbd--parts", `mode:light;chrome:${chrome}`, "", storybook);
+        const heights = await page.locator("#storybook-root p").first().evaluate((p) => {
+          const plain = document.createElement("p");
+          plain.textContent = p.textContent;
+          p.after(plain);
+          const both = [p.getBoundingClientRect().height, plain.getBoundingClientRect().height];
+          plain.remove();
+          return both;
+        });
+        expect(heights[0]).toBeCloseTo(heights[1]!, 2);
+      });
+    }
+
+    test(`a long line in a code block wraps instead of scrolling (${storybook})`, async ({ page }) => {
+      await openStory(page, "components-code--long-lines", "mode:light", "", storybook);
+      const box = await page.locator("#storybook-root .odd-pre").evaluate((pre) => {
+        const lineHeight = parseFloat(getComputedStyle(pre).lineHeight);
+        return { overflow: pre.scrollWidth - pre.clientWidth, lines: Math.round(pre.querySelector("code")!.getBoundingClientRect().height / lineHeight) };
+      });
+      expect(box.overflow).toBe(0);
+      expect(box.lines).toBeGreaterThan(1);
     });
   }
 });

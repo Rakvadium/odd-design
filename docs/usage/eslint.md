@@ -170,6 +170,24 @@ The plugin checks `TextLink` as an `a` with `odd-link`, from its entry of `WRAPP
 
 So `<TextLink>` without `href` reports `ODD-LINK-002`, `aria-disabled` or `disabled` reports `ODD-LINK-003`, `role="button"` reports `ODD-LINK-004`, `aria-current="true"` reports `ODD-LINK-005`, `data-variant` reports `ODD-LINK-006`, and `target="_blank"` without `rel` reports `ODD-LINK-007`. A raw `<span className="odd-link">` reports `ODD-LINK-001`. A router's `<Link className="odd-link">` is an unknown component, so it gives the `ODD-STATIC-001` warning and no link rules.
 
+### Breadcrumb from odd-design/react
+
+The plugin checks `Breadcrumb` as a `nav` with `odd-breadcrumb`, from its entry of `WRAPPERS`. It maps no props, so every prop is the attribute with the same name. The plugin reads its children, so the `ol` inside counts.
+
+So `<Breadcrumb aria-label="Breadcrumb">` around a `ul` reports `ODD-BREADCRUMB-003`, `<Breadcrumb>` with no `aria-label` and no `aria-labelledby` reports `ODD-BREADCRUMB-002`, and `data-tone` reports `ODD-BREADCRUMB-004`. A raw `<div className="odd-breadcrumb">` reports `ODD-BREADCRUMB-001`. The crumbs are `TextLink`s, checked under Link's rules. No rule requires a current crumb.
+
+### Kbd from odd-design/react
+
+The plugin checks `Kbd` as a `kbd` with `odd-kbd`, from its entry of `WRAPPERS`. It maps no props, so every prop is the attribute with the same name.
+
+So `<Kbd aria-hidden="true">` reports `ODD-KBD-002`, and `<Kbd data-size="sm">` reports `ODD-KBD-003`. A raw `<span className="odd-kbd">` reports `ODD-KBD-001`. A raw `<kbd className="odd-menu-shortcut" aria-hidden="true">` inside a `MenuItem` is not a `Kbd`, so `ODD-KBD-002` does not reach it.
+
+### Code and Pre from odd-design/react
+
+The plugin checks `Code` as a `code` with `odd-code` and `Pre` as a `pre` with `odd-pre`, from their entries of `WRAPPERS`. They map no props, so every prop is the attribute with the same name.
+
+So `<Pre data-size="sm">` and `<Code data-tone="primary">` report `ODD-CODE-002`, while `data-language` passes. A raw `<span className="odd-code">` or `<div className="odd-pre">` reports `ODD-CODE-001`.
+
 ### Card from odd-design/react
 
 The plugin checks `Card` as an `article` with `odd-card`, `CardLink` as an `a` with `odd-card-link`, and `CardFooter` as a `div` with `odd-card-footer`, from their entries of `WRAPPERS`. `interactive` on `Card` is read as `data-interactive`. A raw `data-interactive` gives nothing. `Card` sets that attribute from `interactive`, so it drops a raw one, and its type rejects one. Every other prop is the attribute with the same name. The plugin reads a card's children, so a `CardLink` in the title counts as the card's link, even with a computed `href`.

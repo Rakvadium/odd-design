@@ -8,13 +8,16 @@ import { checkRoot } from "../src/js/usage/dom.ts";
 import { Alert, AlertTitle } from "../src/react/alert.tsx";
 import { Avatar, AvatarGroup } from "../src/react/avatar.tsx";
 import { Badge } from "../src/react/badge.tsx";
+import { Breadcrumb } from "../src/react/breadcrumb.tsx";
 import { Button } from "../src/react/button.tsx";
 import { Card, CardFooter, CardLink } from "../src/react/card.tsx";
 import { Choice, Segmented, Switch } from "../src/react/choice.tsx";
+import { Code, Pre } from "../src/react/code.tsx";
 import { Combobox, ComboboxList, ComboboxOption } from "../src/react/combobox.tsx";
 import { Dialog, DialogActions } from "../src/react/dialog.tsx";
 import { Disclosure } from "../src/react/disclosure.tsx";
 import { Field, FieldError, Hint, Input, Label, Select, Textarea } from "../src/react/field.tsx";
+import { Kbd } from "../src/react/kbd.tsx";
 import { Menu, MenuItem } from "../src/react/menu.tsx";
 import { Meter, Progress } from "../src/react/meter.tsx";
 import { Popover } from "../src/react/popover.tsx";
@@ -202,6 +205,42 @@ const markup: readonly [string, ReactElement, string][] = [
       <Spinner aria-hidden="true" /> Loading projects…
     </div>,
     '<div class="odd-row" aria-busy="true"><span aria-hidden="true" class="odd-spinner"></span> Loading projects…</div>',
+  ],
+  [
+    "a breadcrumb trail with a plain level",
+    <Breadcrumb aria-label="Breadcrumb">
+      <ol>
+        <li>
+          <TextLink href="#home">Home</TextLink>
+        </li>
+        <li>Archived</li>
+        <li>
+          <TextLink href="#alerts" aria-current="page">
+            Alerts
+          </TextLink>
+        </li>
+      </ol>
+    </Breadcrumb>,
+    '<nav aria-label="Breadcrumb" class="odd-breadcrumb"><ol><li><a href="#home" class="odd-link">Home</a></li><li>Archived</li><li><a href="#alerts" aria-current="page" class="odd-link">Alerts</a></li></ol></nav>',
+  ],
+  [
+    "keys in a sentence",
+    <p>
+      Press <Kbd>Ctrl</Kbd> <Kbd className="wide">K</Kbd> to search.
+    </p>,
+    '<p>Press <kbd class="odd-kbd">Ctrl</kbd> <kbd class="odd-kbd wide">K</kbd> to search.</p>',
+  ],
+  [
+    "inline code and a block",
+    <div className="odd-stack">
+      <p>
+        Set <Code>--primary</Code> on the scope.
+      </p>
+      <Pre data-language="sh">
+        <code>bun add odd-design</code>
+      </Pre>
+    </div>,
+    '<div class="odd-stack"><p>Set <code class="odd-code">--primary</code> on the scope.</p><pre data-language="sh" class="odd-pre"><code>bun add odd-design</code></pre></div>',
   ],
   [
     "a combobox in a field, before enhancement",
@@ -898,6 +937,12 @@ const failures: Record<string, { codes: string[]; text: string[] }> = {
   "combobox-list-filter": { codes: [], text: ["'\"auto\"' is not assignable to type '\"manual\"'"] },
   "combobox-option-disabled": { codes: ["ODD-COMBOBOX-009"], text: [] },
   "combobox-option-selected": { codes: ["ODD-COMBOBOX-010"], text: [] },
+  "breadcrumb-name": { codes: [], text: ["Property '\"aria-labelledby\"' is missing"] },
+  "breadcrumb-data-tone": { codes: ["ODD-BREADCRUMB-004"], text: [] },
+  "kbd-aria-hidden": { codes: ["ODD-KBD-002"], text: [] },
+  "kbd-data-size": { codes: ["ODD-KBD-003"], text: [] },
+  "code-data-tone": { codes: ["ODD-CODE-002"], text: [] },
+  "pre-data-size": { codes: ["ODD-CODE-002"], text: [] },
   "card-on-click": { codes: ["ODD-CARD-004"], text: [] },
   "card-link-href": { codes: [], text: ["Property 'href' is missing"] },
   "card-data-tone": { codes: ["ODD-CARD-006"], text: [] },

@@ -82,6 +82,15 @@ test("the catalog has every story file's stories, and Button, Field, Choice, Bad
       "components-combobox--states",
       "components-combobox--open",
       "components-combobox--async",
+      "components-breadcrumb--playground",
+      "components-breadcrumb--parts",
+      "components-breadcrumb--wrapping",
+      "components-kbd--playground",
+      "components-kbd--parts",
+      "components-kbd--shortcut-list",
+      "components-code--playground",
+      "components-code--parts",
+      "components-code--long-lines",
     ]),
   );
   expect(react.every((entry) => html.some((item) => item.id === entry.id))).toBe(true);
@@ -176,6 +185,16 @@ test("ComboboxStates renders a disabled input, an invalid input, a disabled opti
 test("ComboboxAsync starts with an empty list that its code filters", () => {
   for (const root of bothRoots("components-combobox--async")) {
     expect(root.querySelector('.odd-combobox-list[data-filter="manual"]')?.childElementCount).toBe(0);
+  }
+});
+
+test("BreadcrumbParts marks each trail's last crumb, and only that crumb, as the current page", () => {
+  for (const root of bothRoots("components-breadcrumb--parts")) {
+    const trails = [...root.querySelectorAll("nav.odd-breadcrumb > ol")].map((list) => {
+      const current = [...list.querySelectorAll('[aria-current="page"]')];
+      return current.length === 1 && current[0] === list.querySelector(":scope > li:last-child > a.odd-link");
+    });
+    expect(trails).toEqual([true, true, true]);
   }
 });
 
@@ -320,6 +339,40 @@ for (const disabled of [true, false]) {
     for (const root of comboboxRoots({ disabled })) {
       const input = root.querySelector("input.odd-input");
       expect([input?.hasAttribute("disabled"), input?.hasAttribute("aria-disabled")]).toEqual([disabled, false]);
+    }
+  });
+}
+
+function playgroundRoots(id: string, args: Record<string, unknown>): ParentNode[] {
+  const entry = react.find((item) => item.id === id) ?? fail(`${id} is not mirrored`);
+  expectSameDom(entry.mirror.scene({ ...entry.meta.args, ...entry.story.args, ...args }), `${entry.label} ${JSON.stringify(args)}`);
+  const roots = [asRoot(renderHtml(entry, args), entry.label), reactRoot(entry, args)];
+  for (const root of roots) checkRoot(root);
+  return roots;
+}
+
+for (const levels of [1, 2, 3, 4, 5]) {
+  test(`Breadcrumb Playground levels=${levels}`, () => {
+    for (const root of playgroundRoots("components-breadcrumb--playground", { levels })) {
+      expect(root.querySelectorAll("nav.odd-breadcrumb > ol > li")).toHaveLength(levels);
+      expect(root.querySelector('[aria-current="page"]')).toBe(root.querySelector("li:last-child > a.odd-link"));
+    }
+  });
+}
+
+test("Kbd Playground draws one key per word of keys", () => {
+  for (const root of playgroundRoots("components-kbd--playground", { keys: "Ctrl Shift P" })) {
+    expect([...root.querySelectorAll("kbd.odd-kbd")].map((key) => key.textContent)).toEqual(["Ctrl", "Shift", "P"]);
+  }
+});
+
+for (const [kind, selector] of [
+  ["inline", "p > code.odd-code"],
+  ["block", "pre.odd-pre > code:not([class])"],
+] as const) {
+  test(`Code Playground kind=${kind}`, () => {
+    for (const root of playgroundRoots("components-code--playground", { kind, text: "bun add odd-design" })) {
+      expect(root.querySelector(selector)?.textContent).toBe("bun add odd-design");
     }
   });
 }

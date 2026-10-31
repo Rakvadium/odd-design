@@ -246,6 +246,20 @@ test("usage and mirror: every story in both Storybooks, each pair, the Playgroun
     await comparePair(`link playground [${args}]`, htmlSide, reactSide, findings, testInfo);
   }
 
+  for (const [id, args, selector, count] of [
+    ["components-breadcrumb--playground", "levels:1", ".odd-breadcrumb li", 1],
+    ["components-breadcrumb--playground", "levels:5", ".odd-breadcrumb li", 5],
+    ["components-kbd--playground", "keys:Ctrl Shift P", ".odd-kbd", 3],
+    ["components-code--playground", "kind:block", ".odd-pre > code", 1],
+  ] as const) {
+    const htmlSide = await see(page, "html", id, args);
+    const htmlCount = await page.locator(`#storybook-root ${selector}`).count();
+    const reactSide = await see(page, "react", id, args);
+    const reactCount = await page.locator(`#storybook-root ${selector}`).count();
+    if (htmlCount !== count || reactCount !== count) findings.push(`${id} [${args}] ${selector} html=${htmlCount} react=${reactCount}, want ${count}`);
+    await comparePair(`${id} [${args}]`, htmlSide, reactSide, findings, testInfo);
+  }
+
   const filterControl = filterValues();
   for (const value of filterControl.options) {
     const args = `filter:${value}`;

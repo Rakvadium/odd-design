@@ -2,13 +2,16 @@ import { useRef, useState, type FormEvent, type MouseEvent } from "react";
 import { Alert, AlertTitle, type AlertTone } from "../../../../src/react/alert.tsx";
 import { Avatar, AvatarGroup, type AvatarSize } from "../../../../src/react/avatar.tsx";
 import { Badge, type BadgeTone } from "../../../../src/react/badge.tsx";
+import { Breadcrumb } from "../../../../src/react/breadcrumb.tsx";
 import { Button } from "../../../../src/react/button.tsx";
 import { Card, CardFooter, CardLink } from "../../../../src/react/card.tsx";
 import { Choice, Segmented, Switch } from "../../../../src/react/choice.tsx";
+import { Code, Pre } from "../../../../src/react/code.tsx";
 import { Combobox, ComboboxList, ComboboxOption } from "../../../../src/react/combobox.tsx";
 import { Dialog, DialogActions } from "../../../../src/react/dialog.tsx";
 import { Disclosure } from "../../../../src/react/disclosure.tsx";
 import { Field, FieldError, Hint, Input, Label, Select, Textarea } from "../../../../src/react/field.tsx";
+import { Kbd } from "../../../../src/react/kbd.tsx";
 import { Menu, MenuItem } from "../../../../src/react/menu.tsx";
 import { Table, TableSort, TableWrap } from "../../../../src/react/table.tsx";
 import { Meter, Progress, type MeterTone } from "../../../../src/react/meter.tsx";
@@ -238,6 +241,43 @@ export function ProjectsLoading({ loading }: { loading: boolean }) {
       <Spinner aria-hidden="true" className="slow" data-testid="projects-spinner" />
       <span className="odd-visually-hidden">Loading projects…</span>
     </div>
+  );
+}
+
+export function ProjectTrail({ archived }: { archived: boolean }) {
+  return (
+    <Breadcrumb aria-label="Breadcrumb" className="trail" data-testid="trail">
+      <ol>
+        <li>
+          <TextLink href="/">Home</TextLink>
+        </li>
+        {archived ? <li>Archived</li> : null}
+        <li>
+          <TextLink href="/projects/roadmap" aria-current="page">
+            Roadmap
+          </TextLink>
+        </li>
+      </ol>
+    </Breadcrumb>
+  );
+}
+
+export function SearchHint() {
+  return (
+    <>
+      <h2 id="trail-heading">You are here</h2>
+      <Breadcrumb aria-labelledby="trail-heading">
+        <ol>
+          <li>Home</li>
+        </ol>
+      </Breadcrumb>
+      <p>
+        Press <Kbd>Ctrl</Kbd> <Kbd className="wide" data-testid="search-key">K</Kbd> to search, or set <Code data-testid="token">--primary</Code> on the scope.
+      </p>
+      <Pre data-language="sh" className="install">
+        <code>bun add odd-design</code>
+      </Pre>
+    </>
   );
 }
 

@@ -1,8 +1,8 @@
 # Use the React components
 
-`odd-design/react` exports `Button`, the Field parts, the Choice parts, `Badge`, the Alert parts, the Avatar parts, `Separator`, `Skeleton`, the Card parts, `Disclosure`, `Tabs`, `Search`, `Slider`, `Meter`, `Progress`, `Toaster`, `Popover`, `Dialog`, `DialogActions`, `Sheet`, `SheetHeader`, `SheetFooter`, `Menu`, `MenuItem`, `TableWrap`, `Table`, `TableSort`, `TextLink`, `Spinner`, `Combobox`, `ComboboxList`, and `ComboboxOption`. Each renders an `odd-` element from typed props. A contract mistake in those props is a TypeScript error that starts with its code, such as `ODD-BUTTON-007`. `Button` lives in `src/react/button.tsx`, the Field parts in `src/react/field.tsx`, the Choice parts in `src/react/choice.tsx`, `Badge` in `src/react/badge.tsx`, the Alert parts in `src/react/alert.tsx`, the Avatar parts in `src/react/avatar.tsx`, `Separator` in `src/react/separator.tsx`, `Skeleton` in `src/react/skeleton.tsx`, the Card parts in `src/react/card.tsx`, `Disclosure` in `src/react/disclosure.tsx`, `Tabs` in `src/react/tabs.tsx`, `Search` in `src/react/search.tsx`, `Slider` in `src/react/slider.tsx`, `Meter` and `Progress` in `src/react/meter.tsx`, `Toaster` in `src/react/toast.tsx`, `Popover` in `src/react/popover.tsx`, `Dialog` and `DialogActions` in `src/react/dialog.tsx`, `Sheet`, `SheetHeader`, and `SheetFooter` in `src/react/sheet.tsx`, `Menu` and `MenuItem` in `src/react/menu.tsx`, `TableWrap`, `Table`, and `TableSort` in `src/react/table.tsx`, `TextLink` in `src/react/text-link.tsx`, `Spinner` in `src/react/spinner.tsx`, and `Combobox`, `ComboboxList`, and `ComboboxOption` in `src/react/combobox.tsx`. Codes and fixes are in [Button usage rules](button.md), [Field usage rules](field.md), [Choice usage rules](choice.md), [Badge usage rules](badge.md), [Alert usage rules](alert.md), [Avatar usage rules](avatar.md), [Separator usage rules](separator.md), [Skeleton usage rules](skeleton.md), [Card usage rules](card.md), [Disclosure usage rules](disclosure.md), [Tabs usage rules](tabs.md), [Search usage rules](search.md), [Slider usage rules](slider.md), [Meter usage rules](meter.md), [Toast usage rules](toast.md), [Popover usage rules](popover.md), [Dialog usage rules](dialog.md), [Sheet usage rules](sheet.md), [Menu usage rules](menu.md), [Table usage rules](table.md), [Link usage rules](link.md), [Spinner usage rules](spinner.md), and [Combobox usage rules](combobox.md).
+`odd-design/react` exports `Button`, the Field parts, the Choice parts, `Badge`, the Alert parts, the Avatar parts, `Separator`, `Skeleton`, the Card parts, `Disclosure`, `Tabs`, `Search`, `Slider`, `Meter`, `Progress`, `Toaster`, `Popover`, `Dialog`, `DialogActions`, `Sheet`, `SheetHeader`, `SheetFooter`, `Menu`, `MenuItem`, `TableWrap`, `Table`, `TableSort`, `TextLink`, `Spinner`, `Combobox`, `ComboboxList`, `ComboboxOption`, `Breadcrumb`, `Kbd`, `Code`, and `Pre`. Each renders an `odd-` element from typed props. A contract mistake in those props is a TypeScript error that starts with its code, such as `ODD-BUTTON-007`. `Button` lives in `src/react/button.tsx`, the Field parts in `src/react/field.tsx`, the Choice parts in `src/react/choice.tsx`, `Badge` in `src/react/badge.tsx`, the Alert parts in `src/react/alert.tsx`, the Avatar parts in `src/react/avatar.tsx`, `Separator` in `src/react/separator.tsx`, `Skeleton` in `src/react/skeleton.tsx`, the Card parts in `src/react/card.tsx`, `Disclosure` in `src/react/disclosure.tsx`, `Tabs` in `src/react/tabs.tsx`, `Search` in `src/react/search.tsx`, `Slider` in `src/react/slider.tsx`, `Meter` and `Progress` in `src/react/meter.tsx`, `Toaster` in `src/react/toast.tsx`, `Popover` in `src/react/popover.tsx`, `Dialog` and `DialogActions` in `src/react/dialog.tsx`, `Sheet`, `SheetHeader`, and `SheetFooter` in `src/react/sheet.tsx`, `Menu` and `MenuItem` in `src/react/menu.tsx`, `TableWrap`, `Table`, and `TableSort` in `src/react/table.tsx`, `TextLink` in `src/react/text-link.tsx`, `Spinner` in `src/react/spinner.tsx`, `Combobox`, `ComboboxList`, and `ComboboxOption` in `src/react/combobox.tsx`, `Breadcrumb` in `src/react/breadcrumb.tsx`, `Kbd` in `src/react/kbd.tsx`, and `Code` and `Pre` in `src/react/code.tsx`. Codes and fixes are in [Button usage rules](button.md), [Field usage rules](field.md), [Choice usage rules](choice.md), [Badge usage rules](badge.md), [Alert usage rules](alert.md), [Avatar usage rules](avatar.md), [Separator usage rules](separator.md), [Skeleton usage rules](skeleton.md), [Card usage rules](card.md), [Disclosure usage rules](disclosure.md), [Tabs usage rules](tabs.md), [Search usage rules](search.md), [Slider usage rules](slider.md), [Meter usage rules](meter.md), [Toast usage rules](toast.md), [Popover usage rules](popover.md), [Dialog usage rules](dialog.md), [Sheet usage rules](sheet.md), [Menu usage rules](menu.md), [Table usage rules](table.md), [Link usage rules](link.md), [Spinner usage rules](spinner.md), [Combobox usage rules](combobox.md), [Breadcrumb usage rules](breadcrumb.md), [Kbd usage rules](kbd.md), and [Code usage rules](code.md).
 
-`button.tsx`, `tabs.tsx`, `toast.tsx`, `menu.tsx`, `table.tsx`, and `combobox.tsx` start with `"use client"`, so a React Server Components app can render `Button`, `Tabs`, `Toaster`, `Menu`, `MenuItem`, `TableWrap`, `Table`, `TableSort`, `Combobox`, `ComboboxList`, and `ComboboxOption` from a server component. `Tabs`, `Toaster`, `Menu`, `Table`, and `Combobox` wire themselves in a layout effect. The Field parts, the Choice parts, `Badge`, the Alert parts, the Avatar parts, `Separator`, `Skeleton`, the Card parts, `Disclosure`, `Search`, `Slider`, `Meter`, `Progress`, `Popover`, `Dialog`, `DialogActions`, `Sheet`, `SheetHeader`, `SheetFooter`, `TextLink`, and `Spinner` hold no state and no handlers, so `field.tsx`, `choice.tsx`, `badge.tsx`, `alert.tsx`, `avatar.tsx`, `separator.tsx`, `skeleton.tsx`, `card.tsx`, `disclosure.tsx`, `search.tsx`, `slider.tsx`, `meter.tsx`, `popover.tsx`, `dialog.tsx`, `sheet.tsx`, `text-link.tsx`, and `spinner.tsx` have no directive. A component that holds the disclosure's, the popover's, the dialog's, or the sheet's state puts the directive in its own file.
+`button.tsx`, `tabs.tsx`, `toast.tsx`, `menu.tsx`, `table.tsx`, and `combobox.tsx` start with `"use client"`, so a React Server Components app can render `Button`, `Tabs`, `Toaster`, `Menu`, `MenuItem`, `TableWrap`, `Table`, `TableSort`, `Combobox`, `ComboboxList`, and `ComboboxOption` from a server component. `Tabs`, `Toaster`, `Menu`, `Table`, and `Combobox` wire themselves in a layout effect. The Field parts, the Choice parts, `Badge`, the Alert parts, the Avatar parts, `Separator`, `Skeleton`, the Card parts, `Disclosure`, `Search`, `Slider`, `Meter`, `Progress`, `Popover`, `Dialog`, `DialogActions`, `Sheet`, `SheetHeader`, `SheetFooter`, `TextLink`, `Spinner`, `Breadcrumb`, `Kbd`, `Code`, and `Pre` hold no state and no handlers, so `field.tsx`, `choice.tsx`, `badge.tsx`, `alert.tsx`, `avatar.tsx`, `separator.tsx`, `skeleton.tsx`, `card.tsx`, `disclosure.tsx`, `search.tsx`, `slider.tsx`, `meter.tsx`, `popover.tsx`, `dialog.tsx`, `sheet.tsx`, `text-link.tsx`, `spinner.tsx`, `breadcrumb.tsx`, `kbd.tsx`, and `code.tsx` have no directive. A component that holds the disclosure's, the popover's, the dialog's, or the sheet's state puts the directive in its own file.
 
 When `Button`, `MenuItem`, or `TableSort` renders a `button`, it defaults to `type="button"` unless you pass `type`, so it does not submit a form around it. Pass `type="submit"` or `type="reset"` to opt in.
 
@@ -323,6 +323,57 @@ import { Combobox, ComboboxList, ComboboxOption, Field, Input, Label } from "odd
 
 Render the options as children whenever you have them. When your code filters, set `data-filter="manual"` on `ComboboxList`, render the results, and render a disabled "No results" option when a search finds nothing. A choice writes the option's text into the input and fires one `onChange` on a controlled `Input`. Put an `onClick` on each option to act on a choice, since Enter clicks the active option. `enhanceCombobox` owns `aria-selected`, so it is a type error on `ComboboxOption` (`ODD-COMBOBOX-010`), and so is `disabled` (`ODD-COMBOBOX-009`). `role` and `data-filter` on `Combobox` are type errors too (`ODD-COMBOBOX-011` and `ODD-COMBOBOX-007`).
 
+## Show where the page sits
+
+```tsx
+import { Breadcrumb, TextLink } from "odd-design/react";
+
+<Breadcrumb aria-label="Breadcrumb">
+  <ol>
+    <li>
+      <TextLink href="/">Home</TextLink>
+    </li>
+    <li>Archived</li>
+    <li>
+      <TextLink href="/archived/alerts" aria-current="page">
+        Alerts
+      </TextLink>
+    </li>
+  </ol>
+</Breadcrumb>;
+```
+
+`Breadcrumb` renders a `nav` with the class `odd-breadcrumb`. Pass `aria-label` or `aria-labelledby`, as on `Menu`. One of them is a required prop. Write the `ol`, the `li`s, and the `TextLink`s yourself. Each level with a page of its own is a `TextLink`, and the last one has `aria-current="page"`. A level with no page of its own is plain text in its `li`. CSS draws the slashes between crumbs, which screen readers do not read, and a long trail wraps.
+
+The types do not read the children. A `ul` or bare links in place of the `ol` (`ODD-BREADCRUMB-003`) pass the types, and ESLint and the runtime checker report them. No checker requires the current crumb, so a trail without `aria-current="page"` passes, and its last crumb looks like every other link.
+
+## Show a key
+
+```tsx
+import { Kbd } from "odd-design/react";
+
+<p>
+  Press <Kbd>Ctrl</Kbd> <Kbd>K</Kbd> to search.
+</p>;
+```
+
+`Kbd` renders a `kbd` with the class `odd-kbd`, drawn as a keycap and read with the sentence. Write one `Kbd` per key, and write the key's name rather than a glyph. `aria-hidden` on `Kbd` is a type error (`ODD-KBD-002`). A shortcut hint at the end of a `MenuItem` is a raw `kbd` with `odd-menu-shortcut` and `aria-hidden="true"`, beside `aria-keyshortcuts` on the item.
+
+## Show code
+
+```tsx
+import { Code, Pre } from "odd-design/react";
+
+<p>
+  Set <Code>--primary</Code> on the scope.
+</p>;
+<Pre>
+  <code>bun add odd-design</code>
+</Pre>;
+```
+
+`Code` renders a `code` with the class `odd-code`, a short piece of code inside a sentence. `Pre` renders a `pre` with the class `odd-pre`, a block. Put a raw `code` inside `Pre` when the block is code, and leave it out for command output. Long lines wrap instead of scrolling, so the block needs no `tabIndex`. An app attribute such as `data-language` passes, and a system `data-` attribute such as `data-size` on either is a type error (`ODD-CODE-002`).
+
 ## Make a whole card clickable
 
 ```tsx
@@ -629,6 +680,10 @@ The type error names the code and the fix. The table lists what each mistake pri
 | `aria-selected` on `ComboboxOption` | `ODD-COMBOBOX-010` |
 | `role` on `Combobox` | `ODD-COMBOBOX-011` |
 | A system `data-` attribute on `Combobox`, `ComboboxList`, or `ComboboxOption`, such as `data-tone` | `ODD-COMBOBOX-012` |
+| A system `data-` attribute on `Breadcrumb`, such as `data-tone` | `ODD-BREADCRUMB-004` |
+| `aria-hidden` on `Kbd` | `ODD-KBD-002` |
+| A system `data-` attribute on `Kbd`, such as `data-size` | `ODD-KBD-003` |
+| A system `data-` attribute on `Code` or `Pre`, such as `data-size` | `ODD-CODE-002` |
 | `onClick` or `tabIndex` on `Card` | `ODD-CARD-004` |
 | A system `data-` attribute on `Card` other than `data-span`, such as `data-tone` | `ODD-CARD-006` |
 | A system `data-` attribute on `CardLink` or `CardFooter`, such as `data-interactive` | `ODD-CARD-007` |
@@ -659,14 +714,14 @@ The type error names the code and the fix. The table lists what each mistake pri
 | `role="region"` on `TableWrap` with no `aria-label` and no `aria-labelledby` | `ODD-TABLE-003` |
 | A system `data-` attribute on `TableWrap`, `Table`, or `TableSort`, such as `data-numeric` | `ODD-TABLE-004` |
 | `aria-sort` on `TableSort` | `ODD-TABLE-005` |
-| `Switch` without `type` or `role`, `Slider` without `type`, `Toaster` without `popover` or `aria-label`, `Popover` without `popover`, `Dialog` or `Sheet` without `aria-label` or `aria-labelledby`, `Menu` without `popover`, `role`, `aria-label`, or `aria-labelledby`, `MenuItem` without `role`, `AvatarGroup` without `role`, `Skeleton` or `Spinner` without `aria-hidden`, `CardLink` or `TextLink` without `href`, `ComboboxList` without `popover`, `role`, `aria-label`, or `aria-labelledby`, or `ComboboxOption` without `role` | TypeScript's missing property error |
+| `Switch` without `type` or `role`, `Slider` without `type`, `Toaster` without `popover` or `aria-label`, `Popover` without `popover`, `Dialog`, `Sheet`, or `Breadcrumb` without `aria-label` or `aria-labelledby`, `Menu` without `popover`, `role`, `aria-label`, or `aria-labelledby`, `MenuItem` without `role`, `AvatarGroup` without `role`, `Skeleton` or `Spinner` without `aria-hidden`, `CardLink` or `TextLink` without `href`, `ComboboxList` without `popover`, `role`, `aria-label`, or `aria-labelledby`, or `ComboboxOption` without `role` | TypeScript's missing property error |
 | A `Switch` `type` other than `checkbox`, a `Switch` `role` other than `switch`, a `Slider` `type` other than `range`, a `Toaster` `popover` other than `manual`, a `Popover` `popover` other than `""` or `auto`, a `Popover` `role` other than `dialog`, a `Dialog` or `Sheet` `role` other than `alertdialog`, a `Dialog` or `Sheet` `closedby` other than `any` or `closerequest`, a `Menu` `popover` other than `""` or `auto`, a `Menu` `role` other than `menu`, a `MenuItem` `role` other than `menuitem`, `menuitemcheckbox`, or `menuitemradio`, a `TableWrap` `role` other than `region`, an `Avatar` or `AvatarGroup` `role` other than `img` or `group`, a `Separator` `role` other than `separator`, a `Skeleton` or `Spinner` `aria-hidden` other than `"true"`, a `ComboboxList` `popover` other than `manual`, a `ComboboxList` `role` other than `listbox`, a `ComboboxList` `data-filter` other than `manual`, or a `ComboboxOption` `role` other than `option` | The allowed value |
 | `Label` without `htmlFor`, or `Hint` or `FieldError` without `id` | TypeScript's missing property error |
 | A `variant`, `size`, `aria-current`, `tone`, `aria-orientation`, `shape`, or `side` value outside the contract | The allowed values |
 
 TypeScript shortens a long type in an error. Set `noErrorTruncation` in `tsconfig.json` to see the whole message.
 
-Some rules are not type errors. `Button` picks the element from `href`, so you cannot write an anchor without `href` (`ODD-BUTTON-009`) or a button with `href` (`ODD-BUTTON-010`). Those two codes apply to a raw `a` or `button` with the `odd-button` class. Each Field and Choice part, `Badge`, each Alert part, each Avatar part, `Separator`, `Skeleton`, each Card part, `Disclosure`, `Tabs`, `Search`, `Slider`, `Meter`, `Progress`, `Toaster`, `Popover`, `Dialog`, `DialogActions`, each Sheet part, `Menu`, `MenuItem`, `TableWrap`, `Table`, `TableSort`, `TextLink`, `Spinner`, `Combobox`, `ComboboxList`, and `ComboboxOption` picks its own element too, so `ODD-FIELD-001`, `ODD-CHOICE-001`, `ODD-BADGE-001`, `ODD-ALERT-001`, `ODD-AVATAR-001`, `ODD-SEPARATOR-001`, `ODD-SKELETON-001`, `ODD-CARD-001`, `ODD-DISCLOSURE-001`, `ODD-TABS-001`, `ODD-SEARCH-001`, `ODD-SLIDER-001`, `ODD-METER-001`, `ODD-TOAST-001`, `ODD-POPOVER-001`, `ODD-DIALOG-001`, `ODD-SHEET-001`, `ODD-MENU-001`, `ODD-TABLE-001`, `ODD-LINK-001`, `ODD-SPINNER-001`, and `ODD-COMBOBOX-001` apply only to raw markup. Visible text in an icon-only button (`ODD-BUTTON-014`), the links and buttons in a card (`ODD-CARD-003`), the summary of a disclosure (`ODD-DISCLOSURE-002`), the tablist of a tab set (`ODD-TABS-002`), the tabs in a tab set (`ODD-TABS-004`), the input and the icon of a search (`ODD-SEARCH-002` and `ODD-SEARCH-003`), a `target` without `rel` on a link (`ODD-LINK-007`), the input and the list of a combobox (`ODD-COMBOBOX-002` and `ODD-COMBOBOX-003`), and a misspelled `data-` name are not type errors either. The ESLint plugin and the [runtime checker](runtime.md) report each of these.
+Some rules are not type errors. `Button` picks the element from `href`, so you cannot write an anchor without `href` (`ODD-BUTTON-009`) or a button with `href` (`ODD-BUTTON-010`). Those two codes apply to a raw `a` or `button` with the `odd-button` class. Each Field and Choice part, `Badge`, each Alert part, each Avatar part, `Separator`, `Skeleton`, each Card part, `Disclosure`, `Tabs`, `Search`, `Slider`, `Meter`, `Progress`, `Toaster`, `Popover`, `Dialog`, `DialogActions`, each Sheet part, `Menu`, `MenuItem`, `TableWrap`, `Table`, `TableSort`, `TextLink`, `Spinner`, `Combobox`, `ComboboxList`, `ComboboxOption`, `Breadcrumb`, `Kbd`, `Code`, and `Pre` picks its own element too, so `ODD-FIELD-001`, `ODD-CHOICE-001`, `ODD-BADGE-001`, `ODD-ALERT-001`, `ODD-AVATAR-001`, `ODD-SEPARATOR-001`, `ODD-SKELETON-001`, `ODD-CARD-001`, `ODD-DISCLOSURE-001`, `ODD-TABS-001`, `ODD-SEARCH-001`, `ODD-SLIDER-001`, `ODD-METER-001`, `ODD-TOAST-001`, `ODD-POPOVER-001`, `ODD-DIALOG-001`, `ODD-SHEET-001`, `ODD-MENU-001`, `ODD-TABLE-001`, `ODD-LINK-001`, `ODD-SPINNER-001`, `ODD-COMBOBOX-001`, `ODD-BREADCRUMB-001`, `ODD-KBD-001`, and `ODD-CODE-001` apply only to raw markup. Visible text in an icon-only button (`ODD-BUTTON-014`), the links and buttons in a card (`ODD-CARD-003`), the summary of a disclosure (`ODD-DISCLOSURE-002`), the tablist of a tab set (`ODD-TABS-002`), the tabs in a tab set (`ODD-TABS-004`), the input and the icon of a search (`ODD-SEARCH-002` and `ODD-SEARCH-003`), a `target` without `rel` on a link (`ODD-LINK-007`), the input and the list of a combobox (`ODD-COMBOBOX-002` and `ODD-COMBOBOX-003`), the list of a breadcrumb (`ODD-BREADCRUMB-003`), and a misspelled `data-` name are not type errors either. The ESLint plugin and the [runtime checker](runtime.md) report each of these.
 
 ## Open a dialog or a popover with a command
 
