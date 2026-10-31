@@ -77,6 +77,11 @@ test("the catalog has every story file's stories, and Button, Field, Choice, Bad
       "components-spinner--playground",
       "components-spinner--parts",
       "components-spinner--states",
+      "components-combobox--playground",
+      "components-combobox--parts",
+      "components-combobox--states",
+      "components-combobox--open",
+      "components-combobox--async",
     ]),
   );
   expect(react.every((entry) => html.some((item) => item.id === entry.id))).toBe(true);
@@ -156,6 +161,21 @@ test("SpinnerStates puts the spinner beside a busy Button's ring", () => {
   for (const root of bothRoots("components-spinner--states")) {
     expect(root.querySelector('[aria-busy="true"] > .odd-spinner[aria-hidden="true"]')).not.toBeNull();
     expect(root.querySelector('.odd-button[aria-busy="true"]')?.textContent).toBe("Saving…");
+  }
+});
+
+test("ComboboxStates renders a disabled input, an invalid input, a disabled option, and options filtered to the value", () => {
+  for (const root of bothRoots("components-combobox--states")) {
+    expect(root.querySelector("input.odd-input:disabled")?.id).toBe("states-disabled");
+    expect(root.querySelector('input.odd-input[aria-invalid="true"]')?.id).toBe("states-invalid");
+    expect(root.querySelector('.odd-combobox-option[aria-disabled="true"]')?.textContent).toBe("Atlantis");
+    expect([...root.querySelectorAll("#states-filled-list > .odd-combobox-option:not([hidden])")].map((option) => option.textContent)).toEqual(["Berlin"]);
+  }
+});
+
+test("ComboboxAsync starts with an empty list that its code filters", () => {
+  for (const root of bothRoots("components-combobox--async")) {
+    expect(root.querySelector('.odd-combobox-list[data-filter="manual"]')?.childElementCount).toBe(0);
   }
 });
 
@@ -266,6 +286,40 @@ for (const value of currentOptions) {
     for (const root of [asRoot(renderHtml(linkPlayground, args), linkPlayground.label), reactRoot(linkPlayground, args)]) {
       checkRoot(root);
       expect(root.querySelector("a.odd-link")?.getAttribute("aria-current")).toBe(expected);
+    }
+  });
+}
+
+const comboboxPlayground = react.find((entry) => entry.id === "components-combobox--playground") ?? fail("Combobox stories have no Playground");
+const filterRule = USAGE.comboboxList.find((item) => item.kind === "enum" && item.attribute === "data-filter");
+if (filterRule?.kind !== "enum") throw new Error("no enum rule for data-filter");
+const filterOptions = comboboxPlayground.meta.argTypes?.filter?.options ?? fail("Combobox Playground argTypes.filter has no options");
+const filterAbsent = filterRule.omit.filter((token) => filterOptions.includes(token));
+
+function comboboxRoots(args: Record<string, unknown>): ParentNode[] {
+  expectSameDom(comboboxPlayground.mirror.scene({ ...comboboxPlayground.meta.args, ...comboboxPlayground.story.args, ...args }), `Combobox Playground ${JSON.stringify(args)}`);
+  const roots = [asRoot(renderHtml(comboboxPlayground, args), comboboxPlayground.label), reactRoot(comboboxPlayground, args)];
+  for (const root of roots) checkRoot(root);
+  return roots;
+}
+
+test("Combobox Playground argTypes match the combobox contract", () => {
+  expect(filterAbsent).toHaveLength(1);
+  expect([...filterOptions].sort()).toEqual([...filterRule.values, filterAbsent[0]].sort());
+});
+
+for (const value of filterOptions) {
+  test(`Combobox Playground filter=${value}`, () => {
+    const expected = value === filterAbsent[0] ? null : value;
+    for (const root of comboboxRoots({ filter: value })) expect(root.querySelector(".odd-combobox-list")?.getAttribute("data-filter")).toBe(expected);
+  });
+}
+
+for (const disabled of [true, false]) {
+  test(`Combobox Playground disabled=${disabled}`, () => {
+    for (const root of comboboxRoots({ disabled })) {
+      const input = root.querySelector("input.odd-input");
+      expect([input?.hasAttribute("disabled"), input?.hasAttribute("aria-disabled")]).toEqual([disabled, false]);
     }
   });
 }

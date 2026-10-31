@@ -3,6 +3,7 @@ import { mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
+import { enhanceCombobox } from "../src/js/combobox.ts";
 import { enhanceToaster, toast } from "../src/js/toast.ts";
 import { checkRoot, flush, installUsageChecker } from "../src/js/usage/dom.ts";
 import { registerUsageChecks } from "../src/js/usage/test-setup.ts";
@@ -232,4 +233,24 @@ test("a later test passes after a failed usage check", async () => {
   } finally {
     rmSync(dir, { recursive: true, force: true });
   }
+});
+
+test("the option enhanceCombobox marks active passes, and a written aria-selected on another option still reports", () => {
+  document.body.innerHTML = /* html */ `
+    <div class="odd-combobox">
+      <input class="odd-input" role="combobox" aria-controls="city-list" aria-expanded="false" aria-autocomplete="list" aria-label="City">
+      <div class="odd-combobox-list" id="city-list" popover="manual" role="listbox" aria-label="Cities">
+        <div class="odd-combobox-option" role="option">Amsterdam</div>
+        <div class="odd-combobox-option" role="option">Berlin</div>
+      </div>
+    </div>`;
+  const root = document.querySelector<HTMLElement>(".odd-combobox")!;
+  const cleanup = enhanceCombobox(root);
+  root.querySelector("input")!.dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowDown", bubbles: true, cancelable: true }));
+  expect(root.querySelector('[aria-selected="true"]')?.textContent).toBe("Amsterdam");
+  expect(codesIn(document.body)).toEqual([]);
+  root.querySelectorAll(".odd-combobox-option")[1]!.setAttribute("aria-selected", "true");
+  expect(codesIn(document.body)).toEqual(["ODD-COMBOBOX-010"]);
+  cleanup();
+  document.body.replaceChildren();
 });
