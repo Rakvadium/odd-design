@@ -115,16 +115,21 @@
   opacity: var(--disabled-opacity);
 }
 
+/* Two stroked diagonals that meet at the bottom: a line chevron, like the native picker icon.
+   The combobox draws the same chevron on its root (combobox.css places it). */
+.odd-select,
+.odd-combobox::after {
+  --_stroke: transparent calc(50% - 0.8px), currentColor calc(50% - 0.6px) calc(50% + 0.6px), transparent calc(50% + 0.8px);
+  background-image: linear-gradient(45deg, var(--_stroke)), linear-gradient(135deg, var(--_stroke));
+  background-size: 0.35rem 0.35rem;
+  background-repeat: no-repeat;
+}
+
 /* Native select with a drawn chevron. Upgraded below where customizable <select> exists. */
 .odd-select {
   appearance: none;
   padding-inline-end: 2.5rem;
-  /* Two stroked diagonals that meet at the bottom: a line chevron, like the native picker icon. */
-  --_stroke: transparent calc(50% - 0.8px), currentColor calc(50% - 0.6px) calc(50% + 0.6px), transparent calc(50% + 0.8px);
-  background-image: linear-gradient(45deg, var(--_stroke)), linear-gradient(135deg, var(--_stroke));
   background-position: right 1.15rem center, right 0.8rem center;
-  background-size: 0.35rem 0.35rem;
-  background-repeat: no-repeat;
 }
 
 @supports (appearance: base-select) {

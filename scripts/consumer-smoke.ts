@@ -7,7 +7,7 @@ const root = join(import.meta.dir, "..");
 const fixtures = join(root, "tests/fixtures/consumer");
 const manifest = JSON.parse(readFileSync(join(root, "package.json"), "utf8")) as { name: string; version: string };
 const expectedTarball = join(root, `${manifest.name}-${manifest.version}.tgz`);
-const CLIENT_MODULES = ["button.js", "tabs.js", "toast.js"];
+const CLIENT_MODULES = ["button.js", "combobox.js", "tabs.js", "toast.js"];
 
 const FORBIDDEN =
   "ODD-BUTTON-007: the disabled attribute is forbidden on odd-button. Allowed values: none. Fix: remove disabled and set aria-disabled. docs/usage/button.md#odd-button-007";
@@ -72,6 +72,7 @@ const REQUIRED = [
   "docs/usage/typography.md",
   "docs/usage/link.md",
   "docs/usage/spinner.md",
+  "docs/usage/combobox.md",
   "src/css/index.css",
   "src/js/appearance.ts",
   "src/js/enhance.ts",

@@ -1,9 +1,11 @@
+import { enhanceCombobox } from "./combobox.ts";
 import { closedByFallback, interestForFallback } from "./fallbacks.ts";
 import { enhanceLog } from "./log.ts";
 import { enhanceMenu } from "./menu.ts";
 import { enhanceTabs } from "./tabs.ts";
 import { enhanceToaster } from "./toast.ts";
 
+export { enhanceCombobox } from "./combobox.ts";
 export { closedByFallback, interestForFallback, supportsClosedBy, supportsInterestFor } from "./fallbacks.ts";
 export { appendLogLine, enhanceLog, type LogLineOptions, type LogTone } from "./log.ts";
 export { enhanceMenu } from "./menu.ts";
@@ -98,9 +100,9 @@ function wireSelectAll(table: HTMLTableElement): () => void {
 }
 
 /**
- * Wires every behavior under root: menus (.odd-menu[role="menu"]), tab sets (.odd-tabs), toasters
- * (.odd-toaster), logs (.odd-log), select-all tables, avatar fallbacks, and the interestfor and
- * closedby fallbacks. Elements added later need their own enhance* call. Returns one cleanup
+ * Wires every behavior under root: menus (.odd-menu[role="menu"]), comboboxes (.odd-combobox), tab
+ * sets (.odd-tabs), toasters (.odd-toaster), logs (.odd-log), select-all tables, avatar fallbacks, and
+ * the interestfor and closedby fallbacks. Elements added later need their own enhance* call. Returns one cleanup
  * function for everything.
  * A number stepper or a slider with number has no class to find, so the page calls enhanceStepper
  * or enhanceRangeField on its root.
@@ -108,6 +110,7 @@ function wireSelectAll(table: HTMLTableElement): () => void {
 export function enhance(root: Document | HTMLElement = document): () => void {
   const cleanups = [
     ...[...root.querySelectorAll<HTMLElement>('.odd-menu[role="menu"]')].map(enhanceMenu),
+    ...[...root.querySelectorAll<HTMLElement>(".odd-combobox")].map(enhanceCombobox),
     ...[...root.querySelectorAll<HTMLElement>(".odd-tabs")].map(enhanceTabs),
     ...[...root.querySelectorAll<HTMLElement>(".odd-toaster")].map(enhanceToaster),
     ...[...root.querySelectorAll<HTMLElement>(".odd-log")].map(enhanceLog),
