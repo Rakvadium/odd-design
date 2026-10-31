@@ -35,6 +35,9 @@ const FAMILIES: readonly Family[] = [
   { name: "Link", classes: ["odd-link"], css: "components/link.css", js: [], react: ["TextLink"] },
   { name: "Spinner", classes: ["odd-spinner"], css: "components/spinner.css", js: [], react: ["Spinner"] },
   { name: "Combobox", classes: ["odd-combobox", "odd-combobox-list", "odd-combobox-option"], css: "components/combobox.css", js: ["combobox.ts"], react: ["Combobox", "ComboboxList", "ComboboxOption"] },
+  { name: "Breadcrumb", classes: ["odd-breadcrumb"], css: "components/breadcrumb.css", js: [], react: ["Breadcrumb"] },
+  { name: "Kbd", classes: ["odd-kbd"], css: "components/kbd.css", js: [], react: ["Kbd"] },
+  { name: "Code", classes: ["odd-code", "odd-pre"], css: "components/code.css", js: [], react: ["Code", "Pre"] },
   { name: "Table", classes: ["odd-table-wrap", "odd-table", "odd-table-sort"], css: "components/table.css", js: ["enhance.ts:47-100"], react: ["TableWrap", "Table", "TableSort"] },
   { name: "Popover", classes: ["odd-popover", "odd-hover-card", "odd-tooltip"], css: "components/popover.css", js: ["fallbacks.ts:9-81"], react: ["Popover"] },
   {
