@@ -146,7 +146,7 @@ function wire(root: HTMLElement): Omit<Holder, "count"> {
   const choose = (option: HTMLElement) => {
     const field = input()!;
     const value = textOf(option);
-    if (field.value !== value) {
+    if (!field.disabled && field.value !== value) {
       // HTMLInputElement's own setter skips React's value tracker, so React's onChange sees the input event.
       replacing = true;
       Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, "value")!.set!.call(field, value);
@@ -195,9 +195,10 @@ function wire(root: HTMLElement): Omit<Holder, "count"> {
         active.click();
         return;
       case "Escape":
-        if (!open) return;
-        event.preventDefault();
-        event.stopPropagation();
+        if (open) {
+          event.preventDefault();
+          event.stopPropagation();
+        }
         close();
         return;
       case "Tab":
