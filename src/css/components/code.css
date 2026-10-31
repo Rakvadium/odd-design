@@ -1,6 +1,6 @@
 /*
  * <p>Set <code class="odd-code">--primary</code> on the scope.</p>
- * <pre class="odd-pre"><code>npm install odd-design</code></pre>
+ * <pre class="odd-pre"><code>bun add odd-design</code></pre>
  * Code in the mono font. odd-code is a short piece of code inside a sentence. odd-pre is a block of code;
  * put a bare code element inside it so screen readers know it is code. Leave the code out for command
  * output. Long lines wrap instead of scrolling, so the block never needs a tab stop to be read with a

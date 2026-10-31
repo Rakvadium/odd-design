@@ -64,8 +64,8 @@ export const ShortcutList = mirrored<Args>({
         of: "div",
         props: { className: "odd-row" },
         children: [
-          { of: "dt", children: keysOf(keys) },
-          { of: "dd", children: [action] },
+          { of: "dt", props: { style: { minInlineSize: "6rem" } }, children: keysOf(keys) },
+          { of: "dd", props: { style: { margin: "0" } }, children: [action] },
         ],
       }),
     ),
