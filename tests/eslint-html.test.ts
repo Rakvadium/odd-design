@@ -586,6 +586,30 @@ const places: Record<string, readonly (readonly [string, number, number, string]
     ["ODD-COMBOBOX-012", 3, 258, 'data-tone="primary"'],
     ["ODD-COMBOBOX-012", 4, 305, 'data-variant="ghost"'],
   ],
+  "odd-breadcrumb-001.bad.html": [
+    ["ODD-BREADCRUMB-001", 2, 6, "class"],
+    ["ODD-BREADCRUMB-001", 3, 5, "class"],
+  ],
+  "odd-breadcrumb-002.bad.html": [["ODD-BREADCRUMB-002", 2, 1, "<nav"]],
+  "odd-breadcrumb-003.bad.html": [
+    ["ODD-BREADCRUMB-003", 2, 1, "<nav"],
+    ["ODD-BREADCRUMB-003", 3, 1, "<nav"],
+  ],
+  "odd-breadcrumb-004.bad.html": [["ODD-BREADCRUMB-004", 2, 53, 'data-tone="primary"']],
+  "odd-kbd-001.bad.html": [
+    ["ODD-KBD-001", 2, 16, "class"],
+    ["ODD-KBD-001", 2, 50, "class"],
+  ],
+  "odd-kbd-002.bad.html": [["ODD-KBD-002", 2, 31, 'aria-hidden="true"']],
+  "odd-kbd-003.bad.html": [["ODD-KBD-003", 2, 31, 'data-size="sm"']],
+  "odd-code-001.bad.html": [
+    ["ODD-CODE-001", 2, 14, "class"],
+    ["ODD-CODE-001", 3, 6, "class"],
+  ],
+  "odd-code-002.bad.html": [
+    ["ODD-CODE-002", 2, 31, 'data-size="sm"'],
+    ["ODD-CODE-002", 3, 22, 'data-tone="info"'],
+  ],
   "odd-class-001.bad.html": [
     ["ODD-CLASS-001", 2, 6, "class"],
     ["ODD-CLASS-001", 3, 4, "class"],

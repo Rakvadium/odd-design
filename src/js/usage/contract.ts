@@ -349,6 +349,22 @@ export const USAGE = {
     { kind: "forbidden-attribute", code: "ODD-COMBOBOX-010", attribute: "aria-selected" },
     { kind: "system-data", code: "ODD-COMBOBOX-012" },
   ] as const satisfies readonly UsageRule[],
+  breadcrumb: [
+    { kind: "element", code: "ODD-BREADCRUMB-001", className: "odd-breadcrumb", elements: ["nav"] },
+    { kind: "accessible-name", code: "ODD-BREADCRUMB-002", element: "nav", names: ["aria-label", "aria-labelledby"] },
+    { kind: "required-child", code: "ODD-BREADCRUMB-003", element: "nav", child: "ol" },
+    { kind: "system-data", code: "ODD-BREADCRUMB-004" },
+  ] as const satisfies readonly UsageRule[],
+  kbd: [
+    { kind: "element", code: "ODD-KBD-001", className: "odd-kbd", elements: ["kbd"] },
+    { kind: "forbidden-attribute", code: "ODD-KBD-002", attribute: "aria-hidden" },
+    { kind: "system-data", code: "ODD-KBD-003" },
+  ] as const satisfies readonly UsageRule[],
+  code: [
+    { kind: "element", code: "ODD-CODE-001", className: "odd-code", elements: ["code"] },
+    { kind: "element", code: "ODD-CODE-001", className: "odd-pre", elements: ["pre"] },
+    { kind: "system-data", code: "ODD-CODE-002" },
+  ] as const satisfies readonly UsageRule[],
   shared: [
     { kind: "unknown-class", code: "ODD-CLASS-001" },
     { kind: "computed-value", code: "ODD-STATIC-001" },
@@ -415,6 +431,10 @@ export const WRAPPERS = {
   Combobox: { source: "odd-design/react", className: "odd-combobox", props: {}, element: "div" },
   ComboboxList: { source: "odd-design/react", className: "odd-combobox-list", props: {}, element: "div" },
   ComboboxOption: { source: "odd-design/react", className: "odd-combobox-option", props: {}, element: "div" },
+  Breadcrumb: { source: "odd-design/react", className: "odd-breadcrumb", props: {}, element: "nav" },
+  Kbd: { source: "odd-design/react", className: "odd-kbd", props: {}, element: "kbd" },
+  Code: { source: "odd-design/react", className: "odd-code", props: {}, element: "code" },
+  Pre: { source: "odd-design/react", className: "odd-pre", props: {}, element: "pre" },
 } as const satisfies Record<string, Wrapper>;
 
 export const CLASS_REGISTRY = [
@@ -423,12 +443,14 @@ export const CLASS_REGISTRY = [
   "odd-avatar",
   "odd-avatar-group",
   "odd-badge",
+  "odd-breadcrumb",
   "odd-button",
   "odd-card",
   "odd-card-footer",
   "odd-card-link",
   "odd-card-title",
   "odd-choice",
+  "odd-code",
   "odd-combobox",
   "odd-combobox-list",
   "odd-combobox-option",
@@ -445,6 +467,7 @@ export const CLASS_REGISTRY = [
   "odd-hint",
   "odd-hover-card",
   "odd-input",
+  "odd-kbd",
   "odd-label",
   "odd-link",
   "odd-log",
@@ -456,6 +479,7 @@ export const CLASS_REGISTRY = [
   "odd-meter",
   "odd-muted",
   "odd-popover",
+  "odd-pre",
   "odd-progress",
   "odd-row",
   "odd-scope",
@@ -497,14 +521,17 @@ export const VOCABULARY = {
   alert: ["data-tone"],
   avatar: ["data-size"],
   badge: ["data-solid", "data-tone"],
+  breadcrumb: [],
   button: ["data-icon-only", "data-size", "data-variant"],
   card: ["data-interactive"],
   choice: [],
+  code: [],
   combobox: [],
   dialog: [],
   disclosure: [],
   field: [],
   grid: ["data-span"],
+  kbd: [],
   link: [],
   log: ["data-tone"],
   menu: ["data-tone"],
@@ -563,3 +590,6 @@ export type SpinnerRule = (typeof USAGE.spinner)[number];
 export type ComboboxRule = (typeof USAGE.combobox)[number];
 export type ComboboxListRule = (typeof USAGE.comboboxList)[number];
 export type ComboboxOptionRule = (typeof USAGE.comboboxOption)[number];
+export type BreadcrumbRule = (typeof USAGE.breadcrumb)[number];
+export type KbdRule = (typeof USAGE.kbd)[number];
+export type CodeRule = (typeof USAGE.code)[number];

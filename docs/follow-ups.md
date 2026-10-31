@@ -169,6 +169,19 @@ Run with NVDA 2026.2, OneCore David, rate 50, in Chrome. The transcripts are in 
 
 - **The combobox's No results option is English.** `enhanceCombobox` adds a disabled option that reads "No results" when the built-in filter matches nothing, and no attribute changes the text. A page in another language gets English there. A list with `data-filter="manual"` is unaffected, because the app renders its own empty row. Add a way to set the text if a non-English consumer needs the built-in filter. (missing cores, batch 2)
 
+## Missing cores queue
+
+Notes from the verification of each batch in `docs/plans/missing-cores-queue.md`, and gaps each batch left on purpose.
+
+- **Spinner tests miss three things.** `ODD-SPINNER-002`'s `aria-labelledby` rule has no line in `odd-spinner-002.bad.html`, no JSX place, and no type fixture. No test reads the spinner's `cursor: progress`, and nothing asserts that the ring grows with the font size. Add the fixture line with its `places` row, and extend the spinner e2e test to read `cursor` and the ring's size at two font sizes. (missing cores, batch 1)
+- **The runtime checker misses three wrong active-option pointers.** `isActiveOption` in `src/js/usage/dom.ts` accepts more than the module writes. `aria-selected="false"` on the active option, an `aria-activedescendant` that points at a stale target, and a `role="combobox"` pointer on an element other than an input stay quiet at runtime, while ESLint still reports `ODD-COMBOBOX-010`. Narrow it to a `.odd-combobox-option` with `aria-selected="true"` and a pointer from `:scope > input[role="combobox"]`. (missing cores, batch 2)
+- **An `aria-controls` that names a missing id passes both checkers.** The list then never opens. `role-descendant` reads only whether the attribute is present, so a fix needs a rule kind that resolves an id. (missing cores, batch 2)
+- **Combobox wiring outlives its markup.** `.storybook/preview.ts` drops `enhanceCombobox`'s cleanup, so each HTML render leaves a `MutationObserver` on the previous root, the same as the other widgets in that render. A session-long `enhance(document)` also keeps the holder of a combobox that React unmounted until the document's cleanup runs. That matches the refcount design. Document it, or release the holder when the root disconnects. (missing cores, batch 2)
+- **Enter is lost when the active option is replaced in the same turn.** The click lands on the detached option, so nothing is chosen. A later key works. (missing cores, batch 2)
+- **No checker requires a breadcrumb's current crumb.** A trail without `aria-current="page"` passes, and its last crumb looks like every other link (measured in the missing-cores design). `required-child` reads direct children only, so a rule needs a kind that reads descendants. `tests/stories.test.ts` checks the stories' trails. (missing cores, batch 3)
+- **VoiceOver may drop the breadcrumb's list.** Safari's VoiceOver is known to drop list semantics from an `ol` with `list-style: none`, which `breadcrumb.css` sets. Playwright's snapshot computes roles itself, so it cannot show this. If the Mac pass confirms it, add `role="list"` to the documented markup. (missing cores, batch 3)
+- **The eval grader does not look for invented chrome.** `eval/grade.ts` does not flag a hand-drawn spinner, a breadcrumb made of buttons, or a styled `span` keycap, so whether agents now reach for the cores is unmeasured. (missing cores, batch 3)
+
 ## Test gaps
 
 - **Text on translucent surfaces.** Glass uses `--surface-alpha: 82%`. `tests/css.ts` now evaluates `color-mix()`, so compositing `--surface-fill` over `--background` is within reach. (original survey)

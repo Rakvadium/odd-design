@@ -9,7 +9,7 @@ Feedback components tell the user about state: `.odd-alert` messages in a neutra
 - `bars-forced-colors`: under `forced-colors=active`, every progress and meter bar shows as a Highlight fill in an outlined track.
 - `skeleton-busy`: the loading region says "Loading decks…" to screen readers, and the skeleton blocks are hidden from them.
 - `motion-reduced`: under `prefers-reduced-motion=reduce`, the skeleton pulse and the indeterminate sweep have a `0s` duration.
-- `spinner-busy`: in `components-spinner--states`, the busy region reads "Loading projects…" and the spinner is hidden from the tree. The spinner and the busy Button's ring sit side by side at the same size.
+- `spinner-busy`: in `components-spinner--states`, the busy region reads "Loading projects…" and the spinner is hidden from the tree. The spinner and the busy Button's ring sit side by side, each 1em across. The spinner is 16px at the region's text size, and the ring is 14px, because the Button sets `font-size: var(--text-sm)`.
 - `spinner-motion`: the spinner turns every `0.7s`, and every `2.4s` under `prefers-reduced-motion=reduce`. It never stops.
 - `spinner-forced-colors`: under `forced-colors=active`, the spinner's gap shows in the page color, so the ring still looks open. The busy Button's ring closes into a full circle there. That is a known Button bug in `docs/follow-ups.md`.
 
