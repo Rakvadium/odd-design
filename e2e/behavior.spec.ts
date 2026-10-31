@@ -1,4 +1,5 @@
 import { expect, test, type Page, type TestInfo } from "@playwright/test";
+import { CHROMES } from "../src/js/contract.ts";
 import { openStory } from "./story.ts";
 
 // Behavior that depends on the engine: native features each browser may or may not have, the JS
@@ -621,18 +622,20 @@ test.describe("breadcrumb, keys, and code", () => {
       expect(read.filter((line) => line.includes("/"))).toEqual([]);
     });
 
-    test(`a line with keycaps is as tall as the same line without them (${storybook})`, async ({ page }) => {
-      await openStory(page, "components-kbd--parts", "mode:light", "", storybook);
-      const heights = await page.locator("#storybook-root p").first().evaluate((p) => {
-        const plain = document.createElement("p");
-        plain.textContent = p.textContent;
-        p.after(plain);
-        const both = [p.getBoundingClientRect().height, plain.getBoundingClientRect().height];
-        plain.remove();
-        return both;
+    for (const chrome of CHROMES) {
+      test(`a line with keycaps is as tall as the same line without them in ${chrome} (${storybook})`, async ({ page }) => {
+        await openStory(page, "components-kbd--parts", `mode:light;chrome:${chrome}`, "", storybook);
+        const heights = await page.locator("#storybook-root p").first().evaluate((p) => {
+          const plain = document.createElement("p");
+          plain.textContent = p.textContent;
+          p.after(plain);
+          const both = [p.getBoundingClientRect().height, plain.getBoundingClientRect().height];
+          plain.remove();
+          return both;
+        });
+        expect(heights[0]).toBeCloseTo(heights[1]!, 2);
       });
-      expect(heights[0]).toBeCloseTo(heights[1]!, 2);
-    });
+    }
 
     test(`a long line in a code block wraps instead of scrolling (${storybook})`, async ({ page }) => {
       await openStory(page, "components-code--long-lines", "mode:light", "", storybook);
