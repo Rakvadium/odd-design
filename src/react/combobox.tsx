@@ -26,7 +26,7 @@ export function Combobox({ ref, ...props }: ComboboxProps): ReactElement {
   const root = useRef<HTMLDivElement>(null);
   useImperativeHandle(ref, () => root.current!, []);
   useLayoutEffect(() => enhanceCombobox(root.current!), []);
-  // No deps: React can rewrite aria-expanded on a render, so every commit writes open and the active option back.
+  // No deps: the holder keeps open and the active option, so every commit writes them back onto what React rendered.
   useLayoutEffect(() => enhanceCombobox(root.current!));
   return createElement(WRAPPERS.Combobox.element, { ...lower("Combobox", props), ref: root });
 }

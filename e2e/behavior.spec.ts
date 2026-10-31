@@ -584,9 +584,9 @@ test.describe("combobox", () => {
       await page.locator("#open-city").focus();
       await page.keyboard.press("ArrowDown");
       await waitOpen(page, "#open-city-list");
-      const field2 = await rect(page, "#open-city");
+      const raised = await rect(page, "#open-city");
       const above = await rect(page, "#open-city-list");
-      expect(Math.abs(field2.top - above.bottom - 4), "flipped to 4px above the input").toBeLessThan(1.5);
+      expect(Math.abs(raised.top - above.bottom - 4), "flipped to 4px above the input").toBeLessThan(1.5);
       await shot(page, testInfo, `combobox-flipped-${storybook}.png`);
     });
   }

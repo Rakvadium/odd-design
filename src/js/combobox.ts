@@ -31,10 +31,10 @@ const holders = new WeakMap<HTMLElement, Holder>();
  * your code filters and every option present is shown. When the built-in filter matches nothing, the
  * list shows a disabled No results option.
  *
- * Open and the active option live here, not in the DOM: each enhanceCombobox call writes them back
- * onto aria-expanded, the popover, aria-activedescendant, and aria-selected, so a React render that
- * rewrites aria-expanded is corrected on its next layout effect. A root is wired once however many
- * callers enhance it, and its listeners go when the last caller cleans up.
+ * Open and the active option live here, not in the DOM. Each enhanceCombobox call writes them onto
+ * aria-expanded, the popover, aria-activedescendant, and aria-selected, so the attributes follow this
+ * record whatever React renders. A root is wired once however many callers enhance it, and its
+ * listeners go when the last caller cleans up.
  */
 export function enhanceCombobox(root: HTMLElement): () => void {
   let hold = holders.get(root);
@@ -144,8 +144,7 @@ function wire(root: HTMLElement): Omit<Holder, "count"> {
   };
 
   const choose = (option: HTMLElement) => {
-    const field = input();
-    if (!field) return;
+    const field = input()!;
     const value = textOf(option);
     if (field.value !== value) {
       // HTMLInputElement's own setter skips React's value tracker, so React's onChange sees the input event.
@@ -215,7 +214,7 @@ function wire(root: HTMLElement): Omit<Holder, "count"> {
 
   // Capture phase, so a disabled option's click never reaches the option's or the app's listeners.
   const onDisabledClick = (event: MouseEvent) => {
-    const option = (event.target as Element).closest?.<HTMLElement>(OPTION);
+    const option = (event.target as Element).closest<HTMLElement>(OPTION);
     if (option && list()?.contains(option) && unavailable(option)) {
       event.preventDefault();
       event.stopPropagation();
@@ -224,7 +223,7 @@ function wire(root: HTMLElement): Omit<Holder, "count"> {
 
   const onClick = (event: MouseEvent) => {
     const target = event.target as Element;
-    const option = target.closest?.<HTMLElement>(OPTION);
+    const option = target.closest<HTMLElement>(OPTION);
     if (option && list()?.contains(option)) return choose(option);
     if (target === input() && !open) {
       wanted = true;

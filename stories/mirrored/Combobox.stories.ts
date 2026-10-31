@@ -143,7 +143,6 @@ export const Open = {
   play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
     const input = canvasElement.querySelector<HTMLInputElement>("#open-city")!;
     const list = canvasElement.querySelector<HTMLElement>("#open-city-list")!;
-    await new Promise((resolve) => setTimeout(resolve));
     input.focus();
     input.dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowDown", bubbles: true, cancelable: true }));
     await Promise.all(list.getAnimations().map((animation) => animation.finished));
