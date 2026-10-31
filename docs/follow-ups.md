@@ -181,6 +181,7 @@ Notes from the verification of each batch in `docs/plans/missing-cores-queue.md`
 - **No checker requires a breadcrumb's current crumb.** A trail without `aria-current="page"` passes, and its last crumb looks like every other link (measured in the missing-cores design). `required-child` reads direct children only, so a rule needs a kind that reads descendants. `tests/stories.test.ts` checks the stories' trails. (missing cores, batch 3)
 - **VoiceOver may drop the breadcrumb's list.** Safari's VoiceOver is known to drop list semantics from an `ol` with `list-style: none`, which `breadcrumb.css` sets. Playwright's snapshot computes roles itself, so it cannot show this. If the Mac pass confirms it, add `role="list"` to the documented markup. (missing cores, batch 3)
 - **The eval grader does not look for invented chrome.** `eval/grade.ts` does not flag a hand-drawn spinner, a breadcrumb made of buttons, or a styled `span` keycap, so whether agents now reach for the cores is unmeasured. (missing cores, batch 3)
+- **No test passes the Breadcrumb Playground a non-default `label`.** Every check reads the default name, "Breadcrumb", so a scene that ignored `label` would still pass. Render the Playground with another label and assert the `navigation` takes that name. (missing cores, batch 3)
 
 ## Test gaps
 
