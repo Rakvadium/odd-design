@@ -34,6 +34,7 @@ const FAMILIES: readonly Family[] = [
   { name: "Separator", classes: ["odd-separator"], css: "components/separator.css", js: [], react: ["Separator"] },
   { name: "Link", classes: ["odd-link"], css: "components/link.css", js: [], react: ["TextLink"] },
   { name: "Spinner", classes: ["odd-spinner"], css: "components/spinner.css", js: [], react: ["Spinner"] },
+  { name: "Combobox", classes: ["odd-combobox", "odd-combobox-list", "odd-combobox-option"], css: "components/combobox.css", js: ["combobox.ts"], react: ["Combobox", "ComboboxList", "ComboboxOption"] },
   { name: "Table", classes: ["odd-table-wrap", "odd-table", "odd-table-sort"], css: "components/table.css", js: ["enhance.ts:47-100"], react: ["TableWrap", "Table", "TableSort"] },
   { name: "Popover", classes: ["odd-popover", "odd-hover-card", "odd-tooltip"], css: "components/popover.css", js: ["fallbacks.ts:9-81"], react: ["Popover"] },
   {
@@ -393,7 +394,7 @@ function axesOf(rules: readonly Rule[], family: Family, stories: readonly Render
     for (const complex of splitTopLevel(rule.selector)) {
       for (const match of complex.matchAll(/\[\s*([\w-]+)\s*(?:[~|^$*]?=\s*("[^"]*"|'[^']*'|[^\]\s]+))?\s*\]/g)) {
         const value = match[2]?.replace(/^'|'$/g, '"');
-        found.set(value === undefined ? `[${match[1]}]` : `[${match[1]}=${value.startsWith('"') ? value : `"${value}"`}]`, "attribute");
+        found.set(value === undefined ? `[${match[1]}]` : `[${match[1]}=${value.startsWith('"') ? value : `"${value}"`}]`, forbidden.has(match[1]!) ? "forbidden" : "attribute");
       }
       for (const className of classTokens(complex)) if (family.classes.includes(className)) found.set(`.${className}`, "part");
       for (const match of complex.matchAll(/(?<!:):(-?[\w-]+)(?=(\([^()]*\))?)/g)) {

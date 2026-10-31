@@ -1,6 +1,6 @@
 # Search usage rules
 
-These codes apply to `odd-search`. Shared codes are in [General usage rules](general.md).
+These codes apply to `odd-search`. Shared codes are in [General usage rules](general.md). For search with suggestions, wrap an `odd-combobox` in a plain `<search>` element instead ([Combobox usage rules](combobox.md)), because `odd-search` needs its own search input as a direct child.
 
 ```html
 <search class="odd-search">
