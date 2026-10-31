@@ -37,7 +37,7 @@ The four throughput questions have one answer for the whole queue. Every batch a
 
 ### Link
 
-`<a class="odd-link" href="/guide">setup guide</a>`, and `aria-current="page"` on the link to the page you are on. In React it is `<Link href="/guide">`. A link that looks like a button stays `a.odd-button`, and a card link stays `CardLink`.
+`<a class="odd-link" href="/guide">setup guide</a>`, and `aria-current="page"` on the link to the page you are on. In React it is `<TextLink href="/guide">`. A link that looks like a button stays `a.odd-button`, and a card link stays `CardLink`.
 
 The bare `a` in `base.css` keeps the resting look. `link.css` holds one rule. The current page takes `--foreground` and drops the underline, so it differs by two cues, not by color. Moving the whole look into the components layer was measured and rejected, because it repaints `odd-skip-link`'s text from `oklch(0.97…)` to `oklch(0.3…)` on its primary fill.
 
@@ -49,8 +49,9 @@ The bare `a` in `base.css` keeps the resting look. `link.css` holds one rule. Th
 | ODD-LINK-004 | `forbidden-attribute` `role` | any role | `role="button"` is announced as a button, and Space does nothing. |
 | ODD-LINK-005 | `enum` `aria-current` `page` | another value | `aria-current="true"` keeps the resting look. |
 | ODD-LINK-006 | `system-data` | a system `data-*` | `data-variant="ghost"` draws nothing. The message points to `odd-button`. |
+| ODD-LINK-007 | `name-requires` `rel` on `target` | `target` without `rel` | A link that opens a new tab says nothing about it. The message asks for `rel="noopener"` and words in the link text that say it opens a new tab. Scout's answer to fork 5. |
 
-`Link` is a `part()` on `a`. `Pinned` requires `href`, `Forbidden` types 003 and 004, and `aria-current` is hand-typed, as Separator types `role`. The existing JSX fixture `tests/fixtures/usage/jsx/link.tsx` (a router link) is renamed `router-link.tsx`, so the new `link.tsx` can take its name.
+`TextLink` is a `part()` on `a`. The export is `TextLink`, not `Link`, so it does not collide with router and framework `Link` exports (Scout, fork 4). The class stays `odd-link`. `Pinned` requires `href`, `Forbidden` types 003 and 004, and `aria-current` is hand-typed, as Separator types `role`. The existing JSX fixture `tests/fixtures/usage/jsx/link.tsx` (a router link) is renamed `router-link.tsx`, so the new `link.tsx` can take its name.
 
 Stories, title `Components/Link`. `Playground` takes `label` and `current: "none" | "page"`, with the options read from `USAGE.link` and swept the way Button's are. `States` shows a resting and a current link. `InText` shows links inside a paragraph.
 
@@ -60,7 +61,7 @@ Stories, title `Components/Link`. `Playground` takes `label` and `current: "none
 
 The spinner is the moving form of Skeleton's idiom. It is decoration, and the region carries the busy state and the words, as `ODD-SKELETON-004` already requires of a skeleton block. `docs/usage/skeleton.md` calls `role="status"` with hidden text "the spinner pattern" today. That line is reworded, so the docs teach one loading idiom.
 
-One ring, one owner. `@keyframes odd-spin` moves from `button.css` to `spinner.css`. A new `--spin-duration` token (700ms, and 2.4s under reduced motion in `preferences.css`) times both the spinner and Button's busy ring, so Button's measured timing is unchanged. Both rings get a forced-colors fix. Forced colors paints the transparent gap in `CanvasText`, which closes the circle, so the gap becomes `Canvas`. The spinner sets `cursor: progress`, as the busy button does.
+`button.css` does not change (Scout, fork 8). `spinner.css` owns its own keyframes, its own 700ms turn, its own 2.4s turn under reduced motion, and its own forced-colors fix, matching Button's busy ring by value. Forced colors paints the transparent gap in `CanvasText`, which closes the circle, so the spinner's gap becomes `Canvas`. Button's busy ring keeps that bug until Button parity work unparks, and `docs/follow-ups.md` records both the bug and the two copies of the ring. The spinner sets `cursor: progress`, as the busy button does.
 
 | Code | Kind | Fires when | What breaks (measured) |
 | --- | --- | --- | --- |
@@ -74,7 +75,7 @@ Stories, title `Components/Spinner`. `Playground` takes `label` and the surround
 
 ### Both cores
 
-Each core ships a usage page, a fixture pair and `places` rows per code, a JSX fixture, type fixtures, a `pass.tsx` block, markup rows, and a `FAMILIES` row. Each also gets an `e2e/behavior.spec.ts` test over both Storybooks. Link's test pins the current link's color and underline, and Spinner's pins the shared ring's timing under reduced motion. Link's tab-order checks run in Firefox only, because this host's WebKit does not tab to links. `Foundations.stories.ts` swaps its prose `<a>` for `odd-link`, since that paragraph is the nearest example an agent copies. Batch 3 swaps its `<code>`.
+Each core ships a usage page, a fixture pair and `places` rows per code, a JSX fixture, type fixtures, a `pass.tsx` block, markup rows, and a `FAMILIES` row. Each also gets an `e2e/behavior.spec.ts` test over both Storybooks. Link's test pins the current link's color and underline, and Spinner's pins the ring's timing at rest and under reduced motion. Link's tab-order checks run in Firefox only, because this host's WebKit does not tab to links. `Foundations.stories.ts` swaps its prose `<a>` for `odd-link`, since that paragraph is the nearest example an agent copies. Batch 3 swaps its `<code>`.
 
 ### Check
 
@@ -117,7 +118,7 @@ A choice is a `click` on an option. Enter clicks the active option, so one `onCl
 
 ### Keyboard and pointer
 
-ArrowDown and ArrowUp open the list at the first or last option, then move and wrap. Typing filters and opens with nothing active. Enter on an active option chooses it. Enter with nothing active closes the list and lets the form submit. Escape closes the list and keeps the text, and a second Escape reaches a surrounding dialog. Tab closes without choosing. Left, Right, Home, and End belong to the caret and clear the active option. A click on the input opens the list, and a click on an option chooses it without moving focus. Disabled options use `aria-disabled="true"`, stay in the arrow order, and ignore clicks, as Menu's items do. Every one of these was measured on a prototype in Firefox and WebKit.
+ArrowDown and ArrowUp open the list at the first or last option, then move and wrap. Typing filters and opens with nothing active. Enter on an active option chooses it. Enter with nothing active closes the list and lets the form submit. Escape closes the list and keeps the text, and a second Escape reaches a surrounding dialog. Tab closes without choosing. Left, Right, Home, and End belong to the caret and clear the active option. A click on the input opens the list, and a click on an option chooses it without moving focus. Disabled options use `aria-disabled="true"`, ignore clicks, and the arrow keys skip them (Scout, fork 16). Every one of these was measured on a prototype in Firefox and WebKit.
 
 ### CSS
 
@@ -224,7 +225,13 @@ The batch 1 gates, with distance 0 for Breadcrumb, Kbd, and Code.
 
 ## Forks for Scout
 
-The build takes each default below. Dispatch routes any fork to Scout, and a different answer becomes a follow-up commit in the open batch, or a new PR if the batch has landed.
+Scout answered every fork on 2026-10-31. Forks 4, 5, 8, 16, and 20 take Scout's answer below. Every other fork keeps its default. Batch 1 builds its three answers into its open PR. Batch 2 builds forks 16 and 20 from the start.
+
+- Fork 4. The Link part is exported as `TextLink`.
+- Fork 5. `target` requires `rel` (ODD-LINK-007), and the docs ask for a visible new-tab cue in the link text.
+- Fork 8. `button.css` stays as it is until Button parity unparks. The spinner keeps its own copy of the ring.
+- Fork 16. The arrow keys skip disabled options.
+- Fork 20. An open list with no matching option shows a "No results" row. There is no result-count live region and no Spinner. Batch 2 measures how the row is exposed, since a listbox may only hold options and groups.
 
 | # | Core | Fork | Default (built) | Alternatives |
 | --- | --- | --- | --- | --- |
