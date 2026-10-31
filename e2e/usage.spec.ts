@@ -62,6 +62,21 @@ function currentValues(): readonly string[] {
   return options;
 }
 
+const comboboxPlayground = react.find((entry) => entry.id === "components-combobox--playground") ?? fail("Combobox stories have no Playground");
+
+function filterValues(): { options: readonly string[]; absent: string } {
+  const rule = USAGE.comboboxList.find((item) => item.kind === "enum" && item.attribute === "data-filter");
+  if (rule?.kind !== "enum") throw new Error("no enum rule for data-filter");
+  const options = comboboxPlayground.meta.argTypes?.filter?.options;
+  if (options === undefined) throw new Error("Combobox Playground argTypes.filter has no options");
+  const absent = rule.omit.filter((token) => options.includes(token));
+  const expected = [...rule.values, ...absent].sort();
+  if (absent.length !== 1 || absent[0] === undefined || sorted(options).join() !== expected.join()) {
+    throw new Error(`Combobox Playground filter options ${sorted(options).join(", ")} do not match ${expected.join(", ")}`);
+  }
+  return { options, absent: absent[0] };
+}
+
 const variantControl = enumValues("data-variant", "variant");
 const sizeControl = enumValues("data-size", "size");
 
@@ -229,6 +244,19 @@ test("usage and mirror: every story in both Storybooks, each pair, the Playgroun
     if (htmlActual !== expected) findings.push(`${linkPlayground.id} [html current=${value}] aria-current=${String(htmlActual)}`);
     if (reactActual !== expected) findings.push(`${linkPlayground.id} [react current=${value}] aria-current=${String(reactActual)}`);
     await comparePair(`link playground [${args}]`, htmlSide, reactSide, findings, testInfo);
+  }
+
+  const filterControl = filterValues();
+  for (const value of filterControl.options) {
+    const args = `filter:${value}`;
+    const expected = value === filterControl.absent ? null : value;
+    const htmlSide = await see(page, "html", comboboxPlayground.id, args);
+    const htmlActual = await page.locator("#storybook-root .odd-combobox-list").getAttribute("data-filter");
+    const reactSide = await see(page, "react", comboboxPlayground.id, args);
+    const reactActual = await page.locator("#storybook-root .odd-combobox-list").getAttribute("data-filter");
+    if (htmlActual !== expected) findings.push(`${comboboxPlayground.id} [html filter=${value}] data-filter=${String(htmlActual)}`);
+    if (reactActual !== expected) findings.push(`${comboboxPlayground.id} [react filter=${value}] data-filter=${String(reactActual)}`);
+    await comparePair(`combobox playground [${args}]`, htmlSide, reactSide, findings, testInfo);
   }
 
   const triggers = [

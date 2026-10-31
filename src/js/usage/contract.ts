@@ -320,6 +320,35 @@ export const USAGE = {
     { kind: "forbidden-attribute", code: "ODD-SPINNER-002", attribute: "aria-busy" },
     { kind: "system-data", code: "ODD-SPINNER-003" },
   ] as const satisfies readonly UsageRule[],
+  combobox: [
+    { kind: "element", code: "ODD-COMBOBOX-001", className: "odd-combobox", elements: ["div"] },
+    { kind: "required-child", code: "ODD-COMBOBOX-002", element: "div", role: "combobox" },
+    { kind: "required-child", code: "ODD-COMBOBOX-002", element: "div", className: "odd-combobox-list" },
+    { kind: "role-descendant", code: "ODD-COMBOBOX-003", role: "combobox", elements: ["input"], attribute: "aria-controls" },
+    { kind: "required-child", code: "ODD-COMBOBOX-003", element: "div", role: "combobox", attribute: "aria-autocomplete", value: "list" },
+    { kind: "forbidden-attribute", code: "ODD-COMBOBOX-007", attribute: "data-filter" },
+    { kind: "forbidden-attribute", code: "ODD-COMBOBOX-011", attribute: "role" },
+    { kind: "system-data", code: "ODD-COMBOBOX-012" },
+  ] as const satisfies readonly UsageRule[],
+  comboboxList: [
+    { kind: "element", code: "ODD-COMBOBOX-001", className: "odd-combobox-list", elements: ["div"] },
+    { kind: "required-attribute", code: "ODD-COMBOBOX-004", element: "div", attribute: "popover" },
+    { kind: "enum", code: "ODD-COMBOBOX-004", attribute: "popover", values: ["manual"], omit: [] },
+    { kind: "required-attribute", code: "ODD-COMBOBOX-005", element: "div", attribute: "role" },
+    { kind: "enum", code: "ODD-COMBOBOX-005", attribute: "role", values: ["listbox"], omit: [] },
+    { kind: "accessible-name", code: "ODD-COMBOBOX-006", element: "div", names: ["aria-label", "aria-labelledby"] },
+    { kind: "enum", code: "ODD-COMBOBOX-007", attribute: "data-filter", values: ["manual"], omit: ["auto"] },
+    { kind: "system-data", code: "ODD-COMBOBOX-012" },
+  ] as const satisfies readonly UsageRule[],
+  comboboxOption: [
+    { kind: "element", code: "ODD-COMBOBOX-001", className: "odd-combobox-option", elements: ["div"] },
+    { kind: "required-attribute", code: "ODD-COMBOBOX-008", element: "div", attribute: "role" },
+    { kind: "enum", code: "ODD-COMBOBOX-008", attribute: "role", values: ["option"], omit: [] },
+    { kind: "forbidden-attribute", code: "ODD-COMBOBOX-009", attribute: "disabled" },
+    { kind: "aria-boolean", code: "ODD-COMBOBOX-009", attribute: "aria-disabled", values: ["true", "false"] },
+    { kind: "forbidden-attribute", code: "ODD-COMBOBOX-010", attribute: "aria-selected" },
+    { kind: "system-data", code: "ODD-COMBOBOX-012" },
+  ] as const satisfies readonly UsageRule[],
   shared: [
     { kind: "unknown-class", code: "ODD-CLASS-001" },
     { kind: "computed-value", code: "ODD-STATIC-001" },
@@ -383,6 +412,9 @@ export const WRAPPERS = {
   TableSort: { source: "odd-design/react", className: "odd-table-sort", props: {}, element: "button" },
   TextLink: { source: "odd-design/react", className: "odd-link", props: {}, element: "a" },
   Spinner: { source: "odd-design/react", className: "odd-spinner", props: {}, element: "span" },
+  Combobox: { source: "odd-design/react", className: "odd-combobox", props: {}, element: "div" },
+  ComboboxList: { source: "odd-design/react", className: "odd-combobox-list", props: {}, element: "div" },
+  ComboboxOption: { source: "odd-design/react", className: "odd-combobox-option", props: {}, element: "div" },
 } as const satisfies Record<string, Wrapper>;
 
 export const CLASS_REGISTRY = [
@@ -397,6 +429,9 @@ export const CLASS_REGISTRY = [
   "odd-card-link",
   "odd-card-title",
   "odd-choice",
+  "odd-combobox",
+  "odd-combobox-list",
+  "odd-combobox-option",
   "odd-dialog",
   "odd-dialog-actions",
   "odd-dialog-body",
@@ -465,6 +500,7 @@ export const VOCABULARY = {
   button: ["data-icon-only", "data-size", "data-variant"],
   card: ["data-interactive"],
   choice: [],
+  combobox: [],
   dialog: [],
   disclosure: [],
   field: [],
@@ -524,3 +560,6 @@ export type TableRule = (typeof USAGE.table)[number];
 export type TableSortRule = (typeof USAGE.tableSort)[number];
 export type LinkRule = (typeof USAGE.link)[number];
 export type SpinnerRule = (typeof USAGE.spinner)[number];
+export type ComboboxRule = (typeof USAGE.combobox)[number];
+export type ComboboxListRule = (typeof USAGE.comboboxList)[number];
+export type ComboboxOptionRule = (typeof USAGE.comboboxOption)[number];

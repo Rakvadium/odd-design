@@ -309,6 +309,18 @@ const places: Record<string, readonly (readonly [string, number, number, string]
     ["ODD-LINK-001", 14, 11, "className"],
     ["ODD-STATIC-001", 15, 5, "<Link"],
   ],
+  "combobox.tsx": [
+    ["ODD-STATIC-001", 8, 21, "{...props}"],
+    ["ODD-COMBOBOX-001", 9, 14, 'className="odd-combobox"'],
+    ["ODD-COMBOBOX-004", 10, 26, 'popover="auto"'],
+    ["ODD-COMBOBOX-005", 11, 43, 'role="menu"'],
+    ["ODD-COMBOBOX-006", 12, 5, "<ComboboxList"],
+    ["ODD-COMBOBOX-007", 13, 78, 'data-filter="auto"'],
+    ["ODD-COMBOBOX-011", 14, 15, 'role="combobox"'],
+    ["ODD-COMBOBOX-009", 15, 35, "disabled"],
+    ["ODD-COMBOBOX-010", 16, 35, 'aria-selected="true"'],
+    ["ODD-STATIC-001", 17, 78, "data-filter"],
+  ],
   "wrapper.good.tsx": [],
 };
 

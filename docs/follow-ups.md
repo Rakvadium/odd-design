@@ -167,6 +167,8 @@ Run with NVDA 2026.2, OneCore David, rate 50, in Chrome. The transcripts are in 
 
 - **Button's busy ring is a separate copy of the Spinner's ring, with a forced-colors bug.** `button.css` draws `.odd-button[aria-busy="true"]::before` with its own `odd-spin` keyframes, 700ms turn, and 2.4s reduced-motion turn. `spinner.css` has the same values under `odd-spinner-turn`. Forced colors paints the busy ring's transparent gap in `CanvasText`, which closes the circle, so it turns with no visible motion (measured in Chromium during the missing-cores design). The Spinner fixes its own gap with `Canvas`. Merge the two rings, and give Button the fix, when Button parity unparks. (missing cores, batch 1)
 
+- **The combobox's No results option is English.** `enhanceCombobox` adds a disabled option that reads "No results" when the built-in filter matches nothing, and no attribute changes the text. A page in another language gets English there. A list with `data-filter="manual"` is unaffected, because the app renders its own empty row. Add a way to set the text if a non-English consumer needs the built-in filter. (missing cores, batch 2)
+
 ## Test gaps
 
 - **Text on translucent surfaces.** Glass uses `--surface-alpha: 82%`. `tests/css.ts` now evaluates `color-mix()`, so compositing `--surface-fill` over `--background` is within reach. (original survey)

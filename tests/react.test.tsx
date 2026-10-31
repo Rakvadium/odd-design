@@ -11,6 +11,7 @@ import { Badge } from "../src/react/badge.tsx";
 import { Button } from "../src/react/button.tsx";
 import { Card, CardFooter, CardLink } from "../src/react/card.tsx";
 import { Choice, Segmented, Switch } from "../src/react/choice.tsx";
+import { Combobox, ComboboxList, ComboboxOption } from "../src/react/combobox.tsx";
 import { Dialog, DialogActions } from "../src/react/dialog.tsx";
 import { Disclosure } from "../src/react/disclosure.tsx";
 import { Field, FieldError, Hint, Input, Label, Select, Textarea } from "../src/react/field.tsx";
@@ -201,6 +202,30 @@ const markup: readonly [string, ReactElement, string][] = [
       <Spinner aria-hidden="true" /> Loading projects…
     </div>,
     '<div class="odd-row" aria-busy="true"><span aria-hidden="true" class="odd-spinner"></span> Loading projects…</div>',
+  ],
+  [
+    "a combobox in a field, before enhancement",
+    <Field>
+      <Label htmlFor="city" id="city-label">
+        City
+      </Label>
+      <Combobox>
+        <Input id="city" name="city" role="combobox" aria-controls="city-list" aria-expanded="false" aria-autocomplete="list" />
+        <ComboboxList id="city-list" popover="manual" role="listbox" aria-labelledby="city-label">
+          <ComboboxOption role="option">Amsterdam</ComboboxOption>
+          <ComboboxOption role="option" aria-disabled="true">
+            Atlantis
+          </ComboboxOption>
+          <ComboboxOption role="option">Berlin</ComboboxOption>
+        </ComboboxList>
+      </Combobox>
+    </Field>,
+    '<div class="odd-field"><label for="city" id="city-label" class="odd-label">City</label><div class="odd-combobox"><input id="city" role="combobox" aria-controls="city-list" aria-expanded="false" aria-autocomplete="list" class="odd-input" name="city"/><div id="city-list" popover="manual" role="listbox" aria-labelledby="city-label" class="odd-combobox-list"><div role="option" class="odd-combobox-option">Amsterdam</div><div role="option" aria-disabled="true" class="odd-combobox-option">Atlantis</div><div role="option" class="odd-combobox-option">Berlin</div></div></div></div>',
+  ],
+  [
+    "a combobox list that your code filters",
+    <ComboboxList id="people" popover="manual" role="listbox" aria-label="People" data-filter="manual" className="wide" />,
+    '<div id="people" popover="manual" role="listbox" aria-label="People" data-filter="manual" class="odd-combobox-list wide"></div>',
   ],
   [
     "open disclosure in a named group",
@@ -493,6 +518,117 @@ describe("Menu", () => {
   });
 });
 
+describe("Combobox", () => {
+  function CityField({ onChange }: { onChange: (value: string) => void }) {
+    const [value, setValue] = useState("");
+    const [renders, setRenders] = useState(0);
+    return (
+      <>
+        <Combobox>
+          <Input
+            id="city"
+            role="combobox"
+            aria-controls="city-list"
+            aria-expanded="false"
+            aria-autocomplete="list"
+            aria-label="City"
+            value={value}
+            onChange={(event) => {
+              onChange(event.target.value);
+              setValue(event.target.value);
+            }}
+          />
+          <ComboboxList id="city-list" popover="manual" role="listbox" aria-label="Cities">
+            <ComboboxOption role="option">Amsterdam</ComboboxOption>
+            <ComboboxOption role="option" aria-disabled="true">
+              Atlantis
+            </ComboboxOption>
+            <ComboboxOption role="option">Berlin</ComboboxOption>
+          </ComboboxList>
+        </Combobox>
+        <button type="button" onClick={() => setRenders(renders + 1)}>
+          Render {renders}
+        </button>
+      </>
+    );
+  }
+
+  const key = (input: HTMLInputElement, name: string) => input.dispatchEvent(new KeyboardEvent("keydown", { key: name, bubbles: true, cancelable: true }));
+  const active = (input: HTMLInputElement) => document.getElementById(input.getAttribute("aria-activedescendant") ?? "")?.textContent ?? null;
+
+  test("steps once per arrow under StrictMode beside an app's enhance(), and after the app's cleanup keeps open through a render, calls a controlled onChange once, and still steps", async () => {
+    const host = document.createElement("div");
+    document.body.append(host);
+    const root = createRoot(host);
+    mounted = root;
+    const changes: string[] = [];
+    await act(async () =>
+      root.render(
+        <StrictMode>
+          <CityField onChange={(value) => changes.push(value)} />
+        </StrictMode>,
+      ),
+    );
+    const unwire = enhance(document);
+    const input = host.querySelector("input")!;
+    key(input, "ArrowDown");
+    key(input, "ArrowDown");
+    expect(active(input)).toBe("Berlin");
+    unwire();
+    await act(async () => host.querySelector("button")!.click());
+    expect([input.getAttribute("aria-expanded"), active(input)]).toEqual(["true", "Berlin"]);
+    await act(async () => key(input, "Enter"));
+    expect([input.value, changes, input.getAttribute("aria-expanded")]).toEqual(["Berlin", ["Berlin"], "false"]);
+    key(input, "ArrowDown");
+    expect(active(input)).toBe("Berlin");
+  });
+
+  test("unmounting closes an open list and unwires the root", async () => {
+    const host = document.createElement("div");
+    document.body.append(host);
+    const root = createRoot(host);
+    await act(async () => root.render(<CityField onChange={() => {}} />));
+    const combobox = host.querySelector<HTMLElement>(".odd-combobox")!;
+    const input = combobox.querySelector("input")!;
+    key(input, "ArrowDown");
+    expect([input.getAttribute("aria-expanded"), active(input)]).toEqual(["true", "Amsterdam"]);
+    await act(async () => root.unmount());
+    expect([input.getAttribute("aria-expanded"), input.hasAttribute("aria-activedescendant")]).toEqual(["false", false]);
+    document.body.append(combobox);
+    key(input, "ArrowDown");
+    expect([input.getAttribute("aria-expanded"), input.hasAttribute("aria-activedescendant")]).toEqual(["false", false]);
+  });
+
+  test("a render that changes the input's aria-expanded prop keeps an open list's state on the input", async () => {
+    function Collapsing() {
+      const [expanded, setExpanded] = useState<"true" | "false">("true");
+      return (
+        <>
+          <Combobox>
+            <Input id="city" role="combobox" aria-controls="city-list" aria-expanded={expanded} aria-autocomplete="list" aria-label="City" />
+            <ComboboxList id="city-list" popover="manual" role="listbox" aria-label="Cities">
+              <ComboboxOption role="option">Amsterdam</ComboboxOption>
+            </ComboboxList>
+          </Combobox>
+          <button type="button" onClick={() => setExpanded("false")}>
+            Collapse
+          </button>
+        </>
+      );
+    }
+    const host = document.createElement("div");
+    document.body.append(host);
+    const root = createRoot(host);
+    mounted = root;
+    await act(async () => root.render(<Collapsing />));
+    const input = host.querySelector("input")!;
+    expect(input.getAttribute("aria-expanded")).toBe("false");
+    key(input, "ArrowDown");
+    await act(async () => host.querySelector("button")!.click());
+    expect([input.getAttribute("aria-expanded"), active(input)]).toEqual(["true", "Amsterdam"]);
+  });
+});
+
 describe("Table", () => {
   test("select-all reaches React onChange once per changed row under StrictMode beside an app's enhance(), leaves a row that cancels its click, resyncs after React changes the rows, and finds a header box rendered after mount", async () => {
     const host = document.createElement("div");
@@ -752,6 +888,16 @@ const failures: Record<string, { codes: string[]; text: string[] }> = {
   "spinner-role": { codes: ["ODD-SPINNER-002"], text: [] },
   "spinner-aria-label": { codes: ["ODD-SPINNER-002"], text: [] },
   "spinner-data-size": { codes: ["ODD-SPINNER-003"], text: [] },
+  "combobox-role": { codes: ["ODD-COMBOBOX-011"], text: [] },
+  "combobox-data-filter": { codes: ["ODD-COMBOBOX-007"], text: [] },
+  "combobox-data-tone": { codes: ["ODD-COMBOBOX-012"], text: [] },
+  "combobox-list-popover": { codes: [], text: ["Property 'popover' is missing"] },
+  "combobox-list-popover-auto": { codes: [], text: ["'\"auto\"' is not assignable to type '\"manual\"'"] },
+  "combobox-list-role": { codes: [], text: ['"listbox"'] },
+  "combobox-list-name": { codes: [], text: ["Property '\"aria-labelledby\"' is missing"] },
+  "combobox-list-filter": { codes: [], text: ["'\"auto\"' is not assignable to type '\"manual\"'"] },
+  "combobox-option-disabled": { codes: ["ODD-COMBOBOX-009"], text: [] },
+  "combobox-option-selected": { codes: ["ODD-COMBOBOX-010"], text: [] },
   "card-on-click": { codes: ["ODD-CARD-004"], text: [] },
   "card-link-href": { codes: [], text: ["Property 'href' is missing"] },
   "card-data-tone": { codes: ["ODD-CARD-006"], text: [] },

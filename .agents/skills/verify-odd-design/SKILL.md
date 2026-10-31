@@ -53,6 +53,7 @@ Stories render in isolation at `iframe.html?id=<storyId>`, which skips the manag
 | Forms | `components-forms--text-fields`, `--select`, `--choices`, `--switch`, `--segmented`, `--slider`, `--search` |
 | Surfaces | `components-surfaces--card`, `--badge`, `--dialog`, `--disclosure` |
 | Feedback | `components-feedback--alert`, `--progress`, `--skeleton`, `--log` |
+| Combobox | `components-combobox--playground` (args `label`, `filter`, `disabled`, `invalid`, `disabledOption`), `--parts`, `--states`, `--open`, `--async` |
 | Link, Spinner | `components-link--playground` (args `label`, `current`), `--states`, `--in-text`, `components-spinner--playground` (args `label`, `size`), `--parts`, `--states` |
 | Data Display | `components-data-display--table`, `--table-parts`, `--table-states`, `--table-overflow`, `--avatar`, `--separator` |
 | Overlays | `components-overlays--popover`, `--tooltip`, `--hover-card`, `--sheet`, `--sheet-end`, `--sheet-start`, `--sheet-top`, `--sheet-bottom`, `--sheet-right-to-left`, `--alert-dialog` |

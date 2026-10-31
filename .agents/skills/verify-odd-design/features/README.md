@@ -35,7 +35,7 @@ Each feature file starts with an H1 and one paragraph on the user-visible behavi
 - [Appearance axes](./appearance-axes.md) covers the chrome, palette, and mode globals; `mode:system` following the OS; scoped appearance; the Matrix; and the OS-preference overrides.
 - [Sample app appearance dialog](./sample-app.md) covers the Showcase screen's no-JS dialog that re-themes its own scope live.
 - [Buttons](./buttons.md) covers variants, sizes, icon-only, busy and disabled states, Playground args, and keyboard focus.
-- [Forms](./forms.md) covers text fields with `:user-invalid`, the select, checkboxes and radios, switches, and the segmented control.
+- [Forms](./forms.md) covers text fields with `:user-invalid`, the select, checkboxes and radios, switches, the segmented control, and the combobox keyboard, pointer, No results option, and async list.
 - [Surfaces](./surfaces.md) covers cards with a whole-card link, badges, the modal dialog via invoker commands, and the exclusive disclosure.
 - [Feedback](./feedback.md) covers alerts per tone, progress and meter bars (including range colors and forced colors), skeletons with reduced motion, and the spinner with its busy region, reduced motion, and forced colors.
 - [Navigation](./navigation.md) covers text links, the current-page look, tab order, and forced colors.

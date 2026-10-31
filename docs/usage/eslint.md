@@ -152,6 +152,12 @@ The plugin checks `Skeleton` as a `div` with `odd-skeleton`, from its entry of `
 
 So `<Skeleton aria-hidden="true" shape="circle">` reports `ODD-SKELETON-002`, `<Skeleton />` and `<Skeleton aria-hidden>` report `ODD-SKELETON-003`, `<Skeleton aria-hidden="true">Loading</Skeleton>` and `<Skeleton aria-hidden="true" aria-busy="true">` report `ODD-SKELETON-004`, and `<Skeleton aria-hidden="true" data-size="lg">` reports `ODD-SKELETON-005`. A bare `aria-hidden` is read as empty, which hides nothing. A computed `shape` gives the `ODD-STATIC-001` warning. A spread gives that warning too, and `ODD-SKELETON-003` then stays quiet, because the spread may hold `aria-hidden`. The plugin does not read a skeleton's parent, so a block with no busy region passes.
 
+### Combobox from odd-design/react
+
+The plugin checks `Combobox`, `ComboboxList`, and `ComboboxOption` as `div`s with `odd-combobox`, `odd-combobox-list`, and `odd-combobox-option`, from their entries of `WRAPPERS`. They map no props, so every prop is the attribute with the same name. The input is Field's `Input`, checked under Field's rules.
+
+So a `Combobox` without a direct `role="combobox"` child or a direct `ComboboxList` reports `ODD-COMBOBOX-002`, and an input without `aria-controls` or `aria-autocomplete="list"` reports `ODD-COMBOBOX-003`. `<ComboboxList popover="auto">` reports `ODD-COMBOBOX-004`, `role="menu"` reports `ODD-COMBOBOX-005`, a list with no name reports `ODD-COMBOBOX-006`, and `data-filter="auto"` reports `ODD-COMBOBOX-007`. `<ComboboxOption disabled>` reports `ODD-COMBOBOX-009`, `aria-selected` reports `ODD-COMBOBOX-010`, and `<Combobox role="combobox">` reports `ODD-COMBOBOX-011`. A raw `<section className="odd-combobox">` reports `ODD-COMBOBOX-001`. A computed `data-filter` or a spread gives the `ODD-STATIC-001` warning.
+
 ### Spinner from odd-design/react
 
 The plugin checks `Spinner` as a `span` with `odd-spinner`, from its entry of `WRAPPERS`. It maps no props, so every prop is the attribute with the same name.

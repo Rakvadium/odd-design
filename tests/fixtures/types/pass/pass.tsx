@@ -5,6 +5,7 @@ import { Badge, type BadgeTone } from "../../../../src/react/badge.tsx";
 import { Button } from "../../../../src/react/button.tsx";
 import { Card, CardFooter, CardLink } from "../../../../src/react/card.tsx";
 import { Choice, Segmented, Switch } from "../../../../src/react/choice.tsx";
+import { Combobox, ComboboxList, ComboboxOption } from "../../../../src/react/combobox.tsx";
 import { Dialog, DialogActions } from "../../../../src/react/dialog.tsx";
 import { Disclosure } from "../../../../src/react/disclosure.tsx";
 import { Field, FieldError, Hint, Input, Label, Select, Textarea } from "../../../../src/react/field.tsx";
@@ -482,5 +483,49 @@ export function DeckTable({ decks }: { decks: readonly { id: string; name: strin
       </TableWrap>
       <TableWrap tabIndex={0} role="region" aria-label="Archived decks" />
     </>
+  );
+}
+
+export function CityField() {
+  const root = useRef<HTMLDivElement>(null);
+  return (
+    <Field>
+      <Label htmlFor="city" id="city-label">
+        City
+      </Label>
+      <Combobox ref={root} className="wide" data-testid="city">
+        <Input id="city" name="city" role="combobox" aria-controls="city-list" aria-expanded="false" aria-autocomplete="list" />
+        <ComboboxList id="city-list" popover="manual" role="listbox" aria-labelledby="city-label">
+          <ComboboxOption role="option">Amsterdam</ComboboxOption>
+          <ComboboxOption role="option" aria-disabled="true">
+            Atlantis
+          </ComboboxOption>
+          <ComboboxOption role="option" aria-disabled={false} data-id="ber">
+            Berlin
+          </ComboboxOption>
+        </ComboboxList>
+      </Combobox>
+    </Field>
+  );
+}
+
+export function AssigneeField({ people, onAssign }: { people: readonly { id: string; name: string }[]; onAssign: (id: string) => void }) {
+  const [query, setQuery] = useState("");
+  return (
+    <Combobox>
+      <Input id="assignee" role="combobox" aria-controls="assignee-list" aria-expanded="false" aria-autocomplete="list" aria-label="Assignee" value={query} onChange={(event) => setQuery(event.target.value)} />
+      <ComboboxList id="assignee-list" popover="manual" role="listbox" aria-label="People" data-filter="manual">
+        {people.map((person) => (
+          <ComboboxOption key={person.id} role="option" onClick={() => onAssign(person.id)}>
+            {person.name}
+          </ComboboxOption>
+        ))}
+        {query !== "" && people.length === 0 && (
+          <ComboboxOption role="option" aria-disabled="true">
+            No results
+          </ComboboxOption>
+        )}
+      </ComboboxList>
+    </Combobox>
   );
 }

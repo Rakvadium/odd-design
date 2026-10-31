@@ -435,6 +435,181 @@ test.describe("text and loading", () => {
   }
 });
 
+test.describe("combobox", () => {
+  const PLAYGROUND = "components-combobox--playground";
+  const input = "#playground-city";
+  const list = "#playground-city-list";
+  const active = (page: Page, field = input) =>
+    page.locator(field).evaluate((el) => document.getElementById(el.getAttribute("aria-activedescendant") ?? "")?.textContent ?? null);
+  const shown = (page: Page, selector = list) =>
+    page.locator(selector).evaluate((el) => [...el.querySelectorAll<HTMLElement>('[role="option"]')].filter((option) => !option.hidden).map((option) => option.textContent));
+
+  for (const storybook of ["html", "react"] as const) {
+    test(`ArrowDown opens at the first option, the arrows skip the disabled option and wrap, and Enter chooses with focus kept in the input (${storybook})`, async ({ page }) => {
+      await openStory(page, PLAYGROUND, "mode:light", "", storybook);
+      await page.locator(input).focus();
+      await page.keyboard.press("ArrowDown");
+      await waitOpen(page, list);
+      expect(await active(page)).toBe("Amsterdam");
+      await page.keyboard.press("ArrowDown");
+      await page.keyboard.press("ArrowDown");
+      expect(await active(page), "Atlantis is disabled, so the arrows pass it").toBe("Berlin");
+      for (let i = 0; i < 3; i++) await page.keyboard.press("ArrowUp");
+      expect(await active(page), "ArrowUp wraps from the first option to the last").toBe("Cairo");
+      await page.keyboard.press("Enter");
+      await waitOpen(page, list, false);
+      await expect(page.locator(input)).toHaveValue("Cairo");
+      await expect(page.locator(input)).toHaveAttribute("aria-expanded", "false");
+      await expect(page.locator(input)).toBeFocused();
+    });
+
+    test(`typing filters by prefix with nothing active, a miss shows No results, Escape keeps the text, and Enter with nothing active is left to the form (${storybook})`, async ({ page }) => {
+      await openStory(page, PLAYGROUND, "mode:light", "", storybook);
+      await page.locator(input).focus();
+      await page.keyboard.type("b");
+      await waitOpen(page, list);
+      expect([await shown(page), await active(page)]).toEqual([["Berlin", "Bogotá"], null]);
+      await page.keyboard.type("x");
+      await expect(page.getByRole("option", { name: "No results" })).toHaveAttribute("aria-disabled", "true");
+      await page.keyboard.press("ArrowDown");
+      expect(await active(page), "the No results option is never active").toBe(null);
+      await page.keyboard.press("Escape");
+      await waitOpen(page, list, false);
+      await page.keyboard.press("Escape");
+      await expect(page.locator(input)).toHaveValue("bx");
+      const prevented = await page.locator(input).evaluate((el) => {
+        let result: boolean | undefined;
+        document.addEventListener("keydown", (event) => (result = event.defaultPrevented), { once: true });
+        el.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter", bubbles: true, cancelable: true }));
+        return result;
+      });
+      expect(prevented, "the browser's own Enter runs, which submits a form").toBe(false);
+    });
+
+    test(`a click on the input opens, a click on an option chooses and keeps focus, a disabled option ignores the click, and an outside click and Tab close (${storybook})`, async ({ page }) => {
+      await openStory(page, PLAYGROUND, "mode:light", "", storybook);
+      await page.locator(input).click();
+      await waitOpen(page, list);
+      await page.getByRole("option", { name: "Berlin" }).click();
+      await waitOpen(page, list, false);
+      await expect(page.locator(input)).toHaveValue("Berlin");
+      await expect(page.locator(input)).toBeFocused();
+      await page.locator(input).fill("");
+      await waitOpen(page, list);
+      await page.getByRole("option", { name: "Atlantis" }).click({ force: true });
+      await page.waitForTimeout(300);
+      expect(await isOpen(page, list), "a disabled option keeps the list open").toBe(true);
+      await expect(page.locator(input)).toHaveValue("");
+      await page.mouse.click(900, 600);
+      await waitOpen(page, list, false);
+      await page.locator(input).click();
+      await waitOpen(page, list);
+      await page.keyboard.press("Tab");
+      await waitOpen(page, list, false);
+      await expect(page.locator(input)).toHaveValue("");
+    });
+
+    test(`Home and End move the caret and clear the active option, choosing the same text twice dispatches nothing, and a disabled input stays closed (${storybook})`, async ({ page }) => {
+      await openStory(page, PLAYGROUND, "mode:light", "", storybook);
+      await page.locator(input).focus();
+      await page.keyboard.type("Ber");
+      await page.keyboard.press("Escape");
+      await page.keyboard.press("Home");
+      expect(await page.locator(input).evaluate((el: HTMLInputElement) => [el.selectionStart, el.getAttribute("aria-expanded"), el.hasAttribute("aria-activedescendant")])).toEqual([0, "false", false]);
+      await page.keyboard.press("ArrowDown");
+      expect(await active(page)).toBe("Berlin");
+      await page.keyboard.press("End");
+      expect(await page.locator(input).evaluate((el: HTMLInputElement) => [el.selectionStart, el.hasAttribute("aria-activedescendant")])).toEqual([3, false]);
+      await page.locator(input).evaluate((el) => {
+        const seen: string[] = [];
+        el.addEventListener("input", () => seen.push("input"));
+        el.addEventListener("change", () => seen.push("change"));
+        Object.assign(window, { seen });
+      });
+      for (let round = 0; round < 2; round++) {
+        await page.keyboard.press("ArrowDown");
+        await page.keyboard.press("Enter");
+      }
+      expect(await page.evaluate(() => (window as unknown as { seen: string[] }).seen)).toEqual(["input", "change"]);
+
+      await openStory(page, PLAYGROUND, "mode:light", "disabled:!true", storybook);
+      await page.locator(input).click({ force: true });
+      await page.locator(input).dispatchEvent("keydown", { key: "ArrowDown", bubbles: true, cancelable: true });
+      await page.waitForTimeout(300);
+      expect([await isOpen(page, list), await page.locator(input).getAttribute("aria-expanded")]).toEqual([false, "false"]);
+    });
+
+    test(`async results open the list, an empty query closes it, and the first Escape closes the list and the second the dialog (${storybook})`, async ({ page }) => {
+      await openStory(page, "components-combobox--async", "mode:light", "", storybook);
+      await page.locator('button[commandfor="assign-dialog"][command="show-modal"]').click();
+      await waitOpen(page, "#assign-dialog");
+      await page.locator("#assignee").focus();
+      const openAtOnce = await page.locator("#assignee").evaluate((el: HTMLInputElement) => {
+        el.value = "lov";
+        el.dispatchEvent(new InputEvent("input", { bubbles: true, inputType: "insertText", data: "lov" }));
+        return document.querySelector("#assignee-list")!.matches(":popover-open");
+      });
+      expect(openAtOnce, "nothing opens before results arrive").toBe(false);
+      await waitOpen(page, "#assignee-list");
+      await page.keyboard.press("ArrowDown");
+      await page.keyboard.press("Enter");
+      await expect(page.locator("#assignee")).toHaveValue("Ada Lovelace");
+      await expect(page.locator("#assign-log")).toHaveText("Assigned to Ada Lovelace");
+      await page.locator("#assignee").fill("qq");
+      await waitOpen(page, "#assignee-list");
+      await expect(page.getByRole("option", { name: "No results" })).toHaveAttribute("aria-disabled", "true");
+      await page.locator("#assignee").fill("");
+      await waitOpen(page, "#assignee-list", false);
+      await page.keyboard.type("hop");
+      await waitOpen(page, "#assignee-list");
+      await page.keyboard.press("Escape");
+      await waitOpen(page, "#assignee-list", false);
+      expect(await isOpen(page, "#assign-dialog"), "the first Escape closes only the list").toBe(true);
+      await page.keyboard.press("Escape");
+      await waitOpen(page, "#assign-dialog", false);
+    });
+
+    test(`Escape before async results land keeps the list closed when they land, and reaches the dialog unprevented (${storybook})`, async ({ page }) => {
+      await openStory(page, "components-combobox--async", "mode:light", "", storybook);
+      await page.locator('button[commandfor="assign-dialog"][command="show-modal"]').click();
+      await waitOpen(page, "#assign-dialog");
+      await page.locator("#assignee").focus();
+      const atEscape = await page.locator("#assignee").evaluate((el: HTMLInputElement) => {
+        let prevented: boolean | undefined;
+        document.addEventListener("keydown", (event) => (prevented = event.defaultPrevented), { once: true });
+        el.value = "lov";
+        el.dispatchEvent(new InputEvent("input", { bubbles: true, inputType: "insertText", data: "lov" }));
+        el.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape", bubbles: true, cancelable: true }));
+        return { options: document.querySelectorAll('#assignee-list [role="option"]').length, prevented };
+      });
+      expect(atEscape, "Escape came before any result and was left for the dialog").toEqual({ options: 0, prevented: false });
+      await expect(page.locator('#assignee-list [role="option"]')).toHaveText(["Ada Lovelace"]);
+      expect([await isOpen(page, "#assignee-list"), await page.locator("#assignee").getAttribute("aria-expanded")]).toEqual([false, "false"]);
+    });
+
+    test(`the list anchors under its input at the input's width and flips above it near the viewport bottom (${storybook})`, async ({ page }, testInfo) => {
+      await openStory(page, "components-combobox--open", "mode:light", "", storybook);
+      await note(page, testInfo, "anchor positioning", `CSS.supports("position-area: block-end")`);
+      await waitOpen(page, "#open-city-list");
+      const field = await rect(page, "#open-city");
+      const below = await rect(page, "#open-city-list");
+      expect(Math.abs(below.left - field.left), "aligned to the input's start edge").toBeLessThan(1);
+      expect(Math.abs(below.right - field.right), "as wide as the input").toBeLessThan(1);
+      expect(Math.abs(below.top - field.bottom - 4), "4px below the input").toBeLessThan(1.5);
+      await shot(page, testInfo, `combobox-open-${storybook}.png`);
+      await page.keyboard.press("Escape");
+      await page.locator("#storybook-root").evaluate((el) => (el.style.paddingBlockStart = `${innerHeight - 120}px`));
+      await page.locator("#open-city").focus();
+      await page.keyboard.press("ArrowDown");
+      await waitOpen(page, "#open-city-list");
+      const raised = await rect(page, "#open-city");
+      const above = await rect(page, "#open-city-list");
+      expect(Math.abs(raised.top - above.bottom - 4), "flipped to 4px above the input").toBeLessThan(1.5);
+      await shot(page, testInfo, `combobox-flipped-${storybook}.png`);
+    });
+  }
+});
+
 test.describe("form fields", () => {
   test("hover darkens an enabled input's border but leaves a disabled one at rest", async ({ page }) => {
     await openStory(page, "components-forms--text-fields", "mode:light");

@@ -21,7 +21,8 @@
  *   <div class="odd-hover-card" id="preview-midnight" popover="hint">…</div>
  *   Treat it as a bonus: everything in it must also be reachable by following the link.
  *
- * Menus (.odd-menu, see src/js/menu.ts) share the surface, motion, and anchoring below.
+ * Menus (.odd-menu, see src/js/menu.ts) share the surface, motion, and anchoring below. Combobox lists
+ * (.odd-combobox-list, see src/js/combobox.ts) share the surface and motion; combobox.css anchors them.
  *
  * Positioning: the invoker is the implicit anchor. Popovers and hover cards open below the
  * invoker, aligned to its start edge; tooltips open above it. Each flips when it runs out of room.
@@ -29,6 +30,7 @@
  */
 .odd-popover,
 .odd-menu,
+.odd-combobox-list,
 .odd-hover-card {
   max-block-size: calc(100dvh - 2rem);
   overflow: auto;
@@ -61,6 +63,7 @@
 
 .odd-popover,
 .odd-menu,
+.odd-combobox-list,
 .odd-hover-card,
 .odd-tooltip {
   opacity: 0;
@@ -71,13 +74,13 @@
   transition-behavior: allow-discrete;
 }
 
-:is(.odd-popover, .odd-menu, .odd-hover-card, .odd-tooltip):popover-open {
+:is(.odd-popover, .odd-menu, .odd-combobox-list, .odd-hover-card, .odd-tooltip):popover-open {
   opacity: 1;
   scale: 1;
 }
 
 @starting-style {
-  :is(.odd-popover, .odd-menu, .odd-hover-card, .odd-tooltip):popover-open {
+  :is(.odd-popover, .odd-menu, .odd-combobox-list, .odd-hover-card, .odd-tooltip):popover-open {
     opacity: 0;
     scale: 0.96;
   }

@@ -532,6 +532,60 @@ const places: Record<string, readonly (readonly [string, number, number, string]
     ["ODD-SPINNER-002", 7, 46, "aria-busy"],
   ],
   "odd-spinner-003.bad.html": [["ODD-SPINNER-003", 2, 46, "data-size"]],
+  "odd-combobox-001.bad.html": [
+    ["ODD-COMBOBOX-001", 2, 10, 'class="odd-combobox"'],
+    ["ODD-COMBOBOX-001", 3, 167, 'class="odd-combobox-list"'],
+    ["ODD-COMBOBOX-001", 4, 266, 'class="odd-combobox-option"'],
+  ],
+  "odd-combobox-002.bad.html": [
+    ["ODD-COMBOBOX-002", 2, 1, "<div"],
+    ["ODD-COMBOBOX-003", 2, 1, "<div"],
+    ["ODD-COMBOBOX-002", 3, 1, "<div"],
+  ],
+  "odd-combobox-003.bad.html": [
+    ["ODD-COMBOBOX-003", 2, 1, "<div"],
+    ["ODD-COMBOBOX-003", 3, 1, "<div"],
+    ["ODD-COMBOBOX-003", 4, 1, "<div"],
+    ["ODD-COMBOBOX-003", 5, 1, "<div"],
+  ],
+  "odd-combobox-004.bad.html": [
+    ["ODD-COMBOBOX-004", 2, 163, "<div"],
+    ["ODD-COMBOBOX-004", 3, 206, 'popover="auto"'],
+    ["ODD-COMBOBOX-004", 4, 206, "popover"],
+  ],
+  "odd-combobox-005.bad.html": [
+    ["ODD-COMBOBOX-005", 2, 163, "<div"],
+    ["ODD-COMBOBOX-005", 3, 223, 'role="menu"'],
+  ],
+  "odd-combobox-006.bad.html": [
+    ["ODD-COMBOBOX-006", 2, 163, "<div"],
+    ["ODD-COMBOBOX-006", 3, 163, "<div"],
+  ],
+  "odd-combobox-007.bad.html": [
+    ["ODD-COMBOBOX-007", 2, 258, 'data-filter="auto"'],
+    ["ODD-COMBOBOX-007", 3, 258, 'data-filter="server"'],
+    ["ODD-COMBOBOX-007", 4, 27, 'data-filter="manual"'],
+  ],
+  "odd-combobox-008.bad.html": [
+    ["ODD-COMBOBOX-008", 2, 258, "<div"],
+    ["ODD-COMBOBOX-008", 3, 291, 'role="menuitem"'],
+  ],
+  "odd-combobox-009.bad.html": [
+    ["ODD-COMBOBOX-009", 2, 305, "disabled"],
+    ["ODD-COMBOBOX-009", 3, 305, 'aria-disabled="yes"'],
+  ],
+  "odd-combobox-010.bad.html": [
+    ["ODD-COMBOBOX-010", 2, 305, 'aria-selected="true"'],
+  ],
+  "odd-combobox-011.bad.html": [
+    ["ODD-COMBOBOX-011", 2, 27, 'role="combobox"'],
+    ["ODD-COMBOBOX-011", 3, 27, 'role="group"'],
+  ],
+  "odd-combobox-012.bad.html": [
+    ["ODD-COMBOBOX-012", 2, 27, 'data-size="sm"'],
+    ["ODD-COMBOBOX-012", 3, 258, 'data-tone="primary"'],
+    ["ODD-COMBOBOX-012", 4, 305, 'data-variant="ghost"'],
+  ],
   "odd-class-001.bad.html": [
     ["ODD-CLASS-001", 2, 6, "class"],
     ["ODD-CLASS-001", 3, 4, "class"],

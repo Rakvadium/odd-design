@@ -1,0 +1,104 @@
+/*
+ * <div class="odd-combobox">
+ *   <input class="odd-input" id="city" role="combobox" aria-controls="city-list" aria-expanded="false" aria-autocomplete="list">
+ *   <div class="odd-combobox-list" id="city-list" popover="manual" role="listbox" aria-labelledby="city-label">
+ *     <div class="odd-combobox-option" role="option">Amsterdam</div>
+ *     <div class="odd-combobox-option" role="option" aria-disabled="true">Atlantis</div>
+ *   </div>
+ * </div>
+ * Behavior: src/js/combobox.ts (enhanceCombobox). The input keeps Field's look and disabled policy.
+ * The list shares the popover surface and motion (popover.css) and is anchored to its own input by an
+ * anchor scoped to the root, so each combobox on a page anchors to its own input. It lives in the top
+ * layer, so overflow: hidden on a card or dialog does not clip it.
+ * The active option (aria-selected, written by enhanceCombobox) draws the menu item's focus ring,
+ * because DOM focus stays in the input.
+ */
+.odd-combobox {
+  position: relative;
+  anchor-scope: --odd-combobox;
+}
+
+.odd-combobox > .odd-input {
+  anchor-name: --odd-combobox;
+  padding-inline-end: 2.5rem;
+}
+
+/* The select's chevron (field.css draws it for both). It turns while the list is open. */
+.odd-combobox::after {
+  content: "";
+  position: absolute;
+  inset-block-start: 50%;
+  inset-inline-end: calc(var(--control-padding-inline) * 0.85);
+  inline-size: 0.75rem;
+  block-size: 0.75rem;
+  translate: 0 -50%;
+  color: var(--muted-foreground);
+  background-position: left 0.025rem bottom 0.2rem, right 0.025rem bottom 0.2rem;
+  pointer-events: none;
+  transition: rotate var(--duration-base) var(--ease);
+}
+.odd-combobox:has(> .odd-combobox-list:popover-open)::after {
+  rotate: 180deg;
+}
+.odd-combobox:has(> .odd-input:disabled)::after {
+  opacity: var(--disabled-opacity);
+}
+
+.odd-combobox-list {
+  position-anchor: --odd-combobox;
+  inline-size: anchor-size(inline);
+  min-inline-size: 12rem;
+  max-block-size: min(18rem, 50dvh);
+  padding: var(--space-1);
+}
+
+@supports (position-area: block-end) {
+  .odd-combobox-list {
+    inset: auto;
+    margin: var(--space-1) 0;
+    position-area: block-end span-inline-end;
+    position-try-fallbacks: flip-block;
+  }
+}
+
+.odd-combobox-option {
+  align-content: center;
+  min-block-size: max(24px, calc(2.25rem * var(--density)));
+  padding: 0 var(--space-3);
+  border-radius: var(--radius-control);
+  font-size: var(--text-sm);
+  cursor: default;
+  transition: background-color var(--duration-fast) var(--ease);
+}
+.odd-combobox-option[hidden] {
+  display: none;
+}
+.odd-combobox-option:hover:not([aria-disabled="true"]) {
+  background: var(--muted);
+  color: var(--foreground);
+}
+.odd-combobox-option[aria-selected="true"] {
+  background: var(--muted);
+  color: var(--foreground);
+  outline: var(--focus-width) solid var(--focus-color);
+  outline-offset: calc(var(--focus-width) * -1);
+  box-shadow: var(--focus-glow);
+}
+.odd-combobox-option[aria-disabled="true"] {
+  color: var(--muted-foreground);
+}
+
+@media (forced-colors: active) {
+  .odd-combobox::after {
+    color: CanvasText;
+    forced-color-adjust: none;
+  }
+  .odd-combobox-option[aria-disabled="true"] {
+    color: GrayText;
+  }
+  .odd-combobox-option[aria-selected="true"] {
+    background: Highlight;
+    color: HighlightText;
+    forced-color-adjust: none;
+  }
+}

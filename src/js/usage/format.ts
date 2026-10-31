@@ -125,6 +125,18 @@ export const USAGE_CODES = [
   "ODD-SPINNER-001",
   "ODD-SPINNER-002",
   "ODD-SPINNER-003",
+  "ODD-COMBOBOX-001",
+  "ODD-COMBOBOX-002",
+  "ODD-COMBOBOX-003",
+  "ODD-COMBOBOX-004",
+  "ODD-COMBOBOX-005",
+  "ODD-COMBOBOX-006",
+  "ODD-COMBOBOX-007",
+  "ODD-COMBOBOX-008",
+  "ODD-COMBOBOX-009",
+  "ODD-COMBOBOX-010",
+  "ODD-COMBOBOX-011",
+  "ODD-COMBOBOX-012",
   "ODD-STATIC-001",
   "ODD-STATIC-002",
   "ODD-STATIC-003",
@@ -194,6 +206,8 @@ const menuItemRoles = comma((USAGE.menuItem[2] satisfies { kind: "enum"; attribu
 const menuAttributes = WRAPPERS.MenuItem.props.tone;
 const headingSizeRule = USAGE.heading[1];
 const headingSizeAllowed = enumAllowed(headingSizeRule.values, headingSizeRule.omit);
+const filterRule = USAGE.comboboxList[6] satisfies { kind: "enum"; attribute: "data-filter" };
+const filterAllowed = enumAllowed(filterRule.values, filterRule.omit);
 const appearanceAxes = comma(APPEARANCE_AXES);
 const headlessAllowlist = comma(HEADLESS_ALLOWLIST);
 
@@ -1085,6 +1099,90 @@ export const MESSAGES = {
     "any app data attribute, the appearance axes, and the headless allowlist",
     `remove the attribute. The ring is 1em across in the text color, so size it with the font size and color it with the color where it sits. Appearance axes: ${appearanceAxes}. Headless allowlist: ${headlessAllowlist}.`,
     "docs/usage/spinner.md#odd-spinner-003",
+  ),
+  "ODD-COMBOBOX-001": text(
+    "ODD-COMBOBOX-001",
+    "this combobox class is not on a div. A button option inside a form submits the form when it is clicked.",
+    "div",
+    "put odd-combobox, odd-combobox-list, and odd-combobox-option each on a div. In React, use Combobox, ComboboxList, and ComboboxOption.",
+    "docs/usage/combobox.md#odd-combobox-001",
+  ),
+  "ODD-COMBOBOX-002": text(
+    "ODD-COMBOBOX-002",
+    "this combobox lacks its input or its list as a direct child. enhanceCombobox looks for both among the root's children, so a list outside the root never opens, and combobox.css cannot anchor it to the input.",
+    "an input with role=combobox and a div with odd-combobox-list, both directly inside odd-combobox",
+    "put the odd-input with role=combobox and the odd-combobox-list directly inside odd-combobox, the input first.",
+    "docs/usage/combobox.md#odd-combobox-002",
+  ),
+  "ODD-COMBOBOX-003": text(
+    "ODD-COMBOBOX-003",
+    "the element with role=combobox is not an input with aria-controls and aria-autocomplete=list. enhanceCombobox finds the list through aria-controls, so without it ArrowDown opens nothing and axe reports nothing. aria-autocomplete=list says the list filters as you type, which is the one mode the combobox has.",
+    "an input with role=combobox, aria-controls naming the list id, and aria-autocomplete=list",
+    "put role=combobox on the odd-input, set aria-controls to the id of the odd-combobox-list, and set aria-autocomplete=list.",
+    "docs/usage/combobox.md#odd-combobox-003",
+  ),
+  "ODD-COMBOBOX-004": text(
+    "ODD-COMBOBOX-004",
+    "odd-combobox-list needs popover=manual. Without popover the list sits in the page, always visible. With popover or popover=auto, a press in the input closes the list the moment it opens.",
+    "manual",
+    "set popover=manual. enhanceCombobox opens and closes the list.",
+    "docs/usage/combobox.md#odd-combobox-004",
+  ),
+  "ODD-COMBOBOX-005": text(
+    "ODD-COMBOBOX-005",
+    "odd-combobox-list needs role=listbox. Options inside a list with no role or with role=menu fail axe aria-required-children and aria-required-parent.",
+    "listbox",
+    "set role=listbox. A list of actions that opens from a button is an odd-menu.",
+    "docs/usage/combobox.md#odd-combobox-005",
+  ),
+  "ODD-COMBOBOX-006": text(
+    "ODD-COMBOBOX-006",
+    "this listbox has no name, so a screen reader reads only listbox, and axe says nothing.",
+    "aria-label or aria-labelledby",
+    "point aria-labelledby at the label id, or set aria-label.",
+    "docs/usage/combobox.md#odd-combobox-006",
+  ),
+  "ODD-COMBOBOX-007": text(
+    filterRule.code,
+    "data-filter has a value the list does not take, or sits on odd-combobox. enhanceCombobox reads it only on the list, so on the root it is ignored, and the built-in prefix filter hides options your search matched in the middle.",
+    filterAllowed,
+    "set data-filter=manual on the odd-combobox-list when your code filters the options, or remove it to let the combobox filter by prefix.",
+    "docs/usage/combobox.md#odd-combobox-007",
+  ),
+  "ODD-COMBOBOX-008": text(
+    "ODD-COMBOBOX-008",
+    "odd-combobox-option needs role=option. enhanceCombobox finds options by that role, so an option without it is never shown, reached, or chosen, and a list of them never opens.",
+    "option",
+    "set role=option on each odd-combobox-option.",
+    "docs/usage/combobox.md#odd-combobox-008",
+  ),
+  "ODD-COMBOBOX-009": text(
+    "ODD-COMBOBOX-009",
+    "an option has disabled, or aria-disabled with a value other than true or false. A div ignores disabled, so the option can still be chosen, is not announced as unavailable, and looks like the others.",
+    "aria-disabled=true, aria-disabled=false",
+    "replace disabled with aria-disabled=true. The arrow keys skip the option, a click on it does nothing, and a screen reader announces it as unavailable.",
+    "docs/usage/combobox.md#odd-combobox-009",
+  ),
+  "ODD-COMBOBOX-010": text(
+    "ODD-COMBOBOX-010",
+    "an option has aria-selected. enhanceCombobox owns it: it marks the active option and clears the rest when the list opens, so a written value is erased and in React the prop and the page disagree.",
+    "none",
+    "remove aria-selected. The option the arrow keys reach gets aria-selected=true from enhanceCombobox.",
+    "docs/usage/combobox.md#odd-combobox-010",
+  ),
+  "ODD-COMBOBOX-011": text(
+    "ODD-COMBOBOX-011",
+    "odd-combobox has a role. A role=combobox wrapper is the ARIA 1.0 pattern, and the accessibility tree reads an unnamed combobox around the real one.",
+    "none",
+    "remove role from odd-combobox. The input carries role=combobox.",
+    "docs/usage/combobox.md#odd-combobox-011",
+  ),
+  "ODD-COMBOBOX-012": text(
+    "ODD-COMBOBOX-012",
+    "this combobox part does not take that data attribute.",
+    "any app data attribute, the appearance axes, and the headless allowlist",
+    `remove the attribute. combobox.css reads no data attributes, and data-filter=manual goes on the list. Appearance axes: ${appearanceAxes}. Headless allowlist: ${headlessAllowlist}.`,
+    "docs/usage/combobox.md#odd-combobox-012",
   ),
   "ODD-STATIC-001": text(
     "ODD-STATIC-001",
