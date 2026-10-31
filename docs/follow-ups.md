@@ -165,6 +165,8 @@ Run with NVDA 2026.2, OneCore David, rate 50, in Chrome. The transcripts are in 
 - **No arrow on tooltips or popovers.** uvs-decks-gg's tooltip has one. An anchored arrow needs anchor functions on a pseudo-element; skipped for now. (step 2)
 - **Uppercase chromes change accessible names.** Chrome exposes CSS `text-transform` in names, so expressive's `Publish` button is read as `PUBLISH` (measured in Chrome on the Tooltip story). Most screen readers say it normally, but some spell out all-caps words. This predates the build-out. Consider keeping case transforms off controls, or accept and document it. (step 2)
 
+- **Button's busy ring is a separate copy of the Spinner's ring, with a forced-colors bug.** `button.css` draws `.odd-button[aria-busy="true"]::before` with its own `odd-spin` keyframes, 700ms turn, and 2.4s reduced-motion turn. `spinner.css` has the same values under `odd-spinner-turn`. Forced colors paints the busy ring's transparent gap in `CanvasText`, which closes the circle, so it turns with no visible motion (measured in Chromium during the missing-cores design). The Spinner fixes its own gap with `Canvas`. Merge the two rings, and give Button the fix, when Button parity unparks. (missing cores, batch 1)
+
 ## Test gaps
 
 - **Text on translucent surfaces.** Glass uses `--surface-alpha: 82%`. `tests/css.ts` now evaluates `color-mix()`, so compositing `--surface-fill` over `--background` is within reach. (original survey)
