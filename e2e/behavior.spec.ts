@@ -393,6 +393,48 @@ test.describe("machine controls", () => {
   });
 });
 
+test.describe("text and loading", () => {
+  for (const storybook of ["html", "react"] as const) {
+    test(`a current link takes the text color and drops its underline, and a resting link keeps both (${storybook})`, async ({ page }) => {
+      await openStory(page, "components-link--states", "mode:light", "", storybook);
+      const look = (name: string) =>
+        page.getByRole("link", { name, exact: true }).evaluate((el) => {
+          const style = getComputedStyle(el);
+          const probe = document.createElement("span");
+          probe.style.color = "var(--foreground)";
+          el.parentElement!.append(probe);
+          const foreground = getComputedStyle(probe).color;
+          probe.remove();
+          return { text: style.color === foreground, underline: style.textDecorationLine };
+        });
+      expect(await look("Settings")).toEqual({ text: false, underline: "underline" });
+      expect(await look("Roadmap")).toEqual({ text: true, underline: "none" });
+    });
+
+    test(`Tab moves through the links in a sentence in order (${storybook})`, async ({ page, browserName }) => {
+      test.skip(browserName !== "firefox", "this host's WebKit does not tab to links");
+      await openStory(page, "components-link--in-text", "mode:light", "", storybook);
+      await page.keyboard.press("Tab");
+      await expect(page.getByRole("link", { name: "setup guide" })).toBeFocused();
+      await page.keyboard.press("Tab");
+      await expect(page.getByRole("link", { name: "Settings" })).toBeFocused();
+    });
+
+    test(`a spinner turns every 700ms and every 2.4s under reduced motion (${storybook})`, async ({ page }) => {
+      const timing = () =>
+        page.locator("#storybook-root .odd-spinner").first().evaluate((el) => {
+          const style = getComputedStyle(el);
+          return { name: style.animationName, duration: style.animationDuration, iterations: style.animationIterationCount };
+        });
+      await openStory(page, "components-spinner--states", "mode:light", "", storybook);
+      expect(await timing()).toEqual({ name: "odd-spinner-turn", duration: "0.7s", iterations: "infinite" });
+      await page.emulateMedia({ reducedMotion: "reduce" });
+      await openStory(page, "components-spinner--states", "mode:light", "", storybook);
+      expect(await timing()).toEqual({ name: "odd-spinner-turn", duration: "2.4s", iterations: "infinite" });
+    });
+  }
+});
+
 test.describe("form fields", () => {
   test("hover darkens an enabled input's border but leaves a disabled one at rest", async ({ page }) => {
     await openStory(page, "components-forms--text-fields", "mode:light");

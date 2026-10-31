@@ -71,6 +71,12 @@ test("the catalog has every story file's stories, and Button, Field, Choice, Bad
       "components-interactive--toast-variants",
       "components-interactive--toast-parts",
       "components-interactive--toast-states",
+      "components-link--playground",
+      "components-link--states",
+      "components-link--in-text",
+      "components-spinner--playground",
+      "components-spinner--parts",
+      "components-spinner--states",
     ]),
   );
   expect(react.every((entry) => html.some((item) => item.id === entry.id))).toBe(true);
@@ -133,6 +139,23 @@ test("TableParts puts aria-sort on each sorted column's header", () => {
       ["Sorted by cards, most first", "Cards", "descending"],
       ["Not sorted", "Deck", "none"],
     ]);
+  }
+});
+
+test("LinkStates marks one link as the current page", () => {
+  for (const root of bothRoots("components-link--states")) {
+    const links = [...root.querySelectorAll("a.odd-link")].map((link) => [link.textContent, link.getAttribute("aria-current")]);
+    expect(links).toEqual([
+      ["Settings", null],
+      ["Roadmap", "page"],
+    ]);
+  }
+});
+
+test("SpinnerStates puts the spinner beside a busy Button's ring", () => {
+  for (const root of bothRoots("components-spinner--states")) {
+    expect(root.querySelector('[aria-busy="true"] > .odd-spinner[aria-hidden="true"]')).not.toBeNull();
+    expect(root.querySelector('.odd-button[aria-busy="true"]')?.textContent).toBe("Saving…");
   }
 });
 
@@ -224,4 +247,25 @@ for (const [arg, attribute] of [
       expect(buttons.react.hasAttribute("disabled")).toBe(false);
     });
   }
+}
+
+const linkPlayground = react.find((entry) => entry.id === "components-link--playground") ?? fail("Link stories have no Playground");
+const currentRule = USAGE.link.find((item) => item.kind === "enum" && item.attribute === "aria-current");
+if (currentRule?.kind !== "enum") throw new Error("no enum rule for aria-current");
+const currentOptions = linkPlayground.meta.argTypes?.current?.options ?? fail("Link Playground argTypes.current has no options");
+
+test("Link Playground argTypes match the link contract", () => {
+  expect([...currentOptions].sort()).toEqual(["none", ...currentRule.values].sort());
+});
+
+for (const value of currentOptions) {
+  test(`Link Playground current=${value}`, () => {
+    const args = { current: value };
+    expectSameDom(linkPlayground.mirror.scene({ ...linkPlayground.meta.args, ...linkPlayground.story.args, ...args }), `Link Playground ${value}`);
+    const expected = value === "none" ? null : value;
+    for (const root of [asRoot(renderHtml(linkPlayground, args), linkPlayground.label), reactRoot(linkPlayground, args)]) {
+      checkRoot(root);
+      expect(root.querySelector("a.odd-link")?.getAttribute("aria-current")).toBe(expected);
+    }
+  });
 }

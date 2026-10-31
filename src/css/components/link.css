@@ -1,0 +1,11 @@
+/*
+ * <a class="odd-link" href="/guide">setup guide</a>
+ * A text link. It looks like every bare <a>, because base.css draws the color, underline, and hover.
+ * The class lets the checkers see the link and draws the current page: aria-current="page" takes the
+ * text color and drops the underline, so it differs from the other links by two cues, not by color alone.
+ * A link that looks like a button is <a class="odd-button" href>. A link that can't be followed is plain text.
+ */
+.odd-link[aria-current="page"] {
+  color: var(--foreground);
+  text-decoration-line: none;
+}

@@ -50,6 +50,18 @@ function ariaValues(attribute: "aria-disabled" | "aria-busy"): readonly ("true" 
   return rule.values;
 }
 
+const linkPlayground = react.find((entry) => entry.id === "components-link--playground") ?? fail("Link stories have no Playground");
+
+function currentValues(): readonly string[] {
+  const rule = USAGE.link.find((item) => item.kind === "enum" && item.attribute === "aria-current");
+  if (rule?.kind !== "enum") throw new Error("no enum rule for aria-current");
+  const options = linkPlayground.meta.argTypes?.current?.options;
+  if (options === undefined) throw new Error("Link Playground argTypes.current has no options");
+  const expected = ["none", ...rule.values].sort();
+  if (sorted(options).join() !== expected.join()) throw new Error(`Link Playground current options ${sorted(options).join(", ")} do not match ${expected.join(", ")}`);
+  return options;
+}
+
 const variantControl = enumValues("data-variant", "variant");
 const sizeControl = enumValues("data-size", "size");
 
@@ -207,6 +219,18 @@ test("usage and mirror: every story in both Storybooks, each pair, the Playgroun
     await comparePair(`playground [${args}]`, htmlSide, reactSide, findings, testInfo);
   }
 
+  for (const value of currentValues()) {
+    const args = `current:${value}`;
+    const expected = value === "none" ? null : value;
+    const htmlSide = await see(page, "html", linkPlayground.id, args);
+    const htmlActual = await page.locator("#storybook-root .odd-link").getAttribute("aria-current");
+    const reactSide = await see(page, "react", linkPlayground.id, args);
+    const reactActual = await page.locator("#storybook-root .odd-link").getAttribute("aria-current");
+    if (htmlActual !== expected) findings.push(`${linkPlayground.id} [html current=${value}] aria-current=${String(htmlActual)}`);
+    if (reactActual !== expected) findings.push(`${linkPlayground.id} [react current=${value}] aria-current=${String(reactActual)}`);
+    await comparePair(`link playground [${args}]`, htmlSide, reactSide, findings, testInfo);
+  }
+
   const triggers = [
     ["saved", "Save deck"],
     ["undo", "Remove card"],
@@ -237,13 +261,15 @@ test("usage and mirror: every story in both Storybooks, each pair, the Playgroun
   expect(findings, "usage diagnostics").toEqual([]);
 });
 
-test("under reduced motion, ToastStates still holds its closing toast in both Storybooks", async ({ page }, testInfo) => {
+test("under reduced motion, ToastStates and SpinnerStates still match in both Storybooks", async ({ page }, testInfo) => {
   await page.emulateMedia({ reducedMotion: "reduce" });
-  const entry = react.find((item) => item.id === "components-interactive--toast-states") ?? fail("ToastStates is not mirrored");
   const findings: string[] = [];
-  const htmlSide = await see(page, "html", entry.id, "", entry.mirror.aria);
-  const reactSide = await see(page, "react", entry.id, "", entry.mirror.aria);
-  await comparePair(`${entry.id} [reduced motion]`, htmlSide, reactSide, findings, testInfo);
+  for (const id of ["components-interactive--toast-states", "components-spinner--states"]) {
+    const entry = react.find((item) => item.id === id) ?? fail(`${id} is not mirrored`);
+    const htmlSide = await see(page, "html", entry.id, "", entry.mirror.aria);
+    const reactSide = await see(page, "react", entry.id, "", entry.mirror.aria);
+    await comparePair(`${entry.id} [reduced motion]`, htmlSide, reactSide, findings, testInfo);
+  }
   expect(findings, "usage diagnostics").toEqual([]);
 });
 

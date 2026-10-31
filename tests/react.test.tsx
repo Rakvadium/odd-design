@@ -22,8 +22,10 @@ import { Separator } from "../src/react/separator.tsx";
 import { Sheet, SheetFooter, SheetHeader } from "../src/react/sheet.tsx";
 import { Skeleton } from "../src/react/skeleton.tsx";
 import { Slider } from "../src/react/slider.tsx";
+import { Spinner } from "../src/react/spinner.tsx";
 import { Table, TableSort, TableWrap } from "../src/react/table.tsx";
 import { Tabs } from "../src/react/tabs.tsx";
+import { TextLink } from "../src/react/text-link.tsx";
 import { Toaster } from "../src/react/toast.tsx";
 
 Object.assign(globalThis, { IS_REACT_ACT_ENVIRONMENT: true });
@@ -185,6 +187,20 @@ const markup: readonly [string, ReactElement, string][] = [
       <CardFooter>60 cards</CardFooter>
     </Card>,
     '<article class="odd-card deck" data-interactive=""><h3 class="odd-card-title"><a href="/decks/ember" class="odd-card-link">Ember Aggro</a></h3><div class="odd-card-footer">60 cards</div></article>',
+  ],
+  [
+    "a text link and the current page",
+    <p>
+      Read the <TextLink href="#guide">setup guide</TextLink> or open <TextLink href="#roadmap" aria-current="page" className="nav">Roadmap</TextLink>.
+    </p>,
+    '<p>Read the <a href="#guide" class="odd-link">setup guide</a> or open <a href="#roadmap" aria-current="page" class="odd-link nav">Roadmap</a>.</p>',
+  ],
+  [
+    "a spinner in a busy region",
+    <div className="odd-row" aria-busy="true">
+      <Spinner aria-hidden="true" /> Loading projects…
+    </div>,
+    '<div class="odd-row" aria-busy="true"><span aria-hidden="true" class="odd-spinner"></span> Loading projects…</div>',
   ],
   [
     "open disclosure in a named group",
@@ -725,6 +741,17 @@ const failures: Record<string, { codes: string[]; text: string[] }> = {
   "skeleton-text": { codes: ["ODD-SKELETON-004"], text: [] },
   "skeleton-aria-busy": { codes: ["ODD-SKELETON-004"], text: [] },
   "skeleton-data-size": { codes: ["ODD-SKELETON-005"], text: [] },
+  "text-link-href": { codes: [], text: ["Property 'href' is missing"] },
+  "text-link-aria-disabled": { codes: ["ODD-LINK-003"], text: [] },
+  "text-link-disabled": { codes: ["ODD-LINK-003"], text: [] },
+  "text-link-role": { codes: ["ODD-LINK-004"], text: [] },
+  "text-link-aria-current-value": { codes: [], text: ['"page"'] },
+  "text-link-data-variant": { codes: ["ODD-LINK-006"], text: [] },
+  "spinner-aria-hidden": { codes: [], text: ["'\"aria-hidden\"' is missing"] },
+  "spinner-text": { codes: ["ODD-SPINNER-002"], text: [] },
+  "spinner-role": { codes: ["ODD-SPINNER-002"], text: [] },
+  "spinner-aria-label": { codes: ["ODD-SPINNER-002"], text: [] },
+  "spinner-data-size": { codes: ["ODD-SPINNER-003"], text: [] },
   "card-on-click": { codes: ["ODD-CARD-004"], text: [] },
   "card-link-href": { codes: [], text: ["Property 'href' is missing"] },
   "card-data-tone": { codes: ["ODD-CARD-006"], text: [] },

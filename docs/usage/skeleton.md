@@ -42,7 +42,7 @@ Set `aria-hidden="true"` on every block. In React, `aria-hidden="true"` is a req
 
 Fails when an `aria-hidden` skeleton block has visible text inside it, or has `aria-busy`, `role`, `aria-label`, or `aria-labelledby`.
 
-`aria-hidden` hides the block and everything in it. Loading text inside the block is never read, and it draws over the bar. `aria-busy` on the block leaves the region it belongs to not busy. `role="status"` with hidden text inside is the spinner pattern, and inside a hidden block it announces nothing. `aria-label` or `aria-labelledby` names a block that nothing reads, so the loading words are in the wrong place.
+`aria-hidden` hides the block and everything in it. Loading text inside the block is never read, and it draws over the bar. `aria-busy` on the block leaves the region it belongs to not busy. `role="status"` with hidden text inside a hidden block announces nothing. A Spinner is the moving form of this idiom: decoration, with the words on the region. `aria-label` or `aria-labelledby` names a block that nothing reads, so the loading words are in the wrong place.
 
 Empty the block, and remove `aria-busy`, `role`, `aria-label`, and `aria-labelledby`. Set `aria-busy="true"` on the region that is filling in, and put the loading text in an `odd-visually-hidden` span inside that region. In React, children and each of those attributes on `Skeleton` are type errors.
 

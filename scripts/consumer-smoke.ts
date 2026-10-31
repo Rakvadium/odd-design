@@ -70,6 +70,8 @@ const REQUIRED = [
   "docs/usage/grid.md",
   "docs/usage/shell.md",
   "docs/usage/typography.md",
+  "docs/usage/link.md",
+  "docs/usage/spinner.md",
   "src/css/index.css",
   "src/js/appearance.ts",
   "src/js/enhance.ts",

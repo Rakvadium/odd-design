@@ -494,6 +494,44 @@ const places: Record<string, readonly (readonly [string, number, number, string]
     ["ODD-TYPOGRAPHY-003", 2, 24, "data-tone"],
     ["ODD-TYPOGRAPHY-003", 3, 24, "data-tone"],
   ],
+  "odd-link-001.bad.html": [
+    ["ODD-LINK-001", 2, 15, "class"],
+    ["ODD-LINK-001", 3, 9, "class"],
+  ],
+  "odd-link-002.bad.html": [["ODD-LINK-002", 2, 1, "<a"]],
+  "odd-link-003.bad.html": [
+    ["ODD-LINK-003", 2, 37, "aria-disabled"],
+    ["ODD-LINK-003", 3, 37, "disabled"],
+  ],
+  "odd-link-004.bad.html": [
+    ["ODD-LINK-004", 2, 38, 'role="button"'],
+    ["ODD-LINK-004", 3, 38, 'role="menuitem"'],
+  ],
+  "odd-link-005.bad.html": [
+    ["ODD-LINK-005", 2, 38, "aria-current"],
+    ["ODD-LINK-005", 3, 38, "aria-current"],
+  ],
+  "odd-link-006.bad.html": [
+    ["ODD-LINK-006", 2, 38, "data-variant"],
+    ["ODD-LINK-006", 3, 38, "data-icon-only"],
+  ],
+  "odd-link-007.bad.html": [
+    ["ODD-LINK-007", 2, 58, "target"],
+    ["ODD-LINK-007", 3, 55, "target"],
+  ],
+  "odd-spinner-001.bad.html": [
+    ["ODD-SPINNER-001", 2, 6, "class"],
+    ["ODD-SPINNER-001", 3, 4, "class"],
+  ],
+  "odd-spinner-002.bad.html": [
+    ["ODD-SPINNER-002", 2, 1, "<span"],
+    ["ODD-SPINNER-002", 3, 27, "aria-hidden"],
+    ["ODD-SPINNER-002", 4, 1, "<span"],
+    ["ODD-SPINNER-002", 5, 46, "role"],
+    ["ODD-SPINNER-002", 6, 46, "aria-label"],
+    ["ODD-SPINNER-002", 7, 46, "aria-busy"],
+  ],
+  "odd-spinner-003.bad.html": [["ODD-SPINNER-003", 2, 46, "data-size"]],
   "odd-class-001.bad.html": [
     ["ODD-CLASS-001", 2, 6, "class"],
     ["ODD-CLASS-001", 3, 4, "class"],

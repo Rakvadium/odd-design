@@ -37,7 +37,8 @@ Each feature file starts with an H1 and one paragraph on the user-visible behavi
 - [Buttons](./buttons.md) covers variants, sizes, icon-only, busy and disabled states, Playground args, and keyboard focus.
 - [Forms](./forms.md) covers text fields with `:user-invalid`, the select, checkboxes and radios, switches, and the segmented control.
 - [Surfaces](./surfaces.md) covers cards with a whole-card link, badges, the modal dialog via invoker commands, and the exclusive disclosure.
-- [Feedback](./feedback.md) covers alerts per tone, progress and meter bars (including range colors and forced colors), and skeletons with reduced motion.
+- [Feedback](./feedback.md) covers alerts per tone, progress and meter bars (including range colors and forced colors), skeletons with reduced motion, and the spinner with its busy region, reduced motion, and forced colors.
+- [Navigation](./navigation.md) covers text links, the current-page look, tab order, and forced colors.
 - [Data display](./data-display.md) covers the table (row selection, sort indicators, focusable scroll wrapper), avatars and groups, and separators.
 - [Overlays](./overlays.md) covers the anchored popover and its flip, tooltips and hover cards via `interestfor`, sheets from each side, and the alert dialog.
 - [Interactive](./interactive.md) covers the menu keyboard and choosing, automatic and manual tabs, toasts (including over a modal dialog), table select-all, and the avatar image fallback.

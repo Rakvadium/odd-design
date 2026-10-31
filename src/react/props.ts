@@ -15,8 +15,10 @@ import type { SeparatorProps } from "./separator.tsx";
 import type { SheetFooterProps, SheetHeaderProps, SheetProps } from "./sheet.tsx";
 import type { SkeletonProps } from "./skeleton.tsx";
 import type { SliderProps } from "./slider.tsx";
+import type { SpinnerProps } from "./spinner.tsx";
 import type { TableProps, TableSortProps, TableWrapProps } from "./table.tsx";
 import type { TabsProps } from "./tabs.tsx";
+import type { TextLinkProps } from "./text-link.tsx";
 import type { ToasterProps } from "./toast.tsx";
 
 export type WrapperProps = {
@@ -59,4 +61,6 @@ export type WrapperProps = {
   TableWrap: TableWrapProps;
   Table: TableProps;
   TableSort: TableSortProps;
+  TextLink: TextLinkProps;
+  Spinner: SpinnerProps;
 };

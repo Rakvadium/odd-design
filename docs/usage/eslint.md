@@ -152,6 +152,18 @@ The plugin checks `Skeleton` as a `div` with `odd-skeleton`, from its entry of `
 
 So `<Skeleton aria-hidden="true" shape="circle">` reports `ODD-SKELETON-002`, `<Skeleton />` and `<Skeleton aria-hidden>` report `ODD-SKELETON-003`, `<Skeleton aria-hidden="true">Loading</Skeleton>` and `<Skeleton aria-hidden="true" aria-busy="true">` report `ODD-SKELETON-004`, and `<Skeleton aria-hidden="true" data-size="lg">` reports `ODD-SKELETON-005`. A bare `aria-hidden` is read as empty, which hides nothing. A computed `shape` gives the `ODD-STATIC-001` warning. A spread gives that warning too, and `ODD-SKELETON-003` then stays quiet, because the spread may hold `aria-hidden`. The plugin does not read a skeleton's parent, so a block with no busy region passes.
 
+### Spinner from odd-design/react
+
+The plugin checks `Spinner` as a `span` with `odd-spinner`, from its entry of `WRAPPERS`. It maps no props, so every prop is the attribute with the same name.
+
+So `<Spinner />`, `<Spinner aria-hidden>`, `<Spinner aria-hidden="true">Loading</Spinner>`, and `<Spinner aria-hidden="true" role="status" />` report `ODD-SPINNER-002`, and `<Spinner aria-hidden="true" data-size="lg" />` reports `ODD-SPINNER-003`. A raw `<div className="odd-spinner">` reports `ODD-SPINNER-001`. A spread gives the `ODD-STATIC-001` warning, and the missing `aria-hidden` then stays quiet. The plugin does not read a spinner's parent, so a spinner with no busy region passes.
+
+### TextLink from odd-design/react
+
+The plugin checks `TextLink` as an `a` with `odd-link`, from its entry of `WRAPPERS`, under any import alias. It maps no props, so every prop is the attribute with the same name.
+
+So `<TextLink>` without `href` reports `ODD-LINK-002`, `aria-disabled` or `disabled` reports `ODD-LINK-003`, `role="button"` reports `ODD-LINK-004`, `aria-current="true"` reports `ODD-LINK-005`, `data-variant` reports `ODD-LINK-006`, and `target="_blank"` without `rel` reports `ODD-LINK-007`. A raw `<span className="odd-link">` reports `ODD-LINK-001`. A router's `<Link className="odd-link">` is an unknown component, so it gives the `ODD-STATIC-001` warning and no link rules.
+
 ### Card from odd-design/react
 
 The plugin checks `Card` as an `article` with `odd-card`, `CardLink` as an `a` with `odd-card-link`, and `CardFooter` as a `div` with `odd-card-footer`, from their entries of `WRAPPERS`. `interactive` on `Card` is read as `data-interactive`. A raw `data-interactive` gives nothing. `Card` sets that attribute from `interactive`, so it drops a raw one, and its type rejects one. Every other prop is the attribute with the same name. The plugin reads a card's children, so a `CardLink` in the title counts as the card's link, even with a computed `href`.

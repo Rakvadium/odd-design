@@ -299,6 +299,27 @@ export const USAGE = {
     { kind: "class", code: "ODD-TYPOGRAPHY-003", className: "odd-eyebrow" },
     { kind: "enum", code: "ODD-TYPOGRAPHY-003", attribute: "data-tone", values: ["primary", "foreground"], omit: [] },
   ] as const satisfies readonly UsageRule[],
+  link: [
+    { kind: "element", code: "ODD-LINK-001", className: "odd-link", elements: ["a"] },
+    { kind: "required-attribute", code: "ODD-LINK-002", element: "a", attribute: "href" },
+    { kind: "forbidden-attribute", code: "ODD-LINK-003", attribute: "aria-disabled" },
+    { kind: "forbidden-attribute", code: "ODD-LINK-003", attribute: "disabled" },
+    { kind: "forbidden-attribute", code: "ODD-LINK-004", attribute: "role" },
+    { kind: "enum", code: "ODD-LINK-005", attribute: "aria-current", values: ["page"], omit: [] },
+    { kind: "system-data", code: "ODD-LINK-006" },
+    { kind: "name-requires", code: "ODD-LINK-007", attribute: "rel", names: ["target"] },
+  ] as const satisfies readonly UsageRule[],
+  spinner: [
+    { kind: "element", code: "ODD-SPINNER-001", className: "odd-spinner", elements: ["span"] },
+    { kind: "required-attribute", code: "ODD-SPINNER-002", element: "span", attribute: "aria-hidden" },
+    { kind: "enum", code: "ODD-SPINNER-002", attribute: "aria-hidden", values: ["true"], omit: [] },
+    { kind: "icon-only-text", code: "ODD-SPINNER-002", attribute: "aria-hidden", ignore: "aria-hidden" },
+    { kind: "forbidden-attribute", code: "ODD-SPINNER-002", attribute: "role" },
+    { kind: "forbidden-attribute", code: "ODD-SPINNER-002", attribute: "aria-label" },
+    { kind: "forbidden-attribute", code: "ODD-SPINNER-002", attribute: "aria-labelledby" },
+    { kind: "forbidden-attribute", code: "ODD-SPINNER-002", attribute: "aria-busy" },
+    { kind: "system-data", code: "ODD-SPINNER-003" },
+  ] as const satisfies readonly UsageRule[],
   shared: [
     { kind: "unknown-class", code: "ODD-CLASS-001" },
     { kind: "computed-value", code: "ODD-STATIC-001" },
@@ -360,6 +381,8 @@ export const WRAPPERS = {
   TableWrap: { source: "odd-design/react", className: "odd-table-wrap", props: {}, element: "div" },
   Table: { source: "odd-design/react", className: "odd-table", props: {}, element: "table" },
   TableSort: { source: "odd-design/react", className: "odd-table-sort", props: {}, element: "button" },
+  TextLink: { source: "odd-design/react", className: "odd-link", props: {}, element: "a" },
+  Spinner: { source: "odd-design/react", className: "odd-spinner", props: {}, element: "span" },
 } as const satisfies Record<string, Wrapper>;
 
 export const CLASS_REGISTRY = [
@@ -388,6 +411,7 @@ export const CLASS_REGISTRY = [
   "odd-hover-card",
   "odd-input",
   "odd-label",
+  "odd-link",
   "odd-log",
   "odd-log-line",
   "odd-menu",
@@ -416,6 +440,7 @@ export const CLASS_REGISTRY = [
   "odd-skeleton",
   "odd-skip-link",
   "odd-slider",
+  "odd-spinner",
   "odd-stack",
   "odd-stat-value",
   "odd-switch",
@@ -444,6 +469,7 @@ export const VOCABULARY = {
   disclosure: [],
   field: [],
   grid: ["data-span"],
+  link: [],
   log: ["data-tone"],
   menu: ["data-tone"],
   meter: ["data-tone"],
@@ -454,6 +480,7 @@ export const VOCABULARY = {
   shell: [],
   skeleton: ["data-shape"],
   slider: [],
+  spinner: [],
   table: ["data-numeric"],
   tabs: [],
   toast: ["data-state", "data-tone"],
@@ -495,3 +522,5 @@ export type MenuItemRule = (typeof USAGE.menuItem)[number];
 export type TableWrapRule = (typeof USAGE.tableWrap)[number];
 export type TableRule = (typeof USAGE.table)[number];
 export type TableSortRule = (typeof USAGE.tableSort)[number];
+export type LinkRule = (typeof USAGE.link)[number];
+export type SpinnerRule = (typeof USAGE.spinner)[number];

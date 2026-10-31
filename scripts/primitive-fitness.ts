@@ -32,6 +32,8 @@ const FAMILIES: readonly Family[] = [
   { name: "Skeleton", classes: ["odd-skeleton"], css: "components/skeleton.css", js: [], react: ["Skeleton"] },
   { name: "Avatar", classes: ["odd-avatar", "odd-avatar-group"], css: "components/avatar.css", js: ["enhance.ts:18-45"], react: ["Avatar", "AvatarGroup"] },
   { name: "Separator", classes: ["odd-separator"], css: "components/separator.css", js: [], react: ["Separator"] },
+  { name: "Link", classes: ["odd-link"], css: "components/link.css", js: [], react: ["TextLink"] },
+  { name: "Spinner", classes: ["odd-spinner"], css: "components/spinner.css", js: [], react: ["Spinner"] },
   { name: "Table", classes: ["odd-table-wrap", "odd-table", "odd-table-sort"], css: "components/table.css", js: ["enhance.ts:47-100"], react: ["TableWrap", "Table", "TableSort"] },
   { name: "Popover", classes: ["odd-popover", "odd-hover-card", "odd-tooltip"], css: "components/popover.css", js: ["fallbacks.ts:9-81"], react: ["Popover"] },
   {

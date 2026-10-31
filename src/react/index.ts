@@ -15,6 +15,8 @@ export * from "./separator.tsx";
 export * from "./sheet.tsx";
 export * from "./skeleton.tsx";
 export * from "./slider.tsx";
+export * from "./spinner.tsx";
 export * from "./table.tsx";
 export * from "./tabs.tsx";
+export * from "./text-link.tsx";
 export * from "./toast.tsx";

@@ -106,7 +106,7 @@ export const Type: Story = {
     <h3>Card heading</h3>
     <h4>Small heading</h4>
     <p style="font-size: var(--text-lg)">Lead paragraph. Body text uses the chrome's body font; headings and labels follow its case and tracking.</p>
-    <p>Body text with an <a href="#">inline link</a>. The link color is <code>--primary</code>, which the contract test holds to 4.5:1 against the page.</p>
+    <p>Body text with an <a class="odd-link" href="#">inline link</a>. The link color is <code>--primary</code>, which the contract test holds to 4.5:1 against the page.</p>
     <p class="odd-muted">Muted text for secondary information.</p>
   </div>`,
 };
