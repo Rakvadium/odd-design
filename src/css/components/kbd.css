@@ -12,6 +12,8 @@
   padding: 0 0.4em;
   border: var(--border-width) solid var(--edge-control);
   border-block-end-width: calc(var(--border-width) * 2);
+  /* Keeps the thicker bottom edge from growing the line. */
+  margin-block-end: calc(-1 * var(--border-width));
   border-radius: min(var(--radius-control), var(--space-1));
   background-color: var(--surface);
   color: var(--foreground);
