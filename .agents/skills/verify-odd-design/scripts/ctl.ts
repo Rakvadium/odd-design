@@ -778,7 +778,7 @@ html data: ${JSON.stringify(html)}`);
     for (const line of proof.report) console.log(line);
     console.log(`wrote ${out}`);
     if (!proof.ok) process.exit(1);
-    if (!publishing) return console.log(`passed. Publish with: ctl.ts proof --publish, or stop with: ctl.ts down`);
+    if (!publishing) return console.log(proof.cited.length ? "passed. Publish with: ctl.ts proof --publish, or stop with: ctl.ts down" : "passed with nothing to publish. Stop with: ctl.ts down");
     if (proof.cited.length) writeFileSync(out, proof.render(publishAssets(proof.cited, branchSlug(branch), head)));
     console.log(`published ${proof.cited.length} screenshots to ${ASSETS_REF} and rewrote ${out}`);
     await commands.down!([]);
