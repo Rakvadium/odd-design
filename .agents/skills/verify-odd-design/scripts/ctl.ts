@@ -358,12 +358,14 @@ function publishAssets(cited: readonly string[], slug: string, head: string): (p
     const github = /github\.com[:/]([^/]+)\/([^/]+?)(?:\.git)?\/?$/.exec(origin);
     if (!github) throw new Error(`origin is not a GitHub remote: ${origin}`);
     const [, owner, repo] = github;
+    // Fetching or pushing through the remote's name updates refs/remotes/origin/*; through its URL no local ref moves.
+    const pushUrl = run("remote", "get-url", "--push", "origin");
     for (const path of cited) if (path.startsWith("../") || isAbsolute(path)) throw new Error(`cited screenshot ${path} is outside ${EVIDENCE_DIR}`);
     const link = (commit: string) => (path: string) => `https://raw.githubusercontent.com/${owner}/${repo}/${commit}/${slug}/${head}/${path}`;
     for (let attempt = 1; attempt <= 3; attempt++) {
-      const tip = run("ls-remote", "origin", ASSETS_REF).split(/\s/)[0] ?? "";
+      const tip = run("ls-remote", origin, ASSETS_REF).split(/\s/)[0] ?? "";
       if (tip) {
-        run("fetch", "--no-tags", "--no-write-fetch-head", "origin", ASSETS_REF);
+        run("fetch", "--no-tags", "--no-write-fetch-head", origin, ASSETS_REF);
         // merge-base exits 1 only when the histories are unrelated, which an orphan branch must be.
         const related = git("merge-base", "origin/main", tip);
         if (related.status !== 1)
@@ -374,7 +376,7 @@ function publishAssets(cited: readonly string[], slug: string, head: string): (p
       const tree = run("write-tree");
       if (tip && tree === run("rev-parse", `${tip}^{tree}`)) return link(tip);
       const commit = run("commit-tree", tree, ...(tip ? ["-p", tip] : []), "-m", `proof: ${slug} @ ${head}`);
-      const push = git("push", "origin", `${commit}:${ASSETS_REF}`);
+      const push = git("push", pushUrl, `${commit}:${ASSETS_REF}`);
       if (push.status === 0) return link(commit);
       console.error(`push to ${ASSETS_REF} rejected (attempt ${attempt} of 3): ${push.error?.message ?? push.stderr.trim()}`);
     }
