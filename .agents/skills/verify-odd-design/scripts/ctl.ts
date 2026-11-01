@@ -4,8 +4,9 @@
 // Run `ctl.ts help` for the command list.
 import { spawn, spawnSync } from "node:child_process";
 import { appendFileSync, existsSync, mkdirSync, openSync, readFileSync, rmSync, writeFileSync } from "node:fs";
-import { dirname, isAbsolute, join, resolve } from "node:path";
+import { dirname, isAbsolute, join, relative, resolve } from "node:path";
 import { A11Y_EXCLUDE, A11Y_OPTIONS, A11Y_TAGS } from "../../../../.storybook/a11y.ts";
+import { branchSlug, buildProof, formatEvent, type Event, type Scheme } from "./proof.ts";
 
 const ROOT = resolve(import.meta.dir, "../../../..");
 const argv = process.argv.slice(2);
@@ -16,7 +17,8 @@ const flag = (name: string) => {
   argv.splice(i, 2);
   return value;
 };
-const RUN = flag("run") ?? process.env.VERIFY_RUN ?? "default";
+const git = (...args: string[]) => spawnSync("git", args, { cwd: ROOT, encoding: "utf8" });
+const RUN = flag("run") ?? process.env.VERIFY_RUN ?? branchSlug(git("branch", "--show-current").stdout.trim());
 const RUN_DIR = join(ROOT, ".verify", "runs", RUN);
 const EVIDENCE_DIR = join(ROOT, ".verify", "evidence", RUN);
 const STATE_FILE = join(RUN_DIR, "state.json");
@@ -55,10 +57,12 @@ const freePort = () => {
   server.stop(true);
   return port;
 };
-const transcript = (line: string) => {
+const transcript = (event: Event) => {
   mkdirSync(EVIDENCE_DIR, { recursive: true });
-  appendFileSync(join(EVIDENCE_DIR, "transcript.log"), `[${new Date().toISOString()}] ${line}\n`);
+  appendFileSync(join(EVIDENCE_DIR, "transcript.log"), `${formatEvent(event, new Date())}\n`);
 };
+/** Evidence-relative, forward slashes. What screenshot and aria events store, and what PROOF.md links. */
+const evidenceName = (path: string) => relative(EVIDENCE_DIR, path).replaceAll("\\", "/");
 const evidencePath = (name: string) => {
   const path = isAbsolute(name) ? name : join(EVIDENCE_DIR, name);
   mkdirSync(dirname(path), { recursive: true });
@@ -182,6 +186,12 @@ const locate = (selector: string, text?: string) => `(() => {
   const hits = want === null ? all : all.filter((el) => el.textContent.replace(/\\s+/g, " ").trim().includes(want));
   if (hits.length === 0) throw new Error("no element matches " + ${JSON.stringify(selector)} + (want ? " with text " + want : ""));
   return hits[0];
+})()`;
+
+/** What the page renders: an explicit data-mode, or for system, the (possibly emulated) preference. */
+const SCHEME_JS = `(() => {
+  const mode = document.documentElement.dataset.mode;
+  return mode === "light" || mode === "dark" ? mode : matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
 })()`;
 
 const KEYS: Record<string, { key: string; code: string; keyCode: number; text?: string }> = {
@@ -330,14 +340,14 @@ function launchChrome(c: Omit<State["chrome"], "pid">, storybookUrl: string) {
 
 const commands: Record<string, (args: string[]) => Promise<void>> = {
   async help() {
-    console.log(`ctl.ts <command> [--run NAME]   (run defaults to $VERIFY_RUN or "default")
+    console.log(`ctl.ts <command> [--run NAME]   (run defaults to $VERIFY_RUN or the current branch as a slug)
   up [--headed]                        start Storybook + headless Chrome on free ports, wait until ready.
                                        --headed opens a visible window at 0,0 instead (needed by sr.ts)
   restart-chrome                       relaunch this run's Chrome with the same profile and port. sr.ts start uses it:
                                        Chrome only sends accessibility events to a screen reader running at launch
   doctor                               read-only health check of this run's instances
   goto <storyId> [globals] [args]      open a story iframe; globals like "chrome:glass;palette:aurora;mode:dark"
-  state                                print html[data-*] appearance + story-root summary
+  state                                print html[data-*] appearance + story-root summary (a read, for proof)
   eval <js>                            evaluate JS in the page (awaits promises), print JSON
   click <css> [--text T]               real mouse click on the first match (optionally whose text contains T)
   hover <css> [--text T]               real mouse move onto the first match (leaves the pointer there)
@@ -346,7 +356,8 @@ const commands: Record<string, (args: string[]) => Promise<void>> = {
   press <Key>                          real key press: ${Object.keys(KEYS).join(", ")}, or one letter/digit
   type <text>                          insert text at the focused element
   emulate <feature=value>...           media features, e.g. prefers-color-scheme=dark prefers-reduced-motion=reduce
-  screenshot <file.png> [--full]       save to .verify/evidence/<run>/ (or an absolute path)
+  screenshot <file.png> [--full]       save to .verify/evidence/<run>/ (or an absolute path); records the light or
+                                       dark scheme the page rendered
   aria <file.txt>                      save an accessibility-tree snapshot to the evidence dir and print it
   axe [storyId...] [--appearance quick|full] [--update-rules]
                                        axe-core with the shared rules in .storybook/a11y.ts on every story (or the named
@@ -377,7 +388,7 @@ const commands: Record<string, (args: string[]) => Promise<void>> = {
     const binary = findChrome();
     const profile = join(RUN_DIR, "chrome-profile");
     const chrome = launchChrome({ binary, profile, port: cdpPort, headed }, `http://127.0.0.1:${sbPort}`);
-    const head = spawnSync("git", ["rev-parse", "--short", "HEAD"], { cwd: ROOT, encoding: "utf8" }).stdout.trim();
+    const head = git("rev-parse", "--short", "HEAD").stdout.trim();
     const state: State = {
       run: RUN,
       head,
@@ -392,7 +403,7 @@ const commands: Record<string, (args: string[]) => Promise<void>> = {
       const r = await fetch(`${state.storybook.url}/index.json`);
       return r.ok && (await r.text()).includes(EXPECTED_STORY) ? true : undefined;
     });
-    transcript(`up: storybook ${state.storybook.url} (pid ${sb.pid}), chrome cdp ${cdpPort} (pid ${chrome.pid}), HEAD ${head}`);
+    transcript({ kind: "up", storybook: state.storybook.url, head });
     console.log(`READY run="${RUN}" storybook=${state.storybook.url} evidence=${EVIDENCE_DIR}`);
   },
 
@@ -404,7 +415,7 @@ const commands: Record<string, (args: string[]) => Promise<void>> = {
     s.chrome.pid = chrome.pid!;
     writeFileSync(STATE_FILE, JSON.stringify(s, null, 2));
     await waitFor("Chrome CDP", 30_000, async () => ((await fetch(`http://127.0.0.1:${s.chrome.port}/json/version`).catch(() => null))?.ok ? true : undefined));
-    transcript(`restart-chrome: pid ${chrome.pid}`);
+    transcript({ kind: "restart-chrome", pid: chrome.pid! });
     console.log(`chrome restarted: pid ${chrome.pid}`);
   },
 
@@ -430,8 +441,8 @@ const commands: Record<string, (args: string[]) => Promise<void>> = {
     } catch (e) {
       checks.push(["chrome CDP answers", false, String(e)]);
     }
-    const head = spawnSync("git", ["rev-parse", "--short", "HEAD"], { cwd: ROOT, encoding: "utf8" }).stdout.trim();
-    const dirty = spawnSync("git", ["status", "--porcelain", "--", "src", "stories", ".storybook"], { cwd: ROOT, encoding: "utf8" }).stdout.trim();
+    const head = git("rev-parse", "--short", "HEAD").stdout.trim();
+    const dirty = git("status", "--porcelain", "--", "src", "stories", ".storybook").stdout.trim();
     checks.push(["HEAD matches launch", head === s.head, `launched ${s.head}, now ${head}${dirty ? " (+uncommitted src/stories changes, served live by HMR)" : ""}`]);
     for (const [name, ok, detail] of checks) console.log(`${ok ? "ok  " : "FAIL"} ${name}: ${detail}`);
     if (checks.some(([, ok]) => !ok)) process.exit(1);
@@ -443,7 +454,7 @@ const commands: Record<string, (args: string[]) => Promise<void>> = {
     const page = await Page.connect(s);
     const { url, html } = await render(page, s, id, globals, args);
     page.close();
-    transcript(`goto ${url} -> rendered, html data=${JSON.stringify(html)}`);
+    transcript({ kind: "goto", story: id, url, html });
     console.log(`rendered ${id} at ${url}
 html data: ${JSON.stringify(html)}`);
   },
@@ -528,7 +539,7 @@ html data: ${JSON.stringify(html)}`);
     }
     const reviewKeys = [...reviewGroups].map(([key, els]) => `${key} (${els.size} element${els.size === 1 ? "" : "s"})`).sort();
     writeFileSync(evidencePath("axe/report.json"), JSON.stringify({ violations: report, needsReview: review }, null, 2));
-    transcript(`axe appearance=${appearance} stories=${targets.length} runs=${runs} violations=${report.length} needsReview=${reviewKeys.length}`);
+    transcript({ kind: "axe", appearance, stories: targets.length, violations: report.length, needsReview: reviewKeys.length });
     for (const g of report) {
       console.log(`FAIL ${g.story}  ${g.rule} (${g.impact})  ${g.targets.join(" ")}\n     ${g.help}\n     in: ${[...new Set(g.where)].slice(0, 4).join("; ")}${g.where.length > 4 ? ` (+${g.where.length - 4} more)` : ""}`);
     }
@@ -570,6 +581,7 @@ html data: ${JSON.stringify(html)}`);
       activeElement: document.activeElement?.outerHTML.slice(0, 160),
     })`);
     page.close();
+    transcript({ kind: "state", dialogs: out.openDialogs, popovers: out.openPopovers, focus: out.activeElement ?? "" });
     console.log(JSON.stringify(out, null, 2));
   },
 
@@ -578,7 +590,7 @@ html data: ${JSON.stringify(html)}`);
     const page = await Page.connect(readState());
     const value = await page.eval(js);
     page.close();
-    transcript(`eval ${js} -> ${JSON.stringify(value)}`);
+    transcript({ kind: "eval", js, result: value });
     console.log(JSON.stringify(value, null, 2));
   },
 
@@ -596,7 +608,7 @@ html data: ${JSON.stringify(html)}`);
       await page.send("Input.dispatchMouseEvent", { type, x: box.x, y: box.y, button: "left", clickCount: 1 });
     await page.eval(`new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r)))`);
     page.close();
-    transcript(`click ${selector}${text ? ` text=${text}` : ""} at (${Math.round(box.x)},${Math.round(box.y)}) -> ${box.tag}`);
+    transcript({ kind: "click", target: selector, text, tag: box.tag });
     console.log(`clicked ${box.tag}`);
   },
 
@@ -613,7 +625,7 @@ html data: ${JSON.stringify(html)}`);
     await page.send("Input.dispatchMouseEvent", { type: "mouseMoved", x: box.x, y: box.y });
     await page.eval(`new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r)))`);
     page.close();
-    transcript(`hover ${selector}${text ? ` text=${text}` : ""} at (${Math.round(box.x)},${Math.round(box.y)}) -> ${box.tag}`);
+    transcript({ kind: "hover", target: selector, text, tag: box.tag });
     console.log(`hovering ${box.tag}`);
   },
 
@@ -621,7 +633,7 @@ html data: ${JSON.stringify(html)}`);
     const n = Number(ms);
     if (!Number.isFinite(n) || n < 0 || n > 5000) fail("usage: wait <ms> (0-5000)");
     await Bun.sleep(n);
-    transcript(`wait ${n}ms`);
+    transcript({ kind: "wait", ms: n });
     console.log(`waited ${n}ms`);
   },
 
@@ -632,7 +644,7 @@ html data: ${JSON.stringify(html)}`);
     const tag = await page.eval(`(() => { const el = ${locate(selector, text)}; el.focus(); return document.activeElement === el ? el.outerHTML.slice(0, 120) : null; })()`);
     page.close();
     if (!tag) fail(`${selector} did not take focus`);
-    transcript(`focus ${selector} -> ${tag}`);
+    transcript({ kind: "focus", target: selector, text, tag });
     console.log(`focused ${tag}`);
   },
 
@@ -645,7 +657,7 @@ html data: ${JSON.stringify(html)}`);
     await page.eval(`new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r)))`);
     const active = await page.eval(`document.activeElement?.outerHTML.slice(0, 120)`);
     page.close();
-    transcript(`press ${name} -> focus ${active}`);
+    transcript({ kind: "press", key: name!, focus: active ?? "" });
     console.log(`pressed ${name}; focus now ${active}`);
   },
 
@@ -654,7 +666,7 @@ html data: ${JSON.stringify(html)}`);
     const page = await Page.connect(readState());
     await page.send("Input.insertText", { text });
     page.close();
-    transcript(`type ${JSON.stringify(text)}`);
+    transcript({ kind: "type", text });
     console.log(`typed ${JSON.stringify(text)}`);
   },
 
@@ -665,7 +677,7 @@ html data: ${JSON.stringify(html)}`);
     });
     const state = readState();
     writeFileSync(STATE_FILE, JSON.stringify({ ...state, emulate: features }, null, 2));
-    transcript(`emulate ${pairs.join(" ")}`);
+    transcript({ kind: "emulate", features: pairs });
     console.log(`emulating ${pairs.join(" ") || "(cleared)"}`);
   },
 
@@ -673,11 +685,12 @@ html data: ${JSON.stringify(html)}`);
     const full = argv.includes("--full");
     if (!name) fail("usage: screenshot <file.png> [--full]");
     const page = await Page.connect(readState());
+    const scheme: Scheme = await page.eval(SCHEME_JS);
     const { data } = await page.send("Page.captureScreenshot", { format: "png", captureBeyondViewport: full });
     page.close();
     const path = evidencePath(name);
     writeFileSync(path, Buffer.from(data, "base64"));
-    transcript(`screenshot ${path}`);
+    transcript({ kind: "screenshot", path: evidenceName(path), full, scheme });
     console.log(path);
   },
 
@@ -688,7 +701,7 @@ html data: ${JSON.stringify(html)}`);
     page.close();
     const path = evidencePath(name);
     writeFileSync(path, tree + "\n");
-    transcript(`aria ${path}`);
+    transcript({ kind: "aria", path: evidenceName(path) });
     console.log(tree);
     console.log(`\nsaved ${path}`);
   },
@@ -706,7 +719,7 @@ html data: ${JSON.stringify(html)}`);
       mkdirSync(EVIDENCE_DIR, { recursive: true });
       writeFileSync(join(EVIDENCE_DIR, "storybook.log"), readFileSync(s.storybook.log));
     }
-    transcript(`down: killed chrome ${s.chrome.pid} and storybook ${s.storybook.pid}`);
+    transcript({ kind: "down" });
     for (let i = 0; i < 10; i++) {
       try {
         rmSync(RUN_DIR, { recursive: true, force: true });
