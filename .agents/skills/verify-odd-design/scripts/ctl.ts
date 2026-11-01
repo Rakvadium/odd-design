@@ -766,7 +766,8 @@ html data: ${JSON.stringify(html)}`);
       head,
       base: base.slice(0, head.length),
       transcript: existsSync(log) ? readFileSync(log, "utf8") : "",
-      diff: git("diff", "-U0", "--no-renames", "--no-color", base).stdout,
+      // Pinned so user config (mnemonicPrefix, noprefix, external diff, textconv) cannot change the headers proof.ts parses.
+      diff: git("-c", "core.quotepath=false", "diff", "--no-ext-diff", "--no-textconv", "--src-prefix=a/", "--dst-prefix=b/", "-U0", "--no-renames", "--no-color", base).stdout,
       untracked: lines(git("ls-files", "--others", "--exclude-standard").stdout),
       index: await (await fetch(`${s.storybook.url}/index.json`)).json(),
       source: (path) => (existsSync(join(ROOT, path)) ? readFileSync(join(ROOT, path), "utf8") : undefined),

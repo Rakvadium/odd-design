@@ -47,7 +47,7 @@ export type ProofInput = {
   readonly base: string;
   /** transcript.log as written. Only lines after the last `up` count. */
   readonly transcript: string;
-  /** `git diff -U0 --no-renames --no-color <base>` of the working tree, whole repo. Filtered here. */
+  /** `git diff -U0 --no-renames --no-color` of the working tree against base, with a/ and b/ prefixes, whole repo. Filtered here. */
   readonly diff: string;
   /** `git ls-files --others --exclude-standard`, repo-relative. New story files arrive here. */
   readonly untracked: readonly string[];
@@ -70,8 +70,17 @@ export type Proof = {
 };
 
 export function buildProof(input: ProofInput): Proof {
-  const requirement = requiredStories(input);
+  const diff = parseDiff(input.diff);
+  const unreadable = diff.unreadable.map((line) => `BAD diff header does not parse, so its file maps to nothing: ${clip(line)}`);
+  const requirement = requiredStories(diff.files, input);
   if (requirement.kind === "none") {
+    if (unreadable.length)
+      return {
+        ok: false,
+        report: unreadable,
+        cited: [],
+        render: () => [header("incomplete", input), "**Missing:**", ...unreadable.map((p) => `- ${p}`), ""].join("\n"),
+      };
     return {
       ok: true,
       report: ["ok nothing under src/, stories/, or .storybook/ changed; no proof needed"],
@@ -83,6 +92,7 @@ export function buildProof(input: ProofInput): Proof {
   const session = lastSession(input.transcript);
   const all = segments(session.events);
   const problems = [
+    ...unreadable,
     ...session.bad.map((b) => `BAD transcript line ${b.line} after the last up does not parse: ${clip(b.text)}`),
     ...staleness(session.head, input),
     ...requirement.unindexed.map((u) => `MISSING ${u}: no row in the live index; the story failed to load or Storybook is stale`),
@@ -313,8 +323,30 @@ type FileChange =
   | { readonly kind: "lines"; readonly path: string; readonly lines: readonly LineRange[] }
   | { readonly kind: "deleted"; readonly path: string };
 
-function parseDiff(diff: string): FileChange[] {
+const C_ESCAPES: Readonly<Record<string, number>> = { a: 7, b: 8, t: 9, n: 10, v: 11, f: 12, r: 13, '"': 34, "\\": 92 };
+
+/** Undoes git's C-style path quoting. Octal escapes are UTF-8 bytes, so decode the bytes together. */
+function unquote(quoted: string): string {
+  const bytes: number[] = [];
+  for (const [whole, escape] of quoted.matchAll(/\\([0-7]{3}|.)|[^\\]+/gs)) {
+    if (escape === undefined) bytes.push(...new TextEncoder().encode(whole));
+    else bytes.push(escape.length === 3 ? parseInt(escape, 8) : (C_ESCAPES[escape] ?? escape.charCodeAt(0)));
+  }
+  return new TextDecoder().decode(new Uint8Array(bytes));
+}
+
+/** The path in a `diff --git` header. With --no-renames both sides name the same path, which splits an unquoted header that contains spaces. */
+function headerPath(line: string): string | undefined {
+  const quoted = /^diff --git "a\/((?:[^"\\]|\\.)*)" "b\/((?:[^"\\]|\\.)*)"$/.exec(line);
+  if (quoted) return quoted[1] === quoted[2] ? unquote(quoted[2]) : undefined;
+  return /^diff --git a\/(.+) b\/\1$/.exec(line)?.[1];
+}
+
+type Diff = { readonly files: readonly FileChange[]; readonly unreadable: readonly string[] };
+
+function parseDiff(diff: string): Diff {
   const files: FileChange[] = [];
+  const unreadable: string[] = [];
   let current: { path: string; kind: FileChange["kind"]; lines: LineRange[] } | undefined;
   const flush = () => {
     if (!current) return;
@@ -323,10 +355,11 @@ function parseDiff(diff: string): FileChange[] {
     files.push(kind === "lines" && lines.length ? { kind, path, lines } : kind === "deleted" ? { kind, path } : { kind: "whole", path });
   };
   for (const line of diff.split(/\r?\n/)) {
-    const file = /^diff --git a\/(.+) b\/(.+)$/.exec(line);
-    if (file) {
+    if (line.startsWith("diff --git ")) {
       flush();
-      current = { path: file[2], kind: "lines", lines: [] };
+      const path = headerPath(line);
+      if (path === undefined) unreadable.push(line);
+      current = path === undefined ? undefined : { path, kind: "lines", lines: [] };
     } else if (!current) continue;
     else if (line.startsWith("new file mode")) current.kind = "whole";
     else if (line.startsWith("deleted file mode")) current.kind = "deleted";
@@ -339,7 +372,7 @@ function parseDiff(diff: string): FileChange[] {
     }
   }
   flush();
-  return files;
+  return { files, unreadable };
 }
 
 type Span = { readonly name: string | undefined; readonly start: number; readonly end: number };
@@ -381,8 +414,8 @@ type Requirement =
  * A changed line inside an `export const <Name>` span requires that story. Any other changed line in a
  * story file (imports, meta, helpers) requires every story in the file, so an unsure mapping over-requires.
  */
-function requiredStories(input: ProofInput): Requirement {
-  const changes = [...parseDiff(input.diff), ...input.untracked.map((path): FileChange => ({ kind: "whole", path }))].filter((c) => isUiPath(c.path));
+function requiredStories(files: readonly FileChange[], input: ProofInput): Requirement {
+  const changes = [...files, ...input.untracked.map((path): FileChange => ({ kind: "whole", path }))].filter((c) => isUiPath(c.path));
   if (!changes.length) return { kind: "none" };
   const index = parseIndex(input.index);
   const ids = new Set<string>();

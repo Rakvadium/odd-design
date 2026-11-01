@@ -250,6 +250,26 @@ export const Sizes = mirrored({
     );
   });
 
+  test("a C-quoted diff header maps to the unquoted path", () => {
+    const diff = `diff --git "a/src/css/caf\\303\\251 \\"x\\".css" "b/src/css/caf\\303\\251 \\"x\\".css"
+index 3333333..4444444 100644
+@@ -1 +1 @@
+-a {}
++b {}
+`;
+    expect(buildProof(input({ diff })).report).toEqual([
+      "MISSING one story proven in both light and dark that renders the changed files",
+      'note src/css/café "x".css changed and no story maps to it; prove at least one story that renders it',
+    ]);
+  });
+
+  test("a diff header in a prefix format proof cannot read fails instead of reading as no change", () => {
+    const diff = CSS_DIFF.replace("diff --git a/src/css/components/button.css b/", "diff --git i/src/css/components/button.css w/");
+    const proof = buildProof(input({ diff }));
+    expect(proof.ok).toBe(false);
+    expect(proof.report).toEqual(["BAD diff header does not parse, so its file maps to nothing: diff --git i/src/css/components/button.css w/src/css/components/button.css"]);
+  });
+
   test("a change outside src, stories, and .storybook passes with an empty transcript", () => {
     const diff = `diff --git a/README.md b/README.md
 index 5555555..6666666 100644
