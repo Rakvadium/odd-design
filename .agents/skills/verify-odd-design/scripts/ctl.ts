@@ -17,7 +17,9 @@ const flag = (name: string) => {
   argv.splice(i, 2);
   return value;
 };
-const git = (...args: string[]) => spawnSync("git", args, { cwd: ROOT, encoding: "utf8" });
+/** spawnSync's default maxBuffer is 1 MiB; past it the output is cut short and only status and error say so. */
+const GIT_OPTIONS = { cwd: ROOT, encoding: "utf8", maxBuffer: 256 * 1024 * 1024 } as const;
+const git = (...args: string[]) => spawnSync("git", args, GIT_OPTIONS);
 const RUN = flag("run") ?? process.env.VERIFY_RUN ?? branchSlug(git("branch", "--show-current").stdout.trim());
 const RUN_DIR = join(ROOT, ".verify", "runs", RUN);
 const EVIDENCE_DIR = join(ROOT, ".verify", "evidence", RUN);
@@ -755,11 +757,16 @@ html data: ${JSON.stringify(html)}`);
     const publishing = argv.includes("--publish");
     const s = readState();
     if (git("rev-parse", "--verify", "--quiet", "origin/main").status !== 0) fail("no origin/main; run: git fetch origin main");
-    const base = git("merge-base", "HEAD", "origin/main").stdout.trim();
+    const checked = (...args: string[]) => {
+      const r = git(...args);
+      if (r.status !== 0) fail(`git ${args.join(" ")}: ${r.error?.message ?? r.stderr.trim()}`);
+      return r.stdout;
+    };
+    const base = checked("merge-base", "HEAD", "origin/main").trim();
     const head = git("rev-parse", "--short", "HEAD").stdout.trim();
     const branch = git("branch", "--show-current").stdout.trim();
     const log = join(EVIDENCE_DIR, "transcript.log");
-    const lines = (text: string) => text.split("\n").map((l) => l.trim()).filter(Boolean);
+    const paths = (nulSeparated: string) => nulSeparated.split("\0").filter(Boolean);
     const proof = buildProof({
       run: RUN,
       branch,
@@ -767,13 +774,13 @@ html data: ${JSON.stringify(html)}`);
       base: base.slice(0, head.length),
       transcript: existsSync(log) ? readFileSync(log, "utf8") : "",
       // Pinned so user config (mnemonicPrefix, noprefix, external diff, textconv) cannot change the headers proof.ts parses.
-      diff: git("-c", "core.quotepath=false", "diff", "--no-ext-diff", "--no-textconv", "--src-prefix=a/", "--dst-prefix=b/", "-U0", "--no-renames", "--no-color", base).stdout,
-      untracked: lines(git("ls-files", "--others", "--exclude-standard").stdout),
+      diff: checked("-c", "core.quotepath=false", "diff", "--no-ext-diff", "--no-textconv", "--src-prefix=a/", "--dst-prefix=b/", "-U0", "--no-renames", "--no-color", base),
+      untracked: paths(checked("ls-files", "-z", "--others", "--exclude-standard")),
       index: await (await fetch(`${s.storybook.url}/index.json`)).json(),
       source: (path) => (existsSync(join(ROOT, path)) ? readFileSync(join(ROOT, path), "utf8") : undefined),
       changedSince: (from) => {
-        const r = git("-c", "core.quotepath=false", "diff", "--name-only", "--no-renames", from, "HEAD");
-        return r.status === 0 ? lines(r.stdout) : undefined;
+        const r = git("diff", "--name-only", "-z", "--no-renames", from, "HEAD");
+        return r.status === 0 ? paths(r.stdout) : undefined;
       },
     });
     const out = join(EVIDENCE_DIR, "PROOF.md");
