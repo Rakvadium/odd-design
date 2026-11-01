@@ -364,7 +364,10 @@ function publishAssets(cited: readonly string[], slug: string, head: string): (p
       const tip = run("ls-remote", "origin", ASSETS_REF).split(/\s/)[0] ?? "";
       if (tip) {
         run("fetch", "--no-tags", "--no-write-fetch-head", "origin", ASSETS_REF);
-        if (git("merge-base", "--is-ancestor", "origin/main", tip).status === 0) throw new Error(`origin ${ASSETS_REF} contains origin/main; refusing to publish onto it`);
+        // merge-base exits 1 only when the histories are unrelated, which an orphan branch must be.
+        const related = git("merge-base", "origin/main", tip);
+        if (related.status !== 1)
+          throw new Error(`origin ${ASSETS_REF} at ${tip} is not unrelated to origin/main (git merge-base exited ${related.status}); refusing to publish onto it`);
         run("read-tree", tip);
       } else run("read-tree", "--empty");
       for (const path of cited) run("update-index", "--add", "--cacheinfo", `100644,${run("hash-object", "-w", join(EVIDENCE_DIR, path))},${slug}/${head}/${path}`);
