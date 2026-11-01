@@ -98,7 +98,7 @@ export function buildProof(input: ProofInput): Proof {
     ...unreadable,
     ...session.bad.map((b) => `BAD transcript line ${b.line} after the last up does not parse: ${clip(b.text)}`),
     ...staleness(session.head, input),
-    ...requirement.unindexed.map((u) => `MISSING ${u}: no row in the live index; the story failed to load or Storybook is stale`),
+    ...requirement.indexGaps,
   ];
 
   const judged = (requirement.kind === "stories" ? requirement.ids : [...new Set(all.map((s) => s.story))]).map((story) => ({
@@ -423,8 +423,10 @@ function parseIndex(index: unknown): StoryEntry[] {
 
 type Requirement =
   | { readonly kind: "none" }
-  | { readonly kind: "stories"; readonly ids: readonly string[]; readonly unmapped: readonly string[]; readonly unindexed: readonly string[] }
-  | { readonly kind: "any"; readonly unmapped: readonly string[]; readonly unindexed: readonly string[] };
+  | { readonly kind: "stories"; readonly ids: readonly string[]; readonly unmapped: readonly string[]; readonly indexGaps: readonly string[] }
+  | { readonly kind: "any"; readonly unmapped: readonly string[]; readonly indexGaps: readonly string[] };
+
+const NO_ROW = "no row in the live index; the story failed to load or Storybook is stale";
 
 /**
  * A changed line inside an `export const <Name>` span requires that story. Any other changed line in a
@@ -436,30 +438,34 @@ function requiredStories(files: readonly FileChange[], input: ProofInput): Requi
   const index = parseIndex(input.index);
   const ids = new Set<string>();
   const unmapped: string[] = [];
-  const unindexed = new Set<string>();
+  const indexGaps = new Set<string>();
   for (const change of changes) {
     if (change.kind === "deleted" || !STORY_FILE.test(change.path)) {
       unmapped.push(change.path);
       continue;
     }
-    const rows = index.filter((r) => r.file === change.path);
-    const wholeFile = () => (rows.length ? rows.forEach((r) => ids.add(r.id)) : unindexed.add(change.path));
+    const indexed = index.filter((r) => r.file === change.path);
+    const wholeFile = (rows: readonly StoryEntry[]) => (rows.length ? rows.forEach((r) => ids.add(r.id)) : indexGaps.add(`MISSING ${change.path}: ${NO_ROW}`));
     const source = change.kind === "lines" ? input.source(change.path) : undefined;
     if (change.kind === "whole" || source === undefined) {
-      wholeFile();
+      wholeFile(indexed);
       continue;
     }
     const spans = statementSpans(source);
+    const exported = new Set(spans.map((s) => s.name));
+    const rows = indexed.filter((r) => exported.has(r.exportName));
+    for (const r of indexed.filter((r) => !exported.has(r.exportName)))
+      indexGaps.add(`MISSING ${r.id}: the live index lists export ${r.exportName} that ${change.path} no longer has; Storybook is stale (run doctor, or down then up)`);
     for (const span of spans.filter((s) => change.lines.some((l) => l.start <= s.end && l.end >= s.start))) {
       const row = span.name === undefined ? undefined : rows.find((r) => r.exportName === span.name);
-      if (span.name === undefined) wholeFile();
+      if (span.name === undefined) wholeFile(rows);
       else if (row) ids.add(row.id);
-      else unindexed.add(`${change.path} export ${span.name}`);
+      else indexGaps.add(`MISSING ${change.path} export ${span.name}: ${NO_ROW}`);
     }
   }
   return ids.size
-    ? { kind: "stories", ids: [...ids], unmapped, unindexed: [...unindexed] }
-    : { kind: "any", unmapped, unindexed: [...unindexed] };
+    ? { kind: "stories", ids: [...ids], unmapped, indexGaps: [...indexGaps] }
+    : { kind: "any", unmapped, indexGaps: [...indexGaps] };
 }
 
 const clip = (s: string, max = 120) => {

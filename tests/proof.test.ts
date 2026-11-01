@@ -250,6 +250,23 @@ export const Sizes = mirrored({
     ]);
   });
 
+  test("a deleted export the live index still lists means Storybook is stale", () => {
+    const source = BUTTON_SOURCE.slice(0, BUTTON_SOURCE.indexOf("\nexport const Variants"));
+    const diff = `diff --git a/${BUTTON} b/${BUTTON}
+index 1111111..2222222 100644
+@@ -12,4 +11,0 @@ export const Playground = mirrored({
+-
+-export const Variants = mirrored({
+-  scene: () => "variants",
+-});
+`;
+    expect(buildProof(input({ diff, source: () => source })).report).toEqual([
+      "MISSING components-button--variants: the live index lists export Variants that stories/mirrored/Button.stories.ts no longer has; Storybook is stale (run doctor, or down then up)",
+      "MISSING components-button--playground light: no goto",
+      "MISSING components-button--playground dark: no goto",
+    ]);
+  });
+
   test("a CSS-only change needs one story proven in both schemes and names the file", () => {
     const empty = buildProof(input({ diff: CSS_DIFF }));
     expect(empty.ok).toBe(false);
