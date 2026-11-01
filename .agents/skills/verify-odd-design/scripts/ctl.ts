@@ -3,8 +3,8 @@
 // Usage: bun .agents/skills/verify-odd-design/scripts/ctl.ts <command> [args] [--run NAME]
 // Run `ctl.ts help` for the command list.
 import { spawn, spawnSync } from "node:child_process";
-import { appendFileSync, existsSync, mkdirSync, openSync, readFileSync, rmSync, writeFileSync } from "node:fs";
-import { dirname, isAbsolute, join, relative, resolve } from "node:path";
+import { appendFileSync, existsSync, mkdirSync, openSync, readFileSync, realpathSync, rmSync, writeFileSync } from "node:fs";
+import { dirname, isAbsolute, join, relative, resolve, sep } from "node:path";
 import { A11Y_EXCLUDE, A11Y_OPTIONS, A11Y_TAGS } from "../../../../.storybook/a11y.ts";
 import { branchSlug, buildProof, formatEvent, type Event, type Scheme } from "./proof.ts";
 
@@ -340,6 +340,11 @@ function launchChrome(c: Omit<State["chrome"], "pid">, storybookUrl: string) {
 
 const ASSETS_REF = "refs/heads/proof-assets";
 
+const isInside = (dir: string, path: string) => {
+  const rel = relative(dir, path);
+  return rel !== "" && rel !== ".." && !rel.startsWith(`..${sep}`) && !isAbsolute(rel);
+};
+
 /**
  * Uploads cited PNGs to <slug>/<head>/<path> on the orphan proof-assets branch and returns a mapping to
  * raw URLs pinned to the resulting commit. Never touches HEAD, the index, the working tree, or any local ref.
@@ -360,7 +365,13 @@ function publishAssets(cited: readonly string[], slug: string, head: string): (p
     const [, owner, repo] = github;
     // Fetching or pushing through the remote's name updates refs/remotes/origin/*; through its URL no local ref moves.
     const pushUrl = run("remote", "get-url", "--push", "origin");
-    for (const path of cited) if (path.startsWith("../") || isAbsolute(path)) throw new Error(`cited screenshot ${path} is outside ${EVIDENCE_DIR}`);
+    const evidence = realpathSync(EVIDENCE_DIR);
+    const files = cited.map((path) => {
+      const file = resolve(EVIDENCE_DIR, path);
+      // realpath catches a symlink inside the evidence dir that points out of it.
+      if (!isInside(EVIDENCE_DIR, file) || !isInside(evidence, realpathSync(file))) throw new Error(`cited screenshot ${path} is outside ${EVIDENCE_DIR}`);
+      return { path, file };
+    });
     const link = (commit: string) => (path: string) => `https://raw.githubusercontent.com/${owner}/${repo}/${commit}/${slug}/${head}/${path}`;
     for (let attempt = 1; attempt <= 3; attempt++) {
       const tip = run("ls-remote", origin, ASSETS_REF).split(/\s/)[0] ?? "";
@@ -372,7 +383,7 @@ function publishAssets(cited: readonly string[], slug: string, head: string): (p
           throw new Error(`origin ${ASSETS_REF} at ${tip} is not unrelated to origin/main (git merge-base exited ${related.status}); refusing to publish onto it`);
         run("read-tree", tip);
       } else run("read-tree", "--empty");
-      for (const path of cited) run("update-index", "--add", "--cacheinfo", `100644,${run("hash-object", "-w", join(EVIDENCE_DIR, path))},${slug}/${head}/${path}`);
+      for (const { path, file } of files) run("update-index", "--add", "--cacheinfo", `100644,${run("hash-object", "-w", file)},${slug}/${head}/${path}`);
       const tree = run("write-tree");
       if (tip && tree === run("rev-parse", `${tip}^{tree}`)) return link(tip);
       const commit = run("commit-tree", tree, ...(tip ? ["-p", tip] : []), "-m", `proof: ${slug} @ ${head}`);
