@@ -55,8 +55,11 @@ export type ProofInput = {
   readonly index: unknown;
   /** Current text of a repo-relative file, for locating story exports. Asked only for modified story files. */
   readonly source: (path: string) => string | undefined;
-  /** Repo-relative paths the commits from `from` to HEAD touch. Asked only when HEAD moved since the last `up`. */
-  readonly changedSince: (from: string) => readonly string[];
+  /**
+   * Repo-relative paths the commits from `from` to HEAD touch, or undefined when git cannot diff them.
+   * Asked only when HEAD moved since the last `up`.
+   */
+  readonly changedSince: (from: string) => readonly string[] | undefined;
 };
 
 export type Proof = {
@@ -236,9 +239,12 @@ function lastSession(text: string): Session {
 
 function staleness(upHead: string | undefined, input: ProofInput): string[] {
   if (upHead === undefined || upHead === input.head) return [];
-  const touched = input.changedSince(upHead).filter(isUiPath);
+  const restart = "restart the run (ctl.ts down, ctl.ts up) and drive the stories again";
+  const changed = input.changedSince(upHead);
+  if (changed === undefined) return [`STALE HEAD moved from ${upHead} to ${input.head} since the last up and git cannot diff them; ${restart}`];
+  const touched = changed.filter(isUiPath);
   if (!touched.length) return [];
-  return [`STALE HEAD moved from ${upHead} to ${input.head} since the last up, and those commits touch ${touched.join(", ")}; restart the run (ctl.ts down, ctl.ts up) and drive the stories again`];
+  return [`STALE HEAD moved from ${upHead} to ${input.head} since the last up, and those commits touch ${touched.join(", ")}; ${restart}`];
 }
 
 /**

@@ -196,6 +196,15 @@ Each row is one \`goto\`. The left image is before the first action, the right i
     const docsOnly = buildProof(input({ head: "def5678", transcript, changedSince: () => ["docs/a.md"] }));
     expect(docsOnly.ok).toBe(true);
   });
+
+  test("a moved HEAD that git cannot diff against the last up is stale, not fresh", () => {
+    const proof = buildProof(input({ head: "def5678", transcript: log(UP, ...LIGHT, ...DARK), changedSince: () => undefined }));
+    expect(proof.ok).toBe(false);
+    expect(proof.report).toEqual([
+      "STALE HEAD moved from abc1234 to def5678 since the last up and git cannot diff them; restart the run (ctl.ts down, ctl.ts up) and drive the stories again",
+      "ok components-button--variants light dark",
+    ]);
+  });
 });
 
 describe("which stories a change requires", () => {

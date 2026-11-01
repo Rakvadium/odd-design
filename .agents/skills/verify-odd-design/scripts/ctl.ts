@@ -771,7 +771,10 @@ html data: ${JSON.stringify(html)}`);
       untracked: lines(git("ls-files", "--others", "--exclude-standard").stdout),
       index: await (await fetch(`${s.storybook.url}/index.json`)).json(),
       source: (path) => (existsSync(join(ROOT, path)) ? readFileSync(join(ROOT, path), "utf8") : undefined),
-      changedSince: (from) => lines(git("diff", "--name-only", from, "HEAD").stdout),
+      changedSince: (from) => {
+        const r = git("-c", "core.quotepath=false", "diff", "--name-only", "--no-renames", from, "HEAD");
+        return r.status === 0 ? lines(r.stdout) : undefined;
+      },
     });
     const out = join(EVIDENCE_DIR, "PROOF.md");
     mkdirSync(EVIDENCE_DIR, { recursive: true });
