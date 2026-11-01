@@ -343,38 +343,42 @@ const ASSETS_REF = "refs/heads/proof-assets";
 /**
  * Uploads cited PNGs to <slug>/<head>/<path> on the orphan proof-assets branch and returns a mapping to
  * raw URLs pinned to the resulting commit. Never touches HEAD, the index, the working tree, or any local ref.
+ * It throws rather than calling fail, because process.exit would skip the finally that removes the temporary index.
  */
 function publishAssets(cited: readonly string[], slug: string, head: string): (path: string) => string {
-  const origin = git("remote", "get-url", "origin").stdout.trim();
-  const [, owner, repo] = /github\.com[:/]([^/]+)\/([^/]+?)(?:\.git)?\/?$/.exec(origin) ?? fail(`origin is not a GitHub remote: ${origin}`);
-  for (const path of cited) if (path.startsWith("../") || isAbsolute(path)) fail(`cited screenshot ${path} is outside ${EVIDENCE_DIR}`);
   const index = join(RUN_DIR, "proof-index");
   const env = { ...process.env, GIT_INDEX_FILE: index };
   const run = (...args: string[]) => {
-    const r = spawnSync("git", args, { cwd: ROOT, encoding: "utf8", env });
-    if (r.status !== 0) fail(`git ${args.join(" ")}: ${r.stderr.trim()}`);
+    const r = spawnSync("git", args, { ...GIT_OPTIONS, env });
+    if (r.status !== 0) throw new Error(`git ${args.join(" ")}: ${r.error?.message ?? r.stderr.trim()}`);
     return r.stdout.trim();
   };
-  const link = (commit: string) => (path: string) => `https://raw.githubusercontent.com/${owner}/${repo}/${commit}/${slug}/${head}/${path}`;
   try {
+    const origin = run("remote", "get-url", "origin");
+    const github = /github\.com[:/]([^/]+)\/([^/]+?)(?:\.git)?\/?$/.exec(origin);
+    if (!github) throw new Error(`origin is not a GitHub remote: ${origin}`);
+    const [, owner, repo] = github;
+    for (const path of cited) if (path.startsWith("../") || isAbsolute(path)) throw new Error(`cited screenshot ${path} is outside ${EVIDENCE_DIR}`);
+    const link = (commit: string) => (path: string) => `https://raw.githubusercontent.com/${owner}/${repo}/${commit}/${slug}/${head}/${path}`;
     for (let attempt = 1; attempt <= 3; attempt++) {
       const tip = run("ls-remote", "origin", ASSETS_REF).split(/\s/)[0] ?? "";
       if (tip) {
         run("fetch", "--no-tags", "--no-write-fetch-head", "origin", ASSETS_REF);
-        if (git("merge-base", "--is-ancestor", "origin/main", tip).status === 0) fail(`origin ${ASSETS_REF} contains origin/main; refusing to publish onto it`);
+        if (git("merge-base", "--is-ancestor", "origin/main", tip).status === 0) throw new Error(`origin ${ASSETS_REF} contains origin/main; refusing to publish onto it`);
         run("read-tree", tip);
       } else run("read-tree", "--empty");
       for (const path of cited) run("update-index", "--add", "--cacheinfo", `100644,${run("hash-object", "-w", join(EVIDENCE_DIR, path))},${slug}/${head}/${path}`);
       const tree = run("write-tree");
       if (tip && tree === run("rev-parse", `${tip}^{tree}`)) return link(tip);
       const commit = run("commit-tree", tree, ...(tip ? ["-p", tip] : []), "-m", `proof: ${slug} @ ${head}`);
-      const push = spawnSync("git", ["push", "origin", `${commit}:${ASSETS_REF}`], { cwd: ROOT, encoding: "utf8" });
+      const push = git("push", "origin", `${commit}:${ASSETS_REF}`);
       if (push.status === 0) return link(commit);
-      console.error(`push to ${ASSETS_REF} rejected (attempt ${attempt} of 3): ${push.stderr.trim()}`);
+      console.error(`push to ${ASSETS_REF} rejected (attempt ${attempt} of 3): ${push.error?.message ?? push.stderr.trim()}`);
     }
-    return fail(`could not push to ${ASSETS_REF} after 3 attempts`);
+    throw new Error(`could not push to ${ASSETS_REF} after 3 attempts`);
   } finally {
     rmSync(index, { force: true });
+    rmSync(`${index}.lock`, { force: true });
   }
 }
 
