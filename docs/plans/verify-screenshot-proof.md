@@ -41,6 +41,7 @@ Roles: `click`, `hover`, `press`, and `type` are interactions. `focus` (it calls
 - Only events after the last `up` count. If HEAD moved since that `up` and the commits between touch `src/`, `stories/`, or `.storybook/`, the proof fails as stale. A line after that `up` that does not parse fails the proof.
 - A segment runs from one `goto` to the next `goto` or boundary. Evidence never spans a reload.
 - The screenshot event records the scheme the page rendered, measured in the page at capture (`data-mode` when it is `light` or `dark`, otherwise `matchMedia("(prefers-color-scheme: dark)")`). The parser never models `emulate`.
+- `screenshot` overwrites its file, so only the last screenshot event for a path counts.
 - A segment proves its story in scheme `s` when it has a screenshot of `s` before the first interaction, at least one interaction, a screenshot of `s` after an interaction, and a read after an interaction.
 - A required story passes when it is proven in both `light` and `dark`.
 
@@ -50,12 +51,12 @@ Roles: `click`, `hover`, `press`, and `type` are interactions. `focus` (it calls
 
 - A new or untracked story file requires every story in it.
 - Story files are split into column-0 top-level statement spans. A changed line inside an `export const <Name>` span requires that story. A changed line in any other span (imports, `meta`, helpers such as `SWATCHES` in `Foundations.stories.ts`) requires every story in the file.
-- A touched export, or a changed story file, with no row in the live index fails the proof. Either the story did not load or the server is stale.
+- A touched export, or a changed story file, with no row in the live index fails the proof. Either the story did not load or the server is stale. So does a live index row for an export that a modified story file no longer has.
 - A change elsewhere under `src/`, `stories/`, or `.storybook/` maps to no story. When nothing maps, `proof` requires at least one fully proven story the agent picks. Unmapped files are always named in `PROOF.md`.
 
 ### Publish
 
-`proof --publish` only runs on a pass, and `cited` is empty on a fail. It writes blobs with `git hash-object -w`, builds the tree in a temporary `GIT_INDEX_FILE` under the run dir, commits with `git commit-tree` (no parent for the first commit), and pushes `<commit>:refs/heads/proof-assets` without force, retrying up to three times on rejection. The ref is a constant. It fetches the tip with `--no-write-fetch-head` and writes no local ref. It refuses if `origin/main` is an ancestor of the remote tip. Files go to `<branch-slug>/<short-head>/<path>`, and links pin to the commit as `https://raw.githubusercontent.com/<owner>/<repo>/<commit>/...`. A re-publish of the same bytes makes no commit. After the push it rewrites `PROOF.md` and runs `down`.
+`proof --publish` only runs on a pass, and `cited` is empty on a fail. It writes blobs with `git hash-object -w`, builds the tree in a temporary `GIT_INDEX_FILE` under the run dir, commits with `git commit-tree` (no parent for the first commit), and pushes `<commit>:refs/heads/proof-assets` without force, retrying up to three times on rejection. The ref is a constant. It fetches the tip with `--no-write-fetch-head`, and it fetches and pushes through the origin URL rather than the remote name, so no local ref moves. It refuses unless `git merge-base origin/main <tip>` exits 1, meaning the histories are unrelated. Each cited path, and its real path, must resolve inside the evidence dir. Files go to `<branch-slug>/<short-head>/<path>`, and links pin to the commit as `https://raw.githubusercontent.com/<owner>/<repo>/<commit>/...`. A re-publish of the same bytes makes no commit. After the push it rewrites `PROOF.md` and runs `down`.
 
 A plain `proof` leaves the run up, so the agent can fill gaps without a cold start.
 

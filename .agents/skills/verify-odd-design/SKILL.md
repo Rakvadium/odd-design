@@ -51,7 +51,7 @@ bun $S proof
 
 The first run fails and prints a `MISSING` line for every story the branch must prove. It diffs the working tree against the merge base with `origin/main`, adds untracked files, and maps each change through the live `index.json`, new stories included. A changed line inside `export const X` requires story X. A change anywhere else in a story file requires every story in that file, and a new story file requires all its stories.
 
-It also names changed files that no story file maps to, such as CSS, JS, and `.storybook` changes. For those, pick the stories that render the change and prove them too. When nothing maps, `proof` needs at least one story you picked. A changed story missing from the index means it failed to load or the server is stale, so run `doctor`.
+It also names changed files that no story file maps to, such as CSS, JS, and `.storybook` changes. For those, pick the stories that render the change and prove them too. `proof` enforces a picked story only when nothing else maps, and then it needs at least one. When story exports also changed, it only names the unmapped files, so proving the stories that render them stays your job. A changed story missing from the index, or an index row for an export the file no longer has, means the story failed to load or the server is stale, so run `doctor`.
 
 A plain `proof` leaves the run up. Drive the gaps and run it again until it exits 0.
 
@@ -87,7 +87,7 @@ Rules for driving:
 Evidence goes to `.verify/evidence/<run>/`, which is gitignored and survives `down`:
 
 - `transcript.log` is automatic. Each line is one event, `[<iso time>] <kind> <json>`. It records every `goto` with the resolved `html data-*`, each click target, key and resulting focus, `state`, `eval` and its result, `aria` path, and screenshot path and scheme. `proof` reads it.
-- `bun $S screenshot <name>.png [--full]` takes a viewport screenshot (1280×900), or the full page with `--full`. Subdirectory names like `dialog/open.png` are fine.
+- `bun $S screenshot <name>.png [--full]` takes a viewport screenshot (1280×900), or the full page with `--full`. Subdirectory names like `dialog/open.png` are fine. Give every shot in a run its own path. A reused path overwrites the earlier PNG, and `proof` discards the earlier shot.
 - `bun $S aria <name>.txt` saves the accessibility tree (roles, names, values, and checked/expanded/focused/modal/invalid/disabled/busy) and prints it.
 - `PROOF.md` is written by `proof`.
 - `storybook.log` is copied in at `down`.
@@ -113,7 +113,7 @@ bun $S state
 
 Then repeat it with `mode:dark`.
 
-- Capture each chrome or palette the change touches. A chrome change needs that chrome in light and dark, or `showcase--matrix`. A palette change needs `foundations--contrast` plus `bun test`.
+- `proof` checks light and dark only. Chrome and palette coverage is your job, so capture each chrome or palette the change touches. A chrome change needs that chrome in light and dark, or `showcase--matrix`. A palette change needs `foundations--contrast` plus `bun test`.
 - Use `screenshot --full` for layout changes.
 - The screenshot records the scheme the page actually rendered. `mode:system` counts as whatever `emulate` made it.
 - `proof` counts only events since the last `up`. If HEAD moved since `up` and the commits in between touch `src/`, `stories/`, or `.storybook/`, it fails as stale. Run `down`, `up`, and drive again.
@@ -133,7 +133,7 @@ gh pr comment <pr> --body-file .verify/evidence/<branch-slug>/PROOF.md
 
 `proof --publish` runs only on a pass. It pushes the cited PNGs to the orphan `proof-assets` branch under `<branch-slug>/<short-head>/`, using git plumbing, and never touches main or the working tree. It rewrites the image links in `PROOF.md` to commit-pinned `raw.githubusercontent.com` URLs, then runs `down`.
 
-`PROOF.md` has a table with one row per proven story and theme: the story, the theme, the action, the before and after screenshots, and the read. Below it, it lists missing items and unmapped files.
+`PROOF.md` has a table with one row per proven story and theme: the story, the theme, the action, the before and after screenshots, and the read. Above the table, it lists unmapped files and missing items.
 
 `PROOF.md` and the screenshots stay gitignored under `.verify/`. Never commit them to main.
 
