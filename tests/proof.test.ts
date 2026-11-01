@@ -139,6 +139,16 @@ Each row is one \`goto\`. The left image is before the first action, the right i
     expect(proof.report).toEqual(["MISSING components-button--variants light: no light screenshot after an interaction"]);
   });
 
+  test("a screenshot that reuses the before shot's path overwrote it, so the segment has no before shot", () => {
+    const [goto, before, click, , read] = LIGHT;
+    const proof = buildProof(input({ transcript: log(UP, goto, before, click, before, read, ...DARK) }));
+    expect(proof.ok).toBe(false);
+    expect(proof.report).toEqual(["MISSING components-button--variants light: no light screenshot before the first interaction"]);
+
+    const recased = buildProof(input({ transcript: log(UP, goto, before, click, before.replace("light-before", "Light-Before"), read, ...DARK) }));
+    expect(recased.report).toEqual(["MISSING components-button--variants light: no light screenshot before the first interaction"]);
+  });
+
   test("a mode:system segment whose screenshots measured dark proves dark, and the theme says so", () => {
     const system = [gotoVariants("system"), `emulate {"features":["prefers-color-scheme=dark"]}`, ...DARK.slice(1)];
     const proof = buildProof(input({ transcript: log(UP, ...LIGHT, ...system) }));

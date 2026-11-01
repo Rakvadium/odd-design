@@ -90,7 +90,7 @@ export function buildProof(input: ProofInput): Proof {
   }
 
   const session = lastSession(input.transcript);
-  const all = segments(session.events);
+  const all = segments(withoutOverwrittenShots(session.events));
   const problems = [
     ...unreadable,
     ...session.bad.map((b) => `BAD transcript line ${b.line} after the last up does not parse: ${clip(b.text)}`),
@@ -239,6 +239,16 @@ function staleness(upHead: string | undefined, input: ProofInput): string[] {
   const touched = input.changedSince(upHead).filter(isUiPath);
   if (!touched.length) return [];
   return [`STALE HEAD moved from ${upHead} to ${input.head} since the last up, and those commits touch ${touched.join(", ")}; restart the run (ctl.ts down, ctl.ts up) and drive the stories again`];
+}
+
+/**
+ * screenshot overwrites its file, so only the last event for a path describes a PNG that still exists.
+ * Paths compare case-insensitively because Windows and macOS file systems do.
+ */
+function withoutOverwrittenShots(events: readonly Event[]): Event[] {
+  const last = new Map<string, Event>();
+  for (const e of events) if (e.kind === "screenshot") last.set(e.path.toLowerCase(), e);
+  return events.filter((e) => e.kind !== "screenshot" || last.get(e.path.toLowerCase()) === e);
 }
 
 /** Events from one goto up to the next goto or boundary. A goto reloads the page, so evidence never spans one. */
