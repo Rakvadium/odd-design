@@ -336,6 +336,46 @@ function launchChrome(c: Omit<State["chrome"], "pid">, storybookUrl: string) {
   return chrome;
 }
 
+const ASSETS_REF = "refs/heads/proof-assets";
+
+/**
+ * Uploads cited PNGs to <slug>/<head>/<path> on the orphan proof-assets branch and returns a mapping to
+ * raw URLs pinned to the resulting commit. Never touches HEAD, the index, the working tree, or any local ref.
+ */
+function publishAssets(cited: readonly string[], slug: string, head: string): (path: string) => string {
+  const origin = git("remote", "get-url", "origin").stdout.trim();
+  const [, owner, repo] = /github\.com[:/]([^/]+)\/([^/]+?)(?:\.git)?\/?$/.exec(origin) ?? fail(`origin is not a GitHub remote: ${origin}`);
+  for (const path of cited) if (path.startsWith("../") || isAbsolute(path)) fail(`cited screenshot ${path} is outside ${EVIDENCE_DIR}`);
+  const index = join(RUN_DIR, "proof-index");
+  const env = { ...process.env, GIT_INDEX_FILE: index };
+  const run = (...args: string[]) => {
+    const r = spawnSync("git", args, { cwd: ROOT, encoding: "utf8", env });
+    if (r.status !== 0) fail(`git ${args.join(" ")}: ${r.stderr.trim()}`);
+    return r.stdout.trim();
+  };
+  const link = (commit: string) => (path: string) => `https://raw.githubusercontent.com/${owner}/${repo}/${commit}/${slug}/${head}/${path}`;
+  try {
+    for (let attempt = 1; attempt <= 3; attempt++) {
+      const tip = run("ls-remote", "origin", ASSETS_REF).split(/\s/)[0] ?? "";
+      if (tip) {
+        run("fetch", "--no-tags", "--no-write-fetch-head", "origin", ASSETS_REF);
+        if (git("merge-base", "--is-ancestor", "origin/main", tip).status === 0) fail(`origin ${ASSETS_REF} contains origin/main; refusing to publish onto it`);
+        run("read-tree", tip);
+      } else run("read-tree", "--empty");
+      for (const path of cited) run("update-index", "--add", "--cacheinfo", `100644,${run("hash-object", "-w", join(EVIDENCE_DIR, path))},${slug}/${head}/${path}`);
+      const tree = run("write-tree");
+      if (tip && tree === run("rev-parse", `${tip}^{tree}`)) return link(tip);
+      const commit = run("commit-tree", tree, ...(tip ? ["-p", tip] : []), "-m", `proof: ${slug} @ ${head}`);
+      const push = spawnSync("git", ["push", "origin", `${commit}:${ASSETS_REF}`], { cwd: ROOT, encoding: "utf8" });
+      if (push.status === 0) return link(commit);
+      console.error(`push to ${ASSETS_REF} rejected (attempt ${attempt} of 3): ${push.stderr.trim()}`);
+    }
+    return fail(`could not push to ${ASSETS_REF} after 3 attempts`);
+  } finally {
+    rmSync(index, { force: true });
+  }
+}
+
 // ---------- commands ----------
 
 const commands: Record<string, (args: string[]) => Promise<void>> = {
@@ -364,6 +404,11 @@ const commands: Record<string, (args: string[]) => Promise<void>> = {
                                        ones), rendered and with each overlay opened; exits 1 on any violation or if the
                                        rules that ran differ from .storybook/a11y-rules.txt. quick = light+dark,
                                        full = every chrome and palette. --update-rules rewrites that file
+  proof [--publish]                    check transcript.log against the stories this branch changed, write PROOF.md
+                                       to the evidence dir, and exit 1 listing what is missing. Each changed story needs,
+                                       in light and in dark, after one goto: a screenshot, a click/hover/press/type, a
+                                       screenshot, and an eval/aria/state read. --publish (only on a pass) pushes the
+                                       cited screenshots to the proof-assets branch, rewrites PROOF.md links, then runs down
   down                                 kill what this run started and delete its scratch dir (evidence is kept)`);
   },
 
@@ -704,6 +749,40 @@ html data: ${JSON.stringify(html)}`);
     transcript({ kind: "aria", path: evidenceName(path) });
     console.log(tree);
     console.log(`\nsaved ${path}`);
+  },
+
+  async proof() {
+    const publishing = argv.includes("--publish");
+    const s = readState();
+    if (git("rev-parse", "--verify", "--quiet", "origin/main").status !== 0) fail("no origin/main; run: git fetch origin main");
+    const base = git("merge-base", "HEAD", "origin/main").stdout.trim();
+    const head = git("rev-parse", "--short", "HEAD").stdout.trim();
+    const branch = git("branch", "--show-current").stdout.trim();
+    const log = join(EVIDENCE_DIR, "transcript.log");
+    const lines = (text: string) => text.split("\n").map((l) => l.trim()).filter(Boolean);
+    const proof = buildProof({
+      run: RUN,
+      branch,
+      head,
+      base: base.slice(0, head.length),
+      transcript: existsSync(log) ? readFileSync(log, "utf8") : "",
+      diff: git("diff", "-U0", "--no-renames", "--no-color", base).stdout,
+      untracked: lines(git("ls-files", "--others", "--exclude-standard").stdout),
+      index: await (await fetch(`${s.storybook.url}/index.json`)).json(),
+      source: (path) => (existsSync(join(ROOT, path)) ? readFileSync(join(ROOT, path), "utf8") : undefined),
+      changedSince: (from) => lines(git("diff", "--name-only", from, "HEAD").stdout),
+    });
+    const out = join(EVIDENCE_DIR, "PROOF.md");
+    mkdirSync(EVIDENCE_DIR, { recursive: true });
+    writeFileSync(out, proof.render((path) => path));
+    for (const line of proof.report) console.log(line);
+    console.log(`wrote ${out}`);
+    if (!proof.ok) process.exit(1);
+    if (!publishing) return console.log(`passed. Publish with: ctl.ts proof --publish, or stop with: ctl.ts down`);
+    if (proof.cited.length) writeFileSync(out, proof.render(publishAssets(proof.cited, branchSlug(branch), head)));
+    console.log(`published ${proof.cited.length} screenshots to ${ASSETS_REF} and rewrote ${out}`);
+    await commands.down!([]);
+    console.log(`post it with: gh pr comment --body-file ${out}`);
   },
 
   async down() {
