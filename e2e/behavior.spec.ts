@@ -413,25 +413,29 @@ test.describe("machine controls", () => {
     await expect(page.locator('[role="group"] button', { hasText: "+5" })).toHaveAttribute("aria-disabled", "false");
   });
 
-  test("the log follows new lines until the reader scrolls up", async ({ page }) => {
-    await openStory(page, "components-feedback--log", "mode:light");
-    const log = page.locator("#arm-log");
-    const fromBottom = () => log.evaluate((el) => Math.round(el.scrollHeight - el.scrollTop - el.clientHeight));
-    const add = page.locator("#add-log-line");
-    await add.click();
-    await expect.poll(fromBottom).toBe(0);
-    await log.hover();
-    await page.mouse.wheel(0, -1000);
-    await expect.poll(() => log.evaluate((el) => el.scrollTop)).toBe(0);
-    await add.click();
-    await page.waitForTimeout(100);
-    expect(await log.evaluate((el) => el.scrollTop), "scrolled up, so the log stays put").toBe(0);
-    await log.hover();
-    await page.mouse.wheel(0, 5000);
-    await expect.poll(fromBottom).toBe(0);
-    await add.click();
-    await expect.poll(fromBottom).toBe(0);
-  });
+  for (const storybook of ["html", "react"] as const) {
+    test(`the log follows new lines until the reader scrolls up (${storybook})`, async ({ page }) => {
+      await openStory(page, "components-feedback--log", "mode:light", "", storybook);
+      const log = page.locator("#sync-log");
+      const fromBottom = () => log.evaluate((el) => Math.round(el.scrollHeight - el.scrollTop - el.clientHeight));
+      const add = page.locator("#add-log-line");
+      expect(await log.evaluate((el) => el.scrollHeight > el.clientHeight), "the story's lines overflow the log").toBe(true);
+      await add.click();
+      await expect.poll(fromBottom).toBe(0);
+      await log.hover();
+      await page.mouse.wheel(0, -1000);
+      await expect.poll(() => log.evaluate((el) => el.scrollTop)).toBe(0);
+      await add.click();
+      await expect(log.locator(".odd-log-line"), "Add line added a line").toHaveCount(18);
+      expect(await log.evaluate((el) => el.scrollTop), "scrolled up, so the log stays put").toBe(0);
+      await log.hover();
+      await page.mouse.wheel(0, 5000);
+      await expect.poll(fromBottom).toBe(0);
+      await add.click();
+      await expect(log.locator(".odd-log-line")).toHaveCount(19);
+      await expect.poll(fromBottom).toBe(0);
+    });
+  }
 
   test("the app grid narrows panels to half, then to one column, by its own width", async ({ page }, testInfo) => {
     await openStory(page, "components-layout--app-shell", "mode:light");

@@ -477,6 +477,16 @@ const places: Record<string, readonly (readonly [string, number, number, string]
     ["ODD-HOVER-CARD-001", 3, 44, "popover"],
     ["ODD-HOVER-CARD-001", 4, 44, "popover"],
   ],
+  "odd-log-001.bad.html": [
+    ["ODD-LOG-001", 2, 1, "<div"],
+    ["ODD-LOG-001", 3, 22, "role"],
+  ],
+  "odd-log-002.bad.html": [
+    ["ODD-LOG-002", 2, 1, "<div"],
+    ["ODD-LOG-002", 3, 55, "tabindex"],
+  ],
+  "odd-log-003.bad.html": [["ODD-LOG-003", 2, 1, "<div"]],
+  "odd-log-004.bad.html": [["ODD-LOG-004", 2, 94, "data-tone"]],
   "odd-tooltip-001.bad.html": [
     ["ODD-TOOLTIP-001", 2, 1, "<span"],
     ["ODD-TOOLTIP-001", 3, 42, "popover"],

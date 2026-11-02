@@ -159,6 +159,7 @@ test("a class's own data- attributes, read from its rules, equal its WRAPPERS ro
     ["odd-combobox-list", [], ["data-filter"]],
     ["odd-eyebrow", [], ["data-tone"]],
     ["odd-heading", [], ["data-size"]],
+    ["odd-log-line", [], ["data-tone"]],
     ["odd-menu-item", [], ["data-tone"]],
     ["odd-sheet", [], ["data-side"]],
   ]);

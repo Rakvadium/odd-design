@@ -295,6 +295,18 @@ export const USAGE = {
     { kind: "required-attribute", code: "ODD-HOVER-CARD-001", attribute: "popover" },
     { kind: "enum", code: "ODD-HOVER-CARD-001", attribute: "popover", values: ["hint"], omit: [] },
   ] as const satisfies readonly UsageRule[],
+  log: [
+    { kind: "class", code: "ODD-LOG-001", className: "odd-log" },
+    { kind: "required-attribute", code: "ODD-LOG-001", attribute: "role" },
+    { kind: "enum", code: "ODD-LOG-001", attribute: "role", values: ["log"], omit: [] },
+    { kind: "required-attribute", code: "ODD-LOG-002", attribute: "tabindex" },
+    { kind: "enum", code: "ODD-LOG-002", attribute: "tabindex", values: ["0"], omit: [] },
+    { kind: "accessible-name", code: "ODD-LOG-003", attribute: "role", names: ["aria-label", "aria-labelledby"] },
+  ] as const satisfies readonly UsageRule[],
+  logLine: [
+    { kind: "class", code: "ODD-LOG-004", className: "odd-log-line" },
+    { kind: "enum", code: "ODD-LOG-004", attribute: "data-tone", values: ["info", "success", "warning", "danger"], omit: [] },
+  ] as const satisfies readonly UsageRule[],
   grid: [
     { kind: "class", code: "ODD-GRID-001", className: "odd-grid" },
     { kind: "child-value", code: "ODD-GRID-001", attribute: "data-span", values: ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"] },
@@ -450,6 +462,8 @@ export type ExportName =
   | "HoverCardLink"
   | "Input"
   | "Kbd"
+  | "Log"
+  | "LogLine"
   | "Menu"
   | "MenuCheckboxItem"
   | "MenuGroup"
@@ -524,8 +538,8 @@ export const CLASSES = {
   "odd-kbd": { by: ["Kbd"] },
   "odd-label": { by: ["Input", "Textarea", "Select", "RadioGroup", "Slider", "Combobox"] },
   "odd-link": { by: ["TextLink", "HoverCardLink"] },
-  "odd-log": { by: [] },
-  "odd-log-line": { by: [] },
+  "odd-log": { by: ["Log"] },
+  "odd-log-line": { by: ["LogLine"] },
   "odd-menu": { by: ["Menu"] },
   "odd-menu-item": { by: ["MenuItem", "MenuCheckboxItem", "MenuRadioItem"] },
   "odd-menu-label": { by: ["MenuGroup", "MenuRadioGroup"] },
@@ -642,6 +656,7 @@ export type MenuRule = (typeof USAGE.menu)[number];
 export type MenuItemRule = (typeof USAGE.menuItem)[number];
 export type TableWrapRule = (typeof USAGE.tableWrap)[number];
 export type TableRule = (typeof USAGE.table)[number];
+export type LogLineRule = (typeof USAGE.logLine)[number];
 export type TableSortRule = (typeof USAGE.tableSort)[number];
 export type LinkRule = (typeof USAGE.link)[number];
 export type SpinnerRule = (typeof USAGE.spinner)[number];

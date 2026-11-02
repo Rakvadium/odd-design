@@ -56,6 +56,8 @@ test("the catalog has every story file's stories, and the mirrored story ids equ
     "components-data-display--table-playground",
     "components-data-display--table-states",
     "components-feedback--alert",
+    "components-feedback--log",
+    "components-feedback--log-variants",
     "components-feedback--progress",
     "components-feedback--skeleton",
     "components-forms--choices",

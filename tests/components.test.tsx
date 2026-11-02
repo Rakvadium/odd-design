@@ -28,6 +28,8 @@ import {
   HoverCardLink,
   Input,
   Kbd,
+  Log,
+  LogLine,
   Menu,
   MenuCheckboxItem,
   MenuGroup,
@@ -624,6 +626,42 @@ const FIXTURES: { readonly [K in ExportName]: readonly [Fixture, ...Fixture[]] }
         </p>
       ),
       markup: '<p>Press <kbd class="odd-kbd">Ctrl</kbd> <kbd class="odd-kbd wide">K</kbd> to search.</p>',
+    },
+  ],
+  Log: [
+    {
+      name: "a named log with each kind of line",
+      uses: ["LogLine"],
+      element: (
+        <Log label="Sync log" className="sync">
+          <LogLine time="09:14:01">Opened Midnight Control</LogLine>
+          <LogLine tone="warning">Warning: 2 cards over the limit</LogLine>
+        </Log>
+      ),
+      markup:
+        '<div class="odd-log sync" role="log" aria-label="Sync log" tabindex="0" aria-live="polite" data-owner="react"><div class="odd-log-line"><time>09:14:01</time> Opened Midnight Control</div><div class="odd-log-line" data-tone="warning">Warning: 2 cards over the limit</div></div>',
+    },
+    {
+      name: "a fast log that a screen reader does not read line by line",
+      uses: ["LogLine"],
+      element: (
+        <Log label="Debug log" live="off">
+          <LogLine tone="info">Info: cache warmed</LogLine>
+        </Log>
+      ),
+    },
+  ],
+  LogLine: [
+    {
+      name: "a line stamped with a Date",
+      uses: ["Log"],
+      element: (
+        <Log label="Sync log">
+          <LogLine tone="success" time={new Date("2026-11-02T09:14:01Z")}>
+            Synced 60 cards
+          </LogLine>
+        </Log>
+      ),
     },
   ],
   Menu: [

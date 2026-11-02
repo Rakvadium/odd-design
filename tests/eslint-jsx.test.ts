@@ -41,7 +41,7 @@ const places: Record<string, readonly (readonly [string, number, number, string]
   "plain.tsx": [],
   "third-party.tsx": [["ODD-REACT-003", 3, 27, 'className="odd-link"']],
   "unowned.tsx": [
-    ["ODD-REACT-003", 4, 10, 'className="odd-log"'],
+    ["ODD-REACT-003", 4, 10, 'className="odd-shell-status"'],
     ["ODD-REACT-003", 5, 9, 'className="odd-toast"'],
     ["ODD-CLASS-001", 6, 10, 'className="odd-stak"'],
   ],
@@ -80,7 +80,7 @@ test("odd-link on a router link names TextLink as the fix", () => {
 
 test("a class no export renders says so, a toast class names toast(), and an unknown class is ODD-CLASS-001", () => {
   expect(lint("unowned.tsx").map((message) => message.message)).toEqual([
-    `${REACT_003} Found odd-log. No odd-design/react component renders it yet.`,
+    `${REACT_003} Found odd-shell-status. No odd-design/react component renders it yet.`,
     `${REACT_003} Found odd-toast. Use toast() from odd-design/enhance.`,
     "ODD-CLASS-001: this class is not in the registry. Allowed values: the registered odd- classes. Fix: use a registered class, or remove the class. docs/usage/general.md#odd-class-001 Found odd-stak.",
   ]);

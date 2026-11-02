@@ -22,6 +22,7 @@ import { Sheet, type SheetSide } from "../../../../src/react/sheet.tsx";
 import { Skeleton } from "../../../../src/react/skeleton.tsx";
 import { Slider } from "../../../../src/react/slider.tsx";
 import { Spinner } from "../../../../src/react/spinner.tsx";
+import { Log, LogLine } from "../../../../src/react/log.tsx";
 import { Tabs } from "../../../../src/react/tabs.tsx";
 import { TextLink } from "../../../../src/react/text-link.tsx";
 import { HoverCard, HoverCardLink } from "../../../../src/react/hover-card.tsx";
@@ -555,5 +556,19 @@ export function Page({ span, size }: { span: GridSpan; size: HeadingSize }) {
         <VisuallyHidden as="p">4 of 5 stars</VisuallyHidden>
       </Scope>
     </>
+  );
+}
+
+export function SyncLog({ events }: { events: readonly { id: string; text: string; at: Date; tone?: "info" | "warning" }[] }) {
+  const log = useRef<HTMLDivElement>(null);
+  return (
+    <Log ref={log} label="Sync log" live="off" className="sync" data-testid="sync-log">
+      {events.map((event) => (
+        <LogLine key={event.id} tone={event.tone} time={event.at} data-testid={event.id}>
+          {event.text}
+        </LogLine>
+      ))}
+      <LogLine time="09:14:01">Opened Midnight Control</LogLine>
+    </Log>
   );
 }

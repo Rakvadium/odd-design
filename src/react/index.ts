@@ -12,6 +12,7 @@ export * from "./field.tsx";
 export * from "./hover-card.tsx";
 export * from "./kbd.tsx";
 export * from "./layout.tsx";
+export * from "./log.tsx";
 export * from "./menu.tsx";
 export * from "./meter.tsx";
 export * from "./popover.tsx";

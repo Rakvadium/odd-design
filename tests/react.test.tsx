@@ -3,7 +3,7 @@ import { fileURLToPath } from "node:url";
 import { act, StrictMode, useRef, useState, type ReactNode } from "react";
 import { createRoot, type Root } from "react-dom/client";
 import { renderToStaticMarkup } from "react-dom/server";
-import { closedByFallback, enhance, enhanceTabs, interestForFallback, toast } from "../src/js/enhance.ts";
+import { appendLogLine, closedByFallback, enhance, enhanceTabs, interestForFallback, toast } from "../src/js/enhance.ts";
 import { Button } from "../src/react/button.tsx";
 import { Breadcrumb } from "../src/react/breadcrumb.tsx";
 import { Card, CardLink } from "../src/react/card.tsx";
@@ -15,6 +15,8 @@ import { Combobox, ComboboxOption } from "../src/react/combobox.tsx";
 import { AlertDialog, Dialog } from "../src/react/dialog.tsx";
 import { RadioGroup } from "../src/react/field.tsx";
 import { Slider } from "../src/react/slider.tsx";
+import { Log, LogLine } from "../src/react/log.tsx";
+import { hydrationErrors } from "./hydrate.ts";
 import { Menu, MenuCheckboxItem, MenuItem, MenuRadioGroup, MenuRadioItem } from "../src/react/menu.tsx";
 import { Popover } from "../src/react/popover.tsx";
 import { Sheet } from "../src/react/sheet.tsx";
@@ -573,6 +575,115 @@ describe("Menu", () => {
   });
 });
 
+type Line = { readonly id: number; readonly text: string };
+
+function SyncLog({ lines }: { lines: readonly Line[] }) {
+  return (
+    <Log label="Sync log">
+      {lines.map((line) => (
+        <LogLine key={line.id}>{line.text}</LogLine>
+      ))}
+    </Log>
+  );
+}
+
+const lines = (count: number): Line[] => Array.from({ length: count }, (_, id) => ({ id, text: `Line ${id}` }));
+
+describe("Log", () => {
+  test("is wired once under StrictMode beside an app's enhance(), and unwired when it unmounts", async () => {
+    const Observer = globalThis.MutationObserver;
+    let live = 0;
+    globalThis.MutationObserver = class extends Observer {
+      #watching = false;
+      override observe(target: Node, options?: MutationObserverInit) {
+        if (target instanceof Element && target.matches(".odd-log") && !this.#watching) {
+          this.#watching = true;
+          live += 1;
+        }
+        super.observe(target, options);
+      }
+      override disconnect() {
+        if (this.#watching) live -= 1;
+        this.#watching = false;
+        super.disconnect();
+      }
+    };
+    try {
+      const host = document.createElement("div");
+      document.body.append(host);
+      const root = createRoot(host);
+      await act(async () =>
+        root.render(
+          <StrictMode>
+            <SyncLog lines={lines(3)} />
+          </StrictMode>,
+        ),
+      );
+      const unwire = enhance(document);
+      expect(live).toBe(1);
+      unwire();
+      expect(live).toBe(1);
+      await act(async () => root.unmount());
+      expect(live).toBe(0);
+    } finally {
+      globalThis.MutationObserver = Observer;
+    }
+  });
+
+  test("keeps the newest line in view after the lines change, until the reader scrolls up", async () => {
+    const host = document.createElement("div");
+    document.body.append(host);
+    const root = createRoot(host);
+    mounted = root;
+    const render = (count: number) => act(async () => root.render(<SyncLog lines={lines(count)} />));
+    await render(2);
+    const log = host.querySelector<HTMLElement>(".odd-log")!;
+    // happy-dom has no layout, so the log reports a fixed 100px window over 40px per line.
+    let top = 0;
+    Object.defineProperties(log, {
+      clientHeight: { get: () => 100 },
+      scrollHeight: { get: () => log.childElementCount * 40 },
+      scrollTop: { get: () => top, set: (value: number) => (top = value) },
+    });
+    await render(6);
+    expect(top).toBe(240);
+    top = 0;
+    log.dispatchEvent(new Event("scroll"));
+    await render(8);
+    expect(top).toBe(0);
+  });
+
+  test("appendLogLine refuses a React log and leaves its lines alone, and still adds to a plain one", async () => {
+    const host = document.createElement("div");
+    document.body.append(host);
+    const root = createRoot(host);
+    mounted = root;
+    await act(async () => root.render(<SyncLog lines={lines(2)} />));
+    const log = host.querySelector<HTMLElement>(".odd-log")!;
+    expect(() => appendLogLine(log, "Synced")).toThrow("appendLogLine cannot add to a React Log");
+    expect(log.childElementCount).toBe(2);
+    const plain = document.createElement("div");
+    appendLogLine(plain, "Synced", { tone: "success" });
+    expect(plain.innerHTML).toBe('<div class="odd-log-line" data-tone="success">Synced</div>');
+  });
+
+  test("hydrates when the server and the browser show a Date line's time differently, and only the time may differ", async () => {
+    const shown = Date.prototype.toLocaleTimeString;
+    let calls = 0;
+    Date.prototype.toLocaleTimeString = () => (calls++ === 0 ? "01:14:01" : "09:14:01");
+    try {
+      const at = new Date("2026-11-02T09:14:01Z");
+      expect(await hydrationErrors(<Log label="Sync log"><LogLine time={at}>Synced 60 cards</LogLine></Log>)).toEqual([]);
+      let renders = 0;
+      const Text = () => (renders++ === 0 ? "Synced on the server" : "Synced in the browser");
+      const text = await hydrationErrors(<Log label="Sync log"><LogLine time={at}><Text /></LogLine></Log>);
+      expect(text.some((error) => error.includes("Hydration failed") || error.includes("didn't match"))).toBe(true);
+    } finally {
+      Date.prototype.toLocaleTimeString = shown;
+    }
+  });
+});
+
 describe("Combobox", () => {
   function CityField({ onChange }: { onChange: (value: string) => void }) {
     const [value, setValue] = useState("");
@@ -977,6 +1088,11 @@ const failures: Record<string, { codes: string[]; text: string[] }> = {
   "menu-item-tone": { codes: [], text: ["'\"info\"' is not assignable to type '\"danger\"'"] },
   "menu-item-aria-disabled": { codes: ["ODD-REACT-001"], text: ["Types of property '\"aria-disabled\"' are incompatible"] },
   "menu-checkbox-item-aria-checked": { codes: ["ODD-REACT-001"], text: ["Types of property '\"aria-checked\"' are incompatible"] },
+  "log-unnamed": { codes: [], text: ["Property 'label' is missing"] },
+  "log-role": { codes: ["ODD-REACT-001"], text: [`Type '"status"' is not assignable`] },
+  "log-tabindex": { codes: ["ODD-REACT-001"], text: ["Type 'number' is not assignable"] },
+  "log-line-tone": { codes: [], text: [`'"danger" | "info" | "success" | "warning" | undefined'`] },
+  "log-line-data-tone": { codes: ["ODD-REACT-002"], text: [] },
   "table-data-numeric": { codes: ["ODD-REACT-002"], text: [] },
   "table-uncaptioned": { codes: [], text: ["Property 'caption' is missing"] },
   "table-sort-other": { codes: [], text: [`Type '"other"' is not assignable to type '"ascending" | "descending"'`] },
