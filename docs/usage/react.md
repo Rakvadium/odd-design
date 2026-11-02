@@ -1,8 +1,8 @@
 # Use the React components
 
-`odd-design/react` exports `Button`, the field controls (`Input`, `Textarea`, `Select`, `Checkbox`, `Switch`, `RadioGroup`, and `Segmented`), `Badge`, the Alert parts, the Avatar parts, `Separator`, `Skeleton`, the Card parts, `Disclosure`, `Tabs`, `Search`, `Slider`, `Meter`, `Progress`, `Toaster`, `Popover`, `Dialog`, `DialogActions`, `Sheet`, `SheetHeader`, `SheetFooter`, `Menu`, `MenuItem`, `TableWrap`, `Table`, `TableSort`, `TextLink`, `Spinner`, `Combobox`, `ComboboxOption`, `Breadcrumb`, `Kbd`, `Code`, `Pre`, the layout components (`Stack`, `Row`, `Grid`, `GridItem`, `VisuallyHidden`, `SkipLink`, and `Scope`), and the typography components (`Heading`, `Eyebrow`, and `Muted`). Each renders an `odd-` element from typed props. A contract mistake in those props is a TypeScript error that starts with its code, such as `ODD-BUTTON-007`. `Button` lives in `src/react/button.tsx`, the field controls in `src/react/field.tsx`, `Badge` in `src/react/badge.tsx`, the Alert parts in `src/react/alert.tsx`, the Avatar parts in `src/react/avatar.tsx`, `Separator` in `src/react/separator.tsx`, `Skeleton` in `src/react/skeleton.tsx`, the Card parts in `src/react/card.tsx`, `Disclosure` in `src/react/disclosure.tsx`, `Tabs` in `src/react/tabs.tsx`, `Search` in `src/react/search.tsx`, `Slider` in `src/react/slider.tsx`, `Meter` and `Progress` in `src/react/meter.tsx`, `Toaster` in `src/react/toast.tsx`, `Popover` in `src/react/popover.tsx`, `Dialog` and `DialogActions` in `src/react/dialog.tsx`, `Sheet`, `SheetHeader`, and `SheetFooter` in `src/react/sheet.tsx`, `Menu` and `MenuItem` in `src/react/menu.tsx`, `TableWrap`, `Table`, and `TableSort` in `src/react/table.tsx`, `TextLink` in `src/react/text-link.tsx`, `Spinner` in `src/react/spinner.tsx`, `Combobox` and `ComboboxOption` in `src/react/combobox.tsx`, `Breadcrumb` in `src/react/breadcrumb.tsx`, `Kbd` in `src/react/kbd.tsx`, `Code` and `Pre` in `src/react/code.tsx`, the layout components in `src/react/layout.tsx`, and the typography components in `src/react/typography.tsx`. Codes and fixes are in [Button usage rules](button.md), [Field usage rules](field.md), [Choice usage rules](choice.md), [Badge usage rules](badge.md), [Alert usage rules](alert.md), [Avatar usage rules](avatar.md), [Separator usage rules](separator.md), [Skeleton usage rules](skeleton.md), [Card usage rules](card.md), [Disclosure usage rules](disclosure.md), [Tabs usage rules](tabs.md), [Search usage rules](search.md), [Slider usage rules](slider.md), [Meter usage rules](meter.md), [Toast usage rules](toast.md), [Popover usage rules](popover.md), [Dialog usage rules](dialog.md), [Sheet usage rules](sheet.md), [Menu usage rules](menu.md), [Table usage rules](table.md), [Link usage rules](link.md), [Spinner usage rules](spinner.md), [Combobox usage rules](combobox.md), [Breadcrumb usage rules](breadcrumb.md), [Kbd usage rules](kbd.md), [Code usage rules](code.md), [Base utilities usage rules](base.md), [Grid usage rules](grid.md), and [Typography usage rules](typography.md).
+`odd-design/react` exports `Button`, the field controls (`Input`, `Textarea`, `Select`, `Checkbox`, `Switch`, `RadioGroup`, and `Segmented`), `Badge`, the Alert parts, the Avatar parts, `Separator`, `Skeleton`, the Card parts, `Disclosure`, `Tabs`, `Search`, `Slider`, `Meter`, `Progress`, `Toaster`, `Popover`, `Dialog`, `AlertDialog`, `Sheet`, `Menu`, `MenuItem`, `TableWrap`, `Table`, `TableSort`, `TextLink`, `Spinner`, `Combobox`, `ComboboxOption`, `Breadcrumb`, `Kbd`, `Code`, `Pre`, the layout components (`Stack`, `Row`, `Grid`, `GridItem`, `VisuallyHidden`, `SkipLink`, and `Scope`), and the typography components (`Heading`, `Eyebrow`, and `Muted`). Each renders an `odd-` element from typed props. A contract mistake in those props is a TypeScript error that starts with its code, such as `ODD-BUTTON-007`. `Button` lives in `src/react/button.tsx`, the field controls in `src/react/field.tsx`, `Badge` in `src/react/badge.tsx`, the Alert parts in `src/react/alert.tsx`, the Avatar parts in `src/react/avatar.tsx`, `Separator` in `src/react/separator.tsx`, `Skeleton` in `src/react/skeleton.tsx`, the Card parts in `src/react/card.tsx`, `Disclosure` in `src/react/disclosure.tsx`, `Tabs` in `src/react/tabs.tsx`, `Search` in `src/react/search.tsx`, `Slider` in `src/react/slider.tsx`, `Meter` and `Progress` in `src/react/meter.tsx`, `Toaster` in `src/react/toast.tsx`, `Popover` in `src/react/popover.tsx`, `Dialog` and `AlertDialog` in `src/react/dialog.tsx`, `Sheet` in `src/react/sheet.tsx`, `Menu` and `MenuItem` in `src/react/menu.tsx`, `TableWrap`, `Table`, and `TableSort` in `src/react/table.tsx`, `TextLink` in `src/react/text-link.tsx`, `Spinner` in `src/react/spinner.tsx`, `Combobox` and `ComboboxOption` in `src/react/combobox.tsx`, `Breadcrumb` in `src/react/breadcrumb.tsx`, `Kbd` in `src/react/kbd.tsx`, `Code` and `Pre` in `src/react/code.tsx`, the layout components in `src/react/layout.tsx`, and the typography components in `src/react/typography.tsx`. Codes and fixes are in [Button usage rules](button.md), [Field usage rules](field.md), [Choice usage rules](choice.md), [Badge usage rules](badge.md), [Alert usage rules](alert.md), [Avatar usage rules](avatar.md), [Separator usage rules](separator.md), [Skeleton usage rules](skeleton.md), [Card usage rules](card.md), [Disclosure usage rules](disclosure.md), [Tabs usage rules](tabs.md), [Search usage rules](search.md), [Slider usage rules](slider.md), [Meter usage rules](meter.md), [Toast usage rules](toast.md), [Popover usage rules](popover.md), [Dialog usage rules](dialog.md), [Sheet usage rules](sheet.md), [Menu usage rules](menu.md), [Table usage rules](table.md), [Link usage rules](link.md), [Spinner usage rules](spinner.md), [Combobox usage rules](combobox.md), [Breadcrumb usage rules](breadcrumb.md), [Kbd usage rules](kbd.md), [Code usage rules](code.md), [Base utilities usage rules](base.md), [Grid usage rules](grid.md), and [Typography usage rules](typography.md).
 
-`button.tsx`, `field.tsx`, `search.tsx`, `slider.tsx`, `tabs.tsx`, `toast.tsx`, `menu.tsx`, `table.tsx`, and `combobox.tsx` start with `"use client"`, so a React Server Components app can render `Button`, the field controls, `Search`, `Slider`, `Tabs`, `Toaster`, `Menu`, `MenuItem`, `TableWrap`, `Table`, `TableSort`, `Combobox`, and `ComboboxOption` from a server component. `Tabs`, `Toaster`, `Menu`, `Table`, and `Combobox` wire themselves in a layout effect. `Badge`, the Alert parts, the Avatar parts, `Separator`, `Skeleton`, the Card parts, `Disclosure`, `Meter`, `Progress`, `Popover`, `Dialog`, `DialogActions`, `Sheet`, `SheetHeader`, `SheetFooter`, `TextLink`, `Spinner`, `Breadcrumb`, `Kbd`, `Code`, and `Pre` hold no state and no handlers, so `badge.tsx`, `alert.tsx`, `avatar.tsx`, `separator.tsx`, `skeleton.tsx`, `card.tsx`, `disclosure.tsx`, `meter.tsx`, `popover.tsx`, `dialog.tsx`, `sheet.tsx`, `text-link.tsx`, `spinner.tsx`, `breadcrumb.tsx`, `kbd.tsx`, `code.tsx`, `layout.tsx`, and `typography.tsx` have no directive. `SkipLink` renders its anchor through a client leaf that reads the router link from `OddProvider`. A component that holds the disclosure's, the popover's, the dialog's, or the sheet's state puts the directive in its own file.
+`button.tsx`, `field.tsx`, `search.tsx`, `slider.tsx`, `tabs.tsx`, `toast.tsx`, `popover.tsx`, `dialog.tsx`, `sheet.tsx`, `menu.tsx`, `table.tsx`, and `combobox.tsx` start with `"use client"`, so a React Server Components app can render `Button`, the field controls, `Search`, `Slider`, `Tabs`, `Toaster`, `Popover`, `Dialog`, `AlertDialog`, `Sheet`, `Menu`, `MenuItem`, `TableWrap`, `Table`, `TableSort`, `Combobox`, and `ComboboxOption` from a server component. `Tabs`, `Toaster`, `Menu`, `Table`, and `Combobox` wire themselves in a layout effect. `Badge`, the Alert parts, the Avatar parts, `Separator`, `Skeleton`, the Card parts, `Disclosure`, `Meter`, `Progress`, `TextLink`, `Spinner`, `Breadcrumb`, `Kbd`, `Code`, and `Pre` hold no state and no handlers, so `badge.tsx`, `alert.tsx`, `avatar.tsx`, `separator.tsx`, `skeleton.tsx`, `card.tsx`, `disclosure.tsx`, `meter.tsx`, `text-link.tsx`, `spinner.tsx`, `breadcrumb.tsx`, `kbd.tsx`, `code.tsx`, `layout.tsx`, and `typography.tsx` have no directive. `SkipLink` renders its anchor through a client leaf that reads the router link from `OddProvider`. A component that holds the disclosure's state puts the directive in its own file. The overlays need the directive because they hand their trigger and their buttons its wiring through context.
 
 When `Button`, `MenuItem`, or `TableSort` renders a `button`, it defaults to `type="button"` unless you pass `type`, so it does not submit a form around it. Pass `type="submit"` or `type="reset"` to opt in.
 
@@ -678,15 +678,11 @@ The type error names the code and the fix. The table lists what each mistake pri
 | A system `data-` attribute on `Meter` or `Progress` other than `data-tone`, such as `data-size` | `ODD-METER-003` |
 | A system `data-` attribute on `Toaster`, such as `data-tone` | `ODD-TOAST-004` |
 | Children on `Toaster` | `not assignable to type 'undefined'` |
-| `role="dialog"` on `Popover` with no `aria-label` and no `aria-labelledby` | `ODD-POPOVER-004` |
-| `aria-label` or `aria-labelledby` on `Popover` with no `role` | `ODD-POPOVER-005` |
-| A system `data-` attribute on `Popover`, such as `data-tone` | `ODD-POPOVER-006` |
-| `open` on `Dialog` or `Sheet` | `ODD-DIALOG-004` |
-| A system `data-` attribute on `Dialog`, such as `data-tone` | `ODD-DIALOG-007` |
-| A system `data-` attribute on `DialogActions`, such as `data-variant` | `ODD-DIALOG-008` |
-| `closedby="any"` on `Dialog` or `Sheet` with `role="alertdialog"` | `'"any"' is not assignable to type '"closerequest"'` |
-| A system `data-` attribute on `Sheet`, `SheetHeader`, or `SheetFooter`, such as `data-tone` | `ODD-SHEET-003` |
-| `data-side` on `Sheet` | `not assignable to type 'undefined'` |
+| `role`, `popover`, `aria-label`, or `aria-labelledby` on `Popover` | `ODD-REACT-001` |
+| `role`, `open`, `closedby`, `aria-label`, `aria-labelledby`, or `aria-describedby` on `Dialog`, `AlertDialog`, or `Sheet`, or `data-side` on `Sheet` | `ODD-REACT-001` |
+| A system `data-` attribute on `Popover`, `Dialog`, `AlertDialog`, or `Sheet`, such as `data-tone` | `ODD-REACT-002` |
+| `Dialog`, `AlertDialog`, or `Sheet` with no `title`, or `AlertDialog` with no `description` | "Property 'title' is missing" or "Property 'description' is missing" |
+| `dismissible` on `AlertDialog` | `Type 'true' is not assignable to type 'undefined'` |
 | A system `data-` attribute on `Menu` or `MenuItem`, such as `data-tone` on `Menu` | `ODD-MENU-004` |
 | `disabled` on `MenuItem` | `ODD-MENU-007` |
 | `data-tone` on `MenuItem` | `not assignable to type 'undefined'` |
@@ -694,32 +690,59 @@ The type error names the code and the fix. The table lists what each mistake pri
 | `role="region"` on `TableWrap` with no `aria-label` and no `aria-labelledby` | `ODD-TABLE-003` |
 | A system `data-` attribute on `TableWrap`, `Table`, or `TableSort`, such as `data-numeric` | `ODD-TABLE-004` |
 | `aria-sort` on `TableSort` | `ODD-TABLE-005` |
-| `Toaster` without `popover` or `aria-label`, `Popover` without `popover`, `Dialog`, `Sheet`, or `Breadcrumb` without `aria-label` or `aria-labelledby`, `Menu` without `popover`, `role`, `aria-label`, or `aria-labelledby`, `MenuItem` without `role`, `AvatarGroup` without `role`, `Skeleton` or `Spinner` without `aria-hidden`, `CardLink` or `TextLink` without `href` | TypeScript's missing property error |
-| A `Toaster` `popover` other than `manual`, a `Popover` `popover` other than `""` or `auto`, a `Popover` `role` other than `dialog`, a `Dialog` or `Sheet` `role` other than `alertdialog`, a `Dialog` or `Sheet` `closedby` other than `any` or `closerequest`, a `Menu` `popover` other than `""` or `auto`, a `Menu` `role` other than `menu`, a `MenuItem` `role` other than `menuitem`, `menuitemcheckbox`, or `menuitemradio`, a `TableWrap` `role` other than `region`, an `Avatar` or `AvatarGroup` `role` other than `img` or `group`, a `Separator` `role` other than `separator`, or a `Skeleton` or `Spinner` `aria-hidden` other than `"true"` | The allowed value |
+| `Toaster` without `popover` or `aria-label`, `Breadcrumb` without `aria-label` or `aria-labelledby`, `Menu` without `popover`, `role`, `aria-label`, or `aria-labelledby`, `MenuItem` without `role`, `AvatarGroup` without `role`, `Skeleton` or `Spinner` without `aria-hidden`, `CardLink` or `TextLink` without `href` | TypeScript's missing property error |
+| A `Toaster` `popover` other than `manual`, a `Menu` `popover` other than `""` or `auto`, a `Menu` `role` other than `menu`, a `MenuItem` `role` other than `menuitem`, `menuitemcheckbox`, or `menuitemradio`, a `TableWrap` `role` other than `region`, an `Avatar` or `AvatarGroup` `role` other than `img` or `group`, a `Separator` `role` other than `separator`, or a `Skeleton` or `Spinner` `aria-hidden` other than `"true"` | The allowed value |
 | A `variant`, `size`, `aria-current`, `tone`, `aria-orientation`, `shape`, or `side` value outside the contract | The allowed values |
 
 TypeScript shortens a long type in an error. Set `noErrorTruncation` in `tsconfig.json` to see the whole message.
 
-Some rules are not type errors. `Button` picks the element from `href`, so you cannot write an anchor without `href` (`ODD-BUTTON-009`) or a button with `href` (`ODD-BUTTON-010`). Those two codes apply to a raw `a` or `button` with the `odd-button` class. Each field control, `Badge`, each Alert part, each Avatar part, `Separator`, `Skeleton`, each Card part, `Disclosure`, `Tabs`, `Search`, `Slider`, `Meter`, `Progress`, `Toaster`, `Popover`, `Dialog`, `DialogActions`, each Sheet part, `Menu`, `MenuItem`, `TableWrap`, `Table`, `TableSort`, `TextLink`, `Spinner`, `Combobox`, `ComboboxOption`, `Breadcrumb`, `Kbd`, `Code`, and `Pre` picks its own element too, so `ODD-FIELD-001`, `ODD-CHOICE-001`, `ODD-BADGE-001`, `ODD-ALERT-001`, `ODD-AVATAR-001`, `ODD-SEPARATOR-001`, `ODD-SKELETON-001`, `ODD-CARD-001`, `ODD-DISCLOSURE-001`, `ODD-TABS-001`, `ODD-SEARCH-001`, `ODD-SLIDER-001`, `ODD-METER-001`, `ODD-TOAST-001`, `ODD-POPOVER-001`, `ODD-DIALOG-001`, `ODD-SHEET-001`, `ODD-MENU-001`, `ODD-TABLE-001`, `ODD-LINK-001`, `ODD-SPINNER-001`, `ODD-COMBOBOX-001`, `ODD-BREADCRUMB-001`, `ODD-KBD-001`, and `ODD-CODE-001` apply only to raw markup. the links and buttons in a card (`ODD-CARD-003`), the summary of a disclosure (`ODD-DISCLOSURE-002`), the tablist of a tab set (`ODD-TABS-002`), the tabs in a tab set (`ODD-TABS-004`), the input and the icon of a search (`ODD-SEARCH-002` and `ODD-SEARCH-003`), a `target` without `rel` on a link (`ODD-LINK-007`), the input and the list of a combobox (`ODD-COMBOBOX-002` and `ODD-COMBOBOX-003`), the list of a breadcrumb (`ODD-BREADCRUMB-003`), and a misspelled `data-` name are not type errors either. The [runtime checker](runtime.md) reports each of these.
+Some rules are not type errors. `Button` picks the element from `href`, so you cannot write an anchor without `href` (`ODD-BUTTON-009`) or a button with `href` (`ODD-BUTTON-010`). Those two codes apply to a raw `a` or `button` with the `odd-button` class. Each field control, `Badge`, each Alert part, each Avatar part, `Separator`, `Skeleton`, each Card part, `Disclosure`, `Tabs`, `Search`, `Slider`, `Meter`, `Progress`, `Toaster`, `Popover`, `Dialog`, `AlertDialog`, `Sheet`, `Menu`, `MenuItem`, `TableWrap`, `Table`, `TableSort`, `TextLink`, `Spinner`, `Combobox`, `ComboboxOption`, `Breadcrumb`, `Kbd`, `Code`, and `Pre` picks its own element too, so `ODD-FIELD-001`, `ODD-CHOICE-001`, `ODD-BADGE-001`, `ODD-ALERT-001`, `ODD-AVATAR-001`, `ODD-SEPARATOR-001`, `ODD-SKELETON-001`, `ODD-CARD-001`, `ODD-DISCLOSURE-001`, `ODD-TABS-001`, `ODD-SEARCH-001`, `ODD-SLIDER-001`, `ODD-METER-001`, `ODD-TOAST-001`, `ODD-POPOVER-001`, `ODD-DIALOG-001`, `ODD-SHEET-001`, `ODD-MENU-001`, `ODD-TABLE-001`, `ODD-LINK-001`, `ODD-SPINNER-001`, `ODD-COMBOBOX-001`, `ODD-BREADCRUMB-001`, `ODD-KBD-001`, and `ODD-CODE-001` apply only to raw markup. the links and buttons in a card (`ODD-CARD-003`), the summary of a disclosure (`ODD-DISCLOSURE-002`), the tablist of a tab set (`ODD-TABS-002`), the tabs in a tab set (`ODD-TABS-004`), the input and the icon of a search (`ODD-SEARCH-002` and `ODD-SEARCH-003`), a `target` without `rel` on a link (`ODD-LINK-007`), the input and the list of a combobox (`ODD-COMBOBOX-002` and `ODD-COMBOBOX-003`), the list of a breadcrumb (`ODD-BREADCRUMB-003`), and a misspelled `data-` name are not type errors either. The [runtime checker](runtime.md) reports each of these.
 
-## Open a dialog or a popover with a command
+## Open a dialog, a sheet, or a popover
 
-Pass `command` and `commandfor` in lowercase. `@types/react` does not declare them, so `Button` declares them. A link takes `interestfor`, and so does a button.
-
-`Popover` renders a `div` with the class `odd-popover`. Give it an `id` and `popover="auto"`, and open it from a `Button` whose `commandfor` names that `id`.
+`Dialog`, `AlertDialog`, `Sheet`, and `Popover` each take a `trigger`, which is a `Button`. The overlay renders the trigger, then its panel right after it, and gives the trigger `command` and `commandfor` with the panel's id. Inside the panel, a `Button` with `command="close"` closes that overlay and needs no `commandfor`. The browser owns open, the top layer, Escape, focus return, and the trigger's expanded state, so none of them takes an `open` prop. To open one from code, call `showModal()` or `showPopover({ source })` on its `ref`.
 
 ```tsx
 import { Button, Checkbox, Popover } from "odd-design/react";
 
-<Button commandfor="filters" command="toggle-popover">Filters</Button>
-<Popover id="filters" popover="auto" role="dialog" aria-labelledby="filters-title">
-  <p className="odd-eyebrow" id="filters-title">Filter decks</p>
+<Popover trigger={<Button>Filters</Button>} title="Filter decks">
   <Checkbox label="Legal only" defaultChecked />
-  <Button size="sm" commandfor="filters" command="hide-popover">Apply</Button>
+  <Button size="sm" command="close">Apply</Button>
 </Popover>;
 ```
 
-The browser owns the rest. It opens the popover in the top layer under its trigger, closes it on Escape, a click outside, or a `hide-popover` button, returns focus to the trigger, and sets the trigger's expanded state. `popover` is required and takes `""` or `"auto"`. A popover that holds controls takes `role="dialog"` and a name, and a popover that only shows text takes neither, as in `<Popover id="rules" popover="auto">Banned cards are marked in red.</Popover>`. `Popover` holds no state and takes no `open` prop. To read the open state, set it from `onToggle` with `event.newState`. To open it from code, call `showPopover({ source })` on its `ref`, which anchors it under `source` with no `id`.
+`Popover` renders `div.odd-popover` with `popover="auto"`, and the trigger gets `command="toggle-popover"`. With a `title`, the popover is `role="dialog"`, named by its title on a `p.odd-eyebrow`, which is right for a popover that holds controls. Without a `title`, it takes no role and no name, which is right for one that only shows text. The title and the children stack inside it. A `Button` with `command="close"` inside gets `command="hide-popover"`. To read the open state, set it from `onToggle` with `event.newState`. A blank `title` throws `ODD-POPOVER-004` outside production.
+
+```tsx
+import { Button, Dialog } from "odd-design/react";
+
+<Dialog
+  trigger={<Button variant="danger">Delete deck…</Button>}
+  title="Delete “Midnight Control”?"
+  description="This removes the deck and its 14 saved versions."
+  dismissible
+  actions={<><Button command="close">Close</Button><Button variant="danger" command="close">Delete</Button></>}
+/>;
+```
+
+`Dialog` renders `dialog.odd-dialog`, and the trigger gets `command="show-modal"`. The dialog holds `div.odd-dialog-body`, which holds the title as `h2.odd-dialog-title`, the `description` as a muted paragraph, the children, and the `actions` in `div.odd-dialog-actions`. The dialog is named by its title through `aria-labelledby` and described by the `description` through `aria-describedby`. `headingLevel` changes the title's level. `dismissible` writes `closedby="any"`, so a click outside closes it too, and installs the `closedby` fallback where the browser lacks it, with no `enhance()` call. Focus starts on the first focusable control, so put the safe choice first. React writes no `autofocus` attribute.
+
+To submit, pass `onSubmit`. The body becomes a `form` with `method="dialog"` and an id, and a `Button` with `type="submit"` in the actions gets `form` with that id. Read the button's `value` from `returnValue` in `onClose`. A blank `title` throws `ODD-DIALOG-002` outside production.
+
+`AlertDialog` is a `Dialog` with `role="alertdialog"`, for a decision the user must make. Its `description` is required, and it takes no `dismissible`, so a click outside never dismisses the decision. Escape still cancels it.
+
+To open a dialog from a control in another part of the page, such as a `MenuItem`, give the dialog an `id` and the opener `command="show-modal"` and `commandfor` with that id. That is the one id you write, because it says which dialog to open.
+
+```tsx
+import { Button, Input, Sheet } from "odd-design/react";
+
+<Sheet trigger={<Button>Filters</Button>} title="Filters" side="start" dismissible onSubmit={apply}
+  actions={<Button type="submit" variant="primary">Show 12 decks</Button>}>
+  <Input label="Name" name="name" />
+</Sheet>;
+```
+
+`Sheet` renders `dialog.odd-sheet` and takes every `Dialog` prop. Its three rows are `div.odd-sheet-header` with the title and an icon-only Close button, `div.odd-sheet-body` with the `description` and the children, and `div.odd-sheet-footer` with the `actions`. `closeLabel` names the Close button and its tooltip, and defaults to "Close". Focus starts on the Close button. With no `side`, the sheet slides in from the end edge. `side` takes `"start"`, `"top"`, or `"bottom"`, and `start` and the end follow the writing direction. With `onSubmit`, the body is the `form`, and a submit `Button` in the footer gets `form` with its id.
 
 `Menu` renders a `div` with the class `odd-menu` and runs `enhanceMenu` on it, and `MenuItem` renders each `button` with the class `odd-menu-item`. Open it like a popover, from a `Button` with `aria-haspopup="menu"`.
 
@@ -740,47 +763,7 @@ import { Button, Menu, MenuItem, Separator } from "odd-design/react";
 
 The browser opens and closes the menu, as it does a popover. `enhanceMenu` adds the menu keyboard, and ArrowDown or ArrowUp on the trigger opens it at the first or last item. `popover` takes `""` or `"auto"`, `role` takes only `"menu"`, and the menu needs `aria-label` or `aria-labelledby`. `MenuItem` takes `role="menuitem"`, `"menuitemcheckbox"`, or `"menuitemradio"`, and `tone="danger"` maps to `data-tone`. Disable an item with `aria-disabled="true"`, which keeps it reachable. A `menuitem` closes the menu when chosen, and checkbox and radio items stay open. `enhanceMenu` owns `aria-checked` after mount. By the time an item's `onClick` runs it has already flipped, so read the new value there. A re-render that passes the same `aria-checked` keeps the toggled value, and a remount resets it to the prop. `Menu` takes no `open` prop. To open it from code, call `showPopover({ source })` on its `ref`.
 
-`Dialog` renders a `dialog` with the class `odd-dialog`, and `DialogActions` renders its actions `div`. Give the dialog an `id` and a name, and open it from a `Button` with `command="show-modal"`.
-
-```tsx
-import { Button, Dialog, DialogActions } from "odd-design/react";
-
-<Button variant="danger" commandfor="confirm-delete" command="show-modal">Delete deck…</Button>
-<Dialog id="confirm-delete" aria-labelledby="confirm-delete-title" closedby="any">
-  <div className="odd-dialog-body">
-    <h2 className="odd-dialog-title" id="confirm-delete-title">Delete “Midnight Control”?</h2>
-    <DialogActions>
-      <Button commandfor="confirm-delete" command="close">Close</Button>
-      <Button variant="danger" commandfor="confirm-delete" command="close">Delete</Button>
-    </DialogActions>
-  </div>
-</Dialog>;
-```
-
-The browser owns the rest. It opens the dialog in the top layer, traps focus, makes the page behind it inert, closes it on Escape or a `close` button, and returns focus to the trigger. `closedby="any"` adds a click outside. The body is a `div` or a `form` with `odd-dialog-body`, and the title is a heading with `odd-dialog-title`, because their tags are yours. An alert dialog takes `role="alertdialog"` and leaves out `closedby="any"`. `Dialog` holds no state and takes no `open` prop. To open it from code, call `showModal()` on its `ref`, and read the close from `onClose`. React writes no `autofocus` attribute, so put the control that should take focus first.
-
-`Sheet` renders a `dialog` with the class `odd-sheet`, and `SheetHeader` and `SheetFooter` render its header and footer `div`s. It opens the same way as `Dialog`.
-
-```tsx
-import { Button, Sheet, SheetFooter, SheetHeader } from "odd-design/react";
-
-<Button commandfor="filters" command="show-modal">Filters</Button>
-<Sheet id="filters" side="start" aria-labelledby="filters-title" closedby="any">
-  <SheetHeader>
-    <h2 className="odd-dialog-title" id="filters-title">Filters</h2>
-    <Button variant="ghost" iconOnly aria-label="Close" commandfor="filters" command="close"><CloseIcon /></Button>
-  </SheetHeader>
-  <div className="odd-sheet-body">…</div>
-  <SheetFooter>
-    <Button commandfor="filters" command="close">Reset</Button>
-    <Button variant="primary" commandfor="filters" command="close">Show 12 decks</Button>
-  </SheetFooter>
-</Sheet>;
-```
-
-With no `side`, the sheet slides in from the end edge. `side` takes `"start"`, `"top"`, or `"bottom"`, and `start` and the end follow the writing direction. Focus starts on the Close button, the first control in the header. The header, the body, and the footer are the sheet's three grid rows, so keep them as its direct children. The body is a `div` or a `form` with `odd-sheet-body`, because its tag is yours. To submit, make the body a `form` with an `id`, and point each footer button at it with `form`. A bottom sheet for a decision takes `role="alertdialog"` and leaves out `closedby="any"`. Like `Dialog`, `Sheet` holds no state and takes no `open` prop.
-
-`command` takes `show-modal`, `close`, `request-close`, `show-popover`, `hide-popover`, `toggle-popover`, or a custom command that starts with `--`.
+`command` takes `show-modal`, `close`, `request-close`, `show-popover`, `hide-popover`, `toggle-popover`, or a custom command that starts with `--`. Pass `command` and `commandfor` in lowercase. `@types/react` does not declare them, so `Button` declares them.
 
 ## ODD-REACT-001
 

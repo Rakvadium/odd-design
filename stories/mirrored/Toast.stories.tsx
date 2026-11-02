@@ -1,4 +1,5 @@
 import { toast, type ToastOptions } from "../../src/js/enhance.ts";
+import { Button, Dialog, Row, Toaster } from "odd-design/react";
 import { mirrored, type Node } from "../mirror.ts";
 
 const meta = {
@@ -17,43 +18,33 @@ export default meta;
 
 export const Toast = {
   ...mirrored({
-    scene: () => ({
-      of: "div",
-      children: [
-        {
-          of: "div",
-          props: { className: "odd-row" },
-          children: [
-            { of: "Button", props: { "data-toast": "saved" }, children: ["Save deck"] },
-            { of: "Button", props: { "data-toast": "undo" }, children: ["Remove card"] },
-            { of: "Button", props: { "data-toast": "error", variant: "danger" }, children: ["Fail to sync"] },
-            { of: "Button", props: { commandfor: "toast-settings", command: "show-modal" }, children: ["Settings…"] },
-          ],
-        },
-        {
-          of: "Dialog",
-          props: { id: "toast-settings", "aria-labelledby": "toast-settings-title", closedby: "any" },
-          children: [
-            {
-              of: "div",
-              props: { className: "odd-dialog-body" },
-              children: [
-                { of: "h2", props: { className: "odd-dialog-title", id: "toast-settings-title" }, children: ["Deck settings"] },
-                { of: "p", props: { className: "odd-muted" }, children: ["Saving here shows a toast while this dialog stays open."] },
-                {
-                  of: "DialogActions",
-                  children: [
-                    { of: "Button", props: { commandfor: "toast-settings", command: "close" }, children: ["Close"] },
-                    { of: "Button", props: { variant: "primary", "data-toast": "saved" }, children: ["Save"] },
-                  ],
-                },
-              ],
-            },
-          ],
-        },
-        { of: "Toaster", props: { popover: "manual", "aria-label": "Notifications" } },
-      ],
-    }),
+    scene: () => (
+      <div>
+        <Row>
+          <Button data-toast="saved">Save deck</Button>
+          <Button data-toast="undo">Remove card</Button>
+          <Button data-toast="error" variant="danger">
+            Fail to sync
+          </Button>
+          <Dialog
+            id="toast-settings"
+            trigger={<Button>Settings…</Button>}
+            title="Deck settings"
+            description="Saving here shows a toast while this dialog stays open."
+            dismissible
+            actions={
+              <>
+                <Button command="close">Close</Button>
+                <Button variant="primary" data-toast="saved">
+                  Save
+                </Button>
+              </>
+            }
+          />
+        </Row>
+        <Toaster popover="manual" aria-label="Notifications" />
+      </div>
+    ),
     aria: `
 - button "Save deck"
 - button "Remove card"

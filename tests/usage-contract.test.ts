@@ -55,7 +55,7 @@ test("each wrapper's enum data prop takes exactly the values its stylesheet styl
       ),
     );
   });
-  expect(compared.map(([attribute]) => attribute)).toEqual(["data-variant", "data-size", "data-tone", "data-tone", "data-size", "data-shape", "data-tone", "data-tone", "data-side", "data-tone"]);
+  expect(compared.map(([attribute]) => attribute)).toEqual(["data-variant", "data-size", "data-tone", "data-tone", "data-size", "data-shape", "data-tone", "data-tone", "data-tone"]);
   for (const [attribute, values, styled] of compared) expect([attribute, styled]).toEqual([attribute, values]);
   expect(read("components/button.css").includes(":disabled")).toBe(true);
 });
@@ -159,6 +159,7 @@ test("a class's own data- attributes, read from its rules, equal its WRAPPERS ro
     ["odd-combobox-list", [], ["data-filter"]],
     ["odd-eyebrow", [], ["data-tone"]],
     ["odd-heading", [], ["data-size"]],
+    ["odd-sheet", [], ["data-side"]],
   ]);
 });
 

@@ -1,3 +1,3 @@
 import { Dialog } from "../../../../src/react/dialog.tsx";
 
-export const view = <Dialog id="delete-deck" />;
+export const view = <Dialog id="appearance" />;

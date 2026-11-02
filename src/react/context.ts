@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, createElement, use, type ComponentPropsWithRef, type ComponentType, type ReactElement } from "react";
+import { createContext, createElement, Fragment, use, type ComponentPropsWithRef, type ComponentType, type ReactElement } from "react";
 import type { ButtonCommand } from "./button.tsx";
 
 /** Wiring an overlay hands to its trigger. The reader consumes it and provides null to its own subtree. */
@@ -14,6 +14,19 @@ export const TriggerContext = createContext<Invoker | null>(null);
 export type Overlay = { readonly id: string; readonly close: ButtonCommand; readonly form?: string };
 
 export const OverlayContext = createContext<Overlay | null>(null);
+
+/**
+ * An overlay's trigger, wired by TriggerContext, then its panel right after it. The panel's Buttons get
+ * the overlay's close and submit wiring, and none of them reads a trigger's wiring from further out.
+ */
+export function overlaid(trigger: ReactElement | undefined, invoker: Invoker, overlay: Overlay, panel: ReactElement): ReactElement {
+  return createElement(
+    Fragment,
+    null,
+    trigger === undefined ? null : createElement(TriggerContext, { value: invoker }, trigger),
+    createElement(TriggerContext, { value: null }, createElement(OverlayContext, { value: overlay }, panel)),
+  );
+}
 
 export type AnchorProps = ComponentPropsWithRef<"a"> & { readonly href: string };
 

@@ -410,12 +410,6 @@ export const WRAPPERS = {
   Meter: { source: "odd-design/react", className: "odd-meter", props: { tone: "data-tone" }, element: "meter" },
   Progress: { source: "odd-design/react", className: "odd-progress", props: { tone: "data-tone" }, element: "progress" },
   Toaster: { source: "odd-design/react", className: "odd-toaster", props: {}, element: "section" },
-  Popover: { source: "odd-design/react", className: "odd-popover", props: {}, element: "div" },
-  Dialog: { source: "odd-design/react", className: "odd-dialog", props: {}, element: "dialog" },
-  DialogActions: { source: "odd-design/react", className: "odd-dialog-actions", props: {}, element: "div" },
-  Sheet: { source: "odd-design/react", className: "odd-sheet", props: { side: "data-side" }, element: "dialog" },
-  SheetHeader: { source: "odd-design/react", className: "odd-sheet-header", props: {}, element: "div" },
-  SheetFooter: { source: "odd-design/react", className: "odd-sheet-footer", props: {}, element: "div" },
   Menu: { source: "odd-design/react", className: "odd-menu", props: {}, element: "div" },
   MenuItem: { source: "odd-design/react", className: "odd-menu-item", props: { tone: "data-tone" }, element: "button" },
   TableWrap: { source: "odd-design/react", className: "odd-table-wrap", props: {}, element: "div" },
@@ -434,6 +428,7 @@ export const WRAPPERS = {
 /** Every rendering export of odd-design/react. */
 export type ExportName =
   | "Alert"
+  | "AlertDialog"
   | "AlertTitle"
   | "Avatar"
   | "AvatarGroup"
@@ -448,7 +443,6 @@ export type ExportName =
   | "Combobox"
   | "ComboboxOption"
   | "Dialog"
-  | "DialogActions"
   | "Disclosure"
   | "Eyebrow"
   | "Grid"
@@ -471,8 +465,6 @@ export type ExportName =
   | "Select"
   | "Separator"
   | "Sheet"
-  | "SheetFooter"
-  | "SheetHeader"
   | "Skeleton"
   | "SkipLink"
   | "Slider"
@@ -513,10 +505,10 @@ export const CLASSES = {
   "odd-combobox": { by: ["Combobox"] },
   "odd-combobox-list": { by: ["Combobox"] },
   "odd-combobox-option": { by: ["ComboboxOption"] },
-  "odd-dialog": { by: ["Dialog"] },
-  "odd-dialog-actions": { by: ["DialogActions"] },
-  "odd-dialog-body": { by: [] },
-  "odd-dialog-title": { by: [] },
+  "odd-dialog": { by: ["Dialog", "AlertDialog"] },
+  "odd-dialog-actions": { by: ["Dialog", "AlertDialog"] },
+  "odd-dialog-body": { by: ["Dialog", "AlertDialog"] },
+  "odd-dialog-title": { by: ["Dialog", "AlertDialog", "Sheet"] },
   "odd-disclosure": { by: ["Disclosure"] },
   "odd-error": { by: ["Input", "Textarea", "Select", "Slider", "Combobox"] },
   "odd-eyebrow": { by: ["Eyebrow"] },
@@ -547,9 +539,9 @@ export const CLASSES = {
   "odd-select": { by: ["Select"] },
   "odd-separator": { by: ["Separator"] },
   "odd-sheet": { by: ["Sheet"] },
-  "odd-sheet-body": { by: [] },
-  "odd-sheet-footer": { by: ["SheetFooter"] },
-  "odd-sheet-header": { by: ["SheetHeader"] },
+  "odd-sheet-body": { by: ["Sheet"] },
+  "odd-sheet-footer": { by: ["Sheet"] },
+  "odd-sheet-header": { by: ["Sheet"] },
   "odd-shell": { by: [] },
   "odd-shell-actions": { by: [] },
   "odd-shell-header": { by: [] },

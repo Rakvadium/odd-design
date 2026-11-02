@@ -7,9 +7,12 @@ import { closedByFallback, enhance, enhanceTabs, interestForFallback, toast } fr
 import { Button } from "../src/react/button.tsx";
 import { Card } from "../src/react/card.tsx";
 import { Combobox, ComboboxOption } from "../src/react/combobox.tsx";
+import { AlertDialog, Dialog } from "../src/react/dialog.tsx";
 import { RadioGroup } from "../src/react/field.tsx";
 import { Slider } from "../src/react/slider.tsx";
 import { Menu, MenuItem } from "../src/react/menu.tsx";
+import { Popover } from "../src/react/popover.tsx";
+import { Sheet } from "../src/react/sheet.tsx";
 import { rejectBlank, useEnhancer } from "../src/react/own.ts";
 import { Table, TableSort } from "../src/react/table.tsx";
 import { Tabs } from "../src/react/tabs.tsx";
@@ -193,6 +196,76 @@ describe("Button tooltips", () => {
       document.addEventListener = add;
       document.removeEventListener = remove;
     }
+  });
+});
+
+describe("Dialog, Sheet, and Popover", () => {
+  test("a blank title throws the family's name code", () => {
+    expect(() => renderToStaticMarkup(<Dialog title=" " />)).toThrow("ODD-DIALOG-002");
+    expect(() => renderToStaticMarkup(<AlertDialog title="" description="Your edits are lost." />)).toThrow("ODD-DIALOG-002");
+    expect(() => renderToStaticMarkup(<Sheet title="  " />)).toThrow("ODD-DIALOG-002");
+    expect(() => renderToStaticMarkup(<Popover trigger={<Button>Filters</Button>} title=" ">Legal only</Popover>)).toThrow("ODD-POPOVER-004");
+  });
+
+  test("a dismissible Dialog or Sheet installs the closedby fallback with no enhance() call, a plain one does not, and the last unmount removes it", async () => {
+    const counts = { added: 0, removed: 0 };
+    const add = document.addEventListener;
+    const remove = document.removeEventListener;
+    document.addEventListener = function (this: Document, ...args: Parameters<Document["addEventListener"]>) {
+      if (args[0] === "click") counts.added += 1;
+      add.apply(this, args);
+    };
+    document.removeEventListener = function (this: Document, ...args: Parameters<Document["removeEventListener"]>) {
+      if (args[0] === "click") counts.removed += 1;
+      remove.apply(this, args);
+    };
+    try {
+      const host = document.createElement("div");
+      document.body.append(host);
+      const root = createRoot(host);
+      mounted = root;
+      await act(async () => root.render(<Dialog title="Rename deck" />));
+      expect(counts).toEqual({ added: 0, removed: 0 });
+      await act(async () =>
+        root.render(
+          <>
+            <Dialog title="Rename deck" dismissible />
+            <Sheet title="Filters" dismissible />
+          </>,
+        ),
+      );
+      expect(counts).toEqual({ added: 1, removed: 0 });
+      mounted = undefined;
+      await act(async () => root.unmount());
+      expect(counts).toEqual({ added: 1, removed: 1 });
+    } finally {
+      document.addEventListener = add;
+      document.removeEventListener = remove;
+    }
+  });
+
+  test("the submit Button in a Dialog's actions submits the body form and runs onSubmit once", async () => {
+    let submits = 0;
+    const host = document.createElement("div");
+    document.body.append(host);
+    const root = createRoot(host);
+    mounted = root;
+    await act(async () =>
+      root.render(
+        <Dialog
+          title="Rename deck"
+          onSubmit={(event) => {
+            event.preventDefault();
+            submits += 1;
+          }}
+          actions={<Button type="submit">Save</Button>}
+        >
+          <input name="name" defaultValue="Ember Aggro" />
+        </Dialog>,
+      ),
+    );
+    await act(async () => host.querySelector<HTMLButtonElement>('button[type="submit"]')!.click());
+    expect(submits).toBe(1);
   });
 });
 
@@ -701,19 +774,18 @@ const failures: Record<string, { codes: string[]; text: string[] }> = {
   "toaster-aria-label": { codes: [], text: ["Property '\"aria-label\"' is missing"] },
   "toaster-data-tone": { codes: ["ODD-TOAST-004"], text: [] },
   "toaster-children": { codes: [], text: ["not assignable to type 'undefined'"] },
-  "popover-popover": { codes: [], text: ["Property 'popover' is missing"] },
-  "popover-popover-manual": { codes: [], text: ['"auto"'] },
-  "popover-role": { codes: [], text: ['"dialog"'] },
-  "popover-name-without-role": { codes: ["ODD-POPOVER-005"], text: [] },
-  "popover-name": { codes: ["ODD-POPOVER-004"], text: [] },
-  "popover-data-tone": { codes: ["ODD-POPOVER-006"], text: [] },
-  "dialog-name": { codes: [], text: ["Property '\"aria-labelledby\"' is missing"] },
-  "dialog-role": { codes: [], text: ['"alertdialog"'] },
-  "dialog-open": { codes: ["ODD-DIALOG-004"], text: [] },
-  "dialog-closedby": { codes: [], text: ['"any" | "closerequest" | undefined'] },
-  "dialog-alert-closedby": { codes: [], text: ["'\"any\"' is not assignable to type '\"closerequest\"'"] },
-  "dialog-data-tone": { codes: ["ODD-DIALOG-007"], text: [] },
-  "dialog-actions-data-tone": { codes: ["ODD-DIALOG-008"], text: [] },
+  "dialog-no-title": { codes: [], text: ["Property 'title' is missing"] },
+  "dialog-role": { codes: ["ODD-REACT-001"], text: ["'\"alertdialog\"' is not assignable"] },
+  "dialog-open": { codes: ["ODD-REACT-001"], text: ["Type 'true' is not assignable"] },
+  "dialog-closedby": { codes: ["ODD-REACT-001"], text: ["'\"any\"' is not assignable"] },
+  "dialog-data-tone": { codes: ["ODD-REACT-002"], text: [] },
+  "alert-dialog-dismissible": { codes: [], text: ["Type 'true' is not assignable to type 'undefined'"] },
+  "alert-dialog-no-description": { codes: [], text: ["Property 'description' is missing"] },
+  "sheet-side": { codes: [], text: ['"bottom" | "start" | "top" | undefined'] },
+  "sheet-data-side": { codes: ["ODD-REACT-001"], text: ["Types of property '\"data-side\"' are incompatible"] },
+  "sheet-data-tone": { codes: ["ODD-REACT-002"], text: [] },
+  "popover-role": { codes: ["ODD-REACT-001"], text: ["'\"menu\"' is not assignable"] },
+  "popover-data-tone": { codes: ["ODD-REACT-002"], text: [] },
   "menu-popover": { codes: [], text: ["Property 'popover' is missing"] },
   "menu-role": { codes: [], text: ['"menu"'] },
   "menu-name": { codes: [], text: ["Property '\"aria-labelledby\"' is missing"] },
@@ -728,12 +800,6 @@ const failures: Record<string, { codes: string[]; text: string[] }> = {
   "table-data-numeric": { codes: ["ODD-TABLE-004"], text: [] },
   "table-sort-aria-sort": { codes: ["ODD-TABLE-005"], text: [] },
   "table-sort-data-numeric": { codes: ["ODD-TABLE-004"], text: [] },
-  "sheet-name": { codes: [], text: ["Property '\"aria-labelledby\"' is missing"] },
-  "sheet-side": { codes: [], text: ['"bottom" | "start" | "top" | undefined'] },
-  "sheet-data-side": { codes: [], text: ["not assignable to type 'undefined'"] },
-  "sheet-alert-closedby": { codes: [], text: ["'\"any\"' is not assignable to type '\"closerequest\"'"] },
-  "sheet-data-tone": { codes: ["ODD-SHEET-003"], text: [] },
-  "sheet-footer-data-variant": { codes: ["ODD-SHEET-003"], text: [] },
   "stack-gap": { codes: [], text: ["{ gap: number; children: string; }' is not assignable"] },
   "stack-style": { codes: [], text: ["{ style: { maxInlineSize: string; }; children: string; }' is not assignable"] },
   "row-role": { codes: ["ODD-REACT-001"], text: [] },

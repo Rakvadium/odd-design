@@ -83,6 +83,6 @@ export function useEnhancer<E extends Element>(ref: RefObject<E | null>, enhance
  * Installs a platform fallback on the document while the component is mounted. Fallbacks are refcounted
  * per document. A layout effect installs it before the first paint, so no hover can land before it listens.
  */
-export function useFallback(fallback: () => () => void): void {
-  useLayoutEffect(() => fallback(), [fallback]);
+export function useFallback(fallback: (() => () => void) | undefined): void {
+  useLayoutEffect(() => fallback?.(), [fallback]);
 }

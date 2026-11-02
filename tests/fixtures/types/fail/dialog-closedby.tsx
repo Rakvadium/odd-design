@@ -1,3 +1,3 @@
 import { Dialog } from "../../../../src/react/dialog.tsx";
 
-export const view = <Dialog aria-label="Appearance" closedby="none" />;
+export const view = <Dialog title="Appearance" closedby="any" />;

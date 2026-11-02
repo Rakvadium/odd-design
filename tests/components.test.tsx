@@ -4,6 +4,7 @@ import { renderToStaticMarkup } from "react-dom/server";
 import type * as Odd from "odd-design/react";
 import {
   Alert,
+  AlertDialog,
   AlertTitle,
   Avatar,
   AvatarGroup,
@@ -18,7 +19,6 @@ import {
   Combobox,
   ComboboxOption,
   Dialog,
-  DialogActions,
   Disclosure,
   Eyebrow,
   Grid,
@@ -41,8 +41,6 @@ import {
   Select,
   Separator,
   Sheet,
-  SheetFooter,
-  SheetHeader,
   SkipLink,
   Skeleton,
   Slider,
@@ -103,6 +101,23 @@ const FIXTURES: { readonly [K in ExportName]: readonly [Fixture, ...Fixture[]] }
       ),
       markup:
         '<div class="odd-alert"><p class="odd-alert-title">Drafts are private</p></div><div class="odd-alert wide" data-tone="warning">Rotation is coming</div><div data-testid="notice" class="odd-alert" data-tone="danger"><p class="odd-alert-title">Could not save</p></div>',
+    },
+  ],
+  AlertDialog: [
+    {
+      name: "a decision with a required description",
+      uses: ["Button", "Muted"],
+      element: (
+        <AlertDialog
+          id="discard"
+          trigger={<Button variant="danger">Discard changes…</Button>}
+          title="Discard unsaved changes?"
+          description="You’ve edited 6 cards since your last save."
+          actions={<Button command="close">Keep editing</Button>}
+        />
+      ),
+      markup:
+        '<button class="odd-button" data-variant="danger" type="button" command="show-modal" commandfor="discard">Discard changes…</button><dialog id="discard" aria-labelledby="discard-title" aria-describedby="discard-description" class="odd-dialog" role="alertdialog"><div class="odd-dialog-body"><h2 class="odd-dialog-title" id="discard-title">Discard unsaved changes?</h2><p id="discard-description" class="odd-muted">You’ve edited 6 cards since your last save.</p><div class="odd-dialog-actions"><button class="odd-button" type="button" command="close" commandfor="discard">Keep editing</button></div></div></dialog>',
     },
   ],
   AlertTitle: [
@@ -272,10 +287,11 @@ const FIXTURES: { readonly [K in ExportName]: readonly [Fixture, ...Fixture[]] }
           <Button command="show-modal" commandfor="settings">
             Settings
           </Button>
-          <Dialog id="settings" aria-label="Settings" />
+          <Dialog id="settings" title="Settings" />
         </>
       ),
-      markup: '<button class="odd-button" type="button" command="show-modal" commandfor="settings">Settings</button><dialog id="settings" aria-label="Settings" class="odd-dialog"></dialog>',
+      markup:
+        '<button class="odd-button" type="button" command="show-modal" commandfor="settings">Settings</button><dialog id="settings" aria-labelledby="settings-title" class="odd-dialog"><div class="odd-dialog-body"><h2 class="odd-dialog-title" id="settings-title">Settings</h2></div></dialog>',
     },
     {
       name: "headless and app data attributes",
@@ -395,30 +411,56 @@ const FIXTURES: { readonly [K in ExportName]: readonly [Fixture, ...Fixture[]] }
   ],
   Dialog: [
     {
-      name: "around its actions",
-      uses: ["DialogActions"],
+      name: "a trigger, a title, a description, and actions",
+      uses: ["Button", "Muted"],
       element: (
-        <Dialog id="confirm" aria-labelledby="confirm-title" closedby="any" className="wide">
-          <h2 id="confirm-title">Delete deck?</h2>
-          <DialogActions className="end" />
+        <Dialog
+          id="confirm"
+          trigger={<Button variant="danger">Delete deck…</Button>}
+          title="Delete “Ember Aggro”?"
+          description="This removes the deck and its 14 saved versions."
+          dismissible
+          className="wide"
+          actions={
+            <>
+              <Button command="close">Keep</Button>
+              <Button variant="danger" command="close">
+                Delete
+              </Button>
+            </>
+          }
+        />
+      ),
+      markup:
+        '<button class="odd-button" data-variant="danger" type="button" command="show-modal" commandfor="confirm">Delete deck…</button><dialog id="confirm" aria-labelledby="confirm-title" aria-describedby="confirm-description" closedby="any" class="odd-dialog wide"><div class="odd-dialog-body"><h2 class="odd-dialog-title" id="confirm-title">Delete “Ember Aggro”?</h2><p id="confirm-description" class="odd-muted">This removes the deck and its 14 saved versions.</p><div class="odd-dialog-actions"><button class="odd-button" type="button" command="close" commandfor="confirm">Keep</button><button class="odd-button" data-variant="danger" type="button" command="close" commandfor="confirm">Delete</button></div></div></dialog>',
+    },
+    {
+      name: "a form body whose submit button names it",
+      uses: ["Button", "Input"],
+      element: (
+        <Dialog
+          id="rename"
+          title="Rename deck"
+          headingLevel={3}
+          onSubmit={() => {}}
+          actions={
+            <Button type="submit" variant="primary">
+              Save
+            </Button>
+          }
+        >
+          <Input id="rename-name" label="Name" name="name" />
         </Dialog>
       ),
       markup:
-        '<dialog id="confirm" aria-labelledby="confirm-title" closedby="any" class="odd-dialog wide"><h2 id="confirm-title">Delete deck?</h2><div class="odd-dialog-actions end"></div></dialog>',
+        '<dialog id="rename" aria-labelledby="rename-title" class="odd-dialog"><form class="odd-dialog-body" id="rename-body" method="dialog"><h3 class="odd-dialog-title" id="rename-title">Rename deck</h3><div class="odd-field"><label class="odd-label" for="rename-name" id="rename-name-label">Name</label><input id="rename-name" class="odd-input" name="name"/></div><div class="odd-dialog-actions"><button class="odd-button" data-variant="primary" type="submit" form="rename-body">Save</button></div></form></dialog>',
     },
-  ],
-  DialogActions: [
     {
-      name: "with a close button",
-      uses: ["Dialog", "Button"],
+      name: "a generated id",
+      uses: ["Button"],
       element: (
-        <Dialog id="discard" aria-labelledby="discard-title">
-          <h2 id="discard-title">Discard changes?</h2>
-          <DialogActions>
-            <Button commandfor="discard" command="close">
-              Keep editing
-            </Button>
-          </DialogActions>
+        <Dialog trigger={<Button>Rename</Button>} title="Rename deck" onSubmit={() => {}} actions={<Button type="submit">Save</Button>}>
+          <p>Names show on your profile.</p>
         </Dialog>
       ),
     },
@@ -589,14 +631,21 @@ const FIXTURES: { readonly [K in ExportName]: readonly [Fixture, ...Fixture[]] }
   ],
   Popover: [
     {
-      name: "a dialog named by its title",
+      name: "a dialog named by its title, with a close button",
+      uses: ["Button", "Checkbox", "Stack", "Eyebrow"],
       element: (
-        <Popover id="filters" popover="auto" role="dialog" aria-labelledby="filters-title" className="wide">
-          <p id="filters-title">Filter decks</p>
+        <Popover id="filters" trigger={<Button>Filters</Button>} title="Filter decks" className="wide">
+          <Checkbox label="Legal only" />
+          <Button command="close">Apply</Button>
         </Popover>
       ),
       markup:
-        '<div id="filters" popover="auto" role="dialog" aria-labelledby="filters-title" class="odd-popover wide"><p id="filters-title">Filter decks</p></div>',
+        '<button class="odd-button" type="button" command="toggle-popover" commandfor="filters">Filters</button><div id="filters" class="odd-popover wide" popover="auto" role="dialog" aria-labelledby="filters-title"><div class="odd-stack"><p id="filters-title" class="odd-eyebrow">Filter decks</p><label class="odd-choice"><input type="checkbox"/>Legal only</label><button class="odd-button" type="button" command="hide-popover" commandfor="filters">Apply</button></div></div>',
+    },
+    {
+      name: "text only, with a generated id",
+      uses: ["Button", "Stack"],
+      element: <Popover trigger={<Button>Rules</Button>}>Banned cards are marked in red.</Popover>,
     },
   ],
   Pre: [
@@ -739,62 +788,36 @@ const FIXTURES: { readonly [K in ExportName]: readonly [Fixture, ...Fixture[]] }
   ],
   Sheet: [
     {
-      name: "from the start edge, around its header and footer",
-      uses: ["SheetHeader", "SheetFooter"],
-      writes: ["odd-dialog-title", "odd-sheet-body"],
+      name: "from the start edge, with a form body and a footer",
+      uses: ["Button", "Input", "Muted"],
       element: (
-        <Sheet id="filters" side="start" aria-labelledby="filters-title" closedby="any" className="wide">
-          <SheetHeader>
-            <h2 className="odd-dialog-title" id="filters-title">
-              Filters
-            </h2>
-          </SheetHeader>
-          <div className="odd-sheet-body" />
-          <SheetFooter className="end" />
+        <Sheet
+          id="filters"
+          side="start"
+          trigger={<Button>Filters</Button>}
+          title="Filters"
+          description="Shown decks match every filter."
+          dismissible
+          className="wide"
+          onSubmit={() => {}}
+          actions={
+            <Button type="submit" variant="primary">
+              Show 12 decks
+            </Button>
+          }
+        >
+          <Input id="filters-name" label="Name" />
         </Sheet>
       ),
       markup:
-        '<dialog id="filters" aria-labelledby="filters-title" closedby="any" class="odd-sheet wide" data-side="start"><div class="odd-sheet-header"><h2 class="odd-dialog-title" id="filters-title">Filters</h2></div><div class="odd-sheet-body"></div><div class="odd-sheet-footer end"></div></dialog>',
+        '<button class="odd-button" type="button" command="show-modal" commandfor="filters">Filters</button><dialog id="filters" aria-labelledby="filters-title" aria-describedby="filters-description" closedby="any" class="odd-sheet wide" data-side="start"><div class="odd-sheet-header"><h2 class="odd-dialog-title" id="filters-title">Filters</h2><button id="filters-close" class="odd-button" data-variant="ghost" data-icon-only="" aria-labelledby="filters-close-tooltip" interestfor="filters-close-tooltip" type="button" command="close" commandfor="filters"><svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18M6 6l12 12"></path></svg></button><span class="odd-tooltip" id="filters-close-tooltip" popover="hint" role="tooltip">Close</span></div><form class="odd-sheet-body" id="filters-body" method="dialog"><p id="filters-description" class="odd-muted">Shown decks match every filter.</p><div class="odd-field"><label class="odd-label" for="filters-name" id="filters-name-label">Name</label><input id="filters-name" class="odd-input"/></div></form><div class="odd-sheet-footer"><button class="odd-button" data-variant="primary" type="submit" form="filters-body">Show 12 decks</button></div></dialog>',
     },
-  ],
-  SheetFooter: [
     {
-      name: "with a close button",
-      uses: ["Sheet", "SheetHeader", "Button"],
-      writes: ["odd-dialog-title", "odd-sheet-body"],
+      name: "a generated id and a close label",
+      uses: ["Button"],
       element: (
-        <Sheet id="sort-sheet" aria-labelledby="sort-sheet-title">
-          <SheetHeader>
-            <h2 className="odd-dialog-title" id="sort-sheet-title">
-              Sort
-            </h2>
-          </SheetHeader>
-          <div className="odd-sheet-body" />
-          <SheetFooter>
-            <Button commandfor="sort-sheet" command="close">
-              Done
-            </Button>
-          </SheetFooter>
-        </Sheet>
-      ),
-    },
-  ],
-  SheetHeader: [
-    {
-      name: "with a title and an icon-only close button",
-      uses: ["Sheet", "Button"],
-      writes: ["odd-dialog-title", "odd-sheet-body"],
-      element: (
-        <Sheet id="deck-sheet" aria-labelledby="deck-sheet-title">
-          <SheetHeader>
-            <h2 className="odd-dialog-title" id="deck-sheet-title">
-              Deck
-            </h2>
-            <Button variant="ghost" iconOnly label="Close" commandfor="deck-sheet" command="close">
-              <svg aria-hidden="true" />
-            </Button>
-          </SheetHeader>
-          <div className="odd-sheet-body" />
+        <Sheet trigger={<Button>Deck</Button>} title="Deck" closeLabel="Close deck">
+          <p>60 cards</p>
         </Sheet>
       ),
     },

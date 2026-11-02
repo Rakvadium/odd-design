@@ -45,9 +45,9 @@ const FAMILIES: readonly Family[] = [
     classes: ["odd-dialog", "odd-dialog-title", "odd-dialog-body", "odd-dialog-actions"],
     css: "components/dialog.css",
     js: ["fallbacks.ts:83-97"],
-    react: ["Dialog", "DialogActions"],
+    react: ["Dialog", "AlertDialog"],
   },
-  { name: "Sheet", classes: ["odd-sheet", "odd-sheet-header", "odd-sheet-body", "odd-sheet-footer"], css: "components/sheet.css", js: [], react: ["Sheet", "SheetHeader", "SheetFooter"] },
+  { name: "Sheet", classes: ["odd-sheet", "odd-sheet-header", "odd-sheet-body", "odd-sheet-footer"], css: "components/sheet.css", js: [], react: ["Sheet"] },
   { name: "Menu", classes: ["odd-menu", "odd-menu-item", "odd-menu-label", "odd-menu-shortcut"], css: "components/menu.css", js: ["menu.ts", "roving.ts"], react: ["Menu", "MenuItem"] },
   { name: "Tabs", classes: ["odd-tabs"], css: "components/tabs.css", js: ["tabs.ts", "roving.ts"], react: ["Tabs"] },
   {

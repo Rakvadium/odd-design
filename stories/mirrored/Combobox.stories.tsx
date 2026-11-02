@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
-import { Combobox, ComboboxOption, Grid, GridItem, Stack } from "odd-design/react";
-import { mirrored, type Scene } from "../mirror.ts";
+import { Button, Combobox, ComboboxOption, Dialog, Grid, GridItem, Muted, Stack } from "odd-design/react";
+import { mirrored } from "../mirror.ts";
 
 type Args = {
   label: string;
@@ -141,36 +141,26 @@ export const Open = {
 
 const PEOPLE = ["Ada Lovelace", "Alan Turing", "Grace Hopper", "Katherine Johnson", "Margaret Hamilton"];
 
-// No component renders a dialog's title and body yet, so this story stays a scene, which can write their classes.
-const assign: Scene = {
-  of: "div",
-  children: [
-    { of: "Button", props: { commandfor: "assign-dialog", command: "show-modal" }, children: ["Assign"] },
-    {
-      of: "Dialog",
-      props: { id: "assign-dialog", "aria-labelledby": "assign-title", closedby: "any" },
-      children: [
-        {
-          of: "div",
-          props: { className: "odd-dialog-body" },
-          children: [
-            { of: "h2", props: { className: "odd-dialog-title", id: "assign-title" }, children: ["Assign the review"] },
-            { of: "Combobox", props: { id: "assignee", label: "Assignee", filter: "manual" } },
-            { of: "p", props: { className: "odd-muted", id: "assign-log", "aria-live": "polite" } },
-            {
-              of: "DialogActions",
-              children: [{ of: "Button", props: { commandfor: "assign-dialog", command: "close" }, children: ["Close"] }],
-            },
-          ],
-        },
-      ],
-    },
-  ],
-};
+function assign() {
+  return (
+    <Dialog
+      id="assign-dialog"
+      trigger={<Button>Assign</Button>}
+      title="Assign the review"
+      dismissible
+      actions={<Button command="close">Close</Button>}
+    >
+      <Combobox id="assignee" label="Assignee" filter="manual" />
+      <Muted id="assign-log" aria-live="polite">
+        {null}
+      </Muted>
+    </Dialog>
+  );
+}
 
 export const Async = {
   ...mirrored<Args>({
-    scene: () => assign,
+    scene: assign,
     aria: `
 - button "Assign"`,
   }),

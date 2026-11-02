@@ -1,19 +1,43 @@
-import type { ReactElement } from "react";
-import type { SheetPartRule, SheetRule } from "../js/usage/contract.ts";
-import { part, type Contract, type Exclusive, type Named, type Native } from "./part.ts";
+"use client";
 
-interface SheetContract extends Contract<"Sheet", SheetRule> {}
+import type { ComponentPropsWithRef, ReactElement } from "react";
+import type { SheetRule } from "../js/usage/contract.ts";
+import { Button } from "./button.tsx";
+import { closeIcon } from "./icons.ts";
+import { modal, modalAttributes, modalBody, modalTitle, useModal, type ModalProps } from "./modal.ts";
+import { cx, type Owned, type Values } from "./own.ts";
 
-export type SheetProps = SheetContract & Native<"Sheet", keyof SheetContract | keyof Exclusive<SheetRule>> & Named<SheetRule> & Exclusive<SheetRule>;
+export type SheetSide = Values<SheetRule, "data-side">;
 
-interface SheetHeaderContract extends Contract<"SheetHeader", SheetPartRule> {}
+export type SheetProps = ModalProps &
+  Owned<"data-side"> & {
+    /** closedby="any", so a click outside closes it too. */
+    readonly dismissible?: boolean;
+    /** The edge it slides in from. Omit it for the end edge. */
+    readonly side?: SheetSide;
+    /** The close button's name and tooltip. */
+    readonly closeLabel?: string;
+  };
 
-export interface SheetHeaderProps extends SheetHeaderContract, Native<"SheetHeader", keyof SheetHeaderContract> {}
-
-interface SheetFooterContract extends Contract<"SheetFooter", SheetPartRule> {}
-
-export interface SheetFooterProps extends SheetFooterContract, Native<"SheetFooter", keyof SheetFooterContract> {}
-
-export const Sheet: (props: SheetProps) => ReactElement = part("Sheet");
-export const SheetHeader: (props: SheetHeaderProps) => ReactElement = part("SheetHeader");
-export const SheetFooter: (props: SheetFooterProps) => ReactElement = part("SheetFooter");
+/**
+ * The trigger, then dialog.odd-sheet > div.odd-sheet-header (the title and an icon-only close Button)
+ * + (div|form).odd-sheet-body + div.odd-sheet-footer with the actions.
+ */
+export function Sheet(props: SheetProps): ReactElement {
+  const { trigger, id, title: _title, headingLevel, description, actions, onSubmit, dismissible, side, closeLabel = "Close", className, children, ...rest } = props;
+  const { ids, title } = useModal(props, dismissible);
+  return modal(
+    props,
+    ids,
+    <dialog {...(rest as ComponentPropsWithRef<"dialog">)} {...modalAttributes(props, ids, dismissible)} className={cx("odd-sheet", className)} data-side={side}>
+      <div className="odd-sheet-header">
+        {modalTitle(props, ids, title)}
+        <Button variant="ghost" iconOnly label={closeLabel} command="close" id={`${ids.base}-close`}>
+          {closeIcon}
+        </Button>
+      </div>
+      {modalBody("odd-sheet-body", props, ids, null, children)}
+      {actions === undefined ? null : <div className="odd-sheet-footer">{actions}</div>}
+    </dialog>,
+  );
+}

@@ -61,10 +61,6 @@ function swallow(event: MouseEvent): void {
   event.preventDefault();
 }
 
-function noFallback(): () => void {
-  return () => {};
-}
-
 function closes(command: ButtonCommand | undefined): boolean {
   return command === "close" || command === "request-close" || command === "hide-popover";
 }
@@ -74,7 +70,7 @@ export function Button(props: ButtonProps): ReactElement {
   const overlay = use(OverlayContext);
   const tipId = `${useOddId(props.id)}-tooltip`;
   const tip = props.iconOnly ? rejectBlank(props.label, "ODD-BUTTON-008") : props.tooltip;
-  useFallback(tip === undefined ? noFallback : interestForFallback);
+  useFallback(tip === undefined ? undefined : interestForFallback);
 
   const shared = {
     className: cx("odd-button", props.className),
@@ -107,7 +103,7 @@ export function Button(props: ButtonProps): ReactElement {
 
   const { variant, size, iconOnly, label, tooltip: _tooltip, current, newTab, disabled, busy, className, children, type = "button", command, commandfor, form, onClick, ...rest } = props;
   const wired = trigger?.kind === "command" ? trigger : undefined;
-  const chosen = wired?.command ?? command;
+  const chosen = wired?.command ?? (command === "close" && commandfor === undefined && overlay !== null ? overlay.close : command);
   const blocked = disabled === true || busy === true;
   return (
     <>

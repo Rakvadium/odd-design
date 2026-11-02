@@ -7,7 +7,7 @@ import { Button } from "../../../../src/react/button.tsx";
 import { Card, CardFooter, CardLink } from "../../../../src/react/card.tsx";
 import { Code, Pre } from "../../../../src/react/code.tsx";
 import { Combobox, ComboboxOption, type ComboboxFilter } from "../../../../src/react/combobox.tsx";
-import { Dialog, DialogActions } from "../../../../src/react/dialog.tsx";
+import { AlertDialog, Dialog } from "../../../../src/react/dialog.tsx";
 import { Disclosure } from "../../../../src/react/disclosure.tsx";
 import { Checkbox, Input, RadioGroup, Segmented, Select, Switch, Textarea, type ChoiceOption } from "../../../../src/react/field.tsx";
 import { Kbd } from "../../../../src/react/kbd.tsx";
@@ -18,7 +18,7 @@ import { Meter, Progress, type MeterTone } from "../../../../src/react/meter.tsx
 import { Popover } from "../../../../src/react/popover.tsx";
 import { Search } from "../../../../src/react/search.tsx";
 import { Separator } from "../../../../src/react/separator.tsx";
-import { Sheet, SheetFooter, SheetHeader, type SheetProps } from "../../../../src/react/sheet.tsx";
+import { Sheet, type SheetSide } from "../../../../src/react/sheet.tsx";
 import { Skeleton } from "../../../../src/react/skeleton.tsx";
 import { Slider } from "../../../../src/react/slider.tsx";
 import { Spinner } from "../../../../src/react/spinner.tsx";
@@ -371,12 +371,14 @@ export function DeckFilters({ label }: { label: string }) {
   const [open, setOpen] = useState(false);
   return (
     <>
-      <Button commandfor="filters" command="toggle-popover">{open ? "Hide filters" : "Filters"}</Button>
-      <Popover ref={panel} id="filters" popover="auto" role="dialog" aria-labelledby="filters-title" onToggle={(event) => setOpen(event.newState === "open")} className="filters" data-testid="filters" data-state="open">
-        <p className="odd-eyebrow" id="filters-title">Filter decks</p>
+      <Popover ref={panel} id="filters" trigger={<Button>{open ? "Hide filters" : "Filters"}</Button>} title="Filter decks" onToggle={(event) => setOpen(event.newState === "open")} className="filters" data-testid="filters" data-state="open">
+        <Checkbox label="Legal only" />
+        <Button command="close">Apply</Button>
       </Popover>
-      <Popover id="notes" popover="auto" role="dialog" aria-label={label} />
-      <Popover id="rules" popover="">Banned cards are marked.</Popover>
+      <Popover trigger={<Button>Notes</Button>} title={label}>
+        Saved with the deck.
+      </Popover>
+      <Popover trigger={<Button>Rules</Button>}>Banned cards are marked.</Popover>
     </>
   );
 }
@@ -385,42 +387,52 @@ export function DeleteDeck({ title, onDelete }: { title: string; onDelete: () =>
   const dialog = useRef<HTMLDialogElement>(null);
   return (
     <>
-      <Button variant="danger" commandfor="delete-deck" command="show-modal">Delete deck…</Button>
-      <Dialog ref={dialog} id="delete-deck" aria-labelledby="delete-deck-title" closedby="any" onClose={() => dialog.current?.returnValue === "delete" && onDelete()} className="wide" data-testid="delete" data-side="end">
-        <form className="odd-dialog-body" method="dialog">
-          <h2 className="odd-dialog-title" id="delete-deck-title">{title}</h2>
-          <DialogActions>
-            <Button commandfor="delete-deck" command="request-close">Close</Button>
+      <Dialog
+        ref={dialog}
+        id="delete-deck"
+        trigger={<Button variant="danger">Delete deck…</Button>}
+        title={title}
+        headingLevel={3}
+        description="This removes its 14 saved versions."
+        dismissible
+        onClose={() => dialog.current?.returnValue === "delete" && onDelete()}
+        onSubmit={(event: FormEvent<HTMLFormElement>) => event.currentTarget.reportValidity()}
+        className="wide"
+        data-testid="delete"
+        data-state="open"
+        actions={
+          <>
+            <Button command="request-close">Close</Button>
             <Button type="submit" value="delete" variant="danger">Delete</Button>
-          </DialogActions>
-        </form>
-      </Dialog>
-      <Dialog role="alertdialog" aria-label={title} closedby="closerequest" onCancel={(event) => event.preventDefault()}>
-        <div className="odd-dialog-body">
-          <DialogActions data-testid="actions" />
-        </div>
-      </Dialog>
+          </>
+        }
+      />
+      <AlertDialog title={title} description="Your edits are lost." onCancel={(event) => event.preventDefault()} actions={<Button command="close">Keep editing</Button>} />
+      <Button command="show-modal" commandfor="delete-deck">Delete from the menu</Button>
     </>
   );
 }
 
-export function FilterSheet({ side, onApply }: { side: SheetProps["side"]; onApply: () => void }) {
+export function FilterSheet({ side, onApply }: { side: SheetSide | undefined; onApply: () => void }) {
   const sheet = useRef<HTMLDialogElement>(null);
   return (
-    <>
-      <Button commandfor="filters" command="show-modal">Filters</Button>
-      <Sheet ref={sheet} id="filters" side={side} aria-labelledby="filters-title" closedby="any" onClose={() => sheet.current?.returnValue === "apply" && onApply()} className="wide" data-testid="filters" data-state="open">
-        <SheetHeader>
-          <h2 className="odd-dialog-title" id="filters-title">Filters</h2>
-          <Button variant="ghost" iconOnly label="Close" commandfor="filters" command="close">×</Button>
-        </SheetHeader>
-        <form className="odd-sheet-body" id="filters-form" method="dialog" />
-        <SheetFooter data-testid="footer">
-          <Button type="submit" form="filters-form" value="apply" variant="primary">Show 12 decks</Button>
-        </SheetFooter>
-      </Sheet>
-      <Sheet side="bottom" role="alertdialog" aria-label="Discard changes?" closedby="closerequest" onCancel={(event) => event.preventDefault()} />
-    </>
+    <Sheet
+      ref={sheet}
+      id="filters"
+      side={side}
+      trigger={<Button>Filters</Button>}
+      title="Filters"
+      closeLabel="Close filters"
+      dismissible
+      onClose={() => sheet.current?.returnValue === "apply" && onApply()}
+      onSubmit={() => {}}
+      className="wide"
+      data-testid="filters"
+      data-state="open"
+      actions={<Button type="submit" value="apply" variant="primary">Show 12 decks</Button>}
+    >
+      <Input label="Name" />
+    </Sheet>
   );
 }
 
