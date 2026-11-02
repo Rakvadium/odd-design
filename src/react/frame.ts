@@ -13,7 +13,6 @@ export type Labeled = Root & {
   readonly id?: string;
 };
 
-/** The attributes the frame writes on its control. */
 export type FieldOwned = "aria-invalid" | "aria-labelledby" | "aria-label" | "aria-disabled";
 
 export type FieldIds = { readonly control: string; readonly label: string; readonly hint: string; readonly error: string };

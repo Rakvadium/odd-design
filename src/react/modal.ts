@@ -4,7 +4,6 @@ import { overlaid } from "./context.ts";
 import { idsOf, rejectBlank, useFallback, useOddId, type HeadingLevel, type Passthrough, type Root } from "./own.ts";
 import { Muted } from "./typography.tsx";
 
-/** The attributes a modal writes on its dialog. */
 export type ModalOwned = "aria-label" | "aria-labelledby" | "aria-describedby" | "closedby" | "open";
 
 /** What Dialog, AlertDialog, and Sheet share. The title is required, so an unnamed dialog does not compile. */

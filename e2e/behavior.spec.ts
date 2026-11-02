@@ -24,7 +24,6 @@ async function hoverFresh(page: Page, selector: string) {
 
 const isOpen = (page: Page, selector: string) => page.locator(selector).evaluate((el) => el.matches(":popover-open, [open]"));
 
-/** Waits for a popover or dialog to open or close. */
 const waitOpen = (page: Page, selector: string, open = true) =>
   poll(() => page.evaluate(([sel, want]) => (document.querySelector(sel)?.matches(":popover-open, [open]") === want ? true : null), [selector, open] as const));
 

@@ -80,7 +80,6 @@ type Fixture = {
   readonly element: ReactElement;
   /** Other exports in the fixture, whose classes it may carry. */
   readonly uses?: readonly ExportName[];
-  /** The exact static markup. */
   readonly markup?: string;
 };
 

@@ -73,7 +73,6 @@ describe("OddProvider", () => {
   test("without a provider every link is a plain a", () => {
     expect(routed(links).map(([, router]) => router)).toEqual([null, null, null, null, null]);
   });
-
 });
 
 function arrowRight(host: HTMLElement) {
@@ -564,7 +563,6 @@ describe("Table", () => {
     await render(<DeckTable rows={DECKS.slice(0, 3)} initial={["a", "b"]} />);
     expect(state()).toEqual([[true, true, false], "mixed"]);
   });
-
 });
 
 describe("Toaster", () => {
