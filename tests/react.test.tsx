@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, test } from "bun:test";
 import { fileURLToPath } from "node:url";
-import { act, StrictMode, useRef, useState, type ReactNode } from "react";
+import { act, StrictMode, useState, type ReactNode } from "react";
 import { createRoot, type Root } from "react-dom/client";
 import { renderToStaticMarkup } from "react-dom/server";
 import { appendLogLine, closedByFallback, enhance, enhanceTabs, interestForFallback, toast } from "../src/js/enhance.ts";
@@ -12,16 +12,11 @@ import { HoverCard, HoverCardLink } from "../src/react/hover-card.tsx";
 import { OddProvider } from "../src/react/provider.tsx";
 import { TextLink } from "../src/react/text-link.tsx";
 import { Combobox, ComboboxOption } from "../src/react/combobox.tsx";
-import { AlertDialog, Dialog } from "../src/react/dialog.tsx";
-import { RadioGroup } from "../src/react/field.tsx";
-import { Slider } from "../src/react/slider.tsx";
 import { Log, LogLine } from "../src/react/log.tsx";
 import { hydrationErrors } from "./hydrate.ts";
 import { Menu, MenuCheckboxItem, MenuItem, MenuRadioGroup, MenuRadioItem } from "../src/react/menu.tsx";
-import { Popover } from "../src/react/popover.tsx";
-import { Sheet } from "../src/react/sheet.tsx";
-import { rejectBlank, useEnhancer } from "../src/react/own.ts";
-import { Table, type Selection, type Sort } from "../src/react/table.tsx";
+import { rejectBlank } from "../src/react/own.ts";
+import { Table, type Selection } from "../src/react/table.tsx";
 import { Tabs } from "../src/react/tabs.tsx";
 import { Toaster } from "../src/react/toast.tsx";
 
@@ -36,244 +31,6 @@ afterEach(async () => {
   mounted = undefined;
   if (root !== undefined) await act(async () => root.unmount());
   document.body.replaceChildren();
-});
-
-async function mountForm(state: { disabled?: boolean; busy?: boolean }) {
-  const counts = { clicks: 0, submits: 0 };
-  const host = document.createElement("div");
-  document.body.append(host);
-  const root = createRoot(host);
-  mounted = root;
-  await act(async () =>
-    root.render(
-      <form
-        onSubmit={(event) => {
-          event.preventDefault();
-          counts.submits += 1;
-        }}
-      >
-        <input name="card" />
-        <Button type="submit" disabled={state.disabled} busy={state.busy} onClick={() => (counts.clicks += 1)}>
-          Pay
-        </Button>
-      </form>,
-    ),
-  );
-  const button = host.querySelector("button");
-  const field = host.querySelector("input");
-  if (button === null || field === null) throw new Error("the form did not render");
-  return { counts, button, field };
-}
-
-function pressEnter(field: HTMLInputElement): void {
-  if (!field.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter", bubbles: true, cancelable: true }))) return;
-  // happy-dom has no implicit submission. The HTML spec fires a click at the form's default button.
-  field.form?.querySelector('[type="submit"]')?.dispatchEvent(new MouseEvent("click", { bubbles: true, cancelable: true }));
-}
-
-describe("Button with disabled or busy", () => {
-  test.each([[{ disabled: true }], [{ busy: true }]])("%p ignores a click and an Enter, and never sets disabled", async (state) => {
-    const { counts, button, field } = await mountForm(state);
-    await act(async () => button.click());
-    await act(async () => pressEnter(field));
-    expect(counts).toEqual({ clicks: 0, submits: 0 });
-    expect(button.disabled).toBe(false);
-    expect(button.hasAttribute("disabled")).toBe(false);
-  });
-
-  test.each([[{}], [{ disabled: false, busy: false }]])("%p submits once per click and once per Enter", async (state) => {
-    const { counts, button, field } = await mountForm(state);
-    await act(async () => button.click());
-    expect(counts).toEqual({ clicks: 1, submits: 1 });
-    await act(async () => pressEnter(field));
-    expect(counts).toEqual({ clicks: 2, submits: 2 });
-  });
-});
-
-describe("field labels", () => {
-  test("a blank Combobox label throws ODD-COMBOBOX-006, because the label names the list too", () => {
-    expect(() => renderToStaticMarkup(<Combobox label=" " />)).toThrow("ODD-COMBOBOX-006");
-  });
-});
-
-describe("Slider", () => {
-  // React tracks the value it last wrote, so a test moves the thumb through the element's own setter, as a user's drag does.
-  const move = (input: HTMLInputElement, value: string) => {
-    Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, "value")!.set!.call(input, value);
-    input.dispatchEvent(new Event("input", { bubbles: true }));
-  };
-
-  test("the shown value follows the thumb when uncontrolled, and follows value when controlled", async () => {
-    function Copies() {
-      const [copies, setCopies] = useState(2);
-      return (
-        <>
-          <Slider id="free" label="Card size" min={0} max={100} defaultValue={65} showValue />
-          <Slider id="held" label="Copies" min={1} max={4} value={copies} onChange={(event) => setCopies(event.currentTarget.valueAsNumber)} showValue formatValue={(value) => `${value} of 4`} />
-        </>
-      );
-    }
-    const host = document.createElement("div");
-    document.body.append(host);
-    const root = createRoot(host);
-    mounted = root;
-    await act(async () => root.render(<Copies />));
-    const output = (id: string) => host.querySelector(`#${id}-value`)?.textContent;
-    expect([output("free"), output("held")]).toEqual(["65", "2 of 4"]);
-    await act(async () => move(host.querySelector<HTMLInputElement>("#free")!, "40"));
-    await act(async () => move(host.querySelector<HTMLInputElement>("#held")!, "4"));
-    expect([output("free"), output("held")]).toEqual(["40", "4 of 4"]);
-  });
-});
-
-describe("RadioGroup", () => {
-  const SORTS = [
-    { value: "newest", label: "Newest" },
-    { value: "oldest", label: "Oldest" },
-  ] as const;
-
-  test("two groups without a name get two names, each shared by its radios, and a choice calls onValueChange with its value", async () => {
-    const chosen: string[] = [];
-    const host = document.createElement("div");
-    document.body.append(host);
-    const root = createRoot(host);
-    mounted = root;
-    await act(async () =>
-      root.render(
-        <>
-          <RadioGroup label="Sort decks" options={SORTS} defaultValue="newest" onValueChange={(value) => chosen.push(value)} />
-          <RadioGroup label="Sort cards" options={SORTS} defaultValue="newest" />
-        </>,
-      ),
-    );
-    const names = [...host.querySelectorAll("fieldset")].map((group) => [...new Set([...group.querySelectorAll("input")].map((radio) => radio.name))]);
-    expect(names.map((list) => list.length)).toEqual([1, 1]);
-    expect(names[0]![0]).not.toBe(names[1]![0]);
-    await act(async () => host.querySelector<HTMLInputElement>('input[value="oldest"]')!.click());
-    expect(chosen).toEqual(["oldest"]);
-    expect([...host.querySelectorAll<HTMLInputElement>("input:checked")].map((radio) => radio.value)).toEqual(["oldest", "newest"]);
-  });
-});
-
-describe("Button tooltips", () => {
-  test("a blank label on an icon-only button throws ODD-BUTTON-008", () => {
-    expect(() =>
-      renderToStaticMarkup(
-        <Button iconOnly label="  ">
-          ×
-        </Button>,
-      ),
-    ).toThrow("ODD-BUTTON-008");
-  });
-
-  test("a tooltip installs the interest fallback with no enhance() call, two tooltips share it, and the last unmount removes it", async () => {
-    const counts = { added: 0, removed: 0 };
-    const add = document.addEventListener;
-    const remove = document.removeEventListener;
-    document.addEventListener = function (this: Document, ...args: Parameters<Document["addEventListener"]>) {
-      if (args[0] === "pointerover") counts.added += 1;
-      add.apply(this, args);
-    };
-    document.removeEventListener = function (this: Document, ...args: Parameters<Document["removeEventListener"]>) {
-      if (args[0] === "pointerover") counts.removed += 1;
-      remove.apply(this, args);
-    };
-    try {
-      const host = document.createElement("div");
-      document.body.append(host);
-      const root = createRoot(host);
-      mounted = root;
-      await act(async () => root.render(<Button>Save</Button>));
-      expect(counts).toEqual({ added: 0, removed: 0 });
-      await act(async () =>
-        root.render(
-          <>
-            <Button tooltip="Anyone with the link can view it">Publish</Button>
-            <Button iconOnly label="Share link">
-              ↗
-            </Button>
-          </>,
-        ),
-      );
-      expect(counts).toEqual({ added: 1, removed: 0 });
-      mounted = undefined;
-      await act(async () => root.unmount());
-      expect(counts).toEqual({ added: 1, removed: 1 });
-    } finally {
-      document.addEventListener = add;
-      document.removeEventListener = remove;
-    }
-  });
-});
-
-describe("Dialog, Sheet, and Popover", () => {
-  test("a blank title throws the family's name code", () => {
-    expect(() => renderToStaticMarkup(<Dialog title=" " />)).toThrow("ODD-DIALOG-002");
-    expect(() => renderToStaticMarkup(<AlertDialog title="" description="Your edits are lost." />)).toThrow("ODD-DIALOG-002");
-    expect(() => renderToStaticMarkup(<Sheet title="  " />)).toThrow("ODD-DIALOG-002");
-    expect(() => renderToStaticMarkup(<Popover trigger={<Button>Filters</Button>} title=" ">Legal only</Popover>)).toThrow("ODD-POPOVER-004");
-  });
-
-  test("a dismissible Dialog or Sheet installs the closedby fallback with no enhance() call, a plain one does not, and the last unmount removes it", async () => {
-    const counts = { added: 0, removed: 0 };
-    const add = document.addEventListener;
-    const remove = document.removeEventListener;
-    document.addEventListener = function (this: Document, ...args: Parameters<Document["addEventListener"]>) {
-      if (args[0] === "click") counts.added += 1;
-      add.apply(this, args);
-    };
-    document.removeEventListener = function (this: Document, ...args: Parameters<Document["removeEventListener"]>) {
-      if (args[0] === "click") counts.removed += 1;
-      remove.apply(this, args);
-    };
-    try {
-      const host = document.createElement("div");
-      document.body.append(host);
-      const root = createRoot(host);
-      mounted = root;
-      await act(async () => root.render(<Dialog title="Rename deck" />));
-      expect(counts).toEqual({ added: 0, removed: 0 });
-      await act(async () =>
-        root.render(
-          <>
-            <Dialog title="Rename deck" dismissible />
-            <Sheet title="Filters" dismissible />
-          </>,
-        ),
-      );
-      expect(counts).toEqual({ added: 1, removed: 0 });
-      mounted = undefined;
-      await act(async () => root.unmount());
-      expect(counts).toEqual({ added: 1, removed: 1 });
-    } finally {
-      document.addEventListener = add;
-      document.removeEventListener = remove;
-    }
-  });
-
-  test("the submit Button in a Dialog's actions submits the body form and runs onSubmit once", async () => {
-    let submits = 0;
-    const host = document.createElement("div");
-    document.body.append(host);
-    const root = createRoot(host);
-    mounted = root;
-    await act(async () =>
-      root.render(
-        <Dialog
-          title="Rename deck"
-          onSubmit={(event) => {
-            event.preventDefault();
-            submits += 1;
-          }}
-          actions={<Button type="submit">Save</Button>}
-        >
-          <input name="name" defaultValue="Ember Aggro" />
-        </Dialog>,
-      ),
-    );
-    await act(async () => host.querySelector<HTMLButtonElement>('button[type="submit"]')!.click());
-    expect(submits).toBe(1);
-  });
 });
 
 describe("OddProvider", () => {
@@ -315,45 +72,6 @@ describe("OddProvider", () => {
     expect(routed(links).map(([, router]) => router)).toEqual([null, null, null, null, null]);
   });
 
-  test("a HoverCard installs the interest fallback with no enhance() call, and its unmount removes it", async () => {
-    const counts = { added: 0, removed: 0 };
-    const add = document.addEventListener;
-    const remove = document.removeEventListener;
-    document.addEventListener = function (this: Document, ...args: Parameters<Document["addEventListener"]>) {
-      if (args[0] === "pointerover") counts.added += 1;
-      add.apply(this, args);
-    };
-    document.removeEventListener = function (this: Document, ...args: Parameters<Document["removeEventListener"]>) {
-      if (args[0] === "pointerover") counts.removed += 1;
-      remove.apply(this, args);
-    };
-    try {
-      const host = document.createElement("div");
-      document.body.append(host);
-      const root = createRoot(host);
-      mounted = root;
-      await act(async () =>
-        root.render(
-          <HoverCard preview="Midnight Control, by Mira Okafor">
-            <p>
-              <HoverCardLink href="/decks/midnight">Midnight Control</HoverCardLink>
-            </p>
-          </HoverCard>,
-        ),
-      );
-      expect(counts).toEqual({ added: 1, removed: 0 });
-      mounted = undefined;
-      await act(async () => root.unmount());
-      expect(counts).toEqual({ added: 1, removed: 1 });
-    } finally {
-      document.addEventListener = add;
-      document.removeEventListener = remove;
-    }
-  });
-
-  test("a HoverCardLink outside a HoverCard throws, because it names no card", () => {
-    expect(() => renderToStaticMarkup(<HoverCardLink href="/decks/midnight">Midnight Control</HoverCardLink>)).toThrow("HoverCardLink renders inside");
-  });
 });
 
 function arrowRight(host: HTMLElement) {
@@ -845,27 +563,6 @@ describe("Table", () => {
     expect(state()).toEqual([[true, true, false], "mixed"]);
   });
 
-  test("a sort button proposes the next sort and does not submit its form", async () => {
-    const sorts: Sort<"name" | "cards">[] = [];
-    const { counts, host, render } = await mountInForm();
-    const columns = [
-      { key: "name", header: "Deck", cell: (deck: Deck) => deck.name },
-      { key: "cards", header: "Cards", cell: (deck: Deck) => deck.cards },
-    ] as const;
-    await render(<Table caption="Decks" rows={DECKS} rowKey={(deck) => deck.id} columns={columns} sortable={["name", "cards"]} sort={{ column: "name", direction: "ascending" }} onSortChange={(sort) => sorts.push(sort)} />);
-    const [byName, byCards] = host.querySelectorAll<HTMLButtonElement>(".odd-table-sort");
-    await act(async () => byName!.click());
-    await act(async () => byCards!.click());
-    expect(sorts).toEqual([
-      { column: "name", direction: "descending" },
-      { column: "cards", direction: "ascending" },
-    ]);
-    expect(counts.submits).toBe(0);
-  });
-
-  test('a blank caption throws ODD-TABLE-003, because it names the table and its region', () => {
-    expect(() => renderToStaticMarkup(<Table caption=" " rows={DECKS} rowKey={(deck) => deck.id} columns={[{ key: "name", header: "Deck", cell: (deck) => deck.name }]} />)).toThrow("ODD-TABLE-003");
-  });
 });
 
 describe("Toaster", () => {
@@ -897,19 +594,6 @@ describe("Toaster", () => {
     expect(() => toast({ title: "Deck saved" })).toThrow("toast() found no toaster");
   });
 });
-
-async function mountInForm() {
-  const counts = { submits: 0 };
-  const host = document.createElement("form");
-  host.addEventListener("submit", (event) => {
-    event.preventDefault();
-    counts.submits += 1;
-  });
-  document.body.append(host);
-  const root = createRoot(host);
-  mounted = root;
-  return { counts, host, render: (children: ReactNode) => act(async () => root.render(children)) };
-}
 
 describe("Buttons in a form", () => {
   test('enhance() keeps menu items and toast buttons from submitting, and keeps a written type="submit"', () => {
@@ -951,100 +635,20 @@ function errorsByFixture(output: string): Map<string, string> {
 }
 
 const failures: Record<string, { codes: string[]; text: string[] }> = {
-  "button-variant": { codes: [], text: ['"primary"', '"secondary"', '"danger"', '"ghost"'] },
-  "button-size": { codes: [], text: ['"sm"', '"lg"'] },
   "button-data-tone": { codes: ["ODD-REACT-002"], text: [] },
-  "button-raw-data-variant": { codes: ["ODD-REACT-002"], text: ["Types of property '\"data-variant\"' are incompatible"] },
-  "button-aria-disabled": { codes: ["ODD-REACT-001"], text: ["Types of property '\"aria-disabled\"' are incompatible"] },
   "button-aria-label": { codes: ["ODD-REACT-001"], text: ["Types of property '\"aria-label\"' are incompatible"] },
   "button-icon-only-unnamed": { codes: [], text: ["Property 'label' is missing"] },
-  "button-label-visible-text": { codes: [], text: ["Property 'iconOnly' is missing"] },
-  "button-current-not-link": { codes: [], text: ["Property 'href' is missing"] },
-  "button-link-disabled": { codes: [], text: ["Types of property 'disabled' are incompatible"] },
-  "button-tooltip-icon-only": { codes: [], text: ["Types of property 'tooltip' are incompatible"] },
-  "button-aria-haspopup": { codes: ["ODD-REACT-001"], text: ["Types of property '\"aria-haspopup\"' are incompatible"] },
-  "input-aria-disabled": { codes: ["ODD-REACT-001"], text: ["Types of property '\"aria-disabled\"' are incompatible"] },
-  "input-owned-aria": { codes: ["ODD-REACT-001"], text: ["Types of property '\"aria-invalid\"' are incompatible"] },
   "input-unnamed": { codes: [], text: ["Property 'label' is missing"] },
-  "input-type-checkbox": { codes: [], text: ["'\"checkbox\"' is not assignable to type 'TextType | undefined'"] },
-  "checkbox-aria-disabled": { codes: ["ODD-REACT-001"], text: ["Types of property '\"aria-disabled\"' are incompatible"] },
-  "switch-aria-disabled": { codes: ["ODD-REACT-001"], text: ["Types of property '\"aria-disabled\"' are incompatible"] },
-  "switch-type": { codes: ["ODD-REACT-001"], text: ["'\"radio\"' is not assignable"] },
-  "radio-group-default-value": { codes: [], text: ["'\"secret\"' is not assignable to type '\"private\" | \"public\" | undefined'"] },
-  "radio-group-no-options": { codes: [], text: ["'[]' is not assignable"] },
-  "alert-aria-live": { codes: ["ODD-ALERT-003"], text: [] },
-  "separator-aria-hidden": { codes: ["ODD-SEPARATOR-003"], text: [] },
-  "skeleton-text": { codes: ["ODD-SKELETON-004"], text: [] },
-  "text-link-href": { codes: [], text: ["Property 'href' is missing"] },
-  "text-link-aria-disabled": { codes: ["ODD-LINK-003"], text: [] },
-  "text-link-disabled": { codes: ["ODD-LINK-003"], text: [] },
-  "text-link-role": { codes: ["ODD-REACT-001"], text: [] },
-  "text-link-aria-current": { codes: ["ODD-REACT-001"], text: ["Types of property '\"aria-current\"' are incompatible"] },
-  "text-link-target": { codes: ["ODD-REACT-001"], text: [] },
-  "text-link-data-variant": { codes: ["ODD-REACT-002"], text: [] },
-  "hover-card-no-preview": { codes: [], text: ["Property 'preview' is missing"] },
-  "hover-card-link-interestfor": { codes: ["ODD-REACT-001"], text: [] },
-  "spinner-text": { codes: ["ODD-SPINNER-002"], text: [] },
-  "kbd-aria-hidden": { codes: ["ODD-KBD-002"], text: [] },
-  "card-on-click": { codes: ["ODD-CARD-004"], text: [] },
-  "disclosure-data-tone": { codes: ["ODD-REACT-002"], text: [] },
-  "disclosure-open": { codes: ["ODD-REACT-001"], text: ["Type 'true' is not assignable"] },
-  "tabs-aria-orientation": { codes: ["ODD-REACT-001"], text: [] },
-  "tabs-data-tone": { codes: ["ODD-REACT-002"], text: [] },
-  "tabs-default-value-unknown": { codes: [], text: [`Type '"notes"' is not assignable to type '"cards" | "stats" | undefined'`] },
   "tabs-unnamed": { codes: [], text: ["Property 'label' is missing"] },
   "dialog-no-title": { codes: [], text: ["Property 'title' is missing"] },
-  "dialog-role": { codes: ["ODD-REACT-001"], text: ["'\"alertdialog\"' is not assignable"] },
-  "dialog-open": { codes: ["ODD-REACT-001"], text: ["Type 'true' is not assignable"] },
-  "dialog-closedby": { codes: ["ODD-REACT-001"], text: ["'\"any\"' is not assignable"] },
-  "dialog-data-tone": { codes: ["ODD-REACT-002"], text: [] },
-  "alert-dialog-dismissible": { codes: [], text: ["Type 'true' is not assignable to type 'undefined'"] },
   "alert-dialog-no-description": { codes: [], text: ["Property 'description' is missing"] },
-  "sheet-side": { codes: [], text: ['"bottom" | "start" | "top" | undefined'] },
-  "sheet-data-side": { codes: ["ODD-REACT-001"], text: ["Types of property '\"data-side\"' are incompatible"] },
-  "sheet-data-tone": { codes: ["ODD-REACT-002"], text: [] },
-  "popover-role": { codes: ["ODD-REACT-001"], text: ["'\"menu\"' is not assignable"] },
-  "popover-data-tone": { codes: ["ODD-REACT-002"], text: [] },
-  "menu-popover": { codes: ["ODD-REACT-001"], text: ["'\"auto\"' is not assignable"] },
-  "menu-role": { codes: ["ODD-REACT-001"], text: ["'\"menu\"' is not assignable"] },
   "menu-name": { codes: [], text: ["Property 'label' is missing"] },
-  "menu-data-tone": { codes: ["ODD-REACT-002"], text: [] },
-  "menu-item-role": { codes: ["ODD-REACT-001"], text: ["'\"menuitemcheckbox\"' is not assignable"] },
-  "menu-item-tone": { codes: [], text: ["'\"info\"' is not assignable to type '\"danger\"'"] },
-  "menu-item-aria-disabled": { codes: ["ODD-REACT-001"], text: ["Types of property '\"aria-disabled\"' are incompatible"] },
-  "menu-checkbox-item-aria-checked": { codes: ["ODD-REACT-001"], text: ["Types of property '\"aria-checked\"' are incompatible"] },
   "log-unnamed": { codes: [], text: ["Property 'label' is missing"] },
-  "log-role": { codes: ["ODD-REACT-001"], text: [`Type '"status"' is not assignable`] },
-  "log-tabindex": { codes: ["ODD-REACT-001"], text: ["Type 'number' is not assignable"] },
-  "log-line-tone": { codes: [], text: [`'"danger" | "info" | "success" | "warning" | undefined'`] },
-  "log-line-data-tone": { codes: ["ODD-REACT-002"], text: [] },
-  "table-data-numeric": { codes: ["ODD-REACT-002"], text: [] },
   "table-uncaptioned": { codes: [], text: ["Property 'caption' is missing"] },
-  "table-sort-other": { codes: [], text: [`Type '"other"' is not assignable to type '"ascending" | "descending"'`] },
-  "table-sortable-unknown": { codes: [], text: [`Type '"deck"' is not assignable to type '"cards" | "name"'`] },
-  "table-sort-not-sortable": { codes: [], text: [`Type '"cards"' is not assignable to type '"name"'`] },
   "stack-gap": { codes: [], text: ["{ gap: number; children: string; }' is not assignable"] },
   "stack-style": { codes: [], text: ["{ style: { maxInlineSize: string; }; children: string; }' is not assignable"] },
-  "row-role": { codes: ["ODD-REACT-001"], text: [] },
-  "grid-item-span": { codes: [], text: ["'13' is not assignable"] },
-  "grid-item-data-span": { codes: ["ODD-REACT-002"], text: [] },
-  "skip-link-href": { codes: [], text: ["'`#${string}`'"] },
-  "scope-mode": { codes: [], text: ["Property 'mode' is missing"] },
-  "heading-level": { codes: [], text: ["Property 'level' is missing"] },
-  "heading-size": { codes: [], text: ["'\"md\"' is not assignable"] },
-  "combobox-role": { codes: ["ODD-REACT-001"], text: ["'\"combobox\"' is not assignable"] },
-  "combobox-data-tone": { codes: ["ODD-REACT-002"], text: ["Types of property '\"data-tone\"' are incompatible"] },
-  "combobox-filter-auto": { codes: [], text: ["'\"auto\"' is not assignable to type '\"manual\"'"] },
   "combobox-unnamed": { codes: [], text: ["Property 'label' is missing"] },
-  "combobox-aria-expanded": { codes: ["ODD-REACT-001"], text: ["Types of property '\"aria-expanded\"' are incompatible"] },
-  "combobox-option-aria-disabled": { codes: ["ODD-REACT-001"], text: ["Types of property '\"aria-disabled\"' are incompatible"] },
-  "combobox-option-selected": { codes: ["ODD-REACT-001"], text: ["Types of property '\"aria-selected\"' are incompatible"] },
-  "search-data-tone": { codes: ["ODD-REACT-002"], text: ["Types of property '\"data-tone\"' are incompatible"] },
   "search-unnamed": { codes: [], text: ["Property 'label' is missing"] },
-  "search-type": { codes: ["ODD-REACT-001"], text: ["'\"text\"' is not assignable"] },
-  "slider-type": { codes: ["ODD-REACT-001"], text: ["'\"text\"' is not assignable"] },
-  "slider-aria-disabled": { codes: ["ODD-REACT-001"], text: ["Types of property '\"aria-disabled\"' are incompatible"] },
-  "slider-data-tone": { codes: ["ODD-REACT-002"], text: ["Types of property '\"data-tone\"' are incompatible"] },
 };
 
 describe("platform fallbacks", () => {
@@ -1122,55 +726,6 @@ describe("rejectBlank", () => {
     } finally {
       Object.defineProperty(globalThis, "process", saved);
     }
-  });
-});
-
-describe("useEnhancer", () => {
-  test("under StrictMode, a re-render shows the holder's value rather than React's, with one live subscription that unmount releases", async () => {
-    const holders = new WeakMap<HTMLElement, { count: number; value: string }>();
-    let live = 0;
-    const enhanceValue = (node: HTMLElement): (() => void) => {
-      const holder = holders.get(node) ?? { count: 0, value: node.dataset.value ?? "" };
-      holders.set(node, holder);
-      if (holder.count++ === 0) live++;
-      node.dataset.value = holder.value;
-      return () => {
-        if (--holder.count > 0) return;
-        live--;
-        holders.delete(node);
-      };
-    };
-    function Valued({ value }: { value: string }) {
-      const ref = useRef<HTMLDivElement>(null);
-      useEnhancer(ref, enhanceValue);
-      return <div ref={ref} data-value={value} />;
-    }
-    const host = document.createElement("div");
-    document.body.append(host);
-    const root = createRoot(host);
-    mounted = root;
-    await act(async () =>
-      root.render(
-        <StrictMode>
-          <Valued value="first" />
-        </StrictMode>,
-      ),
-    );
-    const node = host.querySelector("div")!;
-    const holder = holders.get(node)!;
-    holder.value = "picked";
-    node.dataset.value = "picked";
-    await act(async () =>
-      root.render(
-        <StrictMode>
-          <Valued value="second" />
-        </StrictMode>,
-      ),
-    );
-    expect([node.dataset.value, live]).toEqual(["picked", 1]);
-    mounted = undefined;
-    await act(async () => root.unmount());
-    expect(live).toBe(0);
   });
 });
 

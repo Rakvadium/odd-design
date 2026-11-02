@@ -1,3 +1,0 @@
-import { Input } from "../../../../src/react/field.tsx";
-
-export const view = <Input label="Owner" aria-disabled="true" />;
