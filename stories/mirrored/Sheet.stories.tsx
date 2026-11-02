@@ -2,7 +2,7 @@ import type { ReactNode } from "react";
 import { Button, RadioGroup, Row, Select, Sheet as OddSheet, type SheetSide } from "odd-design/react";
 import { mirrored } from "../mirror.ts";
 import { icon } from "../mirror-react.ts";
-import { opened } from "../opened.ts";
+import { opened, settle } from "../opened.ts";
 
 const meta = {
   title: "Components/Overlays",
@@ -109,7 +109,7 @@ function openSheet(id: string, trigger: string, side: SheetSide | undefined, dir
       const close = context.canvasElement.querySelector<HTMLElement>(`#${id}-close`)!;
       const tip = context.canvasElement.querySelector<HTMLElement>(`#${id}-close-tooltip`)!;
       if (!tip.matches(":popover-open")) tip.showPopover({ source: close } as ShowPopoverOptions);
-      await Promise.all(tip.getAnimations().map((animation) => animation.finished));
+      settle(tip);
     },
   };
 }
