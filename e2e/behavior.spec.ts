@@ -303,11 +303,11 @@ test.describe("keyboard widgets", () => {
 
     test(`a toast is announced as one sentence, without its buttons (${storybook})`, async ({ page }) => {
       await openStory(page, "components-interactive--toast", "mode:light", "", storybook);
-      await page.getByRole("button", { name: "Save deck" }).click();
+      await page.getByRole("button", { name: "Fail to sync" }).click();
       await expect(page.locator(".odd-toast")).toHaveCount(1);
       const live = page.locator('.odd-toaster [aria-live="polite"]');
       await expect(live).toHaveCount(1);
-      await expect(live).toHaveText("Deck saved. Midnight Control, version 15.");
+      await expect(live).toHaveText("Couldn’t sync. Check your connection. Your changes are safe on this device.");
       await expect(live.locator("button")).toHaveCount(0);
       await page.locator('.odd-toast button[aria-label^="Dismiss"]').click();
       await expect(live).toHaveText("");
@@ -392,19 +392,26 @@ test.describe("machine controls", () => {
       await openStory(page, "components-feedback--log", "mode:light", "", storybook);
       const log = page.locator("#sync-log");
       const fromBottom = () => log.evaluate((el) => Math.round(el.scrollHeight - el.scrollTop - el.clientHeight));
+      // A wheel scroll animates over frames, and under load Firefox and WebKit render none for up to a minute.
+      const scrollTo = (top: number) =>
+        log.evaluate(
+          (el, to) =>
+            new Promise<void>((resolve) => {
+              el.addEventListener("scroll", () => resolve(), { once: true });
+              el.scrollTop = to;
+            }),
+          top,
+        );
       const add = page.locator("#add-log-line");
       expect(await log.evaluate((el) => el.scrollHeight > el.clientHeight), "the story's lines overflow the log").toBe(true);
       await add.click();
       await expect.poll(fromBottom).toBe(0);
-      await log.hover();
-      await page.mouse.wheel(0, -1000);
-      await expect.poll(() => log.evaluate((el) => el.scrollTop)).toBe(0);
+      await scrollTo(0);
       await add.click();
       await expect(log.locator(".odd-log-line"), "Add line added a line").toHaveCount(18);
       expect(await log.evaluate((el) => el.scrollTop), "scrolled up, so the log stays put").toBe(0);
-      await log.hover();
-      await page.mouse.wheel(0, 5000);
-      await expect.poll(fromBottom).toBe(0);
+      await scrollTo(1e6);
+      expect(await fromBottom()).toBe(0);
       await add.click();
       await expect(log.locator(".odd-log-line")).toHaveCount(19);
       await expect.poll(fromBottom).toBe(0);
