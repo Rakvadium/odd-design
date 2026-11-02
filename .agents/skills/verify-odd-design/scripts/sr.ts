@@ -6,6 +6,7 @@ import { spawn, spawnSync } from "node:child_process";
 import { appendFileSync, copyFileSync, existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { join, resolve } from "node:path";
 import type { Pointer } from "bun:ffi";
+import { branchSlug } from "./proof.ts";
 import { findWindow, focusWindow, isForeground, KEY_NAMES, pressChord, windowRect } from "./win.ts";
 
 const ROOT = resolve(import.meta.dir, "../../../..");
@@ -18,7 +19,7 @@ const flag = (name: string) => {
   argv.splice(i, 2);
   return value;
 };
-const RUN = flag("run") ?? process.env.VERIFY_RUN ?? "default";
+const RUN = flag("run") ?? process.env.VERIFY_RUN ?? branchSlug(spawnSync("git", ["branch", "--show-current"], { cwd: ROOT, encoding: "utf8" }).stdout.trim());
 const RUN_DIR = join(ROOT, ".verify", "runs", RUN);
 const EVIDENCE_DIR = join(ROOT, ".verify", "evidence", RUN, "sr");
 const SR_FILE = join(RUN_DIR, "sr.json");

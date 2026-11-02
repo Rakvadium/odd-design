@@ -3,9 +3,10 @@
 // Usage: bun .agents/skills/verify-odd-design/scripts/ctl.ts <command> [args] [--run NAME]
 // Run `ctl.ts help` for the command list.
 import { spawn, spawnSync } from "node:child_process";
-import { appendFileSync, existsSync, mkdirSync, openSync, readFileSync, rmSync, writeFileSync } from "node:fs";
-import { dirname, isAbsolute, join, resolve } from "node:path";
+import { appendFileSync, existsSync, mkdirSync, openSync, readFileSync, realpathSync, rmSync, writeFileSync } from "node:fs";
+import { dirname, isAbsolute, join, relative, resolve, sep } from "node:path";
 import { A11Y_EXCLUDE, A11Y_OPTIONS, A11Y_TAGS } from "../../../../.storybook/a11y.ts";
+import { branchSlug, buildProof, formatEvent, type Event, type Scheme } from "./proof.ts";
 
 const ROOT = resolve(import.meta.dir, "../../../..");
 const argv = process.argv.slice(2);
@@ -16,7 +17,10 @@ const flag = (name: string) => {
   argv.splice(i, 2);
   return value;
 };
-const RUN = flag("run") ?? process.env.VERIFY_RUN ?? "default";
+/** spawnSync's default maxBuffer is 1 MiB; past it the output is cut short and only status and error say so. */
+const GIT_OPTIONS = { cwd: ROOT, encoding: "utf8", maxBuffer: 256 * 1024 * 1024 } as const;
+const git = (...args: string[]) => spawnSync("git", args, GIT_OPTIONS);
+const RUN = flag("run") ?? process.env.VERIFY_RUN ?? branchSlug(git("branch", "--show-current").stdout.trim());
 const RUN_DIR = join(ROOT, ".verify", "runs", RUN);
 const EVIDENCE_DIR = join(ROOT, ".verify", "evidence", RUN);
 const STATE_FILE = join(RUN_DIR, "state.json");
@@ -55,10 +59,11 @@ const freePort = () => {
   server.stop(true);
   return port;
 };
-const transcript = (line: string) => {
+const transcript = (event: Event) => {
   mkdirSync(EVIDENCE_DIR, { recursive: true });
-  appendFileSync(join(EVIDENCE_DIR, "transcript.log"), `[${new Date().toISOString()}] ${line}\n`);
+  appendFileSync(join(EVIDENCE_DIR, "transcript.log"), `${formatEvent(event, new Date())}\n`);
 };
+const evidenceName = (path: string) => relative(EVIDENCE_DIR, path).replaceAll("\\", "/");
 const evidencePath = (name: string) => {
   const path = isAbsolute(name) ? name : join(EVIDENCE_DIR, name);
   mkdirSync(dirname(path), { recursive: true });
@@ -182,6 +187,11 @@ const locate = (selector: string, text?: string) => `(() => {
   const hits = want === null ? all : all.filter((el) => el.textContent.replace(/\\s+/g, " ").trim().includes(want));
   if (hits.length === 0) throw new Error("no element matches " + ${JSON.stringify(selector)} + (want ? " with text " + want : ""));
   return hits[0];
+})()`;
+
+const SCHEME_JS = `(() => {
+  const mode = document.documentElement.dataset.mode;
+  return mode === "light" || mode === "dark" ? mode : matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
 })()`;
 
 const KEYS: Record<string, { key: string; code: string; keyCode: number; text?: string }> = {
@@ -329,18 +339,73 @@ function launchChrome(c: Omit<State["chrome"], "pid">, storybookUrl: string) {
   return chrome;
 }
 
+const ASSETS_REF = "refs/heads/proof-assets";
+
+const isInside = (dir: string, path: string) => {
+  const rel = relative(dir, path);
+  return rel !== "" && rel !== ".." && !rel.startsWith(`..${sep}`) && !isAbsolute(rel);
+};
+
+/** Throws rather than calling fail, because process.exit would skip the finally that removes the temporary index. */
+function publishAssets(cited: readonly string[], slug: string, head: string): (path: string) => string {
+  const index = join(RUN_DIR, "proof-index");
+  const env = { ...process.env, GIT_INDEX_FILE: index };
+  const run = (...args: string[]) => {
+    const r = spawnSync("git", args, { ...GIT_OPTIONS, env });
+    if (r.status !== 0) throw new Error(`git ${args.join(" ")}: ${r.error?.message ?? r.stderr.trim()}`);
+    return r.stdout.trim();
+  };
+  try {
+    const origin = run("remote", "get-url", "origin");
+    const github = /github\.com[:/]([^/]+)\/([^/]+?)(?:\.git)?\/?$/.exec(origin);
+    if (!github) throw new Error(`origin is not a GitHub remote: ${origin}`);
+    const [, owner, repo] = github;
+    // Fetching or pushing through the remote's name updates refs/remotes/origin/*; through its URL no local ref moves.
+    const pushUrl = run("remote", "get-url", "--push", "origin");
+    const evidence = realpathSync(EVIDENCE_DIR);
+    const files = cited.map((path) => {
+      const file = resolve(EVIDENCE_DIR, path);
+      if (!isInside(EVIDENCE_DIR, file) || !isInside(evidence, realpathSync(file))) throw new Error(`cited screenshot ${path} is outside ${EVIDENCE_DIR}`);
+      return { path, file };
+    });
+    const link = (commit: string) => (path: string) => `https://raw.githubusercontent.com/${owner}/${repo}/${commit}/${slug}/${head}/${path}`;
+    for (let attempt = 1; attempt <= 3; attempt++) {
+      const tip = run("ls-remote", origin, ASSETS_REF).split(/\s/)[0];
+      if (tip) {
+        run("fetch", "--no-tags", "--no-write-fetch-head", origin, ASSETS_REF);
+        // merge-base exits 1 only when the histories are unrelated, which an orphan branch must be.
+        const related = git("merge-base", "origin/main", tip);
+        if (related.status !== 1)
+          throw new Error(`origin ${ASSETS_REF} at ${tip} is not unrelated to origin/main (git merge-base exited ${related.status}); refusing to publish onto it`);
+        run("read-tree", tip);
+      } else run("read-tree", "--empty");
+      for (const { path, file } of files) run("update-index", "--add", "--cacheinfo", `100644,${run("hash-object", "-w", file)},${slug}/${head}/${path}`);
+      const tree = run("write-tree");
+      if (tip && tree === run("rev-parse", `${tip}^{tree}`)) return link(tip);
+      const commit = run("commit-tree", tree, ...(tip ? ["-p", tip] : []), "-m", `proof: ${slug} @ ${head}`);
+      const push = git("push", pushUrl, `${commit}:${ASSETS_REF}`);
+      if (push.status === 0) return link(commit);
+      console.error(`push to ${ASSETS_REF} rejected (attempt ${attempt} of 3): ${push.error?.message ?? push.stderr.trim()}`);
+    }
+    throw new Error(`could not push to ${ASSETS_REF} after 3 attempts`);
+  } finally {
+    rmSync(index, { force: true });
+    rmSync(`${index}.lock`, { force: true });
+  }
+}
+
 // ---------- commands ----------
 
 const commands: Record<string, (args: string[]) => Promise<void>> = {
   async help() {
-    console.log(`ctl.ts <command> [--run NAME]   (run defaults to $VERIFY_RUN or "default")
+    console.log(`ctl.ts <command> [--run NAME]   (run defaults to $VERIFY_RUN or the current branch as a slug)
   up [--headed]                        start Storybook + headless Chrome on free ports, wait until ready.
                                        --headed opens a visible window at 0,0 instead (needed by sr.ts)
   restart-chrome                       relaunch this run's Chrome with the same profile and port. sr.ts start uses it:
                                        Chrome only sends accessibility events to a screen reader running at launch
   doctor                               read-only health check of this run's instances
   goto <storyId> [globals] [args]      open a story iframe; globals like "chrome:glass;palette:aurora;mode:dark"
-  state                                print html[data-*] appearance + story-root summary
+  state                                print html[data-*] appearance + story-root summary (a read, for proof)
   eval <js>                            evaluate JS in the page (awaits promises), print JSON
   click <css> [--text T]               real mouse click on the first match (optionally whose text contains T)
   hover <css> [--text T]               real mouse move onto the first match (leaves the pointer there)
@@ -349,13 +414,19 @@ const commands: Record<string, (args: string[]) => Promise<void>> = {
   press <Key>                          real key press: ${Object.keys(KEYS).join(", ")}, or one letter/digit
   type <text>                          insert text at the focused element
   emulate <feature=value>...           media features, e.g. prefers-color-scheme=dark prefers-reduced-motion=reduce
-  screenshot <file.png> [--full]       save to .verify/evidence/<run>/ (or an absolute path)
+  screenshot <file.png> [--full]       save to .verify/evidence/<run>/ (or an absolute path); records the light or
+                                       dark scheme the page rendered
   aria <file.txt>                      save an accessibility-tree snapshot to the evidence dir and print it
   axe [storyId...] [--appearance quick|full] [--update-rules]
                                        axe-core with the shared rules in .storybook/a11y.ts on every story (or the named
                                        ones), rendered and with each overlay opened; exits 1 on any violation or if the
                                        rules that ran differ from .storybook/a11y-rules.txt. quick = light+dark,
                                        full = every chrome and palette. --update-rules rewrites that file
+  proof [--publish]                    check transcript.log against the stories this branch changed, write PROOF.md
+                                       to the evidence dir, and exit 1 listing what is missing. Each changed story needs,
+                                       in light and in dark, after one goto: a screenshot, a click/hover/press/type, a
+                                       screenshot, and an eval/aria/state read. --publish (only on a pass) pushes the
+                                       cited screenshots to the proof-assets branch, rewrites PROOF.md links, then runs down
   down                                 kill what this run started and delete its scratch dir (evidence is kept)`);
   },
 
@@ -380,7 +451,7 @@ const commands: Record<string, (args: string[]) => Promise<void>> = {
     const binary = findChrome();
     const profile = join(RUN_DIR, "chrome-profile");
     const chrome = launchChrome({ binary, profile, port: cdpPort, headed }, `http://127.0.0.1:${sbPort}`);
-    const head = spawnSync("git", ["rev-parse", "--short", "HEAD"], { cwd: ROOT, encoding: "utf8" }).stdout.trim();
+    const head = git("rev-parse", "--short", "HEAD").stdout.trim();
     const state: State = {
       run: RUN,
       head,
@@ -395,7 +466,7 @@ const commands: Record<string, (args: string[]) => Promise<void>> = {
       const r = await fetch(`${state.storybook.url}/index.json`);
       return r.ok && (await r.text()).includes(EXPECTED_STORY) ? true : undefined;
     });
-    transcript(`up: storybook ${state.storybook.url} (pid ${sb.pid}), chrome cdp ${cdpPort} (pid ${chrome.pid}), HEAD ${head}`);
+    transcript({ kind: "up", storybook: state.storybook.url, head });
     console.log(`READY run="${RUN}" storybook=${state.storybook.url} evidence=${EVIDENCE_DIR}`);
   },
 
@@ -407,7 +478,7 @@ const commands: Record<string, (args: string[]) => Promise<void>> = {
     s.chrome.pid = chrome.pid!;
     writeFileSync(STATE_FILE, JSON.stringify(s, null, 2));
     await waitFor("Chrome CDP", 30_000, async () => ((await fetch(`http://127.0.0.1:${s.chrome.port}/json/version`).catch(() => null))?.ok ? true : undefined));
-    transcript(`restart-chrome: pid ${chrome.pid}`);
+    transcript({ kind: "restart-chrome", pid: chrome.pid! });
     console.log(`chrome restarted: pid ${chrome.pid}`);
   },
 
@@ -433,8 +504,8 @@ const commands: Record<string, (args: string[]) => Promise<void>> = {
     } catch (e) {
       checks.push(["chrome CDP answers", false, String(e)]);
     }
-    const head = spawnSync("git", ["rev-parse", "--short", "HEAD"], { cwd: ROOT, encoding: "utf8" }).stdout.trim();
-    const dirty = spawnSync("git", ["status", "--porcelain", "--", "src", "stories", ".storybook"], { cwd: ROOT, encoding: "utf8" }).stdout.trim();
+    const head = git("rev-parse", "--short", "HEAD").stdout.trim();
+    const dirty = git("status", "--porcelain", "--", "src", "stories", ".storybook").stdout.trim();
     checks.push(["HEAD matches launch", head === s.head, `launched ${s.head}, now ${head}${dirty ? " (+uncommitted src/stories changes, served live by HMR)" : ""}`]);
     for (const [name, ok, detail] of checks) console.log(`${ok ? "ok  " : "FAIL"} ${name}: ${detail}`);
     if (checks.some(([, ok]) => !ok)) process.exit(1);
@@ -446,7 +517,7 @@ const commands: Record<string, (args: string[]) => Promise<void>> = {
     const page = await Page.connect(s);
     const { url, html } = await render(page, s, id, globals, args);
     page.close();
-    transcript(`goto ${url} -> rendered, html data=${JSON.stringify(html)}`);
+    transcript({ kind: "goto", story: id, url, html });
     console.log(`rendered ${id} at ${url}
 html data: ${JSON.stringify(html)}`);
   },
@@ -531,7 +602,7 @@ html data: ${JSON.stringify(html)}`);
     }
     const reviewKeys = [...reviewGroups].map(([key, els]) => `${key} (${els.size} element${els.size === 1 ? "" : "s"})`).sort();
     writeFileSync(evidencePath("axe/report.json"), JSON.stringify({ violations: report, needsReview: review }, null, 2));
-    transcript(`axe appearance=${appearance} stories=${targets.length} runs=${runs} violations=${report.length} needsReview=${reviewKeys.length}`);
+    transcript({ kind: "axe", appearance, stories: targets.length, violations: report.length, needsReview: reviewKeys.length });
     for (const g of report) {
       console.log(`FAIL ${g.story}  ${g.rule} (${g.impact})  ${g.targets.join(" ")}\n     ${g.help}\n     in: ${[...new Set(g.where)].slice(0, 4).join("; ")}${g.where.length > 4 ? ` (+${g.where.length - 4} more)` : ""}`);
     }
@@ -573,6 +644,7 @@ html data: ${JSON.stringify(html)}`);
       activeElement: document.activeElement?.outerHTML.slice(0, 160),
     })`);
     page.close();
+    transcript({ kind: "state", dialogs: out.openDialogs, popovers: out.openPopovers, focus: out.activeElement ?? "" });
     console.log(JSON.stringify(out, null, 2));
   },
 
@@ -581,7 +653,7 @@ html data: ${JSON.stringify(html)}`);
     const page = await Page.connect(readState());
     const value = await page.eval(js);
     page.close();
-    transcript(`eval ${js} -> ${JSON.stringify(value)}`);
+    transcript({ kind: "eval", js, result: value });
     console.log(JSON.stringify(value, null, 2));
   },
 
@@ -599,7 +671,7 @@ html data: ${JSON.stringify(html)}`);
       await page.send("Input.dispatchMouseEvent", { type, x: box.x, y: box.y, button: "left", clickCount: 1 });
     await page.eval(`new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r)))`);
     page.close();
-    transcript(`click ${selector}${text ? ` text=${text}` : ""} at (${Math.round(box.x)},${Math.round(box.y)}) -> ${box.tag}`);
+    transcript({ kind: "click", target: selector, text, tag: box.tag });
     console.log(`clicked ${box.tag}`);
   },
 
@@ -616,7 +688,7 @@ html data: ${JSON.stringify(html)}`);
     await page.send("Input.dispatchMouseEvent", { type: "mouseMoved", x: box.x, y: box.y });
     await page.eval(`new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r)))`);
     page.close();
-    transcript(`hover ${selector}${text ? ` text=${text}` : ""} at (${Math.round(box.x)},${Math.round(box.y)}) -> ${box.tag}`);
+    transcript({ kind: "hover", target: selector, text, tag: box.tag });
     console.log(`hovering ${box.tag}`);
   },
 
@@ -624,7 +696,7 @@ html data: ${JSON.stringify(html)}`);
     const n = Number(ms);
     if (!Number.isFinite(n) || n < 0 || n > 5000) fail("usage: wait <ms> (0-5000)");
     await Bun.sleep(n);
-    transcript(`wait ${n}ms`);
+    transcript({ kind: "wait", ms: n });
     console.log(`waited ${n}ms`);
   },
 
@@ -635,7 +707,7 @@ html data: ${JSON.stringify(html)}`);
     const tag = await page.eval(`(() => { const el = ${locate(selector, text)}; el.focus(); return document.activeElement === el ? el.outerHTML.slice(0, 120) : null; })()`);
     page.close();
     if (!tag) fail(`${selector} did not take focus`);
-    transcript(`focus ${selector} -> ${tag}`);
+    transcript({ kind: "focus", target: selector, text, tag });
     console.log(`focused ${tag}`);
   },
 
@@ -648,7 +720,7 @@ html data: ${JSON.stringify(html)}`);
     await page.eval(`new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r)))`);
     const active = await page.eval(`document.activeElement?.outerHTML.slice(0, 120)`);
     page.close();
-    transcript(`press ${name} -> focus ${active}`);
+    transcript({ kind: "press", key: name!, focus: active ?? "" });
     console.log(`pressed ${name}; focus now ${active}`);
   },
 
@@ -657,7 +729,7 @@ html data: ${JSON.stringify(html)}`);
     const page = await Page.connect(readState());
     await page.send("Input.insertText", { text });
     page.close();
-    transcript(`type ${JSON.stringify(text)}`);
+    transcript({ kind: "type", text });
     console.log(`typed ${JSON.stringify(text)}`);
   },
 
@@ -668,7 +740,7 @@ html data: ${JSON.stringify(html)}`);
     });
     const state = readState();
     writeFileSync(STATE_FILE, JSON.stringify({ ...state, emulate: features }, null, 2));
-    transcript(`emulate ${pairs.join(" ")}`);
+    transcript({ kind: "emulate", features: pairs });
     console.log(`emulating ${pairs.join(" ") || "(cleared)"}`);
   },
 
@@ -676,11 +748,12 @@ html data: ${JSON.stringify(html)}`);
     const full = argv.includes("--full");
     if (!name) fail("usage: screenshot <file.png> [--full]");
     const page = await Page.connect(readState());
+    const scheme: Scheme = await page.eval(SCHEME_JS);
     const { data } = await page.send("Page.captureScreenshot", { format: "png", captureBeyondViewport: full });
     page.close();
     const path = evidencePath(name);
     writeFileSync(path, Buffer.from(data, "base64"));
-    transcript(`screenshot ${path}`);
+    transcript({ kind: "screenshot", path: evidenceName(path), full, scheme });
     console.log(path);
   },
 
@@ -691,9 +764,52 @@ html data: ${JSON.stringify(html)}`);
     page.close();
     const path = evidencePath(name);
     writeFileSync(path, tree + "\n");
-    transcript(`aria ${path}`);
+    transcript({ kind: "aria", path: evidenceName(path) });
     console.log(tree);
     console.log(`\nsaved ${path}`);
+  },
+
+  async proof() {
+    const publishing = argv.includes("--publish");
+    const s = readState();
+    if (git("rev-parse", "--verify", "--quiet", "origin/main").status !== 0) fail("no origin/main; run: git fetch origin main");
+    const checked = (...args: string[]) => {
+      const r = git(...args);
+      if (r.status !== 0) fail(`git ${args.join(" ")}: ${r.error?.message ?? r.stderr.trim()}`);
+      return r.stdout;
+    };
+    const base = checked("merge-base", "HEAD", "origin/main").trim();
+    const head = git("rev-parse", "--short", "HEAD").stdout.trim();
+    const branch = git("branch", "--show-current").stdout.trim();
+    const log = join(EVIDENCE_DIR, "transcript.log");
+    const paths = (nulSeparated: string) => nulSeparated.split("\0").filter(Boolean);
+    const proof = buildProof({
+      run: RUN,
+      branch,
+      head,
+      base: base.slice(0, head.length),
+      transcript: existsSync(log) ? readFileSync(log, "utf8") : "",
+      // Pinned so user config (mnemonicPrefix, noprefix, external diff, textconv) cannot change the headers proof.ts parses.
+      diff: checked("-c", "core.quotepath=false", "diff", "--no-ext-diff", "--no-textconv", "--src-prefix=a/", "--dst-prefix=b/", "-U0", "--no-renames", "--no-color", base),
+      untracked: paths(checked("ls-files", "-z", "--others", "--exclude-standard")),
+      index: await (await fetch(`${s.storybook.url}/index.json`)).json(),
+      source: (path) => (existsSync(join(ROOT, path)) ? readFileSync(join(ROOT, path), "utf8") : undefined),
+      changedSince: (from) => {
+        const r = git("diff", "--name-only", "-z", "--no-renames", from, "HEAD");
+        return r.status === 0 ? paths(r.stdout) : undefined;
+      },
+    });
+    const out = join(EVIDENCE_DIR, "PROOF.md");
+    mkdirSync(EVIDENCE_DIR, { recursive: true });
+    writeFileSync(out, proof.render((path) => path));
+    for (const line of proof.report) console.log(line);
+    console.log(`wrote ${out}`);
+    if (!proof.ok) process.exit(1);
+    if (!publishing) return console.log(proof.cited.length ? "passed. Publish with: ctl.ts proof --publish, or stop with: ctl.ts down" : "passed with nothing to publish. Stop with: ctl.ts down");
+    if (proof.cited.length) writeFileSync(out, proof.render(publishAssets(proof.cited, branchSlug(branch), head)));
+    console.log(`published ${proof.cited.length} screenshots to ${ASSETS_REF} and rewrote ${out}`);
+    await commands.down!([]);
+    console.log(`post it with: gh pr comment --body-file ${out}`);
   },
 
   async down() {
@@ -709,7 +825,7 @@ html data: ${JSON.stringify(html)}`);
       mkdirSync(EVIDENCE_DIR, { recursive: true });
       writeFileSync(join(EVIDENCE_DIR, "storybook.log"), readFileSync(s.storybook.log));
     }
-    transcript(`down: killed chrome ${s.chrome.pid} and storybook ${s.storybook.pid}`);
+    transcript({ kind: "down" });
     for (let i = 0; i < 10; i++) {
       try {
         rmSync(RUN_DIR, { recursive: true, force: true });
