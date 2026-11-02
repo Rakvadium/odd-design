@@ -63,7 +63,6 @@ const transcript = (event: Event) => {
   mkdirSync(EVIDENCE_DIR, { recursive: true });
   appendFileSync(join(EVIDENCE_DIR, "transcript.log"), `${formatEvent(event, new Date())}\n`);
 };
-/** Evidence-relative, forward slashes. What screenshot and aria events store, and what PROOF.md links. */
 const evidenceName = (path: string) => relative(EVIDENCE_DIR, path).replaceAll("\\", "/");
 const evidencePath = (name: string) => {
   const path = isAbsolute(name) ? name : join(EVIDENCE_DIR, name);
@@ -190,7 +189,6 @@ const locate = (selector: string, text?: string) => `(() => {
   return hits[0];
 })()`;
 
-/** What the page renders: an explicit data-mode, or for system, the (possibly emulated) preference. */
 const SCHEME_JS = `(() => {
   const mode = document.documentElement.dataset.mode;
   return mode === "light" || mode === "dark" ? mode : matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
@@ -345,11 +343,7 @@ const isInside = (dir: string, path: string) => {
   return rel !== "" && rel !== ".." && !rel.startsWith(`..${sep}`) && !isAbsolute(rel);
 };
 
-/**
- * Uploads cited PNGs to <slug>/<head>/<path> on the orphan proof-assets branch and returns a mapping to
- * raw URLs pinned to the resulting commit. Never touches HEAD, the index, the working tree, or any local ref.
- * It throws rather than calling fail, because process.exit would skip the finally that removes the temporary index.
- */
+/** Throws rather than calling fail, because process.exit would skip the finally that removes the temporary index. */
 function publishAssets(cited: readonly string[], slug: string, head: string): (path: string) => string {
   const index = join(RUN_DIR, "proof-index");
   const env = { ...process.env, GIT_INDEX_FILE: index };
@@ -368,7 +362,6 @@ function publishAssets(cited: readonly string[], slug: string, head: string): (p
     const evidence = realpathSync(EVIDENCE_DIR);
     const files = cited.map((path) => {
       const file = resolve(EVIDENCE_DIR, path);
-      // realpath catches a symlink inside the evidence dir that points out of it.
       if (!isInside(EVIDENCE_DIR, file) || !isInside(evidence, realpathSync(file))) throw new Error(`cited screenshot ${path} is outside ${EVIDENCE_DIR}`);
       return { path, file };
     });

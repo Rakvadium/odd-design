@@ -1,11 +1,5 @@
-// Owns the verify transcript format and everything proof derives from it. No fs, git, or network.
-
 export type Scheme = "light" | "dark";
 
-/**
- * One transcript line. ctl.ts writes only these, through formatEvent, so every line it writes is
- * one buildProof can read. Paths are relative to the run's evidence dir, with forward slashes.
- */
 export type Event =
   | { readonly kind: "up"; readonly storybook: string; readonly head: string }
   | { readonly kind: "down" }
@@ -133,12 +127,9 @@ export function buildProof(input: ProofInput): Proof {
   };
 }
 
-// Private below: tests and ctl.ts reach none of it except through buildProof.
-
 type Kind = Event["kind"];
 type Role = "boundary" | "goto" | "interaction" | "shot" | "read" | "neutral";
 
-/** Adding an Event kind without a role fails the typecheck. focus calls el.focus(), which no user does, so it is neutral. */
 const ROLE = {
   up: "boundary",
   down: "boundary",
@@ -180,7 +171,6 @@ const CHECK: Record<Field, (v: unknown) => boolean> = {
 };
 
 const TARGET = { target: "string", text: "string?", tag: "string" } as const;
-/** The fields each kind must carry for its line to parse. */
 const SHAPE = {
   up: { storybook: "string", head: "string" },
   down: {},
@@ -218,7 +208,6 @@ function parseEvent(line: string): Event | undefined {
 
 type Session = { readonly head: string | undefined; readonly events: readonly Event[]; readonly bad: readonly { line: number; text: string }[] };
 
-/** The events after the last `up`. Earlier lines, including ones from older transcript formats, are history. */
 function lastSession(text: string): Session {
   const lines = text.split(/\r?\n/);
   for (let i = lines.length - 1; i >= 0; i--) {
@@ -247,17 +236,13 @@ function staleness(upHead: string | undefined, input: ProofInput): string[] {
   return [`STALE HEAD moved from ${upHead} to ${input.head} since the last up, and those commits touch ${touched.join(", ")}; ${restart}`];
 }
 
-/**
- * screenshot overwrites its file, so only the last event for a path describes a PNG that still exists.
- * Paths compare case-insensitively because Windows and macOS file systems do.
- */
+/** Paths compare case-insensitively because Windows and macOS file systems do. */
 function withoutOverwrittenShots(events: readonly Event[]): Event[] {
   const last = new Map<string, Event>();
   for (const e of events) if (e.kind === "screenshot") last.set(e.path.toLowerCase(), e);
   return events.filter((e) => e.kind !== "screenshot" || last.get(e.path.toLowerCase()) === e);
 }
 
-/** Events from one goto up to the next goto or boundary. A goto reloads the page, so evidence never spans one. */
 type Segment = { readonly story: string; readonly html: Readonly<Record<string, string>>; readonly events: Event[] };
 
 function segments(events: readonly Event[]): Segment[] {
@@ -299,7 +284,6 @@ const STEPS = ["before", "interaction", "after", "read"] as const satisfies read
 
 type SegmentVerdict = { readonly pair: Pair; readonly progress: number };
 
-/** A shot of the scheme before the first interaction, an interaction, then a shot of the scheme and a read after it. */
 function judgeSegment(segment: Segment, scheme: Scheme): SegmentVerdict {
   const { story, events } = segment;
   const first = events.findIndex(isInteraction);
@@ -316,7 +300,6 @@ function judgeSegment(segment: Segment, scheme: Scheme): SegmentVerdict {
   return { pair: { kind: "gap", story, scheme, missing: STEPS[reached] }, progress: reached };
 }
 
-/** The latest proven segment wins. Otherwise the gap names the first missing piece of the segment that got furthest. */
 function judge(story: string, scheme: Scheme, all: readonly Segment[]): Pair {
   let best: SegmentVerdict = { pair: { kind: "gap", story, scheme, missing: "goto" }, progress: -1 };
   for (const segment of all) {
@@ -327,12 +310,10 @@ function judge(story: string, scheme: Scheme, all: readonly Segment[]): Pair {
   return best.pair;
 }
 
-/** What render-affecting means. AGENTS.md states the same three paths in prose. */
 const UI_PATHS = ["src/", "stories/", ".storybook/"] as const;
 const STORY_FILE = /^stories\/.+\.stories\.ts$/;
 const isUiPath = (path: string) => UI_PATHS.some((p) => path.startsWith(p));
 
-/** 1-based inclusive lines in the new file. A pure deletion touches the line above it (or line 1). */
 type LineRange = { readonly start: number; readonly end: number };
 type FileChange =
   | { readonly kind: "whole"; readonly path: string }
@@ -367,7 +348,6 @@ function parseDiff(diff: string): Diff {
   const flush = () => {
     if (!current) return;
     const { path, kind, lines } = current;
-    // A modified file with no hunks (a mode change) has no line to map, so it counts as a whole-file change.
     files.push(kind === "lines" && lines.length ? { kind, path, lines } : kind === "deleted" ? { kind, path } : { kind: "whole", path });
   };
   for (const line of diff.split(/\r?\n/)) {
@@ -396,7 +376,6 @@ type Span = { readonly name: string | undefined; readonly start: number; readonl
 const STATEMENT = /^(?:export |import |const |let |var |function |async |class |type |interface |enum |declare )/;
 const COMMENT = /^\s*(?:\/\/|\/\*|\*)/;
 
-/** Top-level statement spans of a story file. Every top-level statement in stories/ starts at column 0. */
 function statementSpans(source: string): Span[] {
   const lines = source.split(/\r?\n/);
   const starts: { name: string | undefined; start: number }[] = [];
@@ -428,10 +407,6 @@ type Requirement =
 
 const NO_ROW = "no row in the live index; the story failed to load or Storybook is stale";
 
-/**
- * A changed line inside an `export const <Name>` span requires that story. Any other changed line in a
- * story file (imports, meta, helpers) requires every story in the file, so an unsure mapping over-requires.
- */
 function requiredStories(files: readonly FileChange[], input: ProofInput): Requirement {
   const changes = [...files, ...input.untracked.map((path): FileChange => ({ kind: "whole", path }))].filter((c) => isUiPath(c.path));
   if (!changes.length) return { kind: "none" };
@@ -472,7 +447,6 @@ const clip = (s: string, max = 120) => {
   const flat = s.replace(/\s+/g, " ").trim();
   return flat.length > max ? `${flat.slice(0, max - 1)}…` : flat;
 };
-/** An inline code span that survives a GFM table cell. */
 const code = (s: string) => {
   const text = clip(s).replaceAll("|", "\\|");
   return text.includes("`") ? `\`\` ${text} \`\`` : `\`${text}\``;
