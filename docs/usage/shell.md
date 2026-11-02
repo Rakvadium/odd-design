@@ -2,6 +2,16 @@
 
 This code applies to `odd-shell-header` and `odd-shell-main`. Shared codes are in [General usage rules](general.md).
 
+In React, render `Shell` from `odd-design/react` with a `title`, a `status`, and `actions`, and its `GridItem`s inside. It writes the header, the `h1`, the `role="status"` slot, the actions slot, and `main.odd-shell-main.odd-grid`. [Lay out a page](react.md#lay-out-a-page) covers the props.
+
+```tsx
+<Shell title="Orders" status={<Badge tone="success">Synced</Badge>} actions={<Button>Export</Button>}>
+  <GridItem span={8}>…</GridItem>
+</Shell>
+```
+
+The component compiles to the HTML below.
+
 ```html
 <div class="odd-shell">
   <header class="odd-shell-header">

@@ -411,21 +411,23 @@ test.describe("machine controls", () => {
     });
   }
 
-  test("the app grid narrows panels to half, then to one column, by its own width", async ({ page }, testInfo) => {
-    await openStory(page, "components-layout--app-shell", "mode:light");
-    const fractions = () =>
-      page.locator("#shell-grid").evaluate((grid) => {
-        const content = grid.clientWidth - parseFloat(getComputedStyle(grid).paddingLeft) - parseFloat(getComputedStyle(grid).paddingRight);
-        return [...grid.children].map((panel) => Math.round((panel.getBoundingClientRect().width / content) * 100));
-      });
-    expect(await fractions()).toEqual([66, 32, 100]);
-    await shot(page, testInfo, "shell-wide.png", "#storybook-root");
-    await page.setViewportSize({ width: 900, height: 900 });
-    expect(await fractions()).toEqual([66, 49, 100]);
-    await page.setViewportSize({ width: 560, height: 900 });
-    expect(await fractions()).toEqual([100, 100, 100]);
-    await shot(page, testInfo, "shell-narrow.png", "#storybook-root");
-  });
+  for (const storybook of ["html", "react"] as const) {
+    test(`the app grid narrows panels to half, then to one column, by its own width (${storybook})`, async ({ page }, testInfo) => {
+      await openStory(page, "components-layout--app-shell", "mode:light", "", storybook);
+      const fractions = () =>
+        page.locator("#storybook-root .odd-shell-main").evaluate((grid) => {
+          const content = grid.clientWidth - parseFloat(getComputedStyle(grid).paddingLeft) - parseFloat(getComputedStyle(grid).paddingRight);
+          return [...grid.children].map((panel) => Math.round((panel.getBoundingClientRect().width / content) * 100));
+        });
+      expect(await fractions()).toEqual([66, 32, 100]);
+      await shot(page, testInfo, `shell-wide-${storybook}.png`, "#storybook-root");
+      await page.setViewportSize({ width: 900, height: 900 });
+      expect(await fractions()).toEqual([66, 49, 100]);
+      await page.setViewportSize({ width: 560, height: 900 });
+      expect(await fractions()).toEqual([100, 100, 100]);
+      await shot(page, testInfo, `shell-narrow-${storybook}.png`, "#storybook-root");
+    });
+  }
 });
 
 test.describe("text and loading", () => {

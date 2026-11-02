@@ -355,23 +355,23 @@ import { Code, Pre } from "odd-design/react";
 ## Make a whole card clickable
 
 ```tsx
-import { Badge, Card, CardFooter, CardLink } from "odd-design/react";
+import { Badge, Card } from "odd-design/react";
 
-<Card interactive>
-  <p className="odd-eyebrow">Interactive</p>
-  <h3 className="odd-card-title">
-    <CardLink href="/decks/ember">Ember Aggro</CardLink>
-  </h3>
-  <p className="odd-muted">The whole card is clickable. Screen readers hear a single link.</p>
-  <CardFooter>
-    <Badge tone="warning">Rotating soon</Badge>
-  </CardFooter>
+<Card
+  href="/decks/ember"
+  eyebrow="Interactive"
+  title="Ember Aggro"
+  description="The whole card is clickable. Screen readers hear a single link."
+  footer={<Badge tone="warning">Rotating soon</Badge>}
+/>;
+<Card as="section" title="Pose" headingLevel={2}>
+  <p>Base 0, shoulder 45.</p>
 </Card>;
 ```
 
-`Card` renders an `article` with the class `odd-card`. `interactive` sets `data-interactive`, and `interactive={false}` leaves it off. `CardLink` renders an `a` with the class `odd-card-link`, and `href` is a required prop. In an interactive card, the link's `::after` covers the card, so a click anywhere on the card follows the link, and a screen reader hears one link named by the title. `CardFooter` renders a `div` with the class `odd-card-footer`. The title has no part. Write the heading at the level your page needs, with `className="odd-card-title"`.
+`Card` renders `article.odd-card`, or a `section` or `div` with `as`. It writes the `eyebrow` as `p.odd-eyebrow`, the `title` as `h3.odd-card-title` (`headingLevel` sets the level), the `description` as `p.odd-muted`, then the children and `div.odd-card-footer` with the `footer`. With `href`, the card gets `data-interactive` and its title holds the one `a.odd-card-link`, through the router link from `OddProvider`. The link's `::after` covers the card, so a click anywhere on it follows the link, and a screen reader hears one link named by the title. `href` needs a `title`.
 
-An interactive card holds exactly one link or button, its `CardLink`. A second control sits under the stretched link and takes no click, so put it outside the card. A `CardLink` in a card without `interactive` does not stretch and loses its focus outline. The runtime checker reports both as `ODD-CARD-003` on the rendered page. `onClick` and `tabIndex` on `Card` are type errors (`ODD-CARD-004`), because the card itself is not a control. `data-span` places a card in an `odd-grid`, and other system `data-` attributes on `Card` are type errors (`ODD-CARD-006`). For a named panel or a plain box, write a raw `section` or `div` with the class `odd-card`.
+An interactive card holds exactly one link, its title's. A second control sits under the stretched link and takes no click, so put it outside the card. The runtime checker reports one as `ODD-CARD-003`. `onClick` and `tabIndex` on `Card` are type errors (`ODD-CARD-004`), because the card itself is not a control. Place a card in a `Grid` through a `GridItem`.
 
 ## Build a disclosure
 
@@ -576,6 +576,9 @@ import { Grid, GridItem, Row, Scope, SkipLink, Stack, VisuallyHidden } from "odd
 | `VisuallyHidden` | `span.odd-visually-hidden`, or `p` in `as` | None. |
 | `SkipLink` | `a.odd-skip-link` through the router link | `href`, typed `` `#${string}` ``, so a link that is not a fragment is a type error (`ODD-SKIP-001`). |
 | `Scope` | `div.odd-scope`, or the tag in `as` | `chrome`, `palette`, and `mode`, all three required (`ODD-SCOPE-001`). |
+| `Shell` | `div.odd-shell` > `header.odd-shell-header` + `main.odd-shell-main.odd-grid` | `title` as the `h1`, `status` in `div.odd-shell-status[role=status]`, and `actions` in `div.odd-shell-actions`. Both slots render when empty. Its children are the main area's `GridItem`s. |
+
+A full-height page is a `Shell`, as in `<Shell title="Orders" status={<Badge tone="success">Synced</Badge>} actions={<Button>Export</Button>}>` with `GridItem`s inside. A page has one `main`, so it has one `Shell`.
 
 `Stack`, `Row`, and `Grid` take no `gap` and no `style`. Each one keeps the gap its stylesheet sets. `role` and system `data-` attributes, such as `data-span`, are type errors on every one of them (`ODD-REACT-001` and `ODD-REACT-002`). Other props, such as `id` and `aria-labelledby`, go to the element.
 
@@ -623,8 +626,7 @@ The type error names the code and the fix. The table lists what each mistake pri
 | A `filter` other than `manual` on `Combobox` | `'"auto"' is not assignable to type '"manual"'` |
 | `aria-hidden` on `Kbd` | `ODD-KBD-002` |
 | `onClick` or `tabIndex` on `Card` | `ODD-CARD-004` |
-| A system `data-` attribute on `Card` other than `data-span`, such as `data-tone` | `ODD-CARD-006` |
-| A system `data-` attribute on `CardLink` or `CardFooter`, such as `data-interactive` | `ODD-CARD-007` |
+| `href` on `Card` with no `title` | "Property 'title' is missing" |
 | `open` on `Disclosure` | `ODD-REACT-001` |
 | A system `data-` attribute on `Disclosure`, such as `data-tone` | `ODD-REACT-002` |
 | `aria-orientation` or `data-activation` on `Tabs` | `ODD-REACT-001` |

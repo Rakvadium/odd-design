@@ -4,7 +4,8 @@ import { Avatar, AvatarGroup, type AvatarSize } from "../../../../src/react/avat
 import { Badge, type BadgeTone } from "../../../../src/react/badge.tsx";
 import { Breadcrumb } from "../../../../src/react/breadcrumb.tsx";
 import { Button } from "../../../../src/react/button.tsx";
-import { Card, CardFooter, CardLink } from "../../../../src/react/card.tsx";
+import { Card } from "../../../../src/react/card.tsx";
+import { Shell } from "../../../../src/react/shell.tsx";
 import { Code, Pre } from "../../../../src/react/code.tsx";
 import { Combobox, ComboboxOption, type ComboboxFilter } from "../../../../src/react/combobox.tsx";
 import { AlertDialog, Dialog } from "../../../../src/react/dialog.tsx";
@@ -253,15 +254,18 @@ export function SearchHint() {
 }
 
 export function DeckCard({ href, name, selected }: { href: string; name: string; selected: boolean }) {
+  return selected ? (
+    <Card href={href} title={name} headingLevel={2} footer={<Badge tone="success">Legal</Badge>} className="deck" data-testid="deck" />
+  ) : (
+    <Card as="section" title={name} description="Not in a collection yet." />
+  );
+}
+
+export function OrdersPage({ synced }: { synced: boolean }) {
   return (
-    <Card interactive={selected} aria-labelledby="deck-name" className="deck" data-span="4" data-testid="deck">
-      <h2 className="odd-card-title" id="deck-name">
-        <CardLink href={href}>{name}</CardLink>
-      </h2>
-      <CardFooter>
-        <Badge tone="success">Legal</Badge>
-      </CardFooter>
-    </Card>
+    <Shell title="Orders" status={synced ? <Badge tone="success">Synced</Badge> : null} actions={<Button>Export</Button>} data-testid="orders">
+      <GridItem span={8}>Panel</GridItem>
+    </Shell>
   );
 }
 

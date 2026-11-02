@@ -6,7 +6,7 @@ import { renderToStaticMarkup } from "react-dom/server";
 import { appendLogLine, closedByFallback, enhance, enhanceTabs, interestForFallback, toast } from "../src/js/enhance.ts";
 import { Button } from "../src/react/button.tsx";
 import { Breadcrumb } from "../src/react/breadcrumb.tsx";
-import { Card, CardLink } from "../src/react/card.tsx";
+import { Card } from "../src/react/card.tsx";
 import type { AnchorProps } from "../src/react/context.ts";
 import { HoverCard, HoverCardLink } from "../src/react/hover-card.tsx";
 import { OddProvider } from "../src/react/provider.tsx";
@@ -285,11 +285,7 @@ describe("OddProvider", () => {
     <>
       <TextLink href="/guide">Guide</TextLink>
       <Button href="/docs">Docs</Button>
-      <Card interactive>
-        <h3>
-          <CardLink href="/decks/ember">Ember Aggro</CardLink>
-        </h3>
-      </Card>
+      <Card href="/decks/ember" title="Ember Aggro" />
       <Breadcrumb items={[{ label: "Home", href: "/" }]} />
       <HoverCard preview="Midnight Control, by Mira Okafor">
         <p>
@@ -991,8 +987,6 @@ const failures: Record<string, { codes: string[]; text: string[] }> = {
   "spinner-text": { codes: ["ODD-SPINNER-002"], text: [] },
   "kbd-aria-hidden": { codes: ["ODD-KBD-002"], text: [] },
   "card-on-click": { codes: ["ODD-CARD-004"], text: [] },
-  "card-link-href": { codes: [], text: ["Property 'href' is missing"] },
-  "card-data-tone": { codes: ["ODD-CARD-006"], text: [] },
   "disclosure-data-tone": { codes: ["ODD-REACT-002"], text: [] },
   "disclosure-open": { codes: ["ODD-REACT-001"], text: ["Type 'true' is not assignable"] },
   "tabs-aria-orientation": { codes: ["ODD-REACT-001"], text: [] },

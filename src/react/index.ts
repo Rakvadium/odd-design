@@ -19,6 +19,7 @@ export * from "./popover.tsx";
 export * from "./provider.tsx";
 export * from "./search.tsx";
 export * from "./separator.tsx";
+export * from "./shell.tsx";
 export * from "./sheet.tsx";
 export * from "./skeleton.tsx";
 export * from "./slider.tsx";

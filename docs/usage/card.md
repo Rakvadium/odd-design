@@ -2,6 +2,14 @@
 
 These codes apply to `odd-card`, `odd-card-title`, `odd-card-link`, and `odd-card-footer`. Shared codes are in [General usage rules](general.md).
 
+In React, render `Card` from `odd-design/react` with a `title`, and an `href` for a clickable card. It writes the title heading, the one `odd-card-link` inside it, `data-interactive`, and the footer, so ODD-CARD-002, ODD-CARD-003, and ODD-CARD-005 cannot happen. [Make a whole card clickable](react.md#make-a-whole-card-clickable) covers the props.
+
+```tsx
+<Card href="/decks/ember" title="Ember Aggro" footer={<Badge tone="warning">Rotating soon</Badge>} />
+```
+
+The component compiles to this HTML:
+
 ```html
 <article class="odd-card" data-interactive>
   <p class="odd-eyebrow">Interactive</p>
@@ -19,7 +27,7 @@ Fails when a card class is on the wrong element. `odd-card` belongs on `article`
 
 Screen reader users move between cards by heading, so a title in a `p` or `div` hides the card from that list. A card on an `a` or `button` makes the whole card one control, and its name becomes every word in it.
 
-Move the class onto its element. In React, use `Card`, `CardLink`, and `CardFooter`, and write the title heading yourself.
+Move the class onto its element. In React, use `Card`, which renders each of them.
 
 ## ODD-CARD-002
 
@@ -27,7 +35,7 @@ Fails when `data-interactive` is not empty or `true`.
 
 `card.css` reads only the presence of `data-interactive`, so `data-interactive="false"` still makes the card interactive. The checker then skips ODD-CARD-003 on that card, so this is the one code it reports.
 
-Remove the attribute for a static card. In React, `interactive={false}` renders nothing.
+Remove the attribute for a static card. In React, `Card` writes it only with `href`.
 
 ## ODD-CARD-003
 
@@ -51,7 +59,7 @@ Fails when an `a.odd-card-link` has no `href`.
 
 An anchor without an `href` takes no focus and has no link role, so keyboard and screen reader users cannot open the card.
 
-Add the `href`. For an action that is not navigation, use a `button` with `odd-card-link`. In React, `href` is a required prop of `CardLink`.
+Add the `href`. For an action that is not navigation, use a `button` with `odd-card-link`. In React, `Card` writes the link only from `href`.
 
 ## ODD-CARD-006
 
@@ -59,7 +67,7 @@ Fails when `odd-card` has a system `data-` attribute other than `data-interactiv
 
 `card.css` reads only `data-interactive`. `data-tone` copied from a badge does nothing, and `data-interactiv` leaves the card static. `data-span` places the card in an `odd-grid`, so it passes. An app `data-` attribute, the appearance axes, and the headless allowlist pass.
 
-Remove the attribute, or correct its name. In React, pass `interactive`. A system `data-` attribute such as `data-tone` on `Card` is a type error, and `data-span` is not.
+Remove the attribute, or correct its name. In React, pass `href`, and place the card in a `GridItem`.
 
 ## ODD-CARD-007
 
@@ -67,4 +75,4 @@ Fails when `odd-card-title`, `odd-card-link`, or `odd-card-footer` has a system 
 
 None of them reads a `data-` attribute. `data-interactive` on the link does nothing, because `card.css` selects it on `odd-card` only. An app `data-` attribute, the appearance axes, and the headless allowlist pass.
 
-Remove the attribute. Put `data-interactive` and `data-span` on the card. In React, a system `data-` attribute on `CardLink` or `CardFooter` is a type error.
+Remove the attribute. Put `data-interactive` and `data-span` on the card. In React, `Card` writes the link and the footer.

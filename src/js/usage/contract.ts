@@ -412,9 +412,6 @@ export const WRAPPERS = {
     props: { variant: "data-variant", size: "data-size", iconOnly: "data-icon-only" },
     element: { attribute: "href", present: "a", absent: "button" },
   },
-  Card: { source: "odd-design/react", className: "odd-card", props: { interactive: "data-interactive" }, element: "article" },
-  CardLink: { source: "odd-design/react", className: "odd-card-link", props: {}, element: "a" },
-  CardFooter: { source: "odd-design/react", className: "odd-card-footer", props: {}, element: "div" },
   Combobox: { source: "odd-design/react", className: "odd-combobox", props: {}, element: "div" },
   ComboboxOption: { source: "odd-design/react", className: "odd-combobox-option", props: {}, element: "div" },
 } as const satisfies Record<string, Wrapper>;
@@ -429,8 +426,6 @@ export type ExportName =
   | "Breadcrumb"
   | "Button"
   | "Card"
-  | "CardFooter"
-  | "CardLink"
   | "Checkbox"
   | "Code"
   | "Combobox"
@@ -467,6 +462,7 @@ export type ExportName =
   | "Select"
   | "Separator"
   | "Sheet"
+  | "Shell"
   | "Skeleton"
   | "SkipLink"
   | "Slider"
@@ -498,9 +494,9 @@ export const CLASSES = {
   "odd-breadcrumb": { by: ["Breadcrumb"] },
   "odd-button": { by: ["Button"] },
   "odd-card": { by: ["Card"] },
-  "odd-card-footer": { by: ["CardFooter"] },
-  "odd-card-link": { by: ["CardLink"] },
-  "odd-card-title": { by: [] },
+  "odd-card-footer": { by: ["Card"] },
+  "odd-card-link": { by: ["Card"] },
+  "odd-card-title": { by: ["Card"] },
   "odd-choice": { by: ["Checkbox", "Switch", "RadioGroup"] },
   "odd-code": { by: ["Code"] },
   "odd-combobox": { by: ["Combobox"] },
@@ -514,7 +510,7 @@ export const CLASSES = {
   "odd-error": { by: ["Input", "Textarea", "Select", "Slider", "Combobox"] },
   "odd-eyebrow": { by: ["Eyebrow"] },
   "odd-field": { by: ["Input", "Textarea", "Select", "Slider", "Combobox"] },
-  "odd-grid": { by: ["Grid"] },
+  "odd-grid": { by: ["Grid", "Shell"] },
   "odd-heading": { by: ["Heading"] },
   "odd-hint": { by: ["Input", "Textarea", "Select", "Slider", "Combobox"] },
   "odd-hover-card": { by: ["HoverCard"] },
@@ -543,11 +539,11 @@ export const CLASSES = {
   "odd-sheet-body": { by: ["Sheet"] },
   "odd-sheet-footer": { by: ["Sheet"] },
   "odd-sheet-header": { by: ["Sheet"] },
-  "odd-shell": { by: [] },
-  "odd-shell-actions": { by: [] },
-  "odd-shell-header": { by: [] },
-  "odd-shell-main": { by: [] },
-  "odd-shell-status": { by: [] },
+  "odd-shell": { by: ["Shell"] },
+  "odd-shell-actions": { by: ["Shell"] },
+  "odd-shell-header": { by: ["Shell"] },
+  "odd-shell-main": { by: ["Shell"] },
+  "odd-shell-status": { by: ["Shell"] },
   "odd-skeleton": { by: ["Skeleton"] },
   "odd-skip-link": { by: ["SkipLink"] },
   "odd-slider": { by: ["Slider"] },

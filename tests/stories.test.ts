@@ -79,6 +79,7 @@ test("the catalog has every story file's stories, and the mirrored story ids equ
     "components-kbd--parts",
     "components-kbd--playground",
     "components-kbd--shortcut-list",
+    "components-layout--app-shell",
     "components-link--in-text",
     "components-link--playground",
     "components-link--states",
@@ -96,6 +97,10 @@ test("the catalog has every story file's stories, and the mirrored story ids equ
     "components-overlays--sheet-top",
     "components-overlays--tooltip",
     "components-overlays--tooltip-open",
+    "components-shell--empty-actions",
+    "components-shell--empty-status",
+    "components-shell--no-title",
+    "components-shell--parts",
     "components-spinner--parts",
     "components-spinner--playground",
     "components-spinner--states",
@@ -171,15 +176,8 @@ test("TabsVertical's tablist is vertical", () => {
   expect(checkedRoot("components-interactive--tabs-vertical").querySelector('[role="tablist"]')?.getAttribute("aria-orientation")).toBe("vertical");
 });
 
-/** Story files that still render an inline style. A family's commit rewrites its stories and removes its file. */
-const STYLED = [
-  "stories/mirrored/Card.stories.ts",
-];
-
-test("no mirrored story renders a style attribute, except in the files still listed, and each listed file still renders one", () => {
-  const styled = (entry: MirroredEntry) => rendered(entry).querySelector("[style]") !== null;
-  expect(react.filter((entry) => !STYLED.includes(entry.file) && styled(entry)).map((entry) => entry.id)).toEqual([]);
-  expect(STYLED.filter((file) => !react.some((entry) => entry.file === file && styled(entry)))).toEqual([]);
+test("no mirrored story renders a style attribute", () => {
+  expect(react.filter((entry) => rendered(entry).querySelector("[style]") !== null).map((entry) => entry.id)).toEqual([]);
 });
 
 for (const entry of html) {

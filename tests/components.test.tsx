@@ -11,8 +11,6 @@ import {
   Breadcrumb,
   Button,
   Card,
-  CardFooter,
-  CardLink,
   Checkbox,
   Code,
   Combobox,
@@ -49,6 +47,7 @@ import {
   Select,
   Separator,
   Sheet,
+  Shell,
   SkipLink,
   Skeleton,
   Slider,
@@ -81,8 +80,6 @@ type Fixture = {
   readonly element: ReactElement;
   /** Other exports in the fixture, whose classes it may carry. */
   readonly uses?: readonly ExportName[];
-  /** Classes the fixture writes by hand, because no export renders them yet. */
-  readonly writes?: readonly ClassName[];
   /** The exact static markup. */
   readonly markup?: string;
 };
@@ -287,46 +284,26 @@ const FIXTURES: { readonly [K in ExportName]: readonly [Fixture, ...Fixture[]] }
   ],
   Card: [
     {
-      name: "interactive, with one link and a footer",
-      uses: ["CardLink", "CardFooter"],
-      writes: ["odd-card-title"],
+      name: "a link, with an eyebrow, a description, content, and a footer",
+      uses: ["Eyebrow", "Muted", "Badge"],
       element: (
-        <Card interactive className="deck">
-          <h3 className="odd-card-title">
-            <CardLink href="/decks/ember">Ember Aggro</CardLink>
-          </h3>
-          <CardFooter>60 cards</CardFooter>
+        <Card href="/decks/ember" title="Ember Aggro" eyebrow="Interactive" description="Burns out fast." footer={<Badge>60 cards</Badge>} className="deck">
+          <p>Rotating soon.</p>
         </Card>
       ),
       markup:
-        '<article class="odd-card deck" data-interactive=""><h3 class="odd-card-title"><a href="/decks/ember" class="odd-card-link">Ember Aggro</a></h3><div class="odd-card-footer">60 cards</div></article>',
+        '<article class="odd-card deck" data-interactive=""><p class="odd-eyebrow">Interactive</p><h3 class="odd-card-title"><a href="/decks/ember" class="odd-card-link">Ember Aggro</a></h3><p class="odd-muted">Burns out fast.</p><p>Rotating soon.</p><div class="odd-card-footer"><span class="odd-badge">60 cards</span></div></article>',
     },
-  ],
-  CardFooter: [
     {
-      name: "under a title",
-      uses: ["Card"],
-      writes: ["odd-card-title"],
+      name: "a static section with a level-2 title, and a plain article",
       element: (
-        <Card>
-          <h3 className="odd-card-title">Ember Aggro</h3>
-          <CardFooter>60 cards</CardFooter>
-        </Card>
+        <>
+          <Card as="section" title="Pose" headingLevel={2} />
+          <Card>Base 0, shoulder 45.</Card>
+        </>
       ),
-    },
-  ],
-  CardLink: [
-    {
-      name: "the one link in an interactive card",
-      uses: ["Card"],
-      writes: ["odd-card-title"],
-      element: (
-        <Card interactive>
-          <h3 className="odd-card-title">
-            <CardLink href="/decks/tide">Tide Control</CardLink>
-          </h3>
-        </Card>
-      ),
+      markup:
+        '<section class="odd-card"><h2 class="odd-card-title">Pose</h2></section><article class="odd-card">Base 0, shoulder 45.</article>',
     },
   ],
   Checkbox: [
@@ -982,6 +959,20 @@ const FIXTURES: { readonly [K in ExportName]: readonly [Fixture, ...Fixture[]] }
       ),
     },
   ],
+  Shell: [
+    {
+      name: "a page with a title, a status, actions, and a panel",
+      uses: ["Heading", "Badge", "Button", "GridItem"],
+      element: (
+        <Shell title="Orders" status={<Badge tone="success">Synced</Badge>} actions={<Button>Export</Button>} className="app">
+          <GridItem span={8}>Panel</GridItem>
+        </Shell>
+      ),
+      markup:
+        '<div class="odd-shell app"><header class="odd-shell-header"><h1 class="odd-heading">Orders</h1><div class="odd-shell-status" role="status"><span class="odd-badge" data-tone="success">Synced</span></div><div class="odd-shell-actions"><button class="odd-button" type="button">Export</button></div></header><main class="odd-shell-main odd-grid"><div data-span="8">Panel</div></main></div>',
+    },
+    { name: "empty slots and no title", element: <Shell /> },
+  ],
   Skeleton: [
     {
       name: "blocks in a busy region",
@@ -1242,7 +1233,7 @@ for (const [name, fixtures] of entries) {
       if (fixture.markup !== undefined) expect(renderToStaticMarkup(fixture.element)).toBe(fixture.markup);
       const root = rendered(fixture);
       checkRoot(root);
-      const allowed = new Set([...owned(name), ...(fixture.uses ?? []).flatMap(owned), ...(fixture.writes ?? [])]);
+      const allowed = new Set([...owned(name), ...(fixture.uses ?? []).flatMap(owned)]);
       expect(oddClasses(root).filter((className) => !allowed.has(className))).toEqual([]);
       expect(unresolved(root)).toEqual([]);
       expect(await hydrationErrors(fixture.element)).toEqual([]);
@@ -1254,11 +1245,6 @@ for (const [name, fixtures] of entries) {
     expect(owned(name).filter((className) => !seen.has(className))).toEqual([]);
   });
 }
-
-test("a fixture writes by hand only the classes no export renders", () => {
-  const written = entries.flatMap(([name, fixtures]) => fixtures.flatMap((fixture) => (fixture.writes ?? []).map((className) => [name, fixture.name, className] as const)));
-  expect(written.filter(([, , className]) => CLASSES[className].by.length > 0)).toEqual([]);
-});
 
 test("no fixture's static markup has a style attribute", () => {
   const styled = entries.flatMap(([name, fixtures]) => fixtures.filter((fixture) => rendered(fixture).querySelector("[style]") !== null).map((fixture) => `${name} ${fixture.name}`));

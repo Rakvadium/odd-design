@@ -1,4 +1,4 @@
-import { Alert, Avatar, AvatarGroup, Badge, Button, Card, CardFooter, CardLink, Disclosure, Input, Meter, Muted, Row, Search, Separator, Skeleton, Slider, Stack, StatValue, Switch, Tabs, Toaster, VisuallyHidden } from "odd-design/react";
+import { Alert, Avatar, AvatarGroup, Badge, Button, Card, Disclosure, Input, Meter, Muted, Row, Search, Separator, Skeleton, Slider, Stack, StatValue, Switch, Tabs, Toaster, VisuallyHidden } from "odd-design/react";
 
 export function App() {
   return (
@@ -19,12 +19,7 @@ export function App() {
         <VisuallyHidden>Loading decks…</VisuallyHidden>
         <Skeleton shape="avatar" />
       </Stack>
-      <Card interactive>
-        <h3 className="odd-card-title">
-          <CardLink href="/decks/ember">Ember Aggro</CardLink>
-        </h3>
-        <CardFooter>60 cards</CardFooter>
-      </Card>
+      <Card href="/decks/ember" title="Ember Aggro" footer="60 cards" />
       <Disclosure name="faq" summary="Does it need JavaScript?" defaultOpen>
         No.
       </Disclosure>
