@@ -64,7 +64,7 @@ export const States = mirrored<Args>({
     children: [
       { of: "div", props: { className: "odd-row", "aria-busy": "true" }, children: [spinner(), " Loading projects…"] },
       { of: "div", props: { className: "odd-row" }, children: ["3 projects"] },
-      { of: "Button", props: { variant: "primary", "aria-busy": "true" }, children: ["Saving…"] },
+      { of: "Button", props: { variant: "primary", busy: true }, children: ["Saving…"] },
     ],
   }),
   aria: `

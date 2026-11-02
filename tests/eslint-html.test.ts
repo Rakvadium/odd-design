@@ -472,6 +472,12 @@ const places: Record<string, readonly (readonly [string, number, number, string]
     ["ODD-SKIP-001", 4, 26, "href"],
     ["ODD-SKIP-001", 5, 26, "href"],
   ],
+  "odd-tooltip-001.bad.html": [
+    ["ODD-TOOLTIP-001", 2, 1, "<span"],
+    ["ODD-TOOLTIP-001", 3, 42, "popover"],
+    ["ODD-TOOLTIP-001", 4, 1, "<span"],
+    ["ODD-TOOLTIP-001", 5, 59, "role"],
+  ],
   "odd-grid-001.bad.html": [
     ["ODD-GRID-001", 2, 1, "<div"],
     ["ODD-GRID-001", 2, 1, "<div"],
@@ -733,7 +739,7 @@ function storySources(dir: string): string[] {
 
 test("stories have no odd/usage findings, so a new warning fails here", () => {
   const files = storySources("stories");
-  expect(files).toContain("stories/mirrored/Button.stories.ts");
+  expect(files).toContain("stories/Showcase.stories.ts");
   const found = files.flatMap((file) =>
     lint(file).map((message) => [file, codeOf(message.message), message.line, message.column, message.ruleId, message.severity]),
   );

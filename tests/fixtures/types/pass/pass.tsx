@@ -41,20 +41,20 @@ export function Views() {
       <Button variant="primary" size="lg" onClick={save} ref={ref}>
         Save
       </Button>
-      <Button type="submit" aria-disabled="true" aria-busy="true">
+      <Button type="submit" disabled busy={flag}>
         Pay
       </Button>
       <Button type="reset" variant="ghost" size="sm" className="wide">
         Reset
       </Button>
-      <Button href="/docs" aria-current="page" interestfor="docs-card">
+      <Button href="/docs" current={flag} newTab tooltip="The full guide">
         Docs
       </Button>
-      <Button iconOnly aria-label="Close">
+      <Button iconOnly label="Close" id="close">
         ×
       </Button>
-      <Button iconOnly={flag} aria-labelledby="close-label">
-        ×
+      <Button tooltip="Anyone with the link can view it" aria-describedby="publish-note" aria-expanded={flag}>
+        Publish
       </Button>
       <Button command="show-modal" commandfor="settings">
         Settings
@@ -452,7 +452,7 @@ export function FilterSheet({ side, onApply }: { side: SheetProps["side"]; onApp
       <Sheet ref={sheet} id="filters" side={side} aria-labelledby="filters-title" closedby="any" onClose={() => sheet.current?.returnValue === "apply" && onApply()} className="wide" data-testid="filters" data-state="open">
         <SheetHeader>
           <h2 className="odd-dialog-title" id="filters-title">Filters</h2>
-          <Button variant="ghost" iconOnly aria-label="Close" commandfor="filters" command="close">×</Button>
+          <Button variant="ghost" iconOnly label="Close" commandfor="filters" command="close">×</Button>
         </SheetHeader>
         <form className="odd-sheet-body" id="filters-form" method="dialog" />
         <SheetFooter data-testid="footer">

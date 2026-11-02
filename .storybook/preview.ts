@@ -1,4 +1,4 @@
-import type { Preview } from "@storybook/html-vite";
+import type { Decorator, Preview } from "@storybook/html-vite";
 import "@fontsource-variable/outfit";
 import "@fontsource-variable/jetbrains-mono";
 import "@fontsource-variable/bricolage-grotesque";
@@ -11,9 +11,22 @@ import { mirrorOf } from "../stories/mirror.ts";
 import { toReact } from "../stories/mirror-react.ts";
 
 // Page-wide fallbacks, installed once as an app would. Each is a no-op where the browser has the feature.
-interestForFallback();
 closedByFallback();
 avatarFallback();
+
+/** Sets the toolbar's appearance on the page. The React Storybook uses it alone. */
+export const appearance: Decorator = (story, { globals }) => {
+  applyAppearance(globals as Appearance);
+  return story();
+};
+
+// The HTML-only stories rely on a page-wide interest fallback. The React Storybook leaves it out,
+// so its tooltips prove that Button installs the fallback itself.
+let pageInterest: (() => void) | undefined;
+const interest: Decorator = (story) => {
+  pageInterest ??= interestForFallback();
+  return story();
+};
 
 let unenhance: (() => void) | undefined;
 
@@ -29,12 +42,7 @@ const preview: Preview = {
     mode: toolbar("Mode", "mirror", MODES),
   },
   initialGlobals: { chrome: "calm", palette: "default", mode: "system" },
-  decorators: [
-    (story, { globals }) => {
-      applyAppearance(globals as Appearance);
-      return story();
-    },
-  ],
+  decorators: [appearance, interest],
   parameters: {
     layout: "padded",
     a11y: { test: "error", options: A11Y_OPTIONS },

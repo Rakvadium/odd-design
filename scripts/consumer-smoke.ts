@@ -12,8 +12,10 @@ const CLIENT_MODULES = ["button.js", "combobox.js", "tabs.js", "toast.js"];
 const FORBIDDEN =
   "ODD-BUTTON-007: the disabled attribute is forbidden on odd-button. Allowed values: none. Fix: remove disabled and set aria-disabled. docs/usage/button.md#odd-button-007";
 
-const BAD_TYPE =
-  `src/App.tsx(4,18): error TS2322: Type 'true' is not assignable to type '"${FORBIDDEN}"'.`;
+const OWNED =
+  "ODD-REACT-001: an odd-design/react component writes role and the attributes it owns. Allowed values: the component props. Fix: remove the attribute, and pass the prop that sets it, such as label, title, current, disabled, or busy. docs/usage/react.md#odd-react-001";
+
+const BAD_TYPE = `src/App.tsx(4,15): error TS2322: Type '"group"' is not assignable to type '"${OWNED}"'.`;
 
 const HAND_WRITTEN =
   "ODD-REACT-003: an odd- class in JSX hand-writes markup that odd-design/react renders, without the roles, ids, and wiring the component owns. Allowed values: odd-design/react components. Fix: remove the class, and render the component this message names. docs/usage/react.md#odd-react-003 Found odd-button. Render Button from odd-design/react.";

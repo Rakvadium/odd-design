@@ -1,5 +1,4 @@
 import type { Meta, StoryObj } from "@storybook/html-vite";
-import { icons } from "./icons.ts";
 
 const meta = {
   title: "Components/Overlays",
@@ -15,28 +14,6 @@ const meta = {
 
 export default meta;
 type Story = StoryObj;
-
-export const Tooltip: Story = {
-  parameters: {
-    docs: {
-      description: {
-        story:
-          "Shown on hover or keyboard focus through `interestfor`, with the browser's show and hide delays. The icon-only buttons are named by their tooltips through `aria-labelledby`, so they keep a name where tooltips can't show. `Publish` points `aria-describedby` at its tooltip instead, because it already has a visible label.",
-      },
-    },
-  },
-  render: () => /* html */ `<div class="odd-row" style="padding-block-start: var(--space-8)">
-    <button class="odd-button" data-variant="ghost" data-icon-only aria-labelledby="tip-copy" interestfor="tip-copy">${icons.copy}</button>
-    <div class="odd-tooltip" id="tip-copy" popover="hint" role="tooltip">Duplicate deck</div>
-    <button class="odd-button" data-variant="ghost" data-icon-only aria-labelledby="tip-share" interestfor="tip-share">${icons.share}</button>
-    <div class="odd-tooltip" id="tip-share" popover="hint" role="tooltip">Share link</div>
-    <button class="odd-button" data-variant="ghost" data-icon-only aria-labelledby="tip-delete" interestfor="tip-delete">${icons.trash}</button>
-    <div class="odd-tooltip" id="tip-delete" popover="hint" role="tooltip">Delete deck</div>
-    <hr class="odd-separator" aria-orientation="vertical">
-    <button class="odd-button" data-variant="primary" aria-describedby="tip-publish" interestfor="tip-publish">Publish</button>
-    <div class="odd-tooltip" id="tip-publish" popover="hint" role="tooltip">Anyone with the link can view it</div>
-  </div>`,
-};
 
 export const HoverCard: Story = {
   parameters: {

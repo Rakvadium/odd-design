@@ -12,35 +12,43 @@ When `Button`, `MenuItem`, or `TableSort` renders a `button`, it defaults to `ty
 import { Button } from "odd-design/react";
 
 <Button variant="primary">Save</Button>;
-<Button href="/docs" aria-current="page">Docs</Button>;
+<Button href="/docs" current>Docs</Button>;
+<Button iconOnly label="Duplicate deck"><CopyIcon aria-hidden="true" /></Button>;
+<Button tooltip="Anyone with the link can view it">Publish</Button>;
 ```
 
-`Button` renders an `a` when you pass `href`, and a `button` otherwise. The element always has the class `odd-button`, plus the words in `className`. The table shows how the other props map to the element.
+`Button` renders an `a` when you pass `href`, and a `button` otherwise. The element always has the class `odd-button`, plus the words in `className`. `Button` writes every attribute in the table, and passing that attribute yourself is a type error that names the prop (`ODD-REACT-001`).
 
 | Prop | What the element gets |
 | --- | --- |
-| `href` | The element is an `a`. Without `href`, it is a `button`. |
+| `href` | The element is an `a`, through the router link from `OddProvider`. Without `href`, it is a `button`. |
 | `variant` | `data-variant` |
 | `size` | `data-size` |
-| `iconOnly` | `data-icon-only` with an empty value. `iconOnly={false}` leaves it out. |
+| `iconOnly` with `label` | `data-icon-only`, and a tooltip with the label that names the button through `aria-labelledby`. `label` is required with `iconOnly`, and a blank one throws `ODD-BUTTON-008` outside production. |
+| `tooltip` | A tooltip that `aria-describedby` points at, merged with yours. Only a button with visible text takes it. |
+| `disabled` | `aria-disabled="true"`, and a click that does nothing. Only on a `button`. |
+| `busy` | `aria-busy="true"`, the busy ring, and a click that does nothing. Only on a `button`. |
+| `current` | `aria-current="page"`. Only on a link. |
+| `newTab` | `target="_blank"`, `rel="noopener"`, and the hidden words "(opens in a new tab)". Only on a link. |
 | `type` | On a `button`, `type`. It defaults to `button`, and takes `submit` and `reset`. |
+| `command` and `commandfor` | The invoker command for a target elsewhere on the page. |
 | Any other prop | The attribute with the same name. |
 
-Use `variant`, `size`, and `iconOnly`. Passing `data-variant`, `data-size`, or `data-icon-only` yourself is a type error.
+The tooltip renders as a `span.odd-tooltip` right after the button, and `interestfor` opens it on hover or keyboard focus. Where the browser lacks `interestfor`, `Button` installs the fallback itself while it shows a tooltip, so the app needs no `enhance()` call for it. [Tooltip usage rules](tooltip.md) has the compiled HTML.
 
-## Disable a button with aria-disabled
+`aria-expanded`, `aria-controls`, `aria-describedby`, and `aria-haspopup` pass through, for a `Button` your own code uses as a toggle.
 
-Set `aria-disabled="true"`. The button stays focusable and stays in the tab order. A click calls `preventDefault` and does not call your `onClick`. So a `type="submit"` button does not submit its form, by click or by Enter in a field.
+## Disable a button
+
+Set `disabled`. The button gets `aria-disabled="true"`, so it stays focusable and stays in the tab order. A click calls `preventDefault` and does not call your `onClick`. So a `type="submit"` button does not submit its form, by click or by Enter in a field. `busy` does the same while it draws the busy ring.
 
 ```tsx
-<Button type="submit" aria-disabled="true">
+<Button type="submit" disabled>
   Pay
 </Button>
 ```
 
-`Button` never renders the `disabled` attribute, and the `disabled` prop is a type error. `aria-disabled="false"` works like no `aria-disabled`.
-
-A link takes no `aria-disabled`. Render a button when the control should not navigate.
+`Button` never renders the `disabled` attribute. A link takes neither `disabled` nor `busy`. Render a button when the control should not navigate.
 
 ## Build a field
 
@@ -285,7 +293,7 @@ import { Spinner } from "odd-design/react";
 
 `Spinner` renders a `span` with the class `odd-spinner`, a ring 1em across in the text color that turns while something loads. Pass `aria-hidden="true"`, as on the element. It is a required prop, and it takes only the string `"true"`. The font size where the ring sits sets its size. Under reduced motion it turns slower instead of stopping.
 
-The spinner is decoration, like a skeleton block. Set `aria-busy="true"` on the region that is loading, and put the loading words beside the spinner or in an `odd-visually-hidden` span inside that region. Remove the spinner, the words, and `aria-busy` when the content arrives. No checker reads the region. Children, `role`, `aria-label`, `aria-labelledby`, and `aria-busy` on `Spinner` are type errors (`ODD-SPINNER-002`). A Button that is working takes `aria-busy="true"` and draws its own ring, so don't put a `Spinner` inside it.
+The spinner is decoration, like a skeleton block. Set `aria-busy="true"` on the region that is loading, and put the loading words beside the spinner or in an `odd-visually-hidden` span inside that region. Remove the spinner, the words, and `aria-busy` when the content arrives. No checker reads the region. Children, `role`, `aria-label`, `aria-labelledby`, and `aria-busy` on `Spinner` are type errors (`ODD-SPINNER-002`). A `Button` that is working takes `busy` and draws its own ring, so don't put a `Spinner` inside it.
 
 ## Link to a page
 
@@ -692,11 +700,12 @@ The type error names the code and the fix. The table lists what each mistake pri
 
 | Mistake | The error prints |
 | --- | --- |
-| `disabled` | `ODD-BUTTON-007` |
-| `iconOnly` with no `aria-label` and no `aria-labelledby` | `ODD-BUTTON-008` |
-| `aria-current` without `href` | `ODD-BUTTON-012` |
-| `aria-disabled` with `href` | `ODD-BUTTON-013` |
-| A system `data-` attribute the button does not take, such as `data-tone` | `ODD-BUTTON-015` |
+| `role`, or an attribute `Button` writes, such as `aria-label`, `aria-disabled`, or `aria-current` | `ODD-REACT-001` |
+| A system `data-` attribute on `Button`, such as `data-tone` or `data-variant` | `ODD-REACT-002` |
+| `iconOnly` with no `label` | "Property 'label' is missing" |
+| `label` without `iconOnly` | "Property 'iconOnly' is missing" |
+| `current` or `newTab` without `href` | "Property 'href' is missing" |
+| `disabled` or `busy` with `href` | "Types of property 'disabled' are incompatible" |
 | `hidden` or `aria-hidden` on `FieldError` | `ODD-FIELD-002` |
 | `aria-disabled` on `Input`, `Textarea`, or `Select` | `ODD-FIELD-003` |
 | `aria-disabled` on `Choice`, `Switch`, or `Segmented` | `ODD-CHOICE-003` |
@@ -765,7 +774,7 @@ The type error names the code and the fix. The table lists what each mistake pri
 
 TypeScript shortens a long type in an error. Set `noErrorTruncation` in `tsconfig.json` to see the whole message.
 
-Some rules are not type errors. `Button` picks the element from `href`, so you cannot write an anchor without `href` (`ODD-BUTTON-009`) or a button with `href` (`ODD-BUTTON-010`). Those two codes apply to a raw `a` or `button` with the `odd-button` class. Each Field and Choice part, `Badge`, each Alert part, each Avatar part, `Separator`, `Skeleton`, each Card part, `Disclosure`, `Tabs`, `Search`, `Slider`, `Meter`, `Progress`, `Toaster`, `Popover`, `Dialog`, `DialogActions`, each Sheet part, `Menu`, `MenuItem`, `TableWrap`, `Table`, `TableSort`, `TextLink`, `Spinner`, `Combobox`, `ComboboxList`, `ComboboxOption`, `Breadcrumb`, `Kbd`, `Code`, and `Pre` picks its own element too, so `ODD-FIELD-001`, `ODD-CHOICE-001`, `ODD-BADGE-001`, `ODD-ALERT-001`, `ODD-AVATAR-001`, `ODD-SEPARATOR-001`, `ODD-SKELETON-001`, `ODD-CARD-001`, `ODD-DISCLOSURE-001`, `ODD-TABS-001`, `ODD-SEARCH-001`, `ODD-SLIDER-001`, `ODD-METER-001`, `ODD-TOAST-001`, `ODD-POPOVER-001`, `ODD-DIALOG-001`, `ODD-SHEET-001`, `ODD-MENU-001`, `ODD-TABLE-001`, `ODD-LINK-001`, `ODD-SPINNER-001`, `ODD-COMBOBOX-001`, `ODD-BREADCRUMB-001`, `ODD-KBD-001`, and `ODD-CODE-001` apply only to raw markup. Visible text in an icon-only button (`ODD-BUTTON-014`), the links and buttons in a card (`ODD-CARD-003`), the summary of a disclosure (`ODD-DISCLOSURE-002`), the tablist of a tab set (`ODD-TABS-002`), the tabs in a tab set (`ODD-TABS-004`), the input and the icon of a search (`ODD-SEARCH-002` and `ODD-SEARCH-003`), a `target` without `rel` on a link (`ODD-LINK-007`), the input and the list of a combobox (`ODD-COMBOBOX-002` and `ODD-COMBOBOX-003`), the list of a breadcrumb (`ODD-BREADCRUMB-003`), and a misspelled `data-` name are not type errors either. The [runtime checker](runtime.md) reports each of these.
+Some rules are not type errors. `Button` picks the element from `href`, so you cannot write an anchor without `href` (`ODD-BUTTON-009`) or a button with `href` (`ODD-BUTTON-010`). Those two codes apply to a raw `a` or `button` with the `odd-button` class. Each Field and Choice part, `Badge`, each Alert part, each Avatar part, `Separator`, `Skeleton`, each Card part, `Disclosure`, `Tabs`, `Search`, `Slider`, `Meter`, `Progress`, `Toaster`, `Popover`, `Dialog`, `DialogActions`, each Sheet part, `Menu`, `MenuItem`, `TableWrap`, `Table`, `TableSort`, `TextLink`, `Spinner`, `Combobox`, `ComboboxList`, `ComboboxOption`, `Breadcrumb`, `Kbd`, `Code`, and `Pre` picks its own element too, so `ODD-FIELD-001`, `ODD-CHOICE-001`, `ODD-BADGE-001`, `ODD-ALERT-001`, `ODD-AVATAR-001`, `ODD-SEPARATOR-001`, `ODD-SKELETON-001`, `ODD-CARD-001`, `ODD-DISCLOSURE-001`, `ODD-TABS-001`, `ODD-SEARCH-001`, `ODD-SLIDER-001`, `ODD-METER-001`, `ODD-TOAST-001`, `ODD-POPOVER-001`, `ODD-DIALOG-001`, `ODD-SHEET-001`, `ODD-MENU-001`, `ODD-TABLE-001`, `ODD-LINK-001`, `ODD-SPINNER-001`, `ODD-COMBOBOX-001`, `ODD-BREADCRUMB-001`, `ODD-KBD-001`, and `ODD-CODE-001` apply only to raw markup. the links and buttons in a card (`ODD-CARD-003`), the summary of a disclosure (`ODD-DISCLOSURE-002`), the tablist of a tab set (`ODD-TABS-002`), the tabs in a tab set (`ODD-TABS-004`), the input and the icon of a search (`ODD-SEARCH-002` and `ODD-SEARCH-003`), a `target` without `rel` on a link (`ODD-LINK-007`), the input and the list of a combobox (`ODD-COMBOBOX-002` and `ODD-COMBOBOX-003`), the list of a breadcrumb (`ODD-BREADCRUMB-003`), and a misspelled `data-` name are not type errors either. The [runtime checker](runtime.md) reports each of these.
 
 ## Open a dialog or a popover with a command
 

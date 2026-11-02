@@ -60,14 +60,11 @@ for (const storybook of Object.keys(STORYBOOKS) as Storybook[]) {
           for (let i = 0; i < count; i++) {
             const opener = openers.nth(i);
             if (!(await opener.isVisible())) continue;
-            const openedByPlay = await opener.evaluate((el) => {
-              const id = el.getAttribute("commandfor") ?? el.getAttribute("popovertarget") ?? el.getAttribute("interestfor");
-              return id !== null && document.getElementById(id)?.matches("[open], :popover-open") === true;
-            });
-            if (openedByPlay) continue;
+            const target = await opener.evaluate((el) => el.getAttribute("commandfor") ?? el.getAttribute("popovertarget") ?? el.getAttribute("interestfor"));
+            const isOpen = (id: string | null) => page.evaluate((id) => id !== null && document.getElementById(id)?.matches("[open], :popover-open") === true, id);
+            if (await isOpen(target)) continue;
             const hover = (await opener.getAttribute("interestfor")) !== null;
             const label = ((await opener.textContent())?.trim() || (await opener.getAttribute("aria-label")) || `#${i}`).slice(0, 40);
-            const before = await page.evaluate(() => document.querySelectorAll("dialog[open], :popover-open").length);
             if (hover) {
               await opener.hover();
               await page.waitForTimeout(1100);
@@ -75,11 +72,15 @@ for (const storybook of Object.keys(STORYBOOKS) as Storybook[]) {
               await opener.click();
               await page.waitForTimeout(450);
             }
-            const after = await page.evaluate(() => document.querySelectorAll("dialog[open], :popover-open").length);
-            // A toaster region stays open as a popover, so "opened" means more open layers than before.
-            if (after <= before) unopened.push(`${story}: "${label}"`);
+            // The opener's own target, not a count of open layers: a hint closes the hint before it, so the count can stay flat.
+            if (!(await isOpen(target))) unopened.push(`${story}: "${label}"`);
             await check(story, `${hover ? "hover" : "click"} "${label}"`);
-            await page.keyboard.press("Escape");
+            // Escape closes the top layer only. A sheet whose focused close button shows its tooltip needs a second one.
+            const layers = () => page.evaluate(() => document.querySelectorAll('dialog[open], [popover]:not([popover="manual"]):popover-open').length);
+            for (let presses = 0; presses < 3 && (await layers()) > 0; presses++) {
+              await page.keyboard.press("Escape");
+              await page.waitForTimeout(150);
+            }
             await page.mouse.move(0, 0);
             await page.waitForTimeout(400);
           }

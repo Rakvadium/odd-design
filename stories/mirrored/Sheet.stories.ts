@@ -22,7 +22,7 @@ const sheet = (id: string, side?: PropsOf<"Sheet">["side"]): Node<"Sheet"> => ({
       of: "SheetHeader",
       children: [
         { of: "h2", props: { className: "odd-dialog-title", id: `${id}-title` }, children: ["Filters"] },
-        { of: "Button", props: { variant: "ghost", iconOnly: true, "aria-label": "Close", commandfor: id, command: "close" }, children: [{ icon: "close" }] },
+        { of: "Button", props: { variant: "ghost", iconOnly: true, label: "Close", commandfor: id, command: "close" }, children: [{ icon: "close" }] },
       ],
     },
     {

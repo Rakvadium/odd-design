@@ -1,5 +1,5 @@
-import { Button } from "odd-design/react";
+import { Row } from "odd-design/react";
 
 export function App() {
-  return <Button disabled>Save</Button>;
+  return <Row role="group">Decks</Row>;
 }

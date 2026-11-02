@@ -191,7 +191,7 @@ const FIXTURES: { readonly [K in ExportName]: readonly [Fixture, ...Fixture[]] }
     },
   ],
   Button: [
-    { name: "no props", element: <Button>Save</Button>, markup: '<button type="button" class="odd-button">Save</button>' },
+    { name: "no props", element: <Button>Save</Button>, markup: '<button class="odd-button" type="button">Save</button>' },
     {
       name: "variant and size",
       element: (
@@ -199,16 +199,16 @@ const FIXTURES: { readonly [K in ExportName]: readonly [Fixture, ...Fixture[]] }
           Save
         </Button>
       ),
-      markup: '<button type="button" class="odd-button" data-variant="primary" data-size="sm">Save</button>',
+      markup: '<button class="odd-button" data-variant="primary" data-size="sm" type="button">Save</button>',
     },
     {
-      name: "submit with aria-disabled",
+      name: "a disabled, busy submit",
       element: (
-        <Button type="submit" aria-disabled="true" aria-busy="true">
+        <Button type="submit" disabled busy>
           Pay
         </Button>
       ),
-      markup: '<button type="submit" aria-disabled="true" aria-busy="true" class="odd-button">Pay</button>',
+      markup: '<button class="odd-button" type="submit" aria-disabled="true" aria-busy="true">Pay</button>',
     },
     {
       name: "className",
@@ -217,43 +217,69 @@ const FIXTURES: { readonly [K in ExportName]: readonly [Fixture, ...Fixture[]] }
           Reset
         </Button>
       ),
-      markup: '<button type="button" class="odd-button wide" data-variant="ghost">Reset</button>',
+      markup: '<button class="odd-button wide" data-variant="ghost" type="button">Reset</button>',
     },
     {
-      name: "link",
+      name: "the current page's link",
       element: (
-        <Button href="/docs" aria-current="page" variant="secondary">
+        <Button href="/docs" current variant="secondary">
           Docs
         </Button>
       ),
-      markup: '<a href="/docs" aria-current="page" class="odd-button" data-variant="secondary">Docs</a>',
+      markup: '<a class="odd-button" data-variant="secondary" href="/docs" aria-current="page">Docs</a>',
     },
     {
-      name: "icon-only",
+      name: "a link that opens a new tab",
       element: (
-        <Button iconOnly aria-label="Close" size="lg">
+        <Button href="https://example.com/rules" newTab>
+          Rules
+        </Button>
+      ),
+      markup: '<a class="odd-button" href="https://example.com/rules" target="_blank" rel="noopener">Rules<span class="odd-visually-hidden"> (opens in a new tab)</span></a>',
+    },
+    {
+      name: "icon-only, named by its tooltip",
+      element: (
+        <Button iconOnly label="Close" size="lg" id="close">
           <svg aria-hidden="true" />
         </Button>
       ),
-      markup: '<button aria-label="Close" type="button" class="odd-button" data-size="lg" data-icon-only=""><svg aria-hidden="true"></svg></button>',
+      markup:
+        '<button id="close" class="odd-button" data-size="lg" data-icon-only="" aria-labelledby="close-tooltip" interestfor="close-tooltip" type="button"><svg aria-hidden="true"></svg></button><span class="odd-tooltip" id="close-tooltip" popover="hint" role="tooltip">Close</span>',
     },
     {
-      name: "invoker commands and their targets",
-      uses: ["Dialog"],
-      writes: ["odd-tooltip"],
+      name: "icon-only with a generated id",
+      element: (
+        <Button iconOnly label="Share link" variant="ghost">
+          <svg aria-hidden="true" />
+        </Button>
+      ),
+    },
+    {
+      name: "a tooltip merged into the caller's description",
       element: (
         <>
-          <Button command="show-modal" commandfor="settings" interestfor="settings-hint">
-            Settings
+          <Button tooltip="Anyone with the link can view it" aria-describedby="publish-note" id="publish">
+            Publish
           </Button>
-          <span className="odd-tooltip" id="settings-hint" popover="hint" role="tooltip">
-            Opens your settings
-          </span>
-          <Dialog id="settings" aria-label="Settings" />
+          <p id="publish-note">Drafts stay private.</p>
         </>
       ),
       markup:
-        '<button command="show-modal" commandfor="settings" interestfor="settings-hint" type="button" class="odd-button">Settings</button><span class="odd-tooltip" id="settings-hint" popover="hint" role="tooltip">Opens your settings</span><dialog id="settings" aria-label="Settings" class="odd-dialog"></dialog>',
+        '<button aria-describedby="publish-note publish-tooltip" id="publish" class="odd-button" interestfor="publish-tooltip" type="button">Publish</button><span class="odd-tooltip" id="publish-tooltip" popover="hint" role="tooltip">Anyone with the link can view it</span><p id="publish-note">Drafts stay private.</p>',
+    },
+    {
+      name: "a remote command and its target",
+      uses: ["Dialog"],
+      element: (
+        <>
+          <Button command="show-modal" commandfor="settings">
+            Settings
+          </Button>
+          <Dialog id="settings" aria-label="Settings" />
+        </>
+      ),
+      markup: '<button class="odd-button" type="button" command="show-modal" commandfor="settings">Settings</button><dialog id="settings" aria-label="Settings" class="odd-dialog"></dialog>',
     },
     {
       name: "headless and app data attributes",
@@ -262,7 +288,7 @@ const FIXTURES: { readonly [K in ExportName]: readonly [Fixture, ...Fixture[]] }
           Menu
         </Button>
       ),
-      markup: '<button data-state="open" data-chrome="bubblegum" data-testid="menu" type="button" class="odd-button">Menu</button>',
+      markup: '<button data-state="open" data-chrome="bubblegum" data-testid="menu" class="odd-button" type="button">Menu</button>',
     },
   ],
   Card: [
@@ -782,7 +808,7 @@ const FIXTURES: { readonly [K in ExportName]: readonly [Fixture, ...Fixture[]] }
             <h2 className="odd-dialog-title" id="deck-sheet-title">
               Deck
             </h2>
-            <Button variant="ghost" iconOnly aria-label="Close" commandfor="deck-sheet" command="close">
+            <Button variant="ghost" iconOnly label="Close" commandfor="deck-sheet" command="close">
               <svg aria-hidden="true" />
             </Button>
           </SheetHeader>

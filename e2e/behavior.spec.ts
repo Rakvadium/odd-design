@@ -73,34 +73,39 @@ async function shot(page: Page, testInfo: TestInfo, name: string, selector?: str
 }
 
 test.describe("tooltips and hover cards (interestfor)", () => {
-  test("a tooltip opens on hover, centered above its button, and closes when the pointer leaves", async ({ page }, testInfo) => {
-    await openStory(page, "components-overlays--tooltip", "mode:light");
-    await note(page, testInfo, "interestfor", `"interestForElement" in HTMLButtonElement.prototype`);
-    await watchHover(page, '[interestfor="tip-delete"]', "#tip-delete");
-    await hoverFresh(page, '[interestfor="tip-delete"]');
-    // Both engines here use the fallback: 500 ms to show, 250 ms to hide, timed in the page.
-    const shown = await hoverDelay(page, "enter", "open");
-    expect(shown, "opens after the show delay, not at once").toBeGreaterThanOrEqual(450);
-    expect(shown, "opens after the show delay, not much later").toBeLessThan(1000);
-    const button = await rect(page, '[interestfor="tip-delete"]');
-    const tip = await rect(page, "#tip-delete");
-    expect(Math.abs(tip.cx - button.cx), "tooltip centered on its button").toBeLessThan(2);
-    expect(Math.abs(button.top - tip.bottom - 8), "8px above the button").toBeLessThan(1.5);
-    await shot(page, testInfo, "tooltip-hover.png");
-    await page.mouse.move(0, 0);
-    const hidden = await hoverDelay(page, "leave", "closed");
-    expect(hidden, "closes after the hide delay").toBeGreaterThanOrEqual(200);
-    expect(hidden, "closes after the hide delay, not much later").toBeLessThan(750);
-  });
+  // The React Storybook installs no page-wide interest fallback, so there the tooltip opens through the one Button installs.
+  for (const storybook of ["html", "react"] as const) {
+    test(`a tooltip opens on hover, centered above its button, and closes when the pointer leaves (${storybook})`, async ({ page }, testInfo) => {
+      await openStory(page, "components-overlays--tooltip", "mode:light", "", storybook);
+      await note(page, testInfo, "interestfor", `"interestForElement" in HTMLButtonElement.prototype`);
+      await watchHover(page, '[interestfor="delete-tooltip"]', "#delete-tooltip");
+      await hoverFresh(page, '[interestfor="delete-tooltip"]');
+      // Both engines here use the fallback: 500 ms to show, 250 ms to hide, timed in the page.
+      const shown = await hoverDelay(page, "enter", "open");
+      expect(shown, "opens after the show delay, not at once").toBeGreaterThanOrEqual(450);
+      expect(shown, "opens after the show delay, not much later").toBeLessThan(1000);
+      const button = await rect(page, '[interestfor="delete-tooltip"]');
+      const tip = await rect(page, "#delete-tooltip");
+      expect(Math.abs(tip.cx - button.cx), "tooltip centered on its button").toBeLessThan(2);
+      expect(Math.abs(button.top - tip.bottom - 8), "8px above the button").toBeLessThan(1.5);
+      await expect(page.getByRole("button", { name: "Delete deck" }), "the tooltip names its icon-only button").toHaveAttribute("aria-labelledby", "delete-tooltip");
+      await shot(page, testInfo, `tooltip-hover-${storybook}.png`);
+      await page.mouse.move(0, 0);
+      const hidden = await hoverDelay(page, "leave", "closed");
+      expect(hidden, "closes after the hide delay").toBeGreaterThanOrEqual(200);
+      expect(hidden, "closes after the hide delay, not much later").toBeLessThan(750);
+    });
 
-  test("a tooltip opens on keyboard focus and Escape closes it", async ({ page }) => {
-    await openStory(page, "components-overlays--tooltip", "mode:light");
-    for (let i = 0; i < 4; i++) await page.keyboard.press("Tab");
-    await expect(page.locator('[interestfor="tip-publish"]')).toBeFocused();
-    await waitOpen(page, "#tip-publish");
-    await page.keyboard.press("Escape");
-    await waitOpen(page, "#tip-publish", false);
-  });
+    test(`a tooltip opens on keyboard focus and Escape closes it (${storybook})`, async ({ page }) => {
+      await openStory(page, "components-overlays--tooltip", "mode:light", "", storybook);
+      for (let i = 0; i < 4; i++) await page.keyboard.press("Tab");
+      await expect(page.locator('[interestfor="publish-tooltip"]')).toBeFocused();
+      await expect(page.getByRole("button", { name: "Publish" })).toHaveAccessibleDescription("Anyone with the link can view it");
+      await waitOpen(page, "#publish-tooltip");
+      await page.keyboard.press("Escape");
+      await waitOpen(page, "#publish-tooltip", false);
+    });
+  }
 
   test("a hover card opens under its link and stays open while the pointer is inside it", async ({ page }, testInfo) => {
     await openStory(page, "components-overlays--hover-card", "mode:light");
@@ -183,8 +188,18 @@ test.describe("popovers and dialogs", () => {
         if (side === "end") expect(Math.round(r.right)).toBe(viewport.width);
         if (side === "start") expect(Math.round(r.left)).toBe(0);
         if (side === "bottom") expect(Math.round(r.bottom)).toBe(viewport.height);
-        await expect(page.locator(`#sheet-${side} button[aria-label="Close"]`)).toBeFocused();
+        const close = page.locator(`#sheet-${side}`).getByRole("button", { name: "Close" });
+        await expect(close).toBeFocused();
         await shot(page, testInfo, `sheet-${side}-${storybook}.png`);
+        // WebKit counts the focus showModal gives the close button as keyboard focus, so its tooltip opens.
+        // Escape then closes the tooltip first, as WCAG 1.4.13 asks, and a second Escape closes the sheet.
+        const tip = `#${await close.getAttribute("aria-labelledby")}`;
+        if (await isOpen(page, tip)) {
+          testInfo.annotations.push({ type: "sheet close tooltip", description: `${side}: open on focus, closed by the first Escape` });
+          await page.keyboard.press("Escape");
+          await waitOpen(page, tip, false);
+          expect(await isOpen(page, `#sheet-${side}`), "the first Escape closes only the tooltip").toBe(true);
+        }
         await page.keyboard.press("Escape");
         await waitOpen(page, `#sheet-${side}`, false);
       }

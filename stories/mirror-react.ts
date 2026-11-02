@@ -15,7 +15,7 @@ function propName(name: string): string {
   return name.replace(/-([a-z])/g, (_match, letter: string) => letter.toUpperCase());
 }
 
-function icon(name: keyof typeof icons): ReactElement {
+export function icon(name: keyof typeof icons): ReactElement {
   const match = /^<svg([^>]*)>([\s\S]*)<\/svg>$/.exec(icons[name]);
   if (match === null) throw new Error(`icon ${name} is not an svg`);
   const attrs = match[1] ?? "";

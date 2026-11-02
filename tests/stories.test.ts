@@ -87,6 +87,8 @@ test("the catalog has every story file's stories, and the mirrored story ids equ
     "components-overlays--sheet-right-to-left",
     "components-overlays--sheet-start",
     "components-overlays--sheet-top",
+    "components-overlays--tooltip",
+    "components-overlays--tooltip-open",
     "components-spinner--parts",
     "components-spinner--playground",
     "components-spinner--states",

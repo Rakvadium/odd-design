@@ -283,6 +283,13 @@ export const USAGE = {
     { kind: "required-attribute", code: "ODD-SKIP-001", element: "a", attribute: "href" },
     { kind: "fragment-link", code: "ODD-SKIP-001", attribute: "href" },
   ] as const satisfies readonly UsageRule[],
+  tooltip: [
+    { kind: "class", code: "ODD-TOOLTIP-001", className: "odd-tooltip" },
+    { kind: "required-attribute", code: "ODD-TOOLTIP-001", attribute: "popover" },
+    { kind: "enum", code: "ODD-TOOLTIP-001", attribute: "popover", values: ["hint"], omit: [] },
+    { kind: "required-attribute", code: "ODD-TOOLTIP-001", attribute: "role" },
+    { kind: "enum", code: "ODD-TOOLTIP-001", attribute: "role", values: ["tooltip"], omit: [] },
+  ] as const satisfies readonly UsageRule[],
   grid: [
     { kind: "class", code: "ODD-GRID-001", className: "odd-grid" },
     { kind: "child-value", code: "ODD-GRID-001", attribute: "data-span", values: ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"] },
@@ -582,8 +589,8 @@ export const CLASSES = {
   "odd-toast-description": { by: [], via: "toast() from odd-design/enhance" },
   "odd-toast-title": { by: [], via: "toast() from odd-design/enhance" },
   "odd-toaster": { by: ["Toaster"] },
-  "odd-tooltip": { by: [] },
-  "odd-visually-hidden": { by: ["VisuallyHidden"] },
+  "odd-tooltip": { by: ["Button"] },
+  "odd-visually-hidden": { by: ["VisuallyHidden", "Button"] },
 } as const satisfies Record<`odd-${string}`, Owner>;
 
 export type ClassName = keyof typeof CLASSES;

@@ -32,6 +32,6 @@ test("mirrorOf returns the scene, which fails if it drops parameters.mirror", ()
   const mirror = mirrorOf({
     mirror: { scene: () => ({ of: "Button", children: ["Save"] }), aria: '- button "Save"' },
   });
-  expect(renderToStaticMarkup(toReact(mirror.scene({})))).toBe('<button type="button" class="odd-button">Save</button>');
+  expect(renderToStaticMarkup(toReact(mirror.scene({})))).toBe('<button class="odd-button" type="button">Save</button>');
   expect(mirror.aria).toBe('- button "Save"');
 });

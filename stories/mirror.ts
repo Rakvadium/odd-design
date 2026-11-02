@@ -39,10 +39,14 @@ type CustomProperty = "--gap";
 // React appends px to a bare number, so a style value is always a string.
 type StoryStyle = { readonly [Name in keyof CSSProperties | CustomProperty]?: string };
 
+type Dropped<T> = Unlowerable | Controlled<T>;
+
 // A scene is returned from an arrow, where tsc skips excess-property checks, so a dropped prop is typed never rather than omitted.
-type SceneProps<P, T> = {
-  readonly [Name in keyof P]: Name extends Unlowerable | Controlled<T> ? never : Name extends "style" ? StoryStyle : P[Name];
-};
+type SceneProps<P, T> = P extends unknown
+  ? { readonly [Name in keyof P as Name extends Dropped<T> ? never : Name]: Name extends "style" ? StoryStyle : P[Name] } & {
+      readonly [Name in Extract<keyof P, Dropped<T>>]?: never;
+    }
+  : never;
 
 type Props<K extends Component | Tag> = K extends Component
   ? SceneProps<PropsOf<K>, TagOf<K>>

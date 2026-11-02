@@ -110,6 +110,7 @@ export const USAGE_CODES = [
   "ODD-TABLE-006",
   "ODD-SCOPE-001",
   "ODD-SKIP-001",
+  "ODD-TOOLTIP-001",
   "ODD-GRID-001",
   "ODD-SHELL-001",
   "ODD-TYPOGRAPHY-001",
@@ -1006,6 +1007,13 @@ export const MESSAGES = {
     "odd-skip-link on a, with href=#id",
     "put odd-skip-link on an a whose href is # and the id of the main content, such as #main, and give that element the id.",
     "docs/usage/base.md#odd-skip-001",
+  ),
+  "ODD-TOOLTIP-001": text(
+    "ODD-TOOLTIP-001",
+    "odd-tooltip needs popover hint and role tooltip. Without popover hint, interestfor does not open it and it sits in the page as text. Without role tooltip, a screen reader does not read it as the tooltip of the button that points at it.",
+    "popover hint and role tooltip on the odd-tooltip element",
+    "set popover to hint and role to tooltip. In React, pass label to an icon-only Button, or tooltip to a Button, and it renders the tooltip.",
+    "docs/usage/tooltip.md#odd-tooltip-001",
   ),
   "ODD-GRID-001": text(
     "ODD-GRID-001",

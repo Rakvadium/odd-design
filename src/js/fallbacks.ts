@@ -4,12 +4,15 @@
 type Root = Document | HTMLElement;
 
 /**
- * One installation per root, however many callers ask: a page-level enhance() and every component
- * that needs the fallback share it. The listeners go when the last caller cleans up.
+ * One installation per document, however many callers ask: a page-level call, enhance() on any root
+ * inside the page, and every component that needs the fallback share it. The listeners delegate from
+ * the document, so a second set on a subtree would act on every event twice. They go when the last
+ * caller cleans up.
  */
-function perRoot<Options>(install: (root: Root, options: Options) => () => void): (root: Root, options: Options) => () => void {
-  const holds = new WeakMap<Root, { count: number; stop: () => void }>();
-  return (root, options) => {
+function perDocument<Options>(install: (root: Document, options: Options) => () => void): (root: Root, options: Options) => () => void {
+  const holds = new WeakMap<Document, { count: number; stop: () => void }>();
+  return (from, options) => {
+    const root = from.ownerDocument ?? (from as Document);
     let hold = holds.get(root);
     if (hold === undefined) {
       hold = { count: 0, stop: install(root, options) };
@@ -42,7 +45,7 @@ export function interestForFallback(root: Root = document, delays: { showDelay?:
 }
 
 /** The first caller on a root sets the delays. */
-const sharedInterestFor = perRoot((root: Root, { showDelay = 500, hideDelay = 250 }: { showDelay?: number; hideDelay?: number }) => {
+const sharedInterestFor = perDocument((root: Document, { showDelay = 500, hideDelay = 250 }: { showDelay?: number; hideDelay?: number }) => {
   const timers = new WeakMap<HTMLElement, ReturnType<typeof setTimeout>>();
   const shown = new Set<HTMLElement>();
 
@@ -119,7 +122,7 @@ export function closedByFallback(root: Root = document): () => void {
   return sharedClosedBy(root, undefined);
 }
 
-const sharedClosedBy = perRoot((root: Root) => {
+const sharedClosedBy = perDocument((root: Document) => {
   const onClick = (event: Event) => {
     const { target, clientX: x, clientY: y } = event as MouseEvent;
     if (!(target instanceof HTMLDialogElement) || !target.open || target.getAttribute("closedby") !== "any") return;

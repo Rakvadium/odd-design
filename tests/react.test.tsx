@@ -2,6 +2,7 @@ import { afterEach, describe, expect, test } from "bun:test";
 import { fileURLToPath } from "node:url";
 import { act, StrictMode, useRef, useState, type ReactNode } from "react";
 import { createRoot, type Root } from "react-dom/client";
+import { renderToStaticMarkup } from "react-dom/server";
 import { closedByFallback, enhance, enhanceTabs, interestForFallback, toast } from "../src/js/enhance.ts";
 import { Button } from "../src/react/button.tsx";
 import { Card } from "../src/react/card.tsx";
@@ -26,7 +27,7 @@ afterEach(async () => {
   document.body.replaceChildren();
 });
 
-async function mountForm(ariaDisabled: "true" | "false" | undefined) {
+async function mountForm(state: { disabled?: boolean; busy?: boolean }) {
   const counts = { clicks: 0, submits: 0 };
   const host = document.createElement("div");
   document.body.append(host);
@@ -41,7 +42,7 @@ async function mountForm(ariaDisabled: "true" | "false" | undefined) {
         }}
       >
         <input name="card" />
-        <Button type="submit" aria-disabled={ariaDisabled} onClick={() => (counts.clicks += 1)}>
+        <Button type="submit" disabled={state.disabled} busy={state.busy} onClick={() => (counts.clicks += 1)}>
           Pay
         </Button>
       </form>,
@@ -59,9 +60,9 @@ function pressEnter(field: HTMLInputElement): void {
   field.form?.querySelector('[type="submit"]')?.dispatchEvent(new MouseEvent("click", { bubbles: true, cancelable: true }));
 }
 
-describe("Button with aria-disabled", () => {
-  test("ignores a click and an Enter, and never sets disabled", async () => {
-    const { counts, button, field } = await mountForm("true");
+describe("Button with disabled or busy", () => {
+  test.each([[{ disabled: true }], [{ busy: true }]])("%p ignores a click and an Enter, and never sets disabled", async (state) => {
+    const { counts, button, field } = await mountForm(state);
     await act(async () => button.click());
     await act(async () => pressEnter(field));
     expect(counts).toEqual({ clicks: 0, submits: 0 });
@@ -69,12 +70,63 @@ describe("Button with aria-disabled", () => {
     expect(button.hasAttribute("disabled")).toBe(false);
   });
 
-  test.each([[undefined], ["false" as const]])("with aria-disabled %p submits once per click and once per Enter", async (ariaDisabled) => {
-    const { counts, button, field } = await mountForm(ariaDisabled);
+  test.each([[{}], [{ disabled: false, busy: false }]])("%p submits once per click and once per Enter", async (state) => {
+    const { counts, button, field } = await mountForm(state);
     await act(async () => button.click());
     expect(counts).toEqual({ clicks: 1, submits: 1 });
     await act(async () => pressEnter(field));
     expect(counts).toEqual({ clicks: 2, submits: 2 });
+  });
+});
+
+describe("Button tooltips", () => {
+  test("a blank label on an icon-only button throws ODD-BUTTON-008", () => {
+    expect(() =>
+      renderToStaticMarkup(
+        <Button iconOnly label="  ">
+          ×
+        </Button>,
+      ),
+    ).toThrow("ODD-BUTTON-008");
+  });
+
+  test("a tooltip installs the interest fallback with no enhance() call, two tooltips share it, and the last unmount removes it", async () => {
+    const counts = { added: 0, removed: 0 };
+    const add = document.addEventListener;
+    const remove = document.removeEventListener;
+    document.addEventListener = function (this: Document, ...args: Parameters<Document["addEventListener"]>) {
+      if (args[0] === "pointerover") counts.added += 1;
+      add.apply(this, args);
+    };
+    document.removeEventListener = function (this: Document, ...args: Parameters<Document["removeEventListener"]>) {
+      if (args[0] === "pointerover") counts.removed += 1;
+      remove.apply(this, args);
+    };
+    try {
+      const host = document.createElement("div");
+      document.body.append(host);
+      const root = createRoot(host);
+      mounted = root;
+      await act(async () => root.render(<Button>Save</Button>));
+      expect(counts).toEqual({ added: 0, removed: 0 });
+      await act(async () =>
+        root.render(
+          <>
+            <Button tooltip="Anyone with the link can view it">Publish</Button>
+            <Button iconOnly label="Share link">
+              ↗
+            </Button>
+          </>,
+        ),
+      );
+      expect(counts).toEqual({ added: 1, removed: 0 });
+      mounted = undefined;
+      await act(async () => root.unmount());
+      expect(counts).toEqual({ added: 1, removed: 1 });
+    } finally {
+      document.addEventListener = add;
+      document.removeEventListener = remove;
+    }
   });
 });
 
@@ -508,16 +560,17 @@ function errorsByFixture(output: string): Map<string, string> {
 }
 
 const failures: Record<string, { codes: string[]; text: string[] }> = {
-  "button-disabled": { codes: ["ODD-BUTTON-007"], text: [] },
   "button-variant": { codes: [], text: ['"primary"', '"secondary"', '"danger"', '"ghost"'] },
   "button-size": { codes: [], text: ['"sm"', '"lg"'] },
-  "button-link-aria-disabled": { codes: ["ODD-BUTTON-013"], text: [] },
-  "button-icon-only": { codes: ["ODD-BUTTON-008"], text: [] },
-  "button-data-tone": { codes: ["ODD-BUTTON-015"], text: [] },
-  "button-aria-current-value": { codes: [], text: ['"page"'] },
-  "button-aria-current-button": { codes: ["ODD-BUTTON-012"], text: [] },
-  "button-aria-current-icon-only": { codes: ["ODD-BUTTON-012"], text: [] },
-  "button-raw-data-variant": { codes: [], text: ['"data-variant"'] },
+  "button-data-tone": { codes: ["ODD-REACT-002"], text: [] },
+  "button-raw-data-variant": { codes: ["ODD-REACT-002"], text: ["Types of property '\"data-variant\"' are incompatible"] },
+  "button-aria-disabled": { codes: ["ODD-REACT-001"], text: ["Types of property '\"aria-disabled\"' are incompatible"] },
+  "button-aria-label": { codes: ["ODD-REACT-001"], text: ["Types of property '\"aria-label\"' are incompatible"] },
+  "button-icon-only-unnamed": { codes: [], text: ["Property 'label' is missing"] },
+  "button-label-visible-text": { codes: [], text: ["Property 'iconOnly' is missing"] },
+  "button-current-not-link": { codes: [], text: ["Property 'href' is missing"] },
+  "button-link-disabled": { codes: [], text: ["Types of property 'disabled' are incompatible"] },
+  "button-tooltip-icon-only": { codes: [], text: ["Types of property 'tooltip' are incompatible"] },
   "field-error-hidden": { codes: ["ODD-FIELD-002"], text: [] },
   "input-aria-disabled": { codes: ["ODD-FIELD-003"], text: [] },
   "choice-aria-disabled": { codes: ["ODD-CHOICE-003"], text: [] },
@@ -672,6 +725,33 @@ describe("platform fallbacks", () => {
     } finally {
       document.addEventListener = add;
       document.removeEventListener = remove;
+    }
+  });
+});
+
+describe("platform fallbacks on a canvas", () => {
+  test("a page-level interestForFallback and closedByFallback, then enhance() on an element inside the page, add one set of fallback listeners, all on the document", () => {
+    const canvas = document.createElement("div");
+    document.body.append(canvas);
+    const added: string[] = [];
+    const record = <T extends EventTarget>(target: T, name: string) => {
+      const add = target.addEventListener;
+      target.addEventListener = function (this: T, ...args: Parameters<EventTarget["addEventListener"]>) {
+        added.push(`${name} ${args[0]}`);
+        add.apply(this, args);
+      };
+      return () => (target.addEventListener = add);
+    };
+    const restore = [record(document, "document"), record(canvas, "canvas")];
+    try {
+      const page = [interestForFallback(), closedByFallback()];
+      const story = enhance(canvas);
+      const fallback = ["click", "focusin", "focusout", "keydown", "pointerout", "pointerover"];
+      expect(added.filter((entry) => fallback.includes(entry.split(" ")[1]!)).sort()).toEqual(fallback.map((type) => `document ${type}`));
+      story();
+      page.forEach((release) => release());
+    } finally {
+      restore.forEach((undo) => undo());
     }
   });
 });
