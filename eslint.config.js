@@ -31,8 +31,8 @@ export default defineConfig([
   },
   {
     files: ["stories/**/*.ts", "tests/fixtures/usage/templates/**/*.ts", "**/*.html", "**/*.tsx"],
-    // The components write odd- classes, and the markup table in react.test.tsx pins what they write.
-    ignores: ["src/react/**", "tests/react.test.tsx"],
+    // The components write odd- classes, and the fixtures in components.test.tsx pin what they write.
+    ignores: ["src/react/**", "tests/components.test.tsx"],
     plugins: {
       odd,
     },

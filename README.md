@@ -155,7 +155,7 @@ The five palettes ported from uvs-decks-gg went through the same repair. Their i
 
 4. Export the module from `src/react/index.ts`.
 5. Mirror the part's stories in `stories/mirrored/<Family>.stories.ts`.
-6. Add the part's rows to the `markup` table in `tests/react.test.tsx`. Add a `<part>-<rule>.tsx` fail fixture in `tests/fixtures/types/fail/` for each code its props reject, with its `failures` entry. Add the `places` entries for its ESLint fixtures in `tests/eslint-jsx.test.ts` and `tests/eslint-html.test.ts`. Add a `<code>.bad.html` and `<code>.good.html` pair in `tests/fixtures/usage/` for each runtime code, with the code in lower case, and list the code in `RUNTIME_CODES` in `tests/usage-check.test.ts`. Pin the mirrored story ids in `tests/stories.test.ts`.
+6. Add the part to `ExportName` and its classes' `by` lists in `CLASSES` in `src/js/usage/contract.ts`, and give it fixtures in `FIXTURES` in `tests/components.test.tsx`. Add a `<part>-<rule>.tsx` fail fixture in `tests/fixtures/types/fail/` for each code its props reject, with its `failures` entry. Add the `places` entries for its ESLint fixtures in `tests/eslint-html.test.ts`. Add a `<code>.bad.html` and `<code>.good.html` pair in `tests/fixtures/usage/` for each runtime code, with the code in lower case, and list the code in `RUNTIME_CODES` in `tests/usage-check.test.ts`. Pin the mirrored story ids in `tests/stories.test.ts`.
 
 `scripts/build.ts` and `scripts/consumer-smoke.ts` read the `odd-design/react` barrel, so a new part adds no line to either. A new usage page goes in `REQUIRED` in `scripts/consumer-smoke.ts`.
 
@@ -228,5 +228,5 @@ toast({ title: "Deck saved", tone: "success" });
 - `enhanceToaster(region)` wires a `section.odd-toaster` once, however many times it is called, as `enhanceTabs` does. `toast({ title, description, tone, duration, action })` shows a toast on the newest wired region still in the document and returns `{ dismiss }`. It throws when no region is wired.
 - `appendLogLine(log, text, { tone, time, max })`: adds a line as text, with `time` as a `Date` or a string, and drops the oldest lines past `max` (500).
 - `avatarFallback()`: an `.odd-avatar[data-initials]` whose image fails to load shows its initials. It replaces the avatar's children, so use it on markup the page owns, not on a React `Avatar`.
-- `interestForFallback()` and `closedByFallback()`: tooltips and hover cards, and `closedby="any"`, in browsers without them. They do nothing where the browser has the feature.
+- `interestForFallback()` and `closedByFallback()`: tooltips and hover cards, and `closedby="any"`, in browsers without them. They do nothing where the browser has the feature. Each installs once per root, however many callers ask, and its listeners go when the last caller cleans up.
 - `roving(container, options)`: the shared arrow-key, Home/End, and typeahead helper the widgets use.

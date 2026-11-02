@@ -14,6 +14,7 @@ export * from "./kbd.tsx";
 export * from "./menu.tsx";
 export * from "./meter.tsx";
 export * from "./popover.tsx";
+export * from "./provider.tsx";
 export * from "./search.tsx";
 export * from "./separator.tsx";
 export * from "./sheet.tsx";

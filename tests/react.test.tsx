@@ -1,388 +1,21 @@
 import { afterEach, describe, expect, test } from "bun:test";
 import { fileURLToPath } from "node:url";
-import { act, StrictMode, useState, type ReactElement, type ReactNode } from "react";
+import { act, StrictMode, useRef, useState, type ReactNode } from "react";
 import { createRoot, type Root } from "react-dom/client";
-import { renderToStaticMarkup } from "react-dom/server";
-import { enhance, enhanceTabs, toast } from "../src/js/enhance.ts";
-import { checkRoot } from "../src/js/usage/dom.ts";
-import { Alert, AlertTitle } from "../src/react/alert.tsx";
-import { Avatar, AvatarGroup } from "../src/react/avatar.tsx";
-import { Badge } from "../src/react/badge.tsx";
-import { Breadcrumb } from "../src/react/breadcrumb.tsx";
+import { closedByFallback, enhance, enhanceTabs, interestForFallback, toast } from "../src/js/enhance.ts";
 import { Button } from "../src/react/button.tsx";
-import { Card, CardFooter, CardLink } from "../src/react/card.tsx";
-import { Choice, Segmented, Switch } from "../src/react/choice.tsx";
-import { Code, Pre } from "../src/react/code.tsx";
+import { Card } from "../src/react/card.tsx";
 import { Combobox, ComboboxList, ComboboxOption } from "../src/react/combobox.tsx";
-import { Dialog, DialogActions } from "../src/react/dialog.tsx";
-import { Disclosure } from "../src/react/disclosure.tsx";
-import { Field, FieldError, Hint, Input, Label, Select, Textarea } from "../src/react/field.tsx";
-import { Kbd } from "../src/react/kbd.tsx";
+import { Input, Select } from "../src/react/field.tsx";
 import { Menu, MenuItem } from "../src/react/menu.tsx";
-import { Meter, Progress } from "../src/react/meter.tsx";
-import { Popover } from "../src/react/popover.tsx";
-import { Search } from "../src/react/search.tsx";
-import { Separator } from "../src/react/separator.tsx";
-import { Sheet, SheetFooter, SheetHeader } from "../src/react/sheet.tsx";
-import { Skeleton } from "../src/react/skeleton.tsx";
-import { Slider } from "../src/react/slider.tsx";
-import { Spinner } from "../src/react/spinner.tsx";
-import { Table, TableSort, TableWrap } from "../src/react/table.tsx";
+import { useEnhancer } from "../src/react/own.ts";
+import { Table, TableSort } from "../src/react/table.tsx";
 import { Tabs } from "../src/react/tabs.tsx";
-import { TextLink } from "../src/react/text-link.tsx";
 import { Toaster } from "../src/react/toast.tsx";
 
 Object.assign(globalThis, { IS_REACT_ACT_ENVIRONMENT: true });
 
 const repo = fileURLToPath(new URL("..", import.meta.url));
-
-const markup: readonly [string, ReactElement, string][] = [
-  ["no props", <Button>Save</Button>, '<button type="button" class="odd-button">Save</button>'],
-  [
-    "variant and size",
-    <Button variant="primary" size="sm">
-      Save
-    </Button>,
-    '<button type="button" class="odd-button" data-variant="primary" data-size="sm">Save</button>',
-  ],
-  [
-    "submit with aria-disabled",
-    <Button type="submit" aria-disabled="true" aria-busy="true">
-      Pay
-    </Button>,
-    '<button type="submit" aria-disabled="true" aria-busy="true" class="odd-button">Pay</button>',
-  ],
-  [
-    "className",
-    <Button className="wide" variant="ghost">
-      Reset
-    </Button>,
-    '<button type="button" class="odd-button wide" data-variant="ghost">Reset</button>',
-  ],
-  [
-    "link",
-    <Button href="/docs" aria-current="page" variant="secondary">
-      Docs
-    </Button>,
-    '<a href="/docs" aria-current="page" class="odd-button" data-variant="secondary">Docs</a>',
-  ],
-  [
-    "icon-only",
-    <Button iconOnly aria-label="Close" size="lg">
-      <svg aria-hidden="true" />
-    </Button>,
-    '<button aria-label="Close" type="button" class="odd-button" data-size="lg" data-icon-only=""><svg aria-hidden="true"></svg></button>',
-  ],
-  [
-    "invoker commands",
-    <Button command="show-modal" commandfor="settings" interestfor="hint">
-      Settings
-    </Button>,
-    '<button command="show-modal" commandfor="settings" interestfor="hint" type="button" class="odd-button">Settings</button>',
-  ],
-  [
-    "headless and app data attributes",
-    <Button data-state="open" data-chrome="bubblegum" data-testid="menu">
-      Menu
-    </Button>,
-    '<button data-state="open" data-chrome="bubblegum" data-testid="menu" type="button" class="odd-button">Menu</button>',
-  ],
-  [
-    "field with an error",
-    <Field>
-      <Label htmlFor="email">Email</Label>
-      <Input id="email" type="email" required aria-invalid="true" aria-describedby="email-hint email-error" />
-      <Hint id="email-hint">We never share it.</Hint>
-      <FieldError id="email-error">Enter an email address.</FieldError>
-    </Field>,
-    '<div class="odd-field"><label for="email" class="odd-label">Email</label><input id="email" type="email" required="" aria-invalid="true" aria-describedby="email-hint email-error" class="odd-input"/><p id="email-hint" class="odd-hint">We never share it.</p><p id="email-error" class="odd-error">Enter an email address.</p></div>',
-  ],
-  [
-    "disabled textarea and select with className",
-    <>
-      <Textarea id="notes" disabled />
-      <Select id="format" className="wide">
-        <option>Standard</option>
-      </Select>
-    </>,
-    '<textarea id="notes" disabled="" class="odd-textarea"></textarea><select id="format" class="odd-select wide"><option>Standard</option></select>',
-  ],
-  [
-    "choice, switch, and segmented",
-    <>
-      <Choice>
-        <input type="checkbox" defaultChecked /> Weekly digest
-      </Choice>
-      <Choice className="wide">
-        <Switch type="checkbox" role="switch" disabled /> Compact grid
-      </Choice>
-      <Segmented>
-        <legend>View</legend>
-        <label>
-          <input type="radio" name="view" defaultChecked /> Grid
-        </label>
-      </Segmented>
-    </>,
-    '<label class="odd-choice"><input type="checkbox" checked=""/> Weekly digest</label><label class="odd-choice wide"><input type="checkbox" role="switch" disabled="" class="odd-switch"/> Compact grid</label><fieldset class="odd-segmented"><legend>View</legend><label><input type="radio" name="view" checked=""/> Grid</label></fieldset>',
-  ],
-  [
-    "badge tones and solid",
-    <>
-      <Badge>Draft</Badge>
-      <Badge tone="danger" solid className="wide">
-        Banned
-      </Badge>
-      <Badge tone="success" solid={false} data-testid="status">
-        Legal
-      </Badge>
-    </>,
-    '<span class="odd-badge">Draft</span><span class="odd-badge wide" data-tone="danger" data-solid="">Banned</span><span data-testid="status" class="odd-badge" data-tone="success">Legal</span>',
-  ],
-  [
-    "alert tone and title",
-    <>
-      <Alert>
-        <AlertTitle>Drafts are private</AlertTitle>
-      </Alert>
-      <Alert tone="warning" className="wide">
-        Rotation is coming
-      </Alert>
-      <Alert tone="danger" data-testid="notice">
-        <AlertTitle>Could not save</AlertTitle>
-      </Alert>
-    </>,
-    '<div class="odd-alert"><p class="odd-alert-title">Drafts are private</p></div><div class="odd-alert wide" data-tone="warning">Rotation is coming</div><div data-testid="notice" class="odd-alert" data-tone="danger"><p class="odd-alert-title">Could not save</p></div>',
-  ],
-  [
-    "avatar size and group",
-    <AvatarGroup role="group" aria-label="Collaborators" className="wide">
-      <Avatar size="lg" role="img" aria-label="Mira Okafor">
-        MO
-      </Avatar>
-      <Avatar role="img" aria-label="and 3 more">
-        +3
-      </Avatar>
-    </AvatarGroup>,
-    '<div role="group" aria-label="Collaborators" class="odd-avatar-group wide"><span role="img" aria-label="Mira Okafor" class="odd-avatar" data-size="lg">MO</span><span role="img" aria-label="and 3 more" class="odd-avatar">+3</span></div>',
-  ],
-  [
-    "separator horizontal and vertical",
-    <>
-      <Separator />
-      <Separator aria-orientation="vertical" className="tall" />
-    </>,
-    '<hr class="odd-separator"/><hr aria-orientation="vertical" class="odd-separator tall"/>',
-  ],
-  [
-    "skeleton blocks in a busy region",
-    <div aria-busy="true">
-      <span className="odd-visually-hidden">Loading decks…</span>
-      <Skeleton aria-hidden="true" shape="avatar" />
-      <Skeleton aria-hidden="true" className="wide" style={{ inlineSize: "60%" }} />
-    </div>,
-    '<div aria-busy="true"><span class="odd-visually-hidden">Loading decks…</span><div aria-hidden="true" class="odd-skeleton" data-shape="avatar"></div><div aria-hidden="true" style="inline-size:60%" class="odd-skeleton wide"></div></div>',
-  ],
-  [
-    "interactive card with one link and a footer",
-    <Card interactive className="deck">
-      <h3 className="odd-card-title">
-        <CardLink href="/decks/ember">Ember Aggro</CardLink>
-      </h3>
-      <CardFooter>60 cards</CardFooter>
-    </Card>,
-    '<article class="odd-card deck" data-interactive=""><h3 class="odd-card-title"><a href="/decks/ember" class="odd-card-link">Ember Aggro</a></h3><div class="odd-card-footer">60 cards</div></article>',
-  ],
-  [
-    "a text link and the current page",
-    <p>
-      Read the <TextLink href="#guide">setup guide</TextLink> or open <TextLink href="#roadmap" aria-current="page" className="nav">Roadmap</TextLink>.
-    </p>,
-    '<p>Read the <a href="#guide" class="odd-link">setup guide</a> or open <a href="#roadmap" aria-current="page" class="odd-link nav">Roadmap</a>.</p>',
-  ],
-  [
-    "a spinner in a busy region",
-    <div className="odd-row" aria-busy="true">
-      <Spinner aria-hidden="true" /> Loading projects…
-    </div>,
-    '<div class="odd-row" aria-busy="true"><span aria-hidden="true" class="odd-spinner"></span> Loading projects…</div>',
-  ],
-  [
-    "a breadcrumb trail with a plain level",
-    <Breadcrumb aria-label="Breadcrumb">
-      <ol>
-        <li>
-          <TextLink href="#home">Home</TextLink>
-        </li>
-        <li>Archived</li>
-        <li>
-          <TextLink href="#alerts" aria-current="page">
-            Alerts
-          </TextLink>
-        </li>
-      </ol>
-    </Breadcrumb>,
-    '<nav aria-label="Breadcrumb" class="odd-breadcrumb"><ol><li><a href="#home" class="odd-link">Home</a></li><li>Archived</li><li><a href="#alerts" aria-current="page" class="odd-link">Alerts</a></li></ol></nav>',
-  ],
-  [
-    "keys in a sentence",
-    <p>
-      Press <Kbd>Ctrl</Kbd> <Kbd className="wide">K</Kbd> to search.
-    </p>,
-    '<p>Press <kbd class="odd-kbd">Ctrl</kbd> <kbd class="odd-kbd wide">K</kbd> to search.</p>',
-  ],
-  [
-    "inline code and a block",
-    <div className="odd-stack">
-      <p>
-        Set <Code>--primary</Code> on the scope.
-      </p>
-      <Pre data-language="sh">
-        <code>bun add odd-design</code>
-      </Pre>
-    </div>,
-    '<div class="odd-stack"><p>Set <code class="odd-code">--primary</code> on the scope.</p><pre data-language="sh" class="odd-pre"><code>bun add odd-design</code></pre></div>',
-  ],
-  [
-    "a combobox in a field, before enhancement",
-    <Field>
-      <Label htmlFor="city" id="city-label">
-        City
-      </Label>
-      <Combobox>
-        <Input id="city" name="city" role="combobox" aria-controls="city-list" aria-expanded="false" aria-autocomplete="list" />
-        <ComboboxList id="city-list" popover="manual" role="listbox" aria-labelledby="city-label">
-          <ComboboxOption role="option">Amsterdam</ComboboxOption>
-          <ComboboxOption role="option" aria-disabled="true">
-            Atlantis
-          </ComboboxOption>
-          <ComboboxOption role="option">Berlin</ComboboxOption>
-        </ComboboxList>
-      </Combobox>
-    </Field>,
-    '<div class="odd-field"><label for="city" id="city-label" class="odd-label">City</label><div class="odd-combobox"><input id="city" role="combobox" aria-controls="city-list" aria-expanded="false" aria-autocomplete="list" class="odd-input" name="city"/><div id="city-list" popover="manual" role="listbox" aria-labelledby="city-label" class="odd-combobox-list"><div role="option" class="odd-combobox-option">Amsterdam</div><div role="option" aria-disabled="true" class="odd-combobox-option">Atlantis</div><div role="option" class="odd-combobox-option">Berlin</div></div></div></div>',
-  ],
-  [
-    "a combobox list that your code filters",
-    <ComboboxList id="people" popover="manual" role="listbox" aria-label="People" data-filter="manual" className="wide" />,
-    '<div id="people" popover="manual" role="listbox" aria-label="People" data-filter="manual" class="odd-combobox-list wide"></div>',
-  ],
-  [
-    "open disclosure in a named group",
-    <Disclosure name="faq" open className="faq">
-      <summary>Does it need JavaScript?</summary>
-      <div>No.</div>
-    </Disclosure>,
-    '<details name="faq" open="" class="odd-disclosure faq"><summary>Does it need JavaScript?</summary><div>No.</div></details>',
-  ],
-  [
-    "tab set",
-    <Tabs id="deck-tabs" className="deck">
-      <div role="tablist" aria-label="Deck view">
-        <button role="tab" id="tab-cards" aria-controls="panel-cards" aria-selected="true">
-          Cards
-        </button>
-      </div>
-      <div role="tabpanel" id="panel-cards" aria-labelledby="tab-cards">
-        60 cards
-      </div>
-    </Tabs>,
-    '<div id="deck-tabs" class="odd-tabs deck"><div role="tablist" aria-label="Deck view"><button role="tab" id="tab-cards" aria-controls="panel-cards" aria-selected="true">Cards</button></div><div role="tabpanel" id="panel-cards" aria-labelledby="tab-cards">60 cards</div></div>',
-  ],
-  [
-    "search with a hidden label and a leading icon",
-    <Search className="deck-search">
-      <label className="odd-visually-hidden" htmlFor="card-search">
-        Search cards
-      </label>
-      <svg aria-hidden="true" viewBox="0 0 24 24" />
-      <Input type="search" id="card-search" placeholder="Search cards" />
-    </Search>,
-    '<search class="odd-search deck-search"><label class="odd-visually-hidden" for="card-search">Search cards</label><svg aria-hidden="true" viewBox="0 0 24 24"></svg><input type="search" id="card-search" placeholder="Search cards" class="odd-input"/></search>',
-  ],
-  [
-    "disabled range slider",
-    <Slider type="range" id="locked" min={5} max={9} defaultValue={7} disabled className="wide" />,
-    '<input type="range" id="locked" min="5" max="9" disabled="" class="odd-slider wide" value="7"/>',
-  ],
-  [
-    "meter with a tone",
-    <Meter id="actions" min={0} max={60} value={22} tone="info" />,
-    '<meter id="actions" min="0" max="60" value="22" class="odd-meter" data-tone="info"></meter>',
-  ],
-  [
-    "indeterminate progress with no value",
-    <Progress id="sync" aria-label="Syncing decks" />,
-    '<progress id="sync" aria-label="Syncing decks" class="odd-progress"></progress>',
-  ],
-  [
-    "toaster",
-    <Toaster popover="manual" aria-label="Notifications" />,
-    '<section popover="manual" aria-label="Notifications" class="odd-toaster"></section>',
-  ],
-  [
-    "popover dialog named by its title",
-    <Popover id="filters" popover="auto" role="dialog" aria-labelledby="filters-title" className="wide">
-      <p id="filters-title">Filter decks</p>
-    </Popover>,
-    '<div id="filters" popover="auto" role="dialog" aria-labelledby="filters-title" class="odd-popover wide"><p id="filters-title">Filter decks</p></div>',
-  ],
-  [
-    "dialog around its actions",
-    <Dialog id="confirm" aria-labelledby="confirm-title" closedby="any" className="wide">
-      <h2 id="confirm-title">Delete deck?</h2>
-      <DialogActions className="end" />
-    </Dialog>,
-    '<dialog id="confirm" aria-labelledby="confirm-title" closedby="any" class="odd-dialog wide"><h2 id="confirm-title">Delete deck?</h2><div class="odd-dialog-actions end"></div></dialog>',
-  ],
-  [
-    "menu with a danger item",
-    <Menu id="deck-actions" popover="auto" role="menu" aria-label="Deck actions">
-      <MenuItem role="menuitem">Rename</MenuItem>
-      <MenuItem role="menuitem" tone="danger" aria-disabled="true">
-        Delete
-      </MenuItem>
-    </Menu>,
-    '<div id="deck-actions" popover="auto" role="menu" aria-label="Deck actions" class="odd-menu"><button role="menuitem" type="button" class="odd-menu-item">Rename</button><button role="menuitem" aria-disabled="true" type="button" class="odd-menu-item" data-tone="danger">Delete</button></div>',
-  ],
-  [
-    "sheet from the start edge around its header and footer",
-    <Sheet id="filters" side="start" aria-labelledby="filters-title" closedby="any" className="wide">
-      <SheetHeader>
-        <h2 className="odd-dialog-title" id="filters-title">Filters</h2>
-      </SheetHeader>
-      <div className="odd-sheet-body" />
-      <SheetFooter className="end" />
-    </Sheet>,
-    '<dialog id="filters" aria-labelledby="filters-title" closedby="any" class="odd-sheet wide" data-side="start"><div class="odd-sheet-header"><h2 class="odd-dialog-title" id="filters-title">Filters</h2></div><div class="odd-sheet-body"></div><div class="odd-sheet-footer end"></div></dialog>',
-  ],
-  [
-    "table in its scroll region with a sortable header",
-    <TableWrap tabIndex={0} role="region" aria-labelledby="decks-caption">
-      <Table>
-        <caption id="decks-caption">Your decks</caption>
-        <thead>
-          <tr>
-            <th scope="col" aria-sort="ascending">
-              <TableSort>Deck</TableSort>
-            </th>
-          </tr>
-        </thead>
-        <tbody />
-      </Table>
-    </TableWrap>,
-    '<div tabindex="0" role="region" aria-labelledby="decks-caption" class="odd-table-wrap"><table class="odd-table"><caption id="decks-caption">Your decks</caption><thead><tr><th scope="col" aria-sort="ascending"><button type="button" class="odd-table-sort">Deck</button></th></tr></thead><tbody></tbody></table></div>',
-  ],
-];
-
-describe("React markup", () => {
-  test.each(markup)("%s renders markup the runtime checker accepts", (_name, element, expected) => {
-    const html = renderToStaticMarkup(element);
-    expect(html).toBe(expected);
-    const host = document.createElement("div");
-    host.innerHTML = html;
-    expect(() => checkRoot(host)).not.toThrow();
-  });
-});
 
 let mounted: Root | undefined;
 
@@ -996,6 +629,92 @@ const failures: Record<string, { codes: string[]; text: string[] }> = {
   "sheet-data-tone": { codes: ["ODD-SHEET-003"], text: [] },
   "sheet-footer-data-variant": { codes: ["ODD-SHEET-003"], text: [] },
 };
+
+describe("platform fallbacks", () => {
+  const INTEREST = ["focusin", "focusout", "keydown", "pointerout", "pointerover"];
+
+  test("two interestForFallback calls and one enhance() on the document add one set of listeners, which the last cleanup removes", () => {
+    const added: string[] = [];
+    const removed: string[] = [];
+    const add = document.addEventListener;
+    const remove = document.removeEventListener;
+    document.addEventListener = function (this: Document, ...args: Parameters<Document["addEventListener"]>) {
+      added.push(args[0]);
+      add.apply(this, args);
+    };
+    document.removeEventListener = function (this: Document, ...args: Parameters<Document["removeEventListener"]>) {
+      removed.push(args[0]);
+      remove.apply(this, args);
+    };
+    try {
+      const first = interestForFallback();
+      const second = interestForFallback(document);
+      const dismiss = closedByFallback();
+      const page = enhance(document);
+      expect(added.filter((type) => INTEREST.includes(type)).sort()).toEqual(INTEREST);
+      expect(added.filter((type) => type === "click")).toEqual(["click"]);
+      first();
+      page();
+      dismiss();
+      expect(removed.filter((type) => INTEREST.includes(type))).toEqual([]);
+      expect(removed.filter((type) => type === "click")).toEqual(["click"]);
+      second();
+      expect(removed.filter((type) => INTEREST.includes(type)).sort()).toEqual(INTEREST);
+    } finally {
+      document.addEventListener = add;
+      document.removeEventListener = remove;
+    }
+  });
+});
+
+describe("useEnhancer", () => {
+  test("under StrictMode, a re-render shows the holder's value rather than React's, with one live subscription that unmount releases", async () => {
+    const holders = new WeakMap<HTMLElement, { count: number; value: string }>();
+    let live = 0;
+    const enhanceValue = (node: HTMLElement): (() => void) => {
+      const holder = holders.get(node) ?? { count: 0, value: node.dataset.value ?? "" };
+      holders.set(node, holder);
+      if (holder.count++ === 0) live++;
+      node.dataset.value = holder.value;
+      return () => {
+        if (--holder.count > 0) return;
+        live--;
+        holders.delete(node);
+      };
+    };
+    function Valued({ value }: { value: string }) {
+      const ref = useRef<HTMLDivElement>(null);
+      useEnhancer(ref, enhanceValue);
+      return <div ref={ref} data-value={value} />;
+    }
+    const host = document.createElement("div");
+    document.body.append(host);
+    const root = createRoot(host);
+    mounted = root;
+    await act(async () =>
+      root.render(
+        <StrictMode>
+          <Valued value="first" />
+        </StrictMode>,
+      ),
+    );
+    const node = host.querySelector("div")!;
+    const holder = holders.get(node)!;
+    holder.value = "picked";
+    node.dataset.value = "picked";
+    await act(async () =>
+      root.render(
+        <StrictMode>
+          <Valued value="second" />
+        </StrictMode>,
+      ),
+    );
+    expect([node.dataset.value, live]).toEqual(["picked", 1]);
+    mounted = undefined;
+    await act(async () => root.unmount());
+    expect(live).toBe(0);
+  });
+});
 
 describe("React types", () => {
   test(

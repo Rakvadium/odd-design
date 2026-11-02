@@ -1,7 +1,7 @@
 import { copyFileSync, mkdtempSync, mkdirSync, readdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { basename, dirname, join } from "node:path";
-import { WRAPPERS } from "../src/js/usage/contract.ts";
+import * as OddReact from "../src/react/index.ts";
 
 const root = join(import.meta.dir, "..");
 const fixtures = join(root, "tests/fixtures/consumer");
@@ -25,7 +25,7 @@ const HOOK_TESTS = [
   "afterEach fails a React test that never calls flush",
 ];
 
-const REACT_EXPORTS = Object.keys(WRAPPERS).sort().join();
+const REACT_EXPORTS = Object.keys(OddReact).sort().join();
 
 const REQUIRED = [
   "dist/react/index.js",

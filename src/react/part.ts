@@ -1,16 +1,15 @@
 import { createElement, type ComponentProps, type ReactElement } from "react";
 import { WRAPPERS, type APPEARANCE_AXES, type HEADLESS_ALLOWLIST, type VOCABULARY, type Wrapper, type WrapperElement } from "../js/usage/contract.ts";
 import type { MESSAGES } from "../js/usage/format.ts";
+import type { Message, Values } from "./own.ts";
+
+export type { Message, Values };
 
 type Name = keyof typeof WRAPPERS;
 
 type Lowered<N extends Name> = (typeof WRAPPERS)[N]["props"];
 
 type Own<N extends Name> = Lowered<N>[keyof Lowered<N>];
-
-export type Message<Code extends keyof typeof MESSAGES> = (typeof MESSAGES)[Code];
-
-export type Values<Rule, Attribute> = Extract<Rule, { kind: "enum"; attribute: Attribute; values: readonly string[] }>["values"][number];
 
 type DataProps<N extends Name, Rule> = {
   -readonly [Prop in keyof Lowered<N>]?: [Extract<Rule, { kind: "boolean-attribute"; attribute: Lowered<N>[Prop] }>] extends [never]

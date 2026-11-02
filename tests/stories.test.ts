@@ -1,15 +1,11 @@
 import { globSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { expect, test } from "bun:test";
-import { act } from "react";
-import { hydrateRoot, type Root } from "react-dom/client";
-import { renderToString } from "react-dom/server";
 import { USAGE } from "../src/js/usage/contract.ts";
 import { checkRoot } from "../src/js/usage/dom.ts";
 import { catalog, renderHtml, STORYBOOKS, type Entry, type MirroredEntry } from "../stories/catalog.ts";
 import { toReact } from "../stories/mirror-react.ts";
-
-Object.assign(globalThis, { IS_REACT_ACT_ENVIRONMENT: true });
+import { hydrationErrors } from "./hydrate.ts";
 
 const repo = fileURLToPath(new URL("..", import.meta.url));
 
@@ -168,31 +164,9 @@ for (const entry of html) {
   });
 }
 
-/** Hydrates the server markup and returns every recoverable error and React warning it raised. */
-async function hydrationErrors(entry: MirroredEntry): Promise<string[]> {
-  const element = toReact(entry.mirror.scene({ ...entry.meta.args, ...entry.story.args }));
-  const container = document.createElement("div");
-  container.innerHTML = renderToString(element);
-  document.body.append(container);
-  const errors: string[] = [];
-  const original = console.error;
-  console.error = (...args: unknown[]) => errors.push(args.map(String).join(" "));
-  let root: Root | undefined;
-  try {
-    await act(async () => {
-      root = hydrateRoot(container, element, { onRecoverableError: (error) => errors.push(String(error)) });
-    });
-    await act(async () => root?.unmount());
-  } finally {
-    console.error = original;
-    container.remove();
-  }
-  return errors;
-}
-
 for (const entry of react) {
   test(`${entry.label} hydrates`, async () => {
-    expect(await hydrationErrors(entry)).toEqual([]);
+    expect(await hydrationErrors(toReact(entry.mirror.scene({ ...entry.meta.args, ...entry.story.args })))).toEqual([]);
   });
 }
 
