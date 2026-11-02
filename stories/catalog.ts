@@ -1,12 +1,14 @@
 import { globSync } from "node:fs";
 import { resolve } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
+import { renderToStaticMarkup } from "react-dom/server";
 import { isExportStory, storyNameFromExport, toId } from "storybook/internal/csf";
-import { toHtml, type Mirror } from "./mirror.ts";
+import type { Mirror } from "./mirror.ts";
+import { toReact } from "./mirror-react.ts";
 
 export const STORYBOOKS = {
-  html: { title: "HTML", configDir: ".storybook", stories: "stories/**/*.stories.ts" },
-  react: { title: "React", configDir: ".storybook-react", stories: "stories/mirrored/*.stories.ts" },
+  html: { title: "HTML", configDir: ".storybook", stories: "stories/**/*.stories.{ts,tsx}" },
+  react: { title: "React", configDir: ".storybook-react", stories: "stories/mirrored/*.stories.{ts,tsx}" },
 } as const;
 
 export type Storybook = keyof typeof STORYBOOKS;
@@ -141,7 +143,7 @@ export async function catalog(): Promise<Catalog> {
 
 export function renderHtml(entry: Entry, args: Args = {}): unknown {
   const merged = { ...entry.meta.args, ...entry.story.args, ...args };
-  if ("mirror" in entry && isMirror(entry.mirror)) return toHtml(entry.mirror.scene(merged));
+  if ("mirror" in entry && isMirror(entry.mirror)) return renderToStaticMarkup(toReact(entry.mirror.scene(merged)));
   const render = entry.story.render ?? entry.meta.render;
   if (render === undefined) throw new Error(`${entry.label} has no render`);
   return render(merged, { globals: previewGlobals });

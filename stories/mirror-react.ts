@@ -1,4 +1,4 @@
-import { createElement, type ReactElement, type ReactNode } from "react";
+import { createElement, isValidElement, type ReactElement, type ReactNode } from "react";
 import * as Wrappers from "odd-design/react";
 import type { WRAPPERS } from "../src/js/usage/contract.ts";
 import { icons } from "./icons.ts";
@@ -35,7 +35,8 @@ function child(node: Text | Scene): ReactNode {
   return "icon" in node ? icon(node.icon) : toReact(node);
 }
 
-export function toReact(node: Scene): ReactElement {
+export function toReact(node: Scene | ReactElement): ReactElement {
+  if (isValidElement(node)) return node;
   const type = isComponent(node.of) ? (Wrappers[node.of] as (props: object) => ReactElement) : node.of;
   return createElement(type, node.props, ...(node.children ?? []).map(child));
 }

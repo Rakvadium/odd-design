@@ -153,7 +153,7 @@ The five palettes ported from uvs-decks-gg went through the same repair. Their i
 
    `Contract` does not type an `enum` rule on an attribute that is not in the row's `props`. Give each one its own line, `attribute?: Values<Rule, "attribute">`, as `Avatar` does for `role` and `Separator` does for `aria-orientation` and `role`.
 
-4. Export the module from `src/react/index.ts`, and add the props to `WrapperProps` in `src/react/props.ts`.
+4. Export the module from `src/react/index.ts`.
 5. Mirror the part's stories in `stories/mirrored/<Family>.stories.ts`.
 6. Add the part's rows to the `markup` table in `tests/react.test.tsx`. Add a `<part>-<rule>.tsx` fail fixture in `tests/fixtures/types/fail/` for each code its props reject, with its `failures` entry. Add the `places` entries for its ESLint fixtures in `tests/eslint-jsx.test.ts` and `tests/eslint-html.test.ts`. Add a `<code>.bad.html` and `<code>.good.html` pair in `tests/fixtures/usage/` for each runtime code, with the code in lower case, and list the code in `RUNTIME_CODES` in `tests/usage-check.test.ts`. Pin the mirrored story ids in `tests/stories.test.ts`.
 

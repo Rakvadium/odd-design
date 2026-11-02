@@ -5,13 +5,17 @@ import "@fontsource-variable/bricolage-grotesque";
 import "../src/css/index.css";
 import { applyAppearance, CHROMES, MODES, PALETTES, type Appearance } from "../src/js/appearance.ts";
 import { A11Y_OPTIONS } from "./a11y.ts";
-import { avatarFallback, closedByFallback, enhanceCombobox, enhanceMenu, enhanceSelectAll, enhanceTabs, enhanceToaster, interestForFallback } from "../src/js/enhance.ts";
-import { mirrorOf, toHtml } from "../stories/mirror.ts";
+import { renderToStaticMarkup } from "react-dom/server";
+import { avatarFallback, closedByFallback, enhance, interestForFallback } from "../src/js/enhance.ts";
+import { mirrorOf } from "../stories/mirror.ts";
+import { toReact } from "../stories/mirror-react.ts";
 
 // Page-wide fallbacks, installed once as an app would. Each is a no-op where the browser has the feature.
 interestForFallback();
 closedByFallback();
 avatarFallback();
+
+let unenhance: (() => void) | undefined;
 
 const toolbar = (title: string, icon: string, items: readonly string[]) => ({
   description: title,
@@ -38,15 +42,14 @@ const preview: Preview = {
       storySort: { order: ["Introduction", "Showcase", "Foundations", "Components"] },
     },
   },
+  // React only produces the string. The canvas runs the compiled markup with vanilla enhance() and no React.
   render: (args, { parameters, canvasElement }) => {
+    unenhance?.();
+    unenhance = undefined;
     queueMicrotask(() => {
-      canvasElement.querySelectorAll<HTMLElement>(".odd-tabs").forEach(enhanceTabs);
-      canvasElement.querySelectorAll<HTMLElement>(".odd-toaster").forEach(enhanceToaster);
-      canvasElement.querySelectorAll<HTMLElement>('.odd-menu[role="menu"]').forEach(enhanceMenu);
-      canvasElement.querySelectorAll<HTMLElement>(".odd-combobox").forEach(enhanceCombobox);
-      canvasElement.querySelectorAll<HTMLTableElement>("table:has([data-select-all])").forEach(enhanceSelectAll);
+      unenhance = enhance(canvasElement);
     });
-    return toHtml(mirrorOf(parameters).scene(args));
+    return renderToStaticMarkup(toReact(mirrorOf(parameters).scene(args)));
   },
 };
 

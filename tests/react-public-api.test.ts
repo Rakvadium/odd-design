@@ -9,10 +9,9 @@ const repo = fileURLToPath(new URL("..", import.meta.url));
 const outDir = join(repo, ".verify", "react-public-api");
 
 const barrelRegression =
-  "odd-design/react's names must equal the names exported by src/react/*.tsx. A difference means the barrel added a non-component export such as WrapperProps, or dropped a component export.";
+  "odd-design/react's names must equal the names exported by src/react/*.tsx. A difference means the barrel added a non-component export, or dropped a component export.";
 
-const leakRegression =
-  "a declaration reachable from odd-design/react mentions WrapperProps, or a component declaration was not reached. src/react/props.ts is story metadata and must stay out of the published types.";
+const unreadRegression = "a component declaration was not reached from odd-design/react's published types.";
 
 function publishedReactTypes(emitDir: string): string {
   const manifest = JSON.parse(readFileSync(join(repo, "package.json"), "utf8")) as { exports?: unknown };
@@ -60,12 +59,7 @@ test(
 
     const reachable = reachableDeclarations(entry);
     const unread = componentDts.filter((file) => !reachable.includes(file));
-    const leaked = reachable.filter((file) => readFileSync(file, "utf8").includes("WrapperProps"));
-    expect({ regression: leakRegression, leaked, unread }).toEqual({
-      regression: leakRegression,
-      leaked: [],
-      unread: [],
-    });
+    expect({ regression: unreadRegression, unread }).toEqual({ regression: unreadRegression, unread: [] });
   },
   { timeout: 60_000 },
 );
