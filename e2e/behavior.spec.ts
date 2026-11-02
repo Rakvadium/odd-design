@@ -24,15 +24,35 @@ async function hoverFresh(page: Page, selector: string) {
 const isOpen = (page: Page, selector: string) => page.locator(selector).evaluate((el) => el.matches(":popover-open, [open]"));
 
 /**
- * Waits, inside the page, for a popover or dialog to open or close. Under load, Playwright's round
- * trips into Firefox can lag by seconds, so expect.poll timed out on tooltips that had opened on time.
+ * Calls `read`, a short page read, every 100 ms until one returns something other than null. Each
+ * read starts on the timer, not after the one before returns: under load, Firefox can hold a read
+ * until another message reaches the page. Waiting on that one read timed out 10 to 30 s after the
+ * page saw the popover open (.verify/drop-in/hover/).
  */
+function poll<T>(read: () => Promise<T | null>, timeout = 30_000): Promise<T> {
+  return new Promise((resolve, reject) => {
+    let last: unknown = null;
+    const timer = setInterval(() => {
+      read().then(
+        (value) => {
+          if (value === null) return;
+          clearInterval(timer);
+          clearTimeout(limit);
+          resolve(value);
+        },
+        (error: unknown) => (last = error),
+      );
+    }, 100);
+    const limit = setTimeout(() => {
+      clearInterval(timer);
+      reject(new Error(`no page read returned a value in ${timeout} ms${last === null ? "" : `, last error: ${String(last)}`}`));
+    }, timeout);
+  });
+}
+
+/** Waits for a popover or dialog to open or close. */
 const waitOpen = (page: Page, selector: string, open = true) =>
-  page.waitForFunction(
-    ([sel, want]) => document.querySelector(sel)?.matches(":popover-open, [open]") === want,
-    [selector, open] as const,
-    { timeout: 10_000 },
-  );
+  poll(() => page.evaluate(([sel, want]) => (document.querySelector(sel)?.matches(":popover-open, [open]") === want ? true : null), [selector, open] as const));
 
 /**
  * Records, in page time, when the pointer enters and leaves `invoker` and when `target` opens and closes.
@@ -56,19 +76,18 @@ const watchHover = (page: Page, invoker: string, target: string) =>
  * Firefox can fire another pointerenter after the page changes under a resting pointer, so the last
  * entry overall may come after the open it caused.
  */
-const hoverDelay = async (page: Page, from: "enter" | "leave", to: "open" | "closed") => {
-  const handle = await page.waitForFunction(
-    ([f, t]) => {
-      const log = (window as any).__hover as Record<string, number[]>;
-      const b = log[t]!.at(-1);
-      const a = b === undefined ? undefined : log[f]!.filter((at) => at <= b).at(-1);
-      return a !== undefined && b !== undefined ? { ms: b - a } : null;
-    },
-    [from, to] as const,
-    { timeout: 10_000 },
+const hoverDelay = (page: Page, from: "enter" | "leave", to: "open" | "closed") =>
+  poll(() =>
+    page.evaluate(
+      ([f, t]) => {
+        const log = (window as any).__hover as Record<string, number[]>;
+        const b = log[t]!.at(-1);
+        const a = b === undefined ? undefined : log[f]!.filter((at) => at <= b).at(-1);
+        return a !== undefined && b !== undefined ? b - a : null;
+      },
+      [from, to] as const,
+    ),
   );
-  return ((await handle.jsonValue()) as { ms: number }).ms;
-};
 
 async function note(page: Page, testInfo: TestInfo, feature: string, check: string) {
   const native = await page.evaluate(check);
