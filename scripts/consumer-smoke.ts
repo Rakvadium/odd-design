@@ -15,7 +15,10 @@ const FORBIDDEN =
 const BAD_TYPE =
   `src/App.tsx(4,18): error TS2322: Type 'true' is not assignable to type '"${FORBIDDEN}"'.`;
 
-const BAD_ESLINT = [{ ruleId: "odd/usage", severity: 2, message: FORBIDDEN, line: 1, column: 52 }];
+const HAND_WRITTEN =
+  "ODD-REACT-003: an odd- class in JSX hand-writes markup that odd-design/react renders, without the roles, ids, and wiring the component owns. Allowed values: odd-design/react components. Fix: remove the class, and render the component this message names. docs/usage/react.md#odd-react-003 Found odd-button. Render Button from odd-design/react.";
+
+const BAD_ESLINT = [{ ruleId: "odd/usage", severity: 2, message: HAND_WRITTEN, line: 1, column: 43 }];
 
 const HOOK_TESTS = [
   "afterEach fails a DOM test that never calls flush",

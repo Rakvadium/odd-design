@@ -66,4 +66,4 @@ Fails when `odd-link` has a `target` and no `rel`.
 
 A link with `target="_blank"` opens a new tab. Without `rel="noopener"`, older browsers hand the new page a handle on this one. A reader who follows the link also lands in a new tab with no warning, where the Back button does nothing.
 
-Add `rel="noopener"` beside `target`, and put words in the link text that say it opens a new tab, such as "(opens in a new tab)". The checker reads only `rel`, so the words are yours to add. Or remove `target`, so the link opens in the same tab. The React types do not check this pair, so ESLint and the runtime checker report it.
+Add `rel="noopener"` beside `target`, and put words in the link text that say it opens a new tab, such as "(opens in a new tab)". The checker reads only `rel`, so the words are yours to add. Or remove `target`, so the link opens in the same tab. The React types do not check this pair, so in a React app the runtime checker reports it.

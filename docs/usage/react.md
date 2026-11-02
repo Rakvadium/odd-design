@@ -15,7 +15,7 @@ import { Button } from "odd-design/react";
 <Button href="/docs" aria-current="page">Docs</Button>;
 ```
 
-`Button` renders an `a` when you pass `href`, and a `button` otherwise. The element always has the class `odd-button`, plus the words in `className`. The table shows how the other props map to the element. The ESLint plugin reads `Button` with the same mapping, as [Check HTML with ESLint](eslint.md) describes.
+`Button` renders an `a` when you pass `href`, and a `button` otherwise. The element always has the class `odd-button`, plus the words in `className`. The table shows how the other props map to the element.
 
 | Prop | What the element gets |
 | --- | --- |
@@ -54,7 +54,7 @@ import { Field, Hint, Input, Label } from "odd-design/react";
 </Field>;
 ```
 
-Each part renders one element with its class, plus the words in `className`. Every other prop goes to the element as is. The ESLint plugin reads each part as the same element.
+Each part renders one element with its class, plus the words in `className`. Every other prop goes to the element as is.
 
 | Part | Element | Required prop |
 | --- | --- | --- |
@@ -123,7 +123,7 @@ import { Choice, Segmented, Switch } from "odd-design/react";
 </Segmented>;
 ```
 
-Each part renders one element with its class, plus the words in `className`. Every other prop goes to the element as is. The ESLint plugin reads each part as the same element.
+Each part renders one element with its class, plus the words in `className`. Every other prop goes to the element as is.
 
 | Part | Element | Required prop |
 | --- | --- | --- |
@@ -131,7 +131,7 @@ Each part renders one element with its class, plus the words in `className`. Eve
 | `Switch` | `input.odd-switch` | `type="checkbox"` and `role="switch"` |
 | `Segmented` | `fieldset.odd-segmented` | |
 
-The checkbox or radio inside `Choice`, and the `legend` and `label` children of `Segmented`, are plain elements. `Switch` takes `type` and `role` from you, as the HTML does, so the element ESLint reads is the element React renders. A `Switch` outside a `Choice` needs an `aria-label`. Start a choice with `defaultChecked`, or control it with `checked` and `onChange`.
+The checkbox or radio inside `Choice`, and the `legend` and `label` children of `Segmented`, are plain elements. `Switch` takes `type` and `role` from you, as the HTML does. A `Switch` outside a `Choice` needs an `aria-label`. Start a choice with `defaultChecked`, or control it with `checked` and `onChange`.
 
 Disable a choice with the native `disabled` attribute on the input, or on `Segmented`. `aria-disabled` on any Choice part is a type error. It leaves the input toggling, and the choice does not look disabled.
 
@@ -155,7 +155,7 @@ const toneOf: Record<Status, BadgeTone> = { draft: "neutral", legal: "success", 
 | `solid` | `data-solid` with an empty value. `solid={false}` leaves it out. |
 | Any other prop | The attribute with the same name. |
 
-Use `tone` and `solid`. Passing `data-tone` or `data-solid` yourself is a type error, and `Badge` drops the raw attribute. A `solid` that is not a boolean, such as `solid="false"`, is a type error too. Without types, it renders `data-solid="false"`, which is solid, and ESLint and the runtime checker report `ODD-BADGE-003`. `BadgeTone` is the type of `tone`, for a map from your data to a tone.
+Use `tone` and `solid`. Passing `data-tone` or `data-solid` yourself is a type error, and `Badge` drops the raw attribute. A `solid` that is not a boolean, such as `solid="false"`, is a type error too. Without types, it renders `data-solid="false"`, which is solid, and the runtime checker reports `ODD-BADGE-003`. `BadgeTone` is the type of `tone`, for a map from your data to a tone.
 
 ## Show a message with an alert
 
@@ -269,7 +269,7 @@ import { Skeleton } from "odd-design/react";
 </div>;
 ```
 
-`Skeleton` renders a `div` with the class `odd-skeleton`, a block that pulses while content loads. Pass `aria-hidden="true"` on every block, as on the element. It is a required prop, and it takes only the string `"true"`. `aria-hidden={true}` and a bare `aria-hidden` are type errors, because ESLint reads the bare form as empty, and an empty value hides nothing. Leaving `shape` out draws a bar 1em tall. `shape="avatar"` draws a block that matches a default avatar. The shape follows the chrome's chip radius. Size each block with `inlineSize` and `blockSize` in `style`.
+`Skeleton` renders a `div` with the class `odd-skeleton`, a block that pulses while content loads. Pass `aria-hidden="true"` on every block, as on the element. It is a required prop, and it takes only the string `"true"`. `aria-hidden={true}` and a bare `aria-hidden` are type errors. Leaving `shape` out draws a bar 1em tall. `shape="avatar"` draws a block that matches a default avatar. The shape follows the chrome's chip radius. Size each block with `inlineSize` and `blockSize` in `style`.
 
 The block is hidden, so it cannot say that the page is loading. Set `aria-busy="true"` on the region that is filling in, and put the loading words in an `odd-visually-hidden` span inside it. Remove the blocks, the span, and `aria-busy` when the content arrives. No checker reads the region, so a block with no busy region beside it passes. Children, `aria-busy`, `role`, `aria-label`, and `aria-labelledby` on `Skeleton` are type errors (`ODD-SKELETON-004`). A computed `shape`, such as `<Skeleton shape={shapeOf[kind]}>`, gives the `ODD-STATIC-001` warning, the same as a computed `size` on `Avatar`.
 
@@ -299,7 +299,7 @@ import { TextLink } from "odd-design/react";
 
 `TextLink` renders an `a` with the class `odd-link`. It looks like every bare `a`. `href` is a required prop. `aria-current` takes only `"page"`, and the current link takes the text color and drops its underline. The export is `TextLink`, not `Link`, so it does not clash with the `Link` that routers export. A router's `Link` with `className="odd-link"` gives the `ODD-STATIC-001` warning, because the checkers cannot see what it renders.
 
-`aria-disabled` and `disabled` are type errors (`ODD-LINK-003`), and so is `role` (`ODD-LINK-004`). A link that can't be followed is plain text. A link that looks like a button is a `Button` with `href`. A `target` needs `rel="noopener"` and words in the link text that say it opens a new tab (`ODD-LINK-007`). The types do not check that pair, so ESLint and the runtime checker report it.
+`aria-disabled` and `disabled` are type errors (`ODD-LINK-003`), and so is `role` (`ODD-LINK-004`). A link that can't be followed is plain text. A link that looks like a button is a `Button` with `href`. A `target` needs `rel="noopener"` and words in the link text that say it opens a new tab (`ODD-LINK-007`). The types do not check that pair, so the runtime checker reports it.
 
 ## Suggest values as someone types
 
@@ -345,7 +345,7 @@ import { Breadcrumb, TextLink } from "odd-design/react";
 
 `Breadcrumb` renders a `nav` with the class `odd-breadcrumb`. Pass `aria-label` or `aria-labelledby`, as on `Menu`. One of them is a required prop. Write the `ol`, the `li`s, and the `TextLink`s yourself. Each level with a page of its own is a `TextLink`, and the last one has `aria-current="page"`. A level with no page of its own is plain text in its `li`. CSS draws the slashes between crumbs, which screen readers do not read, and a long trail wraps.
 
-The types do not read the children. A `ul` or bare links in place of the `ol` (`ODD-BREADCRUMB-003`) pass the types, and ESLint and the runtime checker report them. No checker requires the current crumb, so a trail without `aria-current="page"` passes, and its last crumb looks like every other link.
+The types do not read the children. A `ul` or bare links in place of the `ol` (`ODD-BREADCRUMB-003`) pass the types, and the runtime checker reports them. No checker requires the current crumb, so a trail without `aria-current="page"` passes, and its last crumb looks like every other link.
 
 ## Show a key
 
@@ -393,7 +393,7 @@ import { Badge, Card, CardFooter, CardLink } from "odd-design/react";
 
 `Card` renders an `article` with the class `odd-card`. `interactive` sets `data-interactive`, and `interactive={false}` leaves it off. `CardLink` renders an `a` with the class `odd-card-link`, and `href` is a required prop. In an interactive card, the link's `::after` covers the card, so a click anywhere on the card follows the link, and a screen reader hears one link named by the title. `CardFooter` renders a `div` with the class `odd-card-footer`. The title has no part. Write the heading at the level your page needs, with `className="odd-card-title"`.
 
-An interactive card holds exactly one link or button, its `CardLink`. A second control sits under the stretched link and takes no click, so put it outside the card. A `CardLink` in a card without `interactive` does not stretch and loses its focus outline. ESLint and the runtime checker report both as `ODD-CARD-003`. They cannot see inside another component, so a missing link in `<Card interactive><DeckTitle /></Card>` passes. `onClick` and `tabIndex` on `Card` are type errors (`ODD-CARD-004`), because the card itself is not a control. `data-span` places a card in an `odd-grid`, and other system `data-` attributes on `Card` are type errors (`ODD-CARD-006`). For a named panel or a plain box, write a raw `section` or `div` with the class `odd-card`. ESLint checks it the same way.
+An interactive card holds exactly one link or button, its `CardLink`. A second control sits under the stretched link and takes no click, so put it outside the card. A `CardLink` in a card without `interactive` does not stretch and loses its focus outline. The runtime checker reports both as `ODD-CARD-003` on the rendered page. `onClick` and `tabIndex` on `Card` are type errors (`ODD-CARD-004`), because the card itself is not a control. `data-span` places a card in an `odd-grid`, and other system `data-` attributes on `Card` are type errors (`ODD-CARD-006`). For a named panel or a plain box, write a raw `section` or `div` with the class `odd-card`.
 
 ## Build a disclosure
 
@@ -430,7 +430,7 @@ export function FaqItem({ question, answer }: { question: string; answer: string
 
 `open={false}` leaves the attribute off, and `open={true}` writes `open=""`. A string `open` is a type error. In raw HTML, `open="false"` still opens the panel, and no checker reports it.
 
-A disclosure with no direct `summary` child shows the browser's own Details label, and the question sits hidden in the closed answer. A `summary` inside a `div`, or a `div` or `button` used as the trigger, reports `ODD-DISCLOSURE-002` in ESLint and the runtime checker. ESLint cannot see a summary that comes from another component or an expression, so it stays quiet. Keep the summary's text non-empty, and keep links and buttons out of it. An empty summary takes its name from the answer, and a link in the summary follows its `href` and leaves the panel closed. Do not set `aria-expanded` on the summary. The browser reports the state, and a written `aria-expanded="false"` stays `false` after a click opens the panel. System `data-` attributes on `Disclosure`, such as `data-tone`, are type errors (`ODD-DISCLOSURE-003`).
+A disclosure with no direct `summary` child shows the browser's own Details label, and the question sits hidden in the closed answer. A `summary` inside a `div`, or a `div` or `button` used as the trigger, reports `ODD-DISCLOSURE-002` in the runtime checker. Keep the summary's text non-empty, and keep links and buttons out of it. An empty summary takes its name from the answer, and a link in the summary follows its `href` and leaves the panel closed. Do not set `aria-expanded` on the summary. The browser reports the state, and a written `aria-expanded="false"` stays `false` after a click opens the panel. System `data-` attributes on `Disclosure`, such as `data-tone`, are type errors (`ODD-DISCLOSURE-003`).
 
 ## Build tabs
 
@@ -471,7 +471,7 @@ export function DeckView() {
 
 `Tabs` takes no `value`, `onValueChange`, or `defaultValue`, and `defaultValue` is a type error. React state that writes `aria-selected` by itself moves the selection and leaves the tab stop on the old tab. Setting `aria-selected` from the `odd-tab-change` value is safe, because it writes what `enhanceTabs` already wrote.
 
-A tablist inside a wrapper loses its segmented track and reports `ODD-TABS-002` in ESLint and the runtime checker. A tab that is not a `button`, or has no `aria-controls`, reports `ODD-TABS-004`. Without `aria-controls`, choosing a tab shows and hides no panel, so the panels keep whatever `hidden` they started with. ESLint cannot see a tablist or a tab that comes from another component or a computed `role`, so it stays quiet. A spread with no `role` also hides a missing tablist. A spread on a tab hides its `aria-controls`, so only a tab that is not a `button` still reports. `aria-orientation` and `data-activation` on `Tabs` are type errors (`ODD-TABS-003`), because nothing reads them on the root. System `data-` attributes on `Tabs`, such as `data-tone`, are type errors (`ODD-TABS-005`).
+A tablist inside a wrapper loses its segmented track and reports `ODD-TABS-002` in the runtime checker. A tab that is not a `button`, or has no `aria-controls`, reports `ODD-TABS-004`. Without `aria-controls`, choosing a tab shows and hides no panel, so the panels keep whatever `hidden` they started with. `aria-orientation` and `data-activation` on `Tabs` are type errors (`ODD-TABS-003`), because nothing reads them on the root. System `data-` attributes on `Tabs`, such as `data-tone`, are type errors (`ODD-TABS-005`).
 
 ## Build a search
 
@@ -524,7 +524,7 @@ To submit on Enter, put a `form` around `Search`. Enter in the input fires the f
 </form>;
 ```
 
-`onSubmit` on `Search` is a type error (`ODD-SEARCH-004`), because a `search` element holds no form and the handler never runs. Do not put the `form` inside `Search`. A form between `odd-search` and its children leaves the input unstyled and the icon unsized, and reports `ODD-SEARCH-002` and `ODD-SEARCH-003` in ESLint and the runtime checker. An input inside a wrapper, a raw `input` with no `odd-input`, or an input whose `type` is not `search` reports `ODD-SEARCH-002`. A missing or wrapped icon, or an `svg` without `aria-hidden="true"`, reports `ODD-SEARCH-003`. Write `aria-hidden="true"`, because ESLint reads a bare `aria-hidden` as empty. ESLint cannot see inside an icon component, such as one from an icon library, so it stays quiet on both codes for that search. It also stays quiet on a computed `className`, `type`, or `aria-hidden`, and on a spread that leaves the attribute out. A computed `className` still reports when the input's `type` is missing or not `search`. The runtime checker still reads the rendered page. System `data-` attributes on `Search`, such as `data-tone`, are type errors (`ODD-SEARCH-005`).
+`onSubmit` on `Search` is a type error (`ODD-SEARCH-004`), because a `search` element holds no form and the handler never runs. Do not put the `form` inside `Search`. A form between `odd-search` and its children leaves the input unstyled and the icon unsized, and reports `ODD-SEARCH-002` and `ODD-SEARCH-003` in the runtime checker. An input inside a wrapper, a raw `input` with no `odd-input`, or an input whose `type` is not `search` reports `ODD-SEARCH-002`. A missing or wrapped icon, or an `svg` without `aria-hidden="true"`, reports `ODD-SEARCH-003`. The runtime checker reads the rendered page, so it sees inside an icon component too. System `data-` attributes on `Search`, such as `data-tone`, are type errors (`ODD-SEARCH-005`).
 
 The CSS's own shape, `<search><form className="odd-search">`, also works and is checked the same way. Its form submits on Enter, and the page navigates unless `onSubmit` calls `preventDefault`.
 
@@ -556,7 +556,7 @@ export function CopiesField() {
 }
 ```
 
-`Slider` renders an `input` with the class `odd-slider`. It takes `type="range"` from you, as `Switch` takes `type="checkbox"`, so the element ESLint reads is the element React renders. A `Slider` without `type` is TypeScript's missing property error, and another `type` prints `"range"`. Every other prop goes to the input: `min`, `max`, `step`, `value` with `onChange`, or `defaultValue`. The arrow keys, Page Up and Page Down, and Home and End come from the browser.
+`Slider` renders an `input` with the class `odd-slider`. It takes `type="range"` from you, as `Switch` takes `type="checkbox"`, so the element you write is the element React renders. A `Slider` without `type` is TypeScript's missing property error, and another `type` prints `"range"`. Every other prop goes to the input: `min`, `max`, `step`, `value` with `onChange`, or `defaultValue`. The arrow keys, Page Up and Page Down, and Home and End come from the browser.
 
 Show the value as text when it matters, as the `output` above does. WebKit draws no filled track, so the thumb and that text are what show the value there. Disable a slider with `disabled`. `aria-disabled` on `Slider` is a type error (`ODD-SLIDER-003`), because the thumb still moves and the slider does not look disabled. A system `data-` attribute on `Slider`, such as `data-tone`, is a type error (`ODD-SLIDER-004`). A computed `type`, such as `type={kind}`, gives the `ODD-STATIC-001` warning.
 
@@ -721,7 +721,7 @@ The type error names the code and the fix. The table lists what each mistake pri
 
 TypeScript shortens a long type in an error. Set `noErrorTruncation` in `tsconfig.json` to see the whole message.
 
-Some rules are not type errors. `Button` picks the element from `href`, so you cannot write an anchor without `href` (`ODD-BUTTON-009`) or a button with `href` (`ODD-BUTTON-010`). Those two codes apply to a raw `a` or `button` with the `odd-button` class. Each Field and Choice part, `Badge`, each Alert part, each Avatar part, `Separator`, `Skeleton`, each Card part, `Disclosure`, `Tabs`, `Search`, `Slider`, `Meter`, `Progress`, `Toaster`, `Popover`, `Dialog`, `DialogActions`, each Sheet part, `Menu`, `MenuItem`, `TableWrap`, `Table`, `TableSort`, `TextLink`, `Spinner`, `Combobox`, `ComboboxList`, `ComboboxOption`, `Breadcrumb`, `Kbd`, `Code`, and `Pre` picks its own element too, so `ODD-FIELD-001`, `ODD-CHOICE-001`, `ODD-BADGE-001`, `ODD-ALERT-001`, `ODD-AVATAR-001`, `ODD-SEPARATOR-001`, `ODD-SKELETON-001`, `ODD-CARD-001`, `ODD-DISCLOSURE-001`, `ODD-TABS-001`, `ODD-SEARCH-001`, `ODD-SLIDER-001`, `ODD-METER-001`, `ODD-TOAST-001`, `ODD-POPOVER-001`, `ODD-DIALOG-001`, `ODD-SHEET-001`, `ODD-MENU-001`, `ODD-TABLE-001`, `ODD-LINK-001`, `ODD-SPINNER-001`, `ODD-COMBOBOX-001`, `ODD-BREADCRUMB-001`, `ODD-KBD-001`, and `ODD-CODE-001` apply only to raw markup. Visible text in an icon-only button (`ODD-BUTTON-014`), the links and buttons in a card (`ODD-CARD-003`), the summary of a disclosure (`ODD-DISCLOSURE-002`), the tablist of a tab set (`ODD-TABS-002`), the tabs in a tab set (`ODD-TABS-004`), the input and the icon of a search (`ODD-SEARCH-002` and `ODD-SEARCH-003`), a `target` without `rel` on a link (`ODD-LINK-007`), the input and the list of a combobox (`ODD-COMBOBOX-002` and `ODD-COMBOBOX-003`), the list of a breadcrumb (`ODD-BREADCRUMB-003`), and a misspelled `data-` name are not type errors either. The ESLint plugin and the [runtime checker](runtime.md) report each of these.
+Some rules are not type errors. `Button` picks the element from `href`, so you cannot write an anchor without `href` (`ODD-BUTTON-009`) or a button with `href` (`ODD-BUTTON-010`). Those two codes apply to a raw `a` or `button` with the `odd-button` class. Each Field and Choice part, `Badge`, each Alert part, each Avatar part, `Separator`, `Skeleton`, each Card part, `Disclosure`, `Tabs`, `Search`, `Slider`, `Meter`, `Progress`, `Toaster`, `Popover`, `Dialog`, `DialogActions`, each Sheet part, `Menu`, `MenuItem`, `TableWrap`, `Table`, `TableSort`, `TextLink`, `Spinner`, `Combobox`, `ComboboxList`, `ComboboxOption`, `Breadcrumb`, `Kbd`, `Code`, and `Pre` picks its own element too, so `ODD-FIELD-001`, `ODD-CHOICE-001`, `ODD-BADGE-001`, `ODD-ALERT-001`, `ODD-AVATAR-001`, `ODD-SEPARATOR-001`, `ODD-SKELETON-001`, `ODD-CARD-001`, `ODD-DISCLOSURE-001`, `ODD-TABS-001`, `ODD-SEARCH-001`, `ODD-SLIDER-001`, `ODD-METER-001`, `ODD-TOAST-001`, `ODD-POPOVER-001`, `ODD-DIALOG-001`, `ODD-SHEET-001`, `ODD-MENU-001`, `ODD-TABLE-001`, `ODD-LINK-001`, `ODD-SPINNER-001`, `ODD-COMBOBOX-001`, `ODD-BREADCRUMB-001`, `ODD-KBD-001`, and `ODD-CODE-001` apply only to raw markup. Visible text in an icon-only button (`ODD-BUTTON-014`), the links and buttons in a card (`ODD-CARD-003`), the summary of a disclosure (`ODD-DISCLOSURE-002`), the tablist of a tab set (`ODD-TABS-002`), the tabs in a tab set (`ODD-TABS-004`), the input and the icon of a search (`ODD-SEARCH-002` and `ODD-SEARCH-003`), a `target` without `rel` on a link (`ODD-LINK-007`), the input and the list of a combobox (`ODD-COMBOBOX-002` and `ODD-COMBOBOX-003`), the list of a breadcrumb (`ODD-BREADCRUMB-003`), and a misspelled `data-` name are not type errors either. The [runtime checker](runtime.md) reports each of these.
 
 ## Open a dialog or a popover with a command
 

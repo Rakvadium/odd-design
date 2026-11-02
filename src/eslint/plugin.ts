@@ -24,7 +24,7 @@ function usageRule(report: HtmlReport): Rule.RuleModule {
       schema: [],
     },
     create(context) {
-      return { ...htmlVisitors(context, report), ...jsxVisitors(context, report) };
+      return report === "usage" ? { ...htmlVisitors(context, report), ...jsxVisitors(context) } : htmlVisitors(context, report);
     },
   };
 }

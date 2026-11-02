@@ -39,7 +39,7 @@ Fails when a `nav` with `odd-breadcrumb` has no `ol` as a direct child.
 
 `breadcrumb.css` draws the trail on `nav > ol > li`. A `ul` keeps its bullets and draws no slashes, in Firefox and WebKit. Links placed straight in the `nav` lose the list, so a screen reader no longer says how many levels the trail has. An `ol` says the levels come in order.
 
-Put the crumbs in an `ol` directly inside the `nav`, with one `li` per level. The React types do not check the children, so ESLint and the runtime checker report it.
+Put the crumbs in an `ol` directly inside the `nav`, with one `li` per level. The React types do not check the children, so in a React app the runtime checker reports it.
 
 ## ODD-BREADCRUMB-004
 

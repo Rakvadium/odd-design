@@ -15,348 +15,83 @@ function lineText(source: string, line: number): string {
   return source.split(/\r?\n/)[line - 1] ?? "";
 }
 
-function expectedCodes(source: string, pattern: RegExp): string[] {
-  const match = pattern.exec(source);
+function expectedCodes(source: string): string[] {
+  const match = /^\/\/ expect: (.+)/.exec(source);
   if (match === null || match[1] === undefined) throw new Error("fixture has no expect line");
   return match[1] === "none" ? [] : match[1].split(" ");
 }
 
+function lint(name: string, filename = `${folder}/${name}`): Linter.LintMessage[] {
+  return linter.verify(readFileSync(`${folder}/${name}`, "utf8"), flat, { filename });
+}
+
+const REACT_003 =
+  "ODD-REACT-003: an odd- class in JSX hand-writes markup that odd-design/react renders, without the roles, ids, and wiring the component owns. Allowed values: odd-design/react components. Fix: remove the class, and render the component this message names. docs/usage/react.md#odd-react-003";
+
 const places: Record<string, readonly (readonly [string, number, number, string])[]> = {
-  "alert.tsx": [
-    ["ODD-ALERT-002", 8, 12, 'tone="neutral"'],
-    ["ODD-ALERT-003", 9, 12, 'role="status"'],
-    ["ODD-ALERT-003", 10, 12, 'aria-live="polite"'],
-    ["ODD-ALERT-004", 11, 12, "data-variant"],
-    ["ODD-ALERT-005", 12, 17, "data-tone"],
-    ["ODD-ALERT-001", 13, 11, "className"],
+  "class-expressions.tsx": [
+    ["ODD-REACT-003", 5, 11, "className={`odd-badge"],
+    ["ODD-REACT-003", 6, 14, "className={clsx("],
+    ["ODD-REACT-003", 7, 8, "className={clsx({"],
+    ["ODD-REACT-003", 8, 10, 'class="odd-kbd"'],
+    ["ODD-REACT-003", 9, 9, 'className={"odd-separator"}'],
   ],
-  "avatar.tsx": [
-    ["ODD-AVATAR-002", 8, 13, 'size="md"'],
-    ["ODD-AVATAR-003", 9, 13, 'role="presentation"'],
-    ["ODD-AVATAR-004", 10, 5, '<Avatar role="img">'],
-    ["ODD-AVATAR-005", 11, 13, "data-tone"],
-    ["ODD-AVATAR-006", 12, 49, "data-size"],
-    ["ODD-AVATAR-004", 13, 5, "<AvatarGroup"],
-    ["ODD-AVATAR-001", 14, 10, "className"],
+  "odd-react-003.bad.tsx": [["ODD-REACT-003", 2, 43, 'className="odd-button"']],
+  "odd-react-003.good.tsx": [],
+  "plain.tsx": [],
+  "third-party.tsx": [["ODD-REACT-003", 3, 27, 'className="odd-link"']],
+  "unowned.tsx": [
+    ["ODD-REACT-003", 4, 10, 'className="odd-stack"'],
+    ["ODD-REACT-003", 5, 9, 'className="odd-toast"'],
+    ["ODD-CLASS-001", 6, 10, 'className="odd-stak"'],
   ],
-  "badge.tsx": [
-    ["ODD-BADGE-002", 7, 12, 'tone="sucess"'],
-    ["ODD-BADGE-004", 8, 12, "data-variant"],
-    ["ODD-BADGE-003", 9, 33, "data-solid={false}"],
-    ["ODD-BADGE-001", 10, 10, "className"],
-  ],
-  "card.tsx": [
-    ["ODD-CARD-003", 14, 11, "interactive"],
-    ["ODD-CARD-003", 15, 5, "<Card>"],
-    ["ODD-CARD-003", 16, 11, "interactive"],
-    ["ODD-CARD-004", 17, 11, "onClick={open}"],
-    ["ODD-CARD-004", 17, 26, "tabIndex={0}"],
-    ["ODD-CARD-001", 18, 14, "className"],
-    ["ODD-CARD-003", 19, 11, "interactive"],
-    ["ODD-STATIC-001", 20, 11, "{...props}"],
-  ],
-  "disclosure.tsx": [
-    ["ODD-DISCLOSURE-002", 15, 5, "<Disclosure>"],
-    ["ODD-DISCLOSURE-002", 16, 5, "<Disclosure>"],
-    ["ODD-DISCLOSURE-001", 17, 10, "className"],
-    ["ODD-DISCLOSURE-003", 18, 17, 'data-tone="info"'],
-    ["ODD-STATIC-001", 19, 17, "{...props}"],
-    ["ODD-STATIC-001", 20, 41, "{...props}"],
-    ["ODD-DISCLOSURE-002", 21, 5, "<Disclosure {...props}>"],
-    ["ODD-STATIC-001", 21, 17, "{...props}"],
-  ],
-  "tabs.tsx": [
-    ["ODD-TABS-002", 16, 5, "<Tabs>"],
-    ["ODD-TABS-003", 17, 11, "aria-orientation"],
-    ["ODD-TABS-003", 17, 39, "data-activation"],
-    ["ODD-TABS-004", 18, 5, "<Tabs>"],
-    ["ODD-TABS-004", 18, 5, "<Tabs>"],
-    ["ODD-TABS-001", 19, 14, "className"],
-    ["ODD-TABS-005", 20, 11, 'data-tone="info"'],
-    ["ODD-TABS-004", 21, 219, "<Tabs>"],
-    ["ODD-TABS-004", 22, 5, "<Tabs>"],
-  ],
-  "search.tsx": [
-    ["ODD-SEARCH-002", 20, 5, "<Search>"],
-    ["ODD-SEARCH-002", 21, 5, "<Search>"],
-    ["ODD-SEARCH-002", 22, 5, "<Search>"],
-    ["ODD-STATIC-001", 22, 46, "className={cn("],
-    ["ODD-SEARCH-002", 23, 5, "<Search>"],
-    ["ODD-SEARCH-002", 24, 5, "<Search>"],
-    ["ODD-SEARCH-003", 24, 5, "<Search>"],
-    ["ODD-SEARCH-003", 25, 5, "<Search>"],
-    ["ODD-SEARCH-003", 26, 5, "<Search>"],
-    ["ODD-SEARCH-003", 27, 5, "<Search>"],
-    ["ODD-SEARCH-001", 28, 10, "className"],
-    ["ODD-SEARCH-004", 29, 13, "onSubmit"],
-    ["ODD-SEARCH-005", 30, 13, 'data-tone="info"'],
-  ],
-  "slider.tsx": [
-    ["ODD-STATIC-001", 10, 13, "type={kind}"],
-    ["ODD-SLIDER-001", 11, 10, "className"],
-    ["ODD-SLIDER-002", 12, 5, "<input"],
-    ["ODD-SLIDER-002", 13, 13, 'type="number"'],
-    ["ODD-SLIDER-003", 14, 49, 'aria-disabled="true"'],
-    ["ODD-SLIDER-004", 15, 49, 'data-tone="info"'],
-  ],
-  "toast.tsx": [
-    ["ODD-STATIC-001", 9, 14, "{...props}"],
-    ["ODD-STATIC-001", 10, 14, "popover={mode}"],
-    ["ODD-TOAST-001", 11, 10, 'className="odd-toaster"'],
-    ["ODD-TOAST-001", 12, 12, 'className="odd-toaster"'],
-    ["ODD-TOAST-002", 13, 5, "<section"],
-    ["ODD-TOAST-002", 14, 14, 'popover="auto"'],
-    ["ODD-TOAST-003", 15, 5, "<Toaster"],
-    ["ODD-TOAST-004", 16, 58, 'data-tone="success"'],
-  ],
-  "popover.tsx": [
-    ["ODD-STATIC-001", 9, 14, "{...props}"],
-    ["ODD-STATIC-001", 10, 21, "popover={kind}"],
-    ["ODD-POPOVER-001", 11, 11, "className"],
-    ["ODD-POPOVER-002", 12, 5, "<div"],
-    ["ODD-POPOVER-002", 13, 21, 'popover="manual"'],
-    ["ODD-POPOVER-002", 14, 21, 'popover="hint"'],
-    ["ODD-POPOVER-003", 15, 36, 'role="menu"'],
-    ["ODD-POPOVER-005", 16, 36, 'aria-labelledby="i-title"'],
-    ["ODD-POPOVER-004", 17, 5, "<Popover"],
-    ["ODD-POPOVER-006", 18, 36, 'data-tone="info"'],
-    ["ODD-STATIC-001", 19, 40, "{...props}"],
-  ],
-  "dialog.tsx": [
-    ["ODD-STATIC-001", 9, 13, "{...props}"],
-    ["ODD-DIALOG-001", 10, 10, "className"],
-    ["ODD-DIALOG-002", 11, 5, "<Dialog"],
-    ["ODD-DIALOG-002", 12, 5, "<Dialog"],
-    ["ODD-DIALOG-003", 13, 13, 'role="dialog"'],
-    ["ODD-DIALOG-003", 14, 13, 'role="region"'],
-    ["ODD-DIALOG-004", 15, 37, "open"],
-    ["ODD-DIALOG-005", 16, 37, 'closedby="none"'],
-    ["ODD-DIALOG-006", 17, 62, 'closedby="any"'],
-    ["ODD-DIALOG-007", 18, 37, 'data-tone="danger"'],
-    ["ODD-DIALOG-008", 19, 38, 'data-tone="danger"'],
-    ["ODD-DIALOG-008", 20, 20, 'data-variant="danger"'],
-    ["ODD-STATIC-001", 21, 37, "{...props}"],
-  ],
-  "sheet.tsx": [
-    ["ODD-SHEET-001", 8, 10, "className"],
-    ["ODD-SHEET-001", 9, 13, "className"],
-    ["ODD-DIALOG-002", 10, 5, "<Sheet"],
-    ["ODD-DIALOG-004", 11, 33, "open"],
-    ["ODD-DIALOG-006", 12, 61, 'closedby="any"'],
-    ["ODD-SHEET-002", 13, 33, 'side="end"'],
-    ["ODD-SHEET-002", 14, 56, 'data-side="left"'],
-    ["ODD-SHEET-003", 15, 33, 'data-tone="danger"'],
-    ["ODD-SHEET-003", 16, 18, 'data-variant="primary"'],
-    ["ODD-STATIC-001", 17, 33, "side={side}"],
-    ["ODD-STATIC-001", 18, 12, "{...props}"],
-  ],
-  "menu.tsx": [
-    ["ODD-STATIC-001", 8, 15, "{...props}"],
-    ["ODD-MENU-001", 9, 14, "className"],
-    ["ODD-MENU-001", 10, 10, "className"],
-    ["ODD-POPOVER-002", 11, 18, 'popover="manual"'],
-    ["ODD-MENU-002", 12, 33, 'role="listbox"'],
-    ["ODD-MENU-003", 13, 5, "<Menu"],
-    ["ODD-MENU-004", 14, 71, 'data-tone="danger"'],
-    ["ODD-MENU-005", 15, 15, 'role="option"'],
-    ["ODD-MENU-006", 16, 31, 'tone="info"'],
-    ["ODD-MENU-007", 17, 31, "disabled"],
-    ["ODD-STATIC-001", 18, 31, "tone={tone}"],
-  ],
-  "table.tsx": [
-    ["ODD-STATIC-001", 8, 16, "{...props}"],
-    ["ODD-TABLE-001", 9, 11, "className"],
-    ["ODD-TABLE-002", 10, 16, "tabIndex={0}"],
-    ["ODD-TABLE-002", 11, 29, 'role="group"'],
-    ["ODD-TABLE-003", 12, 5, "<TableWrap"],
-    ["ODD-TABLE-004", 13, 12, 'data-numeric=""'],
-    ["ODD-TABLE-004", 14, 16, 'data-numeric=""'],
-    ["ODD-TABLE-005", 15, 16, 'aria-sort="ascending"'],
-    ["ODD-TABLE-006", 17, 5, "<Table>"],
-  ],
-  "base.tsx": [
-    ["ODD-SCOPE-001", 8, 5, '<div className="odd-scope"'],
-    ["ODD-SCOPE-001", 8, 5, '<div className="odd-scope"'],
-    ["ODD-SKIP-001", 9, 13, "className"],
-    ["ODD-SKIP-001", 10, 5, "<a"],
-    ["ODD-SKIP-001", 11, 34, 'href="#"'],
-  ],
-  "grid.tsx": [
-    ["ODD-GRID-001", 7, 5, '<main className="odd-grid">'],
-    ["ODD-GRID-001", 8, 5, '<div className="odd-grid">'],
-  ],
-  "shell.tsx": [
-    ["ODD-SHELL-001", 5, 10, "className"],
-    ["ODD-SHELL-001", 6, 14, "className"],
-  ],
-  "typography.tsx": [
-    ["ODD-TYPOGRAPHY-001", 7, 10, "className"],
-    ["ODD-TYPOGRAPHY-002", 8, 33, 'data-size="md"'],
-    ["ODD-TYPOGRAPHY-002", 9, 33, 'data-size="3xl"'],
-    ["ODD-TYPOGRAPHY-003", 10, 32, 'data-tone="danger"'],
-    ["ODD-STATIC-001", 11, 33, "data-size={size}"],
-  ],
-  "meter.tsx": [
-    ["ODD-METER-001", 10, 10, "className"],
-    ["ODD-METER-001", 11, 15, "className"],
-    ["ODD-METER-001", 12, 10, "className"],
-    ["ODD-METER-002", 13, 12, 'tone="primary"'],
-    ["ODD-METER-002", 14, 40, 'data-tone="neutral"'],
-    ["ODD-STATIC-001", 15, 12, "tone={typeTone}"],
-    ["ODD-METER-003", 16, 15, 'data-size="sm"'],
-  ],
-  "children-prop.tsx": [
-    ["ODD-BUTTON-014", 5, 5, "<Button"],
-    ["ODD-BUTTON-014", 6, 5, "<button"],
-  ],
-  "cn.tsx": [
-    ["ODD-STATIC-001", 4, 11, "className={cn("],
-    ["ODD-BUTTON-007", 4, 63, "disabled"],
-  ],
-  "choice.tsx": [
-    ["ODD-CHOICE-002", 8, 13, 'type="radio"'],
-    ["ODD-CHOICE-003", 9, 13, 'aria-disabled="true"'],
-    ["ODD-CHOICE-003", 10, 43, 'aria-disabled="true"'],
-    ["ODD-CHOICE-003", 11, 16, 'aria-disabled="true"'],
-  ],
-  "field.tsx": [
-    ["ODD-FIELD-001", 5, 12, 'className="odd-input"'],
-    ["ODD-FIELD-001", 6, 14, 'className="odd-input"'],
-    ["ODD-FIELD-001", 8, 13, 'className="odd-input"'],
-    ["ODD-FIELD-001", 11, 15, 'className="odd-input"'],
-    ["ODD-FIELD-001", 12, 13, 'className="odd-input"'],
-    ["ODD-FIELD-003", 13, 23, 'aria-disabled="true"'],
-    ["ODD-FIELD-002", 14, 33, "hidden"],
-  ],
-  "link.tsx": [["ODD-STATIC-001", 3, 21, "<Link"]],
-  "local-button.tsx": [],
-  "odd-button-004.bad.tsx": [
-    ["ODD-BUTTON-004", 4, 36, 'data-icon-only="false"'],
-    ["ODD-BUTTON-004", 5, 36, "data-icon-only={false}"],
-    ["ODD-BUTTON-004", 6, 36, 'data-icon-only="false"'],
-  ],
-  "odd-button-014.bad.tsx": [
-    ["ODD-BUTTON-014", 4, 5, "<button"],
-    ["ODD-BUTTON-014", 5, 5, "<button"],
-  ],
-  "radix.tsx": [],
-  "raw.bad.tsx": [
-    ["ODD-BUTTON-001", 4, 11, "className"],
-    ["ODD-BUTTON-002", 5, 36, "data-variant"],
-    ["ODD-BUTTON-003", 6, 36, "data-size"],
-    ["ODD-BUTTON-004", 7, 36, "data-icon-only"],
-    ["ODD-BUTTON-005", 8, 36, "aria-disabled"],
-    ["ODD-BUTTON-006", 9, 36, "aria-busy"],
-    ["ODD-BUTTON-007", 10, 36, "disabled"],
-    ["ODD-BUTTON-008", 11, 5, "<button"],
-    ["ODD-BUTTON-009", 12, 5, "<a"],
-    ["ODD-BUTTON-010", 13, 36, "href"],
-    ["ODD-BUTTON-011", 14, 44, "aria-current"],
-    ["ODD-BUTTON-012", 15, 36, "aria-current"],
-    ["ODD-BUTTON-013", 16, 44, "aria-disabled"],
-    ["ODD-BUTTON-014", 17, 5, "<button"],
-    ["ODD-BUTTON-015", 18, 36, "data-tone"],
-    ["ODD-CLASS-001", 19, 10, "className"],
-  ],
-  "wrapper-data.tsx": [["ODD-BUTTON-002", 8, 36, 'data-variant="nope"']],
-  "wrapper-href.tsx": [
-    ["ODD-STATIC-001", 5, 5, "<Button href={url}"],
-    ["ODD-STATIC-001", 6, 5, "<Button href={url}"],
-    ["ODD-BUTTON-013", 8, 26, "aria-disabled"],
-    ["ODD-STATIC-001", 9, 5, "<Button href={url}"],
-    ["ODD-BUTTON-002", 9, 24, 'variant="outline"'],
-    ["ODD-BUTTON-007", 9, 42, "disabled"],
-    ["ODD-BUTTON-008", 10, 5, "<Button href={url} iconOnly>"],
-    ["ODD-STATIC-001", 10, 5, "<Button href={url} iconOnly>"],
-  ],
-  "wrapper.bad.tsx": [
-    ["ODD-BUTTON-007", 6, 13, "disabled"],
-    ["ODD-BUTTON-007", 7, 16, "disabled"],
-    ["ODD-BUTTON-008", 8, 5, "<Button iconOnly>"],
-    ["ODD-BUTTON-013", 9, 22, "aria-disabled"],
-    ["ODD-BUTTON-002", 10, 13, 'variant="outline"'],
-    ["ODD-BUTTON-003", 11, 13, 'size="md"'],
-  ],
-  "separator.tsx": [
-    ["ODD-SEPARATOR-002", 6, 16, 'aria-orientation="verticle"'],
-    ["ODD-SEPARATOR-003", 7, 16, 'role="none"'],
-    ["ODD-SEPARATOR-003", 8, 16, 'aria-hidden="true"'],
-    ["ODD-SEPARATOR-004", 9, 16, "data-tone"],
-    ["ODD-SEPARATOR-001", 10, 10, "className"],
-  ],
-  "skeleton.tsx": [
-    ["ODD-SKELETON-002", 6, 34, 'shape="circle"'],
-    ["ODD-SKELETON-003", 7, 5, "<Skeleton />"],
-    ["ODD-SKELETON-003", 8, 15, "aria-hidden"],
-    ["ODD-SKELETON-004", 9, 5, '<Skeleton aria-hidden="true">'],
-    ["ODD-SKELETON-004", 10, 34, 'aria-busy="true"'],
-    ["ODD-SKELETON-005", 11, 34, "data-size"],
-    ["ODD-SKELETON-001", 12, 11, "className"],
-  ],
-  "spinner.tsx": [
-    ["ODD-SPINNER-002", 8, 5, "<Spinner />"],
-    ["ODD-SPINNER-002", 9, 5, '<Spinner aria-hidden="true">'],
-    ["ODD-SPINNER-002", 10, 33, 'role="status"'],
-    ["ODD-SPINNER-003", 11, 33, "data-size"],
-    ["ODD-SPINNER-001", 12, 10, "className"],
-  ],
-  "text-link.tsx": [
-    ["ODD-LINK-002", 9, 5, "<TextLink>"],
-    ["ODD-LINK-003", 10, 31, 'aria-disabled="true"'],
-    ["ODD-LINK-005", 11, 32, 'aria-current="true"'],
-    ["ODD-LINK-007", 12, 49, 'target="_blank"'],
-    ["ODD-LINK-004", 13, 30, 'role="button"'],
-    ["ODD-LINK-001", 14, 11, "className"],
-    ["ODD-STATIC-001", 15, 5, "<Link"],
-  ],
-  "combobox.tsx": [
-    ["ODD-STATIC-001", 8, 21, "{...props}"],
-    ["ODD-COMBOBOX-001", 9, 14, 'className="odd-combobox"'],
-    ["ODD-COMBOBOX-004", 10, 26, 'popover="auto"'],
-    ["ODD-COMBOBOX-005", 11, 43, 'role="menu"'],
-    ["ODD-COMBOBOX-006", 12, 5, "<ComboboxList"],
-    ["ODD-COMBOBOX-007", 13, 78, 'data-filter="auto"'],
-    ["ODD-COMBOBOX-011", 14, 15, 'role="combobox"'],
-    ["ODD-COMBOBOX-009", 15, 35, "disabled"],
-    ["ODD-COMBOBOX-010", 16, 35, 'aria-selected="true"'],
-    ["ODD-STATIC-001", 17, 78, "data-filter"],
-  ],
-  "breadcrumb.tsx": [
-    ["ODD-BREADCRUMB-003", 12, 5, '<Breadcrumb aria-label="Breadcrumb">'],
-    ["ODD-BREADCRUMB-002", 13, 5, "<Breadcrumb>"],
-    ["ODD-BREADCRUMB-004", 14, 41, 'data-tone="primary"'],
-    ["ODD-BREADCRUMB-001", 15, 10, "className"],
-  ],
-  "kbd.tsx": [
-    ["ODD-KBD-002", 6, 19, 'aria-hidden="true"'],
-    ["ODD-KBD-003", 7, 19, 'data-size="sm"'],
-    ["ODD-KBD-001", 8, 20, "className"],
-  ],
-  "code.tsx": [
-    ["ODD-CODE-002", 7, 10, 'data-size="sm"'],
-    ["ODD-CODE-001", 8, 18, "className"],
-    ["ODD-CODE-001", 9, 10, "className"],
-  ],
-  "wrapper.good.tsx": [],
 };
 
 const fixtures = readdirSync(folder)
   .filter((name) => name.endsWith(".tsx"))
   .sort();
 
+test("every fixture has its places", () => {
+  expect(fixtures).toEqual(Object.keys(places).sort());
+});
+
 for (const name of fixtures) {
   test(`${name} reports its expected codes at their places`, () => {
     const source = readFileSync(`${folder}/${name}`, "utf8");
-    const messages = linter.verify(source, flat, { filename: `${folder}/${name}` });
+    const messages = lint(name);
     const located = places[name] ?? [];
-    expect(messages.map((message) => codeOf(message.message))).toEqual(expectedCodes(source, /^\/\/ expect: (.+)/));
+    expect(messages.map((message) => codeOf(message.message))).toEqual(expectedCodes(source));
     expect(messages.map((message) => [codeOf(message.message), message.line, message.column, message.ruleId, message.severity])).toEqual(
-      located.map(([code, line, column]) =>
-        code === "ODD-STATIC-001" ? [code, line, column, "odd/usage-incomplete", 1] : [code, line, column, "odd/usage", 2],
-      ),
+      located.map(([code, line, column]) => [code, line, column, "odd/usage", 2]),
     );
     for (const [index, message] of messages.entries()) {
       expect(lineText(source, message.line).slice(message.column - 1).startsWith(located[index]?.[3] ?? "")).toBe(true);
     }
   });
 }
+
+test("odd-button on a button names Button as the fix", () => {
+  expect(lint("odd-react-003.bad.tsx").map((message) => message.message)).toEqual([`${REACT_003} Found odd-button. Render Button from odd-design/react.`]);
+});
+
+test("odd-link on a router link names TextLink as the fix", () => {
+  expect(lint("third-party.tsx").map((message) => message.message)).toEqual([`${REACT_003} Found odd-link. Render TextLink from odd-design/react.`]);
+});
+
+test("a class no export renders says so, a toast class names toast(), and an unknown class is ODD-CLASS-001", () => {
+  expect(lint("unowned.tsx").map((message) => message.message)).toEqual([
+    `${REACT_003} Found odd-stack. No odd-design/react component renders it yet.`,
+    `${REACT_003} Found odd-toast. Use toast() from odd-design/enhance.`,
+    "ODD-CLASS-001: this class is not in the registry. Allowed values: the registered odd- classes. Fix: use a registered class, or remove the class. docs/usage/general.md#odd-class-001 Found odd-stak.",
+  ]);
+});
+
+test("the components under src/react write odd- classes without a finding", () => {
+  expect(lint("odd-react-003.bad.tsx", "src/react/button.tsx")).toEqual([]);
+});
+
+test("odd/usage-incomplete has no JSX findings", () => {
+  const source = readFileSync(`${folder}/class-expressions.tsx`, "utf8");
+  const incomplete = flat.map((entry) => ("rules" in entry && entry.rules !== undefined && "odd/usage" in entry.rules ? { ...entry, rules: { "odd/usage-incomplete": "warn" as const } } : entry));
+  expect(linter.verify(source, incomplete, { filename: `${folder}/class-expressions.tsx` })).toEqual([]);
+});
