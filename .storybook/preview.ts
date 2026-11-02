@@ -9,8 +9,7 @@ import { renderToStaticMarkup } from "react-dom/server";
 import { avatarFallback, closedByFallback, enhance, interestForFallback } from "../src/js/enhance.ts";
 import { sceneOf } from "../stories/story.ts";
 
-// Page-wide fallbacks, installed once as an app would. Each is a no-op where the browser has the feature.
-closedByFallback();
+// A page-wide fallback, installed once as an app would. It is a no-op where the browser has the feature.
 avatarFallback();
 
 /** Sets the toolbar's appearance on the page. The React Storybook uses it alone. */
@@ -19,11 +18,11 @@ export const appearance: Decorator = (story, { globals }) => {
   return story();
 };
 
-// The HTML-only stories rely on a page-wide interest fallback. The React Storybook leaves it out,
-// so its tooltips prove that Button installs the fallback itself.
-let pageInterest: (() => void) | undefined;
-const interest: Decorator = (story) => {
-  pageInterest ??= interestForFallback();
+// The HTML stories rely on page-wide interest and closedby fallbacks. The React Storybook leaves them out,
+// so its tooltips, hover cards, and dismissible dialogs prove that the components install them themselves.
+let pageFallbacks: readonly (() => void)[] | undefined;
+const fallbacks: Decorator = (story) => {
+  pageFallbacks ??= [interestForFallback(), closedByFallback()];
   return story();
 };
 
@@ -41,7 +40,7 @@ const preview: Preview = {
     mode: toolbar("Mode", "mirror", MODES),
   },
   initialGlobals: { chrome: "calm", palette: "default", mode: "system" },
-  decorators: [appearance, interest],
+  decorators: [appearance, fallbacks],
   parameters: {
     layout: "padded",
     a11y: { test: "error", options: A11Y_OPTIONS },

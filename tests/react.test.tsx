@@ -4,6 +4,7 @@ import { act, StrictMode, useState, type ReactNode } from "react";
 import { createRoot, type Root } from "react-dom/client";
 import { renderToStaticMarkup } from "react-dom/server";
 import { appendLogLine, closedByFallback, enhance, enhanceTabs, interestForFallback, toast } from "../src/js/enhance.ts";
+import { Avatar } from "../src/react/avatar.tsx";
 import { Button } from "../src/react/button.tsx";
 import { Breadcrumb } from "../src/react/breadcrumb.tsx";
 import { Card } from "../src/react/card.tsx";
@@ -12,6 +13,7 @@ import { HoverCard, HoverCardLink } from "../src/react/hover-card.tsx";
 import { OddProvider } from "../src/react/provider.tsx";
 import { TextLink } from "../src/react/text-link.tsx";
 import { Combobox, ComboboxOption } from "../src/react/combobox.tsx";
+import { Dialog } from "../src/react/dialog.tsx";
 import { Log, LogLine } from "../src/react/log.tsx";
 import { hydrationErrors } from "./hydrate.ts";
 import { Menu, MenuCheckboxItem, MenuItem, MenuRadioGroup, MenuRadioItem } from "../src/react/menu.tsx";
@@ -651,10 +653,24 @@ const failures: Record<string, { codes: string[]; text: string[] }> = {
   "search-unnamed": { codes: [], text: ["Property 'label' is missing"] },
 };
 
+describe("Avatar", () => {
+  test("an image that fails to load gives way to the initials, named by name", async () => {
+    const host = document.createElement("div");
+    document.body.append(host);
+    const root = createRoot(host);
+    mounted = root;
+    await act(async () => root.render(<Avatar name="Kai Nakamura" src="https://example.test/kai.png" />));
+    const image = host.querySelector("img")!;
+    expect(image.alt).toBe("Kai Nakamura");
+    await act(async () => image.dispatchEvent(new Event("error")));
+    expect(host.innerHTML).toBe('<span class="odd-avatar" role="img" aria-label="Kai Nakamura">KN</span>');
+  });
+});
+
 describe("platform fallbacks", () => {
   const INTEREST = ["focusin", "focusout", "keydown", "pointerout", "pointerover"];
 
-  test("two interestForFallback calls and one enhance() on the document add one set of listeners, which the last cleanup removes", () => {
+  test("a dismissible Dialog with no page-level call, two interestForFallback calls, and one enhance() on the document add one set of listeners, which the last cleanup removes", async () => {
     const added: string[] = [];
     const removed: string[] = [];
     const add = document.addEventListener;
@@ -668,6 +684,12 @@ describe("platform fallbacks", () => {
       remove.apply(this, args);
     };
     try {
+      const host = document.createElement("div");
+      document.body.append(host);
+      const root = createRoot(host);
+      mounted = root;
+      await act(async () => root.render(<Dialog title="Filters" dismissible />));
+      expect(added.filter((type) => type === "click")).toEqual(["click"]);
       const first = interestForFallback();
       const second = interestForFallback(document);
       const dismiss = closedByFallback();
@@ -678,6 +700,9 @@ describe("platform fallbacks", () => {
       page();
       dismiss();
       expect(removed.filter((type) => INTEREST.includes(type))).toEqual([]);
+      expect(removed.filter((type) => type === "click")).toEqual([]);
+      await act(async () => root.unmount());
+      mounted = undefined;
       expect(removed.filter((type) => type === "click")).toEqual(["click"]);
       second();
       expect(removed.filter((type) => INTEREST.includes(type)).sort()).toEqual(INTEREST);
