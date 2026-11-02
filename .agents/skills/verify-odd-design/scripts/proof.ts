@@ -432,7 +432,7 @@ function requiredStories(files: readonly FileChange[], input: ProofInput): Requi
     for (const r of indexed.filter((r) => !exported.has(r.exportName)))
       indexGaps.add(`MISSING ${r.id}: the live index lists export ${r.exportName} that ${change.path} no longer has; Storybook is stale (run doctor, or down then up)`);
     for (const span of spans.filter((s) => change.lines.some((l) => l.start <= s.end && l.end >= s.start))) {
-      const row = span.name === undefined ? undefined : rows.find((r) => r.exportName === span.name);
+      const row = rows.find((r) => r.exportName === span.name);
       if (span.name === undefined) wholeFile(rows);
       else if (row) ids.add(row.id);
       else indexGaps.add(`MISSING ${change.path} export ${span.name}: ${NO_ROW}`);

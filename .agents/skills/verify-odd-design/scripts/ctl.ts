@@ -367,7 +367,7 @@ function publishAssets(cited: readonly string[], slug: string, head: string): (p
     });
     const link = (commit: string) => (path: string) => `https://raw.githubusercontent.com/${owner}/${repo}/${commit}/${slug}/${head}/${path}`;
     for (let attempt = 1; attempt <= 3; attempt++) {
-      const tip = run("ls-remote", origin, ASSETS_REF).split(/\s/)[0] ?? "";
+      const tip = run("ls-remote", origin, ASSETS_REF).split(/\s/)[0];
       if (tip) {
         run("fetch", "--no-tags", "--no-write-fetch-head", origin, ASSETS_REF);
         // merge-base exits 1 only when the histories are unrelated, which an orphan branch must be.
