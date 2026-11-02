@@ -2,6 +2,16 @@
 
 These codes apply to `odd-disclosure`. Shared codes are in [General usage rules](general.md).
 
+In React, render `Disclosure` from `odd-design/react` with a `summary` and the answer as its children. It renders the `summary` as the direct child and the answer after it, so the structural codes below cannot happen. [Build a disclosure](react.md#build-a-disclosure) covers the props.
+
+```tsx
+<Disclosure name="faq" summary="Does it need JavaScript?" defaultOpen>
+  No. These are native details elements, and sharing a name makes the group exclusive.
+</Disclosure>
+```
+
+The component compiles to this HTML:
+
 ```html
 <details class="odd-disclosure" name="faq" open>
   <summary>Does it need JavaScript?</summary>
@@ -9,7 +19,7 @@ These codes apply to `odd-disclosure`. Shared codes are in [General usage rules]
 </details>
 ```
 
-A disclosure is a `details` element with a `summary` as a direct child. The `summary` holds the question and is the toggle. The answer follows in one element, such as a `div`, a `p`, or a `pre`. `open` opens it, and every `details` that shares a `name` belongs to one exclusive group, so opening one closes the others with no script. In React, `Disclosure` renders the `details`, and you write the `summary` and the answer element yourself. `open`, `name`, and `onToggle` are the native props.
+A disclosure is a `details` element with a `summary` as a direct child. The `summary` holds the question and is the toggle. The answer follows in one element, such as a `div`, a `p`, or a `pre`. `open` opens it, and every `details` that shares a `name` belongs to one exclusive group, so opening one closes the others with no script.
 
 ## ODD-DISCLOSURE-001
 

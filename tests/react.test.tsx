@@ -373,45 +373,73 @@ function arrowRight(host: HTMLElement) {
   return { focused: document.activeElement?.id, selected, shown };
 }
 
+const DECK_TABS = [
+  { value: "cards", label: "Cards", content: "60 cards" },
+  { value: "stats", label: "Stats", content: "Average cost 2.4" },
+  { value: "notes", label: "Notes", content: "Mulligan for an early unit" },
+] as const;
+
+async function mountTabs(element: ReactNode) {
+  const host = document.createElement("div");
+  document.body.append(host);
+  const root = createRoot(host);
+  mounted = root;
+  const render = (next: ReactNode) => act(async () => root.render(next));
+  await render(element);
+  const tab = (name: string) => [...host.querySelectorAll<HTMLElement>('[role="tab"]')].find((each) => each.textContent === name)!;
+  const state = () => ({
+    selected: [...host.querySelectorAll('[aria-selected="true"]')].map((each) => each.textContent),
+    shown: [...host.querySelectorAll<HTMLElement>('[role="tabpanel"]')].filter((panel) => !panel.hidden).map((panel) => panel.textContent),
+  });
+  return { host, render, tab, state };
+}
+
 describe("Tabs", () => {
   test("moves one tab per arrow key under StrictMode, beside an app's enhance(), and after its cleanup", async () => {
-    const host = document.createElement("div");
-    document.body.append(host);
-    const root = createRoot(host);
-    mounted = root;
-    await act(async () =>
-      root.render(
-        <StrictMode>
-          <Tabs>
-            <div role="tablist" aria-label="Deck view">
-              <button role="tab" id="tab-cards" aria-controls="panel-cards" aria-selected="true">
-                Cards
-              </button>
-              <button role="tab" id="tab-stats" aria-controls="panel-stats" aria-selected="false">
-                Stats
-              </button>
-              <button role="tab" id="tab-notes" aria-controls="panel-notes" aria-selected="false">
-                Notes
-              </button>
-            </div>
-            <div role="tabpanel" id="panel-cards" aria-labelledby="tab-cards">
-              Cards
-            </div>
-            <div role="tabpanel" id="panel-stats" aria-labelledby="tab-stats" hidden>
-              Stats
-            </div>
-            <div role="tabpanel" id="panel-notes" aria-labelledby="tab-notes" hidden>
-              Notes
-            </div>
-          </Tabs>
-        </StrictMode>,
-      ),
+    const { host } = await mountTabs(
+      <StrictMode>
+        <Tabs id="deck" label="Deck view" tabs={DECK_TABS} />
+      </StrictMode>,
     );
     const unwire = enhance(document);
-    document.getElementById("tab-cards")?.focus();
-    expect(arrowRight(host)).toEqual({ focused: "tab-stats", selected: ["tab-stats"], shown: ["panel-stats"] });
+    document.getElementById("deck-tab-0")?.focus();
+    expect(arrowRight(host)).toEqual({ focused: "deck-tab-1", selected: ["deck-tab-1"], shown: ["deck-panel-1"] });
     unwire();
-    expect(arrowRight(host)).toEqual({ focused: "tab-notes", selected: ["tab-notes"], shown: ["panel-notes"] });
+    expect(arrowRight(host)).toEqual({ focused: "deck-tab-2", selected: ["deck-tab-2"], shown: ["deck-panel-2"] });
+  });
+
+  test("a chosen tab stays chosen, with only its panel shown, when the parent renders again with another default", async () => {
+    const { render, tab, state } = await mountTabs(<Tabs label="Deck view" tabs={DECK_TABS} defaultValue="cards" />);
+    await act(async () => tab("Stats").click());
+    await render(<Tabs label="Deck view" tabs={DECK_TABS} defaultValue="cards" />);
+    expect(state()).toEqual({ selected: ["Stats"], shown: ["Average cost 2.4"] });
+    await render(<Tabs label="Deck view" tabs={DECK_TABS} defaultValue="notes" />);
+    expect(state()).toEqual({ selected: ["Stats"], shown: ["Average cost 2.4"] });
+    expect(tab("Stats").tabIndex).toBe(0);
+  });
+
+  test("a new default moves the choice while the user has not chosen", async () => {
+    const { render, state } = await mountTabs(<Tabs label="Deck view" tabs={DECK_TABS} defaultValue="cards" />);
+    await render(<Tabs label="Deck view" tabs={DECK_TABS} defaultValue="notes" />);
+    expect(state()).toEqual({ selected: ["Notes"], shown: ["Mulligan for an early unit"] });
+  });
+
+  test("onValueChange gets the chosen tab's value, and a tab set nested in a panel does not reach it", async () => {
+    const values: string[] = [];
+    const inner = (
+      <Tabs
+        label="Stats view"
+        tabs={[
+          { value: "curve", label: "Curve", content: "Peaks at 3" },
+          { value: "colors", label: "Colors", content: "Mostly red" },
+        ]}
+      />
+    );
+    const { tab } = await mountTabs(<Tabs label="Deck view" tabs={[...DECK_TABS, { value: "more", label: "More", content: inner }]} onValueChange={(value) => values.push(value)} />);
+    await act(async () => tab("Notes").click());
+    await act(async () => tab("More").click());
+    await act(async () => tab("Colors").click());
+    expect(values).toEqual(["notes", "more"]);
   });
 
   test("enhanceTabs wires a root that gains its tablist after an earlier call", () => {
@@ -791,36 +819,6 @@ describe("Buttons in a form", () => {
     expect(counts.submits).toBe(1);
   });
 
-  test('Tabs types every untyped tab, including one mounted later, and keeps a written type="submit"', async () => {
-    const { counts, host, render } = await mountInForm();
-    const tabs = (later: ReactNode) => (
-      <Tabs>
-        <div role="tablist" aria-label="Deck view">
-          <button role="tab" id="tab-cards" aria-controls="panel-cards" aria-selected="true">
-            Cards
-          </button>
-          <button role="tab" id="tab-stats" aria-controls="panel-stats" aria-selected="false" type="submit">
-            Stats
-          </button>
-          {later}
-        </div>
-      </Tabs>
-    );
-    await render(tabs(null));
-    await render(
-      tabs(
-        <button role="tab" id="tab-notes" aria-controls="panel-notes" aria-selected="false">
-          Notes
-        </button>,
-      ),
-    );
-    expect([...host.querySelectorAll('[role="tab"]')].map((tab) => tab.getAttribute("type"))).toEqual(["button", "submit", "button"]);
-    await act(async () => document.getElementById("tab-notes")!.click());
-    expect(counts.submits).toBe(0);
-    await act(async () => document.getElementById("tab-stats")!.click());
-    expect(counts.submits).toBe(1);
-  });
-
   test('enhance() keeps menu items and toast buttons from submitting, and keeps a written type="submit"', () => {
     const form = document.createElement("form");
     let submits = 0;
@@ -930,10 +928,12 @@ const failures: Record<string, { codes: string[]; text: string[] }> = {
   "card-on-click": { codes: ["ODD-CARD-004"], text: [] },
   "card-link-href": { codes: [], text: ["Property 'href' is missing"] },
   "card-data-tone": { codes: ["ODD-CARD-006"], text: [] },
-  "disclosure-data-tone": { codes: ["ODD-DISCLOSURE-003"], text: [] },
-  "tabs-aria-orientation": { codes: ["ODD-TABS-003"], text: [] },
-  "tabs-data-tone": { codes: ["ODD-TABS-005"], text: [] },
-  "tabs-default-value": { codes: [], text: ["not assignable to type 'undefined'"] },
+  "disclosure-data-tone": { codes: ["ODD-REACT-002"], text: [] },
+  "disclosure-open": { codes: ["ODD-REACT-001"], text: ["Type 'true' is not assignable"] },
+  "tabs-aria-orientation": { codes: ["ODD-REACT-001"], text: [] },
+  "tabs-data-tone": { codes: ["ODD-REACT-002"], text: [] },
+  "tabs-default-value-unknown": { codes: [], text: [`Type '"notes"' is not assignable to type '"cards" | "stats" | undefined'`] },
+  "tabs-unnamed": { codes: [], text: ["Property 'label' is missing"] },
   "meter-tone": { codes: [], text: ['"success"', '"warning"', '"danger"', '"info"'] },
   "progress-data-size": { codes: ["ODD-METER-003"], text: [] },
   "toaster-popover": { codes: [], text: ["Property 'popover' is missing"] },

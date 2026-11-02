@@ -293,35 +293,35 @@ export function DeckCard({ href, name, selected }: { href: string; name: string;
   );
 }
 
-export function FaqItem({ question, answer }: { question: string; answer: string }) {
-  const [open, setOpen] = useState(false);
+export function FaqItem({ question, answer, first }: { question: string; answer: string; first: boolean }) {
+  const [open, setOpen] = useState(first);
   return (
-    <Disclosure name="faq" open={open} onToggle={(event) => setOpen(event.newState === "open")} className="faq" data-testid="faq" data-state="open">
-      <summary>{question}</summary>
-      <div>{answer}</div>
+    <Disclosure name="faq" summary={question} defaultOpen={first} onToggle={(event) => setOpen(event.newState === "open")} className={open ? "faq open" : "faq"} data-testid="faq" data-state="open">
+      {answer}
     </Disclosure>
   );
 }
 
 export function SeasonTabs() {
   const tabs = useRef<HTMLDivElement>(null);
+  const [season, setSeason] = useState<"s7" | "s5">("s7");
   return (
-    <Tabs ref={tabs} id="season-tabs" className="seasons" data-testid="seasons" data-state="ready">
-      <div role="tablist" aria-label="Season" aria-orientation="vertical" data-activation="manual">
-        <button role="tab" id="tab-s7" aria-controls="panel-s7" aria-selected="true">
-          Season 7
-        </button>
-        <button role="tab" id="tab-s5" aria-controls="panel-s5" aria-selected="false" disabled>
-          Season 5
-        </button>
-      </div>
-      <div role="tabpanel" id="panel-s7" aria-labelledby="tab-s7">
-        Current season.
-      </div>
-      <div role="tabpanel" id="panel-s5" aria-labelledby="tab-s5" hidden>
-        Not imported yet.
-      </div>
-    </Tabs>
+    <Tabs
+      ref={tabs}
+      id="season-tabs"
+      className="seasons"
+      data-testid="seasons"
+      data-state={season}
+      label="Season"
+      orientation="vertical"
+      activation="manual"
+      defaultValue="s7"
+      onValueChange={(value) => setSeason(value)}
+      tabs={[
+        { value: "s7", label: "Season 7", content: "Current season." },
+        { value: "s5", label: "Season 5", content: "Not imported yet.", disabled: true },
+      ]}
+    />
   );
 }
 

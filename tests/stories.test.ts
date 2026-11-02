@@ -176,14 +176,12 @@ const STYLED = [
   "stories/mirrored/Breadcrumb.stories.ts",
   "stories/mirrored/Card.stories.ts",
   "stories/mirrored/Code.stories.ts",
-  "stories/mirrored/Disclosure.stories.ts",
   "stories/mirrored/Kbd.stories.ts",
   "stories/mirrored/Meter.stories.ts",
   "stories/mirrored/Separator.stories.ts",
   "stories/mirrored/Skeleton.stories.ts",
   "stories/mirrored/Spinner.stories.ts",
   "stories/mirrored/Table.stories.ts",
-  "stories/mirrored/Tabs.stories.ts",
 ];
 
 test("no mirrored story renders a style attribute, except in the files still listed, and each listed file still renders one", () => {

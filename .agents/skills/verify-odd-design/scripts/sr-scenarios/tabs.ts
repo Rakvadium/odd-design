@@ -6,7 +6,7 @@ export default {
   story: "components-interactive--tabs",
   globals: "mode:light",
   steps: [
-    { focus: "#tab-cards", note: "Start on the Cards tab. Expect tab, selected, 1 of 3, and NVDA switching to focus mode." },
+    { focus: "#deck-tabs-tab-0", note: "Start on the Cards tab. Expect tab, selected, 1 of 3, and NVDA switching to focus mode." },
     { keys: "ArrowRight", note: "Stats. Automatic activation, so it is selected and its panel shows." },
     { keys: "nvda+Space", note: "Switch to browse mode." },
     { keys: "ArrowDown", note: "Browse mode reads one tab per line: Notes." },

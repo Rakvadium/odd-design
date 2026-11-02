@@ -2,18 +2,33 @@
 
 These codes apply to `odd-tabs`. Shared codes are in [General usage rules](general.md).
 
+In React, render `Tabs` from `odd-design/react` with a `label` and a `tabs` array. It renders the tablist, each tab and its panel, and the ids that wire them, so the structural codes below cannot happen. [Build tabs](react.md#build-tabs) covers the props.
+
+```tsx
+<Tabs
+  id="deck"
+  label="Deck view"
+  tabs={[
+    { value: "cards", label: "Cards", content: "60 cards across 24 units." },
+    { value: "stats", label: "Stats", content: "Average cost 2.4." },
+  ]}
+/>
+```
+
+The component compiles to this HTML:
+
 ```html
-<div class="odd-tabs">
+<div class="odd-tabs" id="deck">
   <div role="tablist" aria-label="Deck view">
-    <button role="tab" type="button" id="tab-cards" aria-controls="panel-cards" aria-selected="true">Cards</button>
-    <button role="tab" type="button" id="tab-stats" aria-controls="panel-stats" aria-selected="false">Stats</button>
+    <button type="button" role="tab" id="deck-tab-0" aria-controls="deck-panel-0" aria-selected="true" tabindex="0">Cards</button>
+    <button type="button" role="tab" id="deck-tab-1" aria-controls="deck-panel-1" aria-selected="false" tabindex="-1">Stats</button>
   </div>
-  <div role="tabpanel" id="panel-cards" aria-labelledby="tab-cards">…</div>
-  <div role="tabpanel" id="panel-stats" aria-labelledby="tab-stats" hidden>…</div>
+  <div role="tabpanel" id="deck-panel-0" aria-labelledby="deck-tab-0">60 cards across 24 units.</div>
+  <div role="tabpanel" id="deck-panel-1" aria-labelledby="deck-tab-1" hidden>Average cost 2.4.</div>
 </div>
 ```
 
-A tab set is a `div` with a `role="tablist"` as a direct child and the panels after it. Each tab is a `button` whose `aria-controls` names its panel's `id`. `enhanceTabs` adds the keyboard and switches the panels. It also gives a tab with no `type` the type `button` when it wires the set, so a tab inside a form does not submit it. `aria-orientation="vertical"` and `data-activation="manual"` go on the tablist. In React, `Tabs` renders the `div` and runs `enhanceTabs` itself, and you write the tablist, the tabs, and the panels.
+A tab set is a `div` with a `role="tablist"` as a direct child and the panels after it. Each tab is a `button` whose `aria-controls` names its panel's `id`. `enhanceTabs` adds the keyboard and switches the panels. It also gives a tab with no `type` the type `button` when it wires the set, so a tab inside a form does not submit it. `aria-orientation="vertical"` and `data-activation="manual"` go on the tablist. Hand-written HTML runs `enhanceTabs` through `enhance()`.
 
 ## ODD-TABS-001
 

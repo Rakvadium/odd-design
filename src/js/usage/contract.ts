@@ -410,8 +410,6 @@ export const WRAPPERS = {
   Card: { source: "odd-design/react", className: "odd-card", props: { interactive: "data-interactive" }, element: "article" },
   CardLink: { source: "odd-design/react", className: "odd-card-link", props: {}, element: "a" },
   CardFooter: { source: "odd-design/react", className: "odd-card-footer", props: {}, element: "div" },
-  Disclosure: { source: "odd-design/react", className: "odd-disclosure", props: {}, element: "details" },
-  Tabs: { source: "odd-design/react", className: "odd-tabs", props: {}, element: "div" },
   Meter: { source: "odd-design/react", className: "odd-meter", props: { tone: "data-tone" }, element: "meter" },
   Progress: { source: "odd-design/react", className: "odd-progress", props: { tone: "data-tone" }, element: "progress" },
   Toaster: { source: "odd-design/react", className: "odd-toaster", props: {}, element: "section" },

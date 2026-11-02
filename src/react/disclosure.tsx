@@ -1,9 +1,22 @@
-import type { ReactElement } from "react";
-import type { DisclosureRule } from "../js/usage/contract.ts";
-import { part, type Contract, type Native } from "./part.ts";
+import type { ComponentPropsWithRef, ReactElement, ReactNode } from "react";
+import { cx, type Passthrough, type Root } from "./own.ts";
 
-interface DisclosureContract extends Contract<"Disclosure", DisclosureRule> {}
+export type DisclosureProps = Root &
+  Passthrough<"details", "open"> & {
+    /** The question, which is the toggle. */
+    readonly summary: ReactNode;
+    /** The first state. The browser owns every toggle after that. */
+    readonly defaultOpen?: boolean;
+    /** The answer. */
+    readonly children: ReactNode;
+  };
 
-export interface DisclosureProps extends DisclosureContract, Native<"Disclosure", keyof DisclosureContract> {}
-
-export const Disclosure: (props: DisclosureProps) => ReactElement = part("Disclosure");
+/** details.odd-disclosure > summary + div. Disclosures that share a name open one at a time. */
+export function Disclosure({ summary, defaultOpen, className, children, ...rest }: DisclosureProps): ReactElement {
+  return (
+    <details {...(rest as ComponentPropsWithRef<"details">)} className={cx("odd-disclosure", className)} open={defaultOpen}>
+      <summary>{summary}</summary>
+      <div>{children}</div>
+    </details>
+  );
+}

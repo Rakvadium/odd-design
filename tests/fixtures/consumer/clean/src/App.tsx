@@ -31,20 +31,16 @@ export function App() {
         </h3>
         <CardFooter>60 cards</CardFooter>
       </Card>
-      <Disclosure name="faq" open>
-        <summary>Does it need JavaScript?</summary>
-        <div>No.</div>
+      <Disclosure name="faq" summary="Does it need JavaScript?" defaultOpen>
+        No.
       </Disclosure>
-      <Tabs>
-        <div role="tablist" aria-label="Deck view">
-          <button role="tab" id="tab-cards" aria-controls="panel-cards" aria-selected="true">
-            Cards
-          </button>
-        </div>
-        <div role="tabpanel" id="panel-cards" aria-labelledby="tab-cards">
-          60 cards
-        </div>
-      </Tabs>
+      <Tabs
+        label="Deck view"
+        tabs={[
+          { value: "cards", label: "Cards", content: "60 cards" },
+          { value: "stats", label: "Stats", content: "Average cost 2.4" },
+        ]}
+      />
       <Search label="Search cards" placeholder="Search cards" />
       <Slider label="Copies per card" min={1} max={4} defaultValue={3} showValue />
       <div className="odd-stack">

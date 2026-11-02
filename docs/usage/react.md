@@ -404,15 +404,14 @@ An interactive card holds exactly one link or button, its `CardLink`. A second c
 ```tsx
 import { Disclosure } from "odd-design/react";
 
-<Disclosure name="faq" open>
-  <summary>Does it need JavaScript?</summary>
-  <div>No. Sharing a name makes the group exclusive.</div>
+<Disclosure name="faq" summary="Does it need JavaScript?" defaultOpen>
+  No. Sharing a name makes the group exclusive.
 </Disclosure>;
 ```
 
-`Disclosure` renders a `details` with the class `odd-disclosure`. Write the question as a `summary` directly inside it, and the answer as one element after it, such as a `div`, a `p`, or a `pre`. `open`, `name`, and `onToggle` are the native `details` props. Every disclosure that shares a `name` joins one exclusive group, so opening one closes the others with no script. Start at most one item of a group open. When two start open, WebKit closes both, and Firefox and Chromium keep the first.
+`Disclosure` renders `details.odd-disclosure`, then `summary` as its direct child with the `summary` prop inside it, then a `div` with the children, which is the answer. `name` and `onToggle` are the native `details` props. Every disclosure that shares a `name` joins one exclusive group, so opening one closes the others with no script. Start at most one item of a group open. When two start open, WebKit closes both, and Firefox and Chromium keep the first.
 
-A literal `open` sets only the first state. The browser owns every toggle after that. To read or drive the state from React, sync each item from its own `onToggle`.
+`defaultOpen` sets the first state, and the browser owns every toggle after that. `open` is a type error (`ODD-REACT-001`), because a controlled `open` goes stale after the first click and React cannot reopen that item. A render with a different `defaultOpen` writes it again, so keep it constant for an item, such as `defaultOpen={index === 0}`. To read the state, listen with `onToggle` and read `event.newState`.
 
 ```tsx
 "use client";
@@ -422,60 +421,37 @@ import { Disclosure } from "odd-design/react";
 export function FaqItem({ question, answer }: { question: string; answer: string }) {
   const [open, setOpen] = useState(false);
   return (
-    <Disclosure name="faq" open={open} onToggle={(event) => setOpen(event.newState === "open")}>
-      <summary>{question}</summary>
-      <div>{answer}</div>
+    <Disclosure name="faq" summary={question} onToggle={(event) => setOpen(event.newState === "open")} className={open ? "faq-open" : undefined}>
+      {answer}
     </Disclosure>
   );
 }
 ```
 
-`event.newState === "open"` covers both directions, so the state also turns `false` when the user collapses the item. A list that keeps one shared open id must clear it on `"closed"` with a functional update, such as `setOpenId((current) => (current === id ? null : current))`. A handler that sets the id only on `"open"` leaves the prop `true` after the user collapses the item. A computed `open` with no `onToggle` goes stale after the first click, and React cannot reopen that item.
-
-`open={false}` leaves the attribute off, and `open={true}` writes `open=""`. A string `open` is a type error. In raw HTML, `open="false"` still opens the panel, and no checker reports it.
-
-A disclosure with no direct `summary` child shows the browser's own Details label, and the question sits hidden in the closed answer. A `summary` inside a `div`, or a `div` or `button` used as the trigger, reports `ODD-DISCLOSURE-002` in the runtime checker. Keep the summary's text non-empty, and keep links and buttons out of it. An empty summary takes its name from the answer, and a link in the summary follows its `href` and leaves the panel closed. Do not set `aria-expanded` on the summary. The browser reports the state, and a written `aria-expanded="false"` stays `false` after a click opens the panel. System `data-` attributes on `Disclosure`, such as `data-tone`, are type errors (`ODD-DISCLOSURE-003`).
+`event.newState === "open"` covers both directions, so the state also turns `false` when the user collapses the item. Keep the summary's text non-empty, and keep links and buttons out of it. An empty summary takes its name from the answer, and a link in the summary follows its `href` and leaves the panel closed. The browser reports the open state, so the summary needs no `aria-expanded`. System `data-` attributes on `Disclosure`, such as `data-tone`, are type errors (`ODD-REACT-002`). `Disclosure` holds no state and no handlers, so it renders in a server component.
 
 ## Build tabs
 
 ```tsx
 import { Tabs } from "odd-design/react";
 
-<Tabs>
-  <div role="tablist" aria-label="Deck view">
-    <button role="tab" id="tab-cards" aria-controls="panel-cards" aria-selected="true">Cards</button>
-    <button role="tab" id="tab-stats" aria-controls="panel-stats" aria-selected="false">Stats</button>
-  </div>
-  <div role="tabpanel" id="panel-cards" aria-labelledby="tab-cards">60 cards across 24 units.</div>
-  <div role="tabpanel" id="panel-stats" aria-labelledby="tab-stats" hidden>Average cost 2.4.</div>
-</Tabs>;
+<Tabs
+  label="Deck view"
+  defaultValue="cards"
+  onValueChange={setView}
+  tabs={[
+    { value: "cards", label: "Cards", content: <CardList /> },
+    { value: "stats", label: "Stats", content: <DeckStats /> },
+    { value: "notes", label: "Notes", content: <DeckNotes />, disabled: true },
+  ]}
+/>;
 ```
 
-`Tabs` renders a `div` with the class `odd-tabs` and runs `enhanceTabs` on it, so arrows, Home, End, clicks, and the panel switch work with no other call. Write the tablist as its direct child. Each tab is a `button` with `role="tab"` and an `aria-controls` that names its panel. Each panel has `role="tabpanel"`, that `id`, and an `aria-labelledby` that names its tab. `enhanceTabs` finds a panel by its `id`, so keep the ids unique on the page. `aria-selected` and `hidden` in the JSX set the first choice only. After mount, `enhanceTabs` owns them, as the browser owns `open` on a `Disclosure`. `aria-orientation="vertical"` and `data-activation="manual"` go on the tablist. A disabled tab takes native `disabled`, and the arrows skip it. `Tabs` gives a tab with no `type` the type `button` each time `Tabs` renders, so a tab inside a form does not submit it. A tab you write as `type="submit"` keeps it. A tab that a child component adds while `Tabs` does not render stays untyped until `Tabs` renders again, so write `type="button"` on it. An `enhance()` call elsewhere in the app does not wire the set twice.
+`Tabs` renders `div.odd-tabs` with the tablist as its direct child, named by `label`, and one panel per tab after it. Each tab is a `button` with `type="button"`, `role="tab"`, and an `aria-controls` that names its panel, and each panel is named by its tab through `aria-labelledby`. The ids hang off `id`, as `${id}-tab-0` and `${id}-panel-0`, and `Tabs` generates the base when `id` is absent. `Tabs` runs `enhanceTabs` on itself, so arrows, Home, End, clicks, and the panel switch work with no other call, and an `enhance()` call elsewhere in the app does not wire the set twice. `orientation="vertical"` switches to Up and Down, and `activation="manual"`, for panels that are slow to fill, makes the arrows move focus and Enter or Space choose. A `disabled` tab takes native `disabled`, and the arrows skip it.
 
-To read the choice, listen for `odd-tab-change` on the forwarded ref. React 19 does not attach a custom-event prop on a `div`, so the listener goes through `addEventListener`. To choose a tab from code, call `.click()` on its button. The click goes through `enhanceTabs`, so the tab stop moves too.
+`defaultValue` is the first choice, typed from each `value` in `tabs`, so a value that names no tab is a type error. Without it, the first enabled tab is chosen. After mount, `enhanceTabs` owns the choice, the tab stop, and the panels. A render with a different `defaultValue` moves the choice until the user chooses a tab. After that, `Tabs` shows the user's choice again after every render, as a native checkbox ignores a new `defaultChecked` once the user has changed it. A remount starts again from `defaultValue`. There is no controlled `value`. `onValueChange` gets the chosen tab's `value`. To choose a tab from code, call `.click()` on its button through the forwarded ref, so the tab stop moves too.
 
-```tsx
-"use client";
-import { useEffect, useRef, useState } from "react";
-import { Tabs } from "odd-design/react";
-
-export function DeckView() {
-  const ref = useRef<HTMLDivElement>(null);
-  const [view, setView] = useState("cards");
-  useEffect(() => {
-    const tabs = ref.current!;
-    const onChange = (event: Event) => setView((event as CustomEvent<{ tab: HTMLElement }>).detail.tab.id.replace("tab-", ""));
-    tabs.addEventListener("odd-tab-change", onChange);
-    return () => tabs.removeEventListener("odd-tab-change", onChange);
-  }, []);
-  return <Tabs ref={ref}>…</Tabs>;
-}
-```
-
-`Tabs` takes no `value`, `onValueChange`, or `defaultValue`, and `defaultValue` is a type error. React state that writes `aria-selected` by itself moves the selection and leaves the tab stop on the old tab. Setting `aria-selected` from the `odd-tab-change` value is safe, because it writes what `enhanceTabs` already wrote.
-
-A tablist inside a wrapper loses its segmented track and reports `ODD-TABS-002` in the runtime checker. A tab that is not a `button`, or has no `aria-controls`, reports `ODD-TABS-004`. Without `aria-controls`, choosing a tab shows and hides no panel, so the panels keep whatever `hidden` they started with. `aria-orientation` and `data-activation` on `Tabs` are type errors (`ODD-TABS-003`), because nothing reads them on the root. System `data-` attributes on `Tabs`, such as `data-tone`, are type errors (`ODD-TABS-005`).
+`label` is required, because an unnamed tablist gives a screen reader nothing to announce. `aria-orientation` and `data-activation` on `Tabs` are type errors (`ODD-REACT-001`), because `orientation` and `activation` write them on the tablist. System `data-` attributes on `Tabs`, such as `data-tone`, are type errors (`ODD-REACT-002`). [Tabs usage rules](tabs.md) has the codes for hand-written markup.
 
 ## Build a search
 
@@ -688,10 +664,12 @@ The type error names the code and the fix. The table lists what each mistake pri
 | `onClick` or `tabIndex` on `Card` | `ODD-CARD-004` |
 | A system `data-` attribute on `Card` other than `data-span`, such as `data-tone` | `ODD-CARD-006` |
 | A system `data-` attribute on `CardLink` or `CardFooter`, such as `data-interactive` | `ODD-CARD-007` |
-| A system `data-` attribute on `Disclosure`, such as `data-tone` | `ODD-DISCLOSURE-003` |
-| `aria-orientation` or `data-activation` on `Tabs` | `ODD-TABS-003` |
-| A system `data-` attribute on `Tabs`, such as `data-tone` | `ODD-TABS-005` |
-| `defaultValue` on `Tabs` | `not assignable to type 'undefined'` |
+| `open` on `Disclosure` | `ODD-REACT-001` |
+| A system `data-` attribute on `Disclosure`, such as `data-tone` | `ODD-REACT-002` |
+| `aria-orientation` or `data-activation` on `Tabs` | `ODD-REACT-001` |
+| A system `data-` attribute on `Tabs`, such as `data-tone` | `ODD-REACT-002` |
+| `Tabs` with no `label` | "Property 'label' is missing" |
+| A `defaultValue` that names no tab in `tabs` | `Type '"notes"' is not assignable to type '"cards" \| "stats" \| undefined'` |
 | `type` or `aria-label` on `Search`, or `type` or `aria-disabled` on `Slider` | `ODD-REACT-001` |
 | A system `data-` attribute on `Search` or `Slider`, such as `data-tone` | `ODD-REACT-002` |
 | A system `data-` attribute on `Meter` or `Progress` other than `data-tone`, such as `data-size` | `ODD-METER-003` |
@@ -716,7 +694,7 @@ The type error names the code and the fix. The table lists what each mistake pri
 
 TypeScript shortens a long type in an error. Set `noErrorTruncation` in `tsconfig.json` to see the whole message.
 
-Some rules are not type errors. `Button` picks the element from `href`, so you cannot write an anchor without `href` (`ODD-BUTTON-009`) or a button with `href` (`ODD-BUTTON-010`). Those two codes apply to a raw `a` or `button` with the `odd-button` class. Each field control, `Badge`, each Alert part, each Avatar part, `Separator`, `Skeleton`, each Card part, `Disclosure`, `Tabs`, `Search`, `Slider`, `Meter`, `Progress`, `Toaster`, `Popover`, `Dialog`, `AlertDialog`, `Sheet`, each Menu part, `TableWrap`, `Table`, `TableSort`, `TextLink`, `Spinner`, `Combobox`, `ComboboxOption`, `Breadcrumb`, `Kbd`, `Code`, and `Pre` picks its own element too, so `ODD-FIELD-001`, `ODD-CHOICE-001`, `ODD-BADGE-001`, `ODD-ALERT-001`, `ODD-AVATAR-001`, `ODD-SEPARATOR-001`, `ODD-SKELETON-001`, `ODD-CARD-001`, `ODD-DISCLOSURE-001`, `ODD-TABS-001`, `ODD-SEARCH-001`, `ODD-SLIDER-001`, `ODD-METER-001`, `ODD-TOAST-001`, `ODD-POPOVER-001`, `ODD-DIALOG-001`, `ODD-SHEET-001`, `ODD-MENU-001`, `ODD-TABLE-001`, `ODD-LINK-001`, `ODD-HOVER-CARD-001`, `ODD-SPINNER-001`, `ODD-COMBOBOX-001`, `ODD-BREADCRUMB-001`, `ODD-KBD-001`, and `ODD-CODE-001` apply only to raw markup. the links and buttons in a card (`ODD-CARD-003`), the summary of a disclosure (`ODD-DISCLOSURE-002`), the tablist of a tab set (`ODD-TABS-002`), the tabs in a tab set (`ODD-TABS-004`), the input and the icon of a search (`ODD-SEARCH-002` and `ODD-SEARCH-003`), a `target` without `rel` on a link (`ODD-LINK-007`), the input and the list of a combobox (`ODD-COMBOBOX-002` and `ODD-COMBOBOX-003`), the list of a breadcrumb (`ODD-BREADCRUMB-003`), and a misspelled `data-` name are not type errors either. The [runtime checker](runtime.md) reports each of these.
+Some rules are not type errors. `Button` picks the element from `href`, so you cannot write an anchor without `href` (`ODD-BUTTON-009`) or a button with `href` (`ODD-BUTTON-010`). Those two codes apply to a raw `a` or `button` with the `odd-button` class. Each field control, `Badge`, each Alert part, each Avatar part, `Separator`, `Skeleton`, each Card part, `Disclosure`, `Tabs`, `Search`, `Slider`, `Meter`, `Progress`, `Toaster`, `Popover`, `Dialog`, `AlertDialog`, `Sheet`, each Menu part, `TableWrap`, `Table`, `TableSort`, `TextLink`, `Spinner`, `Combobox`, `ComboboxOption`, `Breadcrumb`, `Kbd`, `Code`, and `Pre` picks its own element too, so `ODD-FIELD-001`, `ODD-CHOICE-001`, `ODD-BADGE-001`, `ODD-ALERT-001`, `ODD-AVATAR-001`, `ODD-SEPARATOR-001`, `ODD-SKELETON-001`, `ODD-CARD-001`, `ODD-DISCLOSURE-001`, `ODD-DISCLOSURE-002`, `ODD-TABS-001`, `ODD-TABS-002`, `ODD-TABS-004`, `ODD-SEARCH-001`, `ODD-SLIDER-001`, `ODD-METER-001`, `ODD-TOAST-001`, `ODD-POPOVER-001`, `ODD-DIALOG-001`, `ODD-SHEET-001`, `ODD-MENU-001`, `ODD-TABLE-001`, `ODD-LINK-001`, `ODD-HOVER-CARD-001`, `ODD-SPINNER-001`, `ODD-COMBOBOX-001`, `ODD-BREADCRUMB-001`, `ODD-KBD-001`, and `ODD-CODE-001` apply only to raw markup. the links and buttons in a card (`ODD-CARD-003`), the input and the icon of a search (`ODD-SEARCH-002` and `ODD-SEARCH-003`), a `target` without `rel` on a link (`ODD-LINK-007`), the input and the list of a combobox (`ODD-COMBOBOX-002` and `ODD-COMBOBOX-003`), the list of a breadcrumb (`ODD-BREADCRUMB-003`), and a misspelled `data-` name are not type errors either. The [runtime checker](runtime.md) reports each of these.
 
 ## Open a dialog, a sheet, or a popover
 

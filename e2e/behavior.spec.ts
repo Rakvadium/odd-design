@@ -285,28 +285,28 @@ test.describe("keyboard widgets", () => {
   for (const storybook of ["html", "react"] as const) {
     test(`tabs follow the arrow keys, and manual tabs wait for Enter (${storybook})`, async ({ page }) => {
       await openStory(page, "components-interactive--tabs", "mode:light", "", storybook);
-      await expect(page.locator("#tab-s5"), "enhanceTabs ran").toHaveAttribute("tabindex", "-1");
-      await page.locator("#tab-cards").focus();
+      await expect(page.locator("#deck-tabs-panel-0"), "enhanceTabs ran: a panel with nothing focusable takes focus").toHaveAttribute("tabindex", "0");
+      await page.locator("#deck-tabs-tab-0").focus();
       await page.keyboard.press("ArrowRight");
-      await expect(page.locator("#tab-stats")).toHaveAttribute("aria-selected", "true");
-      await expect(page.locator("#panel-stats")).toBeVisible();
+      await expect(page.locator("#deck-tabs-tab-1")).toHaveAttribute("aria-selected", "true");
+      await expect(page.locator("#deck-tabs-panel-1")).toBeVisible();
       await page.keyboard.press("End");
       await page.keyboard.press("ArrowRight");
-      await expect(page.locator("#tab-cards")).toBeFocused();
-      await page.locator("#tab-s7").focus();
+      await expect(page.locator("#deck-tabs-tab-0")).toBeFocused();
+      await page.locator("#manual-tabs-tab-0").focus();
       await page.keyboard.press("ArrowRight");
-      await expect(page.locator("#tab-s6")).toBeFocused();
-      await expect(page.locator("#tab-s7")).toHaveAttribute("aria-selected", "true");
+      await expect(page.locator("#manual-tabs-tab-1")).toBeFocused();
+      await expect(page.locator("#manual-tabs-tab-0")).toHaveAttribute("aria-selected", "true");
       await page.keyboard.press("ArrowRight");
-      await expect(page.locator("#tab-s7"), "ArrowRight skips the disabled tab").toBeFocused();
+      await expect(page.locator("#manual-tabs-tab-0"), "ArrowRight skips the disabled tab").toBeFocused();
       await page.keyboard.press("ArrowLeft");
       await page.keyboard.press("Enter");
-      await expect(page.locator("#tab-s6")).toHaveAttribute("aria-selected", "true");
-      await expect(page.locator("#panel-s6")).toBeVisible();
-      await page.locator("#tab-cards").click();
-      await expect(page.locator("#panel-cards")).toBeVisible();
+      await expect(page.locator("#manual-tabs-tab-1")).toHaveAttribute("aria-selected", "true");
+      await expect(page.locator("#manual-tabs-panel-1")).toBeVisible();
+      await page.locator("#deck-tabs-tab-0").click();
+      await expect(page.locator("#deck-tabs-panel-0")).toBeVisible();
       await page.keyboard.press("Tab");
-      await expect(page.locator("#panel-cards"), "Tab leaves the list for the chosen panel").toBeFocused();
+      await expect(page.locator("#deck-tabs-panel-0"), "Tab leaves the list for the chosen panel").toBeFocused();
     });
   }
 

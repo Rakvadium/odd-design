@@ -474,14 +474,13 @@ const FIXTURES: { readonly [K in ExportName]: readonly [Fixture, ...Fixture[]] }
   ],
   Disclosure: [
     {
-      name: "open, in a named group",
+      name: "open first, in a named group",
       element: (
-        <Disclosure name="faq" open className="faq">
-          <summary>Does it need JavaScript?</summary>
-          <div>No.</div>
+        <Disclosure name="faq" summary="Does it need JavaScript?" defaultOpen className="faq">
+          No.
         </Disclosure>
       ),
-      markup: '<details name="faq" open="" class="odd-disclosure faq"><summary>Does it need JavaScript?</summary><div>No.</div></details>',
+      markup: '<details name="faq" class="odd-disclosure faq" open=""><summary>Does it need JavaScript?</summary><div>No.</div></details>',
     },
   ],
   Eyebrow: [
@@ -1107,21 +1106,36 @@ const FIXTURES: { readonly [K in ExportName]: readonly [Fixture, ...Fixture[]] }
   ],
   Tabs: [
     {
-      name: "a tab set",
+      name: "a tab set that starts on its second tab, with a disabled tab",
       element: (
-        <Tabs id="deck-tabs" className="deck">
-          <div role="tablist" aria-label="Deck view">
-            <button role="tab" id="tab-cards" aria-controls="panel-cards" aria-selected="true">
-              Cards
-            </button>
-          </div>
-          <div role="tabpanel" id="panel-cards" aria-labelledby="tab-cards">
-            60 cards
-          </div>
-        </Tabs>
+        <Tabs
+          id="deck-tabs"
+          className="deck"
+          label="Deck view"
+          defaultValue="stats"
+          tabs={[
+            { value: "cards", label: "Cards", content: "60 cards" },
+            { value: "stats", label: "Stats", content: "Average cost 2.4" },
+            { value: "notes", label: "Notes", content: "Mulligan for an early unit", disabled: true },
+          ]}
+        />
       ),
       markup:
-        '<div id="deck-tabs" class="odd-tabs deck"><div role="tablist" aria-label="Deck view"><button role="tab" id="tab-cards" aria-controls="panel-cards" aria-selected="true">Cards</button></div><div role="tabpanel" id="panel-cards" aria-labelledby="tab-cards">60 cards</div></div>',
+        '<div id="deck-tabs" class="odd-tabs deck"><div role="tablist" aria-label="Deck view"><button type="button" role="tab" id="deck-tabs-tab-0" aria-controls="deck-tabs-panel-0" aria-selected="false" tabindex="-1">Cards</button><button type="button" role="tab" id="deck-tabs-tab-1" aria-controls="deck-tabs-panel-1" aria-selected="true" tabindex="0">Stats</button><button type="button" role="tab" id="deck-tabs-tab-2" aria-controls="deck-tabs-panel-2" aria-selected="false" tabindex="-1" disabled="">Notes</button></div><div role="tabpanel" id="deck-tabs-panel-0" aria-labelledby="deck-tabs-tab-0" hidden="">60 cards</div><div role="tabpanel" id="deck-tabs-panel-1" aria-labelledby="deck-tabs-tab-1">Average cost 2.4</div><div role="tabpanel" id="deck-tabs-panel-2" aria-labelledby="deck-tabs-tab-2" hidden="">Mulligan for an early unit</div></div>',
+    },
+    {
+      name: "manual and vertical, with a generated id",
+      element: (
+        <Tabs
+          label="Season"
+          activation="manual"
+          orientation="vertical"
+          tabs={[
+            { value: "s7", label: "Season 7", content: "Rotation on May 1." },
+            { value: "s6", label: "Season 6", content: "Archived results." },
+          ]}
+        />
+      ),
     },
   ],
   TextLink: [
