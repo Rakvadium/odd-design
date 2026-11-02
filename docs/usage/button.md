@@ -6,7 +6,7 @@ In React, render `Button` from `odd-design/react`. It writes each attribute belo
 
 ```tsx
 <Button variant="primary" type="submit" disabled>Pay</Button>
-<Button iconOnly variant="ghost" label="Duplicate deck"><CopyIcon aria-hidden="true" /></Button>
+<Button id="copy" iconOnly variant="ghost" label="Duplicate deck"><CopyIcon aria-hidden="true" /></Button>
 <Button href="/docs" current>Docs</Button>
 ```
 
@@ -14,7 +14,7 @@ The components compile to this HTML:
 
 ```html
 <button class="odd-button" data-variant="primary" type="submit" aria-disabled="true">Pay</button>
-<button class="odd-button" data-variant="ghost" data-icon-only aria-labelledby="copy-tooltip" interestfor="copy-tooltip" type="button"><svg aria-hidden="true">…</svg></button>
+<button class="odd-button" data-variant="ghost" id="copy" data-icon-only aria-labelledby="copy-tooltip" interestfor="copy-tooltip" type="button"><svg aria-hidden="true">…</svg></button>
 <span class="odd-tooltip" id="copy-tooltip" popover="hint" role="tooltip">Duplicate deck</span>
 <a class="odd-button" href="/docs" aria-current="page">Docs</a>
 ```

@@ -63,7 +63,7 @@ The plugin also checks JSX. Add your `.jsx` and `.tsx` files to the plugin's `fi
 }
 ```
 
-In JSX, `odd/usage` reports each `odd-` class in a `className` or `class`, on any element, as `ODD-REACT-003`. An `odd-` class is markup that a component from `odd-design/react` renders, with the roles, ids, and wiring it owns, so the message names that component. `<button className="odd-button">` reports `ODD-REACT-003` and says to render `Button`. A router link with `className="odd-link"` says to render `TextLink`. A class that no component renders yet says so, and a toast class says to call `toast()` from `odd-design/enhance`. A class that is not in the registry reports `ODD-CLASS-001`.
+In JSX, `odd/usage` reports each `odd-` class in a `className` or `class`, on any element, as `ODD-REACT-003`. An `odd-` class is markup that a component from `odd-design/react` renders, with the roles, ids, and wiring it owns, so the message names that component. `<button className="odd-button">` reports `ODD-REACT-003` and says to render `Button`. A router link with `className="odd-link"` says to render `TextLink`. A toast class says to call `toast()` from `odd-design/enhance`. A class that is not in the registry reports `ODD-CLASS-001`.
 
 The plugin reads every string inside the value: a string, a template literal, and the strings inside a call such as `cx("odd-card", active && "is-active")` or `clsx({ "odd-hint": shown })`. A value with no string, such as `className={styles.card}`, reports nothing.
 

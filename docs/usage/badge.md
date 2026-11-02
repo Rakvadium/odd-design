@@ -5,6 +5,8 @@ These codes apply to `odd-badge`. Shared codes are in [General usage rules](gene
 In React, render `Badge` from `odd-design/react` with a `tone` and `solid`. [The React guide](react.md#show-a-status-with-a-badge) covers the props.
 
 ```tsx
+<Badge>Draft</Badge>
+<Badge tone="success">Legal</Badge>
 <Badge tone="danger" solid>Banned</Badge>
 ```
 

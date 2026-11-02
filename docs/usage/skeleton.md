@@ -15,7 +15,7 @@ In React, render `Skeleton` from `odd-design/react` for each block. It writes `a
 The component compiles to this HTML:
 
 ```html
-<div aria-busy="true">
+<div class="odd-stack" aria-busy="true">
   <span class="odd-visually-hidden">Loading decks…</span>
   <div class="odd-skeleton" aria-hidden="true" data-shape="avatar"></div>
   <div class="odd-skeleton" aria-hidden="true"></div>

@@ -7,10 +7,10 @@ In React, a tooltip is a prop on `Button`, never a component of its own. An icon
 ```tsx
 import { Button } from "odd-design/react";
 
-<Button variant="ghost" iconOnly label="Duplicate deck">
+<Button id="copy" variant="ghost" iconOnly label="Duplicate deck">
   <CopyIcon aria-hidden="true" />
 </Button>;
-<Button variant="primary" tooltip="Anyone with the link can view it">
+<Button id="publish" variant="primary" tooltip="Anyone with the link can view it">
   Publish
 </Button>;
 ```
@@ -20,11 +20,11 @@ import { Button } from "odd-design/react";
 The components compile to this HTML:
 
 ```html
-<button class="odd-button" type="button" data-variant="ghost" data-icon-only aria-labelledby="copy-tooltip" interestfor="copy-tooltip">
+<button class="odd-button" id="copy" type="button" data-variant="ghost" data-icon-only aria-labelledby="copy-tooltip" interestfor="copy-tooltip">
   <svg aria-hidden="true">…</svg>
 </button>
 <span class="odd-tooltip" id="copy-tooltip" popover="hint" role="tooltip">Duplicate deck</span>
-<button class="odd-button" type="button" data-variant="primary" aria-describedby="publish-tooltip" interestfor="publish-tooltip">Publish</button>
+<button class="odd-button" id="publish" type="button" data-variant="primary" aria-describedby="publish-tooltip" interestfor="publish-tooltip">Publish</button>
 <span class="odd-tooltip" id="publish-tooltip" popover="hint" role="tooltip">Anyone with the link can view it</span>
 ```
 

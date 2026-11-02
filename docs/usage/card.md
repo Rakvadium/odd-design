@@ -12,14 +12,12 @@ The component compiles to this HTML:
 
 ```html
 <article class="odd-card" data-interactive>
-  <p class="odd-eyebrow">Interactive</p>
   <h3 class="odd-card-title"><a class="odd-card-link" href="/decks/ember">Ember Aggro</a></h3>
-  <p class="odd-muted">The whole card is clickable. Screen readers hear a single link.</p>
   <div class="odd-card-footer"><span class="odd-badge" data-tone="warning">Rotating soon</span></div>
 </article>
 ```
 
-A card is an `article` for a standalone item, a `section` with `aria-labelledby` for a named panel, or a `div`. Its title is a heading at the level the page outline needs. A clickable card has `data-interactive` and exactly one control, an `a.odd-card-link` with an `href` or a `button.odd-card-link`, inside the title. The link's `::after` stretches over the card, so the whole card clicks through one link whose name is the title. In React, `Card` renders the `article` and `interactive` sets `data-interactive`. `CardLink` renders the `a`, and `CardFooter` renders the footer `div`. Write the title heading yourself, as `<h3 className="odd-card-title">`.
+A card is an `article` for a standalone item, a `section` with `aria-labelledby` for a named panel, or a `div`. Its title is a heading at the level the page outline needs. A clickable card has `data-interactive` and exactly one control, an `a.odd-card-link` with an `href` or a `button.odd-card-link`, inside the title. The link's `::after` stretches over the card, so the whole card clicks through one link whose name is the title. In React, `Card` takes `title`, `href`, `eyebrow`, `description`, `footer`, `headingLevel`, and `as`. It renders the `article`, or the tag `as` names, and writes the title heading at `headingLevel`. With `href`, it also writes `data-interactive` and the `a.odd-card-link` inside the title.
 
 ## ODD-CARD-001
 

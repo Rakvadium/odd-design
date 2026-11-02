@@ -33,7 +33,7 @@ The component compiles to this HTML:
 
 The browser does the rest with no JS. `command="show-modal"` opens the dialog in the top layer, traps focus, makes the page behind it inert, and closes it on Escape. Focus returns to the opener when it closes. `closedby="any"` adds a click outside. Focus starts on the first focusable control, so put the safe choice first. For a decision the user must make, add `role="alertdialog"` and leave out `closedby`, which is what `AlertDialog` renders. To submit from the dialog, make the body a `form` with `method="dialog"`, which is what `onSubmit` on `Dialog` renders.
 
-React writes no `autofocus` attribute. It calls `focus()` once when the button mounts, while the dialog is still closed, so `autoFocus` inside a `Dialog` does nothing. Put the control that should take focus first. To open the dialog from code, call `showModal()` on a `ref`, and read the close from `onClose`.
+`Dialog` does not move focus itself. `showModal()` moves it when the trigger opens the dialog, so put the control that should take focus first. To open the dialog from code, call `showModal()` on a `ref`, and read the close from `onClose`.
 
 ## ODD-DIALOG-001
 

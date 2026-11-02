@@ -7,6 +7,7 @@ In React, render `Progress` from `odd-design/react` or `Meter` with a `label`, w
 ```tsx
 <Progress label="Importing decks" value={40} max={100} />
 <Meter label="Actions" min={0} max={60} value={22} tone="info" />
+<Meter label="Storage" value={0.93} low={0.6} high={0.85} optimum={0} />
 ```
 
 The component compiles to this HTML:

@@ -16,17 +16,15 @@ The component compiles to this HTML:
 
 ```html
 <span class="odd-avatar"><img src="kai.png" alt="Kai Nakamura"></span>
-<span class="odd-avatar" data-size="lg" role="img" aria-label="Ana Rojas">AR</span>
 <div class="odd-avatar-group" role="group" aria-label="Collaborators">
   <span class="odd-avatar"><img src="mira.png" alt="Mira Okafor"></span>
   <span class="odd-avatar" role="img" aria-label="and 3 more">+3</span>
 </div>
-<span class="odd-avatar" aria-hidden="true">MO</span> Mira Okafor
 ```
 
-An avatar is named in one of three ways. An image avatar's `img` has `alt`. An initials avatar is `role="img"` with an `aria-label`. An avatar next to a visible name repeats it, so hide it with `aria-hidden="true"` or `alt=""`. In React, `Avatar` renders the `span` and `AvatarGroup` renders the `div`. Pass `size` to `Avatar`. The `img`, the initials, and the name stay yours.
+An avatar is named in one of three ways. An image avatar's `img` has `alt`. An initials avatar is `role="img"` with an `aria-label`. An avatar next to a visible name repeats it, so hide it with `aria-hidden="true"` or `alt=""`. In React, `Avatar` renders the `span` and `AvatarGroup` renders the `div`. `Avatar` writes an `img` with `name` as its `alt`, or the initials with `role="img"` and `name` as the `aria-label`. `decorative` writes `aria-hidden="true"` and an empty `alt`. Pass `size` to `Avatar`.
 
-`avatarFallback` from `odd-design/enhance` swaps a failed image for the initials in `data-initials`. It replaces the avatar's children, so it is for markup the page owns. React throws on its next render of children a script replaced, so `data-initials` on `Avatar` is a type error. In React, render the initials when the image's `onError` fires.
+`avatarFallback` from `odd-design/enhance` swaps a failed image for the initials in `data-initials`. It replaces the avatar's children, so it is for markup the page owns. React throws on its next render of children a script replaced, so `data-initials` on `Avatar` is a type error (`ODD-REACT-001`). `Avatar` shows the initials itself when its image fails to load.
 
 ## ODD-AVATAR-001
 

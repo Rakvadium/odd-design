@@ -13,13 +13,6 @@ In React, render `Alert` from `odd-design/react` with a `tone`, an `icon`, and a
 The component compiles to this HTML:
 
 ```html
-<div class="odd-alert">
-  <svg aria-hidden="true"></svg>
-  <div>
-    <p class="odd-alert-title">Drafts are private</p>
-    <p>Only you can see a deck until you publish it.</p>
-  </div>
-</div>
 <div class="odd-alert" data-tone="warning">
   <svg aria-hidden="true"></svg>
   <div>

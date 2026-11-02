@@ -14,14 +14,13 @@ The component compiles to this HTML:
 <nav class="odd-breadcrumb" aria-label="Breadcrumb">
   <ol>
     <li><a class="odd-link" href="/">Home</a></li>
-    <li><a class="odd-link" href="/settings">Settings</a></li>
     <li>Archived</li>
     <li><a class="odd-link" href="/settings/archived/alerts" aria-current="page">Alerts</a></li>
   </ol>
 </nav>
 ```
 
-A breadcrumb is the trail from the top of the site to the page you are on. It is a `nav` with a name, around an `ol` with one `li` per level. The `ol` and `li` need no class. Each level with a page of its own is an `odd-link`. The last crumb is the page you are on, with `aria-current="page"`, which the link draws in the text color without an underline. A level with no page of its own is plain text in its `li`. The slashes between crumbs are drawn by CSS and hidden from screen readers, and a long trail wraps onto more lines. In React, `Breadcrumb` renders the `nav`, and you write the `ol`, the `li`s, and `TextLink`s inside it.
+A breadcrumb is the trail from the top of the site to the page you are on. It is a `nav` with a name, around an `ol` with one `li` per level. The `ol` and `li` need no class. Each level with a page of its own is an `odd-link`. The last crumb is the page you are on, with `aria-current="page"`, which the link draws in the text color without an underline. A level with no page of its own is plain text in its `li`. The slashes between crumbs are drawn by CSS and hidden from screen readers, and a long trail wraps onto more lines. In React, `Breadcrumb` writes the `nav`, the `ol`, and one `li` per item in `items`. An item with an `href` is a `TextLink`.
 
 Mark only the last crumb with `aria-current="page"`. No checker reads that deep, so a trail without it passes, and its last crumb then looks like every other link. A wrong `aria-current` value on a crumb is ODD-LINK-005.
 

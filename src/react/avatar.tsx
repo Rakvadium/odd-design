@@ -9,7 +9,7 @@ export type AvatarSize = Values<AvatarRule, "data-size">;
 type Named = "aria-label" | "aria-labelledby";
 
 export type AvatarProps = Root &
-  Passthrough<"span", Named | "aria-hidden"> & {
+  Passthrough<"span", Named | "aria-hidden" | "data-initials"> & {
     /** The person's name: the image's alt text, or the name of the initials. */
     readonly name: string;
     readonly src?: string;
@@ -32,7 +32,7 @@ function initialsOf(name: string): string {
 
 /**
  * span.odd-avatar with an img, or with initials when there is no image or it fails. The fallback is
- * React state, and Avatar never writes data-initials, so a page-level avatarFallback() leaves it alone.
+ * React state, and data-initials is owned, so a page-level avatarFallback() never replaces children React renders.
  */
 export function Avatar({ name, src, initials, size, decorative, className, ...rest }: AvatarProps): ReactElement {
   const [failed, setFailed] = useState<string>();

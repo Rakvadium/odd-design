@@ -6,25 +6,29 @@ In React, render `SkipLink`, `Stack`, `Row`, `Muted`, `VisuallyHidden`, and `Sco
 
 ```tsx
 <SkipLink href="#main">Skip to content</SkipLink>
-<Stack as="main" id="main">
-  <Row>
-    <Button>Save</Button>
-    <Muted as="span">Saved 2 minutes ago</Muted>
-  </Row>
-  <Scope as="section" chrome="glass" palette="aurora" mode="dark">…</Scope>
-</Stack>
+<main id="main">
+  <Stack>
+    <Row>
+      <Button>Save</Button>
+      <Muted as="span">Saved 2 minutes ago</Muted>
+    </Row>
+    <Scope as="section" chrome="glass" palette="aurora" mode="dark">…</Scope>
+  </Stack>
+</main>
 ```
 
 The components compile to this HTML:
 
 ```html
 <a class="odd-skip-link" href="#main">Skip to content</a>
-<main id="main" class="odd-stack">
-  <div class="odd-row">
-    <button class="odd-button" type="button">Save</button>
-    <span class="odd-muted">Saved 2 minutes ago</span>
+<main id="main">
+  <div class="odd-stack">
+    <div class="odd-row">
+      <button class="odd-button" type="button">Save</button>
+      <span class="odd-muted">Saved 2 minutes ago</span>
+    </div>
+    <section class="odd-scope" data-chrome="glass" data-palette="aurora" data-mode="dark">…</section>
   </div>
-  <section class="odd-scope" data-chrome="glass" data-palette="aurora" data-mode="dark">…</section>
 </main>
 ```
 

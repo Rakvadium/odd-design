@@ -6,6 +6,11 @@ In React, render `Separator` from `odd-design/react` and pass `orientation="vert
 
 ```tsx
 <Separator />
+<Row>
+  <TextLink href="/edit">Edit</TextLink>
+  <Separator orientation="vertical" />
+  <TextLink href="/export">Export</TextLink>
+</Row>
 ```
 
 The component compiles to this HTML:
@@ -13,13 +18,13 @@ The component compiles to this HTML:
 ```html
 <hr class="odd-separator">
 <div class="odd-row">
-  <a href="/edit">Edit</a>
+  <a class="odd-link" href="/edit">Edit</a>
   <hr class="odd-separator" aria-orientation="vertical">
-  <a href="/export">Export</a>
+  <a class="odd-link" href="/export">Export</a>
 </div>
 ```
 
-A separator is an `hr`, and screen readers announce it as a separator. A horizontal line needs no attribute. A line between inline items is `aria-orientation="vertical"` inside an `odd-row`, which stretches it to the row's height. In React, `Separator` renders the `hr`, and you pass `aria-orientation` as on the element. `Separator` takes no children.
+A separator is an `hr`, and screen readers announce it as a separator. A horizontal line needs no attribute. A line between inline items is `aria-orientation="vertical"` inside an `odd-row`, which stretches it to the row's height. In React, `Separator` renders the `hr`, and `orientation="vertical"` writes `aria-orientation`. `Separator` takes no children.
 
 ## ODD-SEPARATOR-001
 

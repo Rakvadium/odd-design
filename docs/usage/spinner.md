@@ -6,7 +6,10 @@ In React, render `Spinner` from `odd-design/react` in a busy region. It writes `
 
 ```tsx
 <Row aria-busy="true">
-  <Spinner label="Loading projects…" />
+  <Spinner /> Loading projects…
+</Row>
+<Row aria-busy="true">
+  <Spinner label="Loading reports…" />
 </Row>
 ```
 

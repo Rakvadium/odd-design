@@ -12,11 +12,6 @@ The component compiles to this HTML:
 
 ```html
 <section class="odd-toaster" popover="manual" aria-label="Notifications"></section>
-<script type="module">
-  import { enhance, toast } from "odd-design/enhance";
-  enhance();
-  save.addEventListener("click", () => toast({ title: "Deck saved", tone: "success" }));
-</script>
 ```
 
 Write the region once per page, empty. `enhance()`, or `enhanceToaster(region)`, builds the list and a hidden polite live region inside it and opens it. `toast({ title, description, tone, duration, action })` shows a toast on the newest wired region still in the document, and throws when there is none. Only `toast()` writes `odd-toast` and its parts, so no rule covers them.
@@ -29,7 +24,7 @@ import { toast } from "odd-design/enhance";
 
 <body>
   {children}
-  <Toaster popover="manual" aria-label="Notifications" />
+  <Toaster label="Notifications" />
 </body>;
 
 <Button onClick={() => toast({ title: "Deck saved", description: "Midnight Control, version 15.", tone: "success" })}>Save</Button>;

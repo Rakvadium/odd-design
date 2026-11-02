@@ -6,6 +6,7 @@ In React, render `Kbd` from `odd-design/react` for each key. [The React guide](r
 
 ```tsx
 <p>Press <Kbd>Ctrl</Kbd> <Kbd>K</Kbd> to search.</p>
+<p><Kbd>Esc</Kbd> closes the dialog.</p>
 ```
 
 The component compiles to this HTML:
