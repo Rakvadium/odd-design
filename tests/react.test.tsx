@@ -7,7 +7,7 @@ import { closedByFallback, enhance, enhanceTabs, interestForFallback, toast } fr
 import { Button } from "../src/react/button.tsx";
 import { Card } from "../src/react/card.tsx";
 import { Combobox, ComboboxList, ComboboxOption } from "../src/react/combobox.tsx";
-import { Input, Select } from "../src/react/field.tsx";
+import { RadioGroup } from "../src/react/field.tsx";
 import { Menu, MenuItem } from "../src/react/menu.tsx";
 import { rejectBlank, useEnhancer } from "../src/react/own.ts";
 import { Table, TableSort } from "../src/react/table.tsx";
@@ -76,6 +76,35 @@ describe("Button with disabled or busy", () => {
     expect(counts).toEqual({ clicks: 1, submits: 1 });
     await act(async () => pressEnter(field));
     expect(counts).toEqual({ clicks: 2, submits: 2 });
+  });
+});
+
+describe("RadioGroup", () => {
+  const SORTS = [
+    { value: "newest", label: "Newest" },
+    { value: "oldest", label: "Oldest" },
+  ] as const;
+
+  test("two groups without a name get two names, each shared by its radios, and a choice calls onValueChange with its value", async () => {
+    const chosen: string[] = [];
+    const host = document.createElement("div");
+    document.body.append(host);
+    const root = createRoot(host);
+    mounted = root;
+    await act(async () =>
+      root.render(
+        <>
+          <RadioGroup label="Sort decks" options={SORTS} defaultValue="newest" onValueChange={(value) => chosen.push(value)} />
+          <RadioGroup label="Sort cards" options={SORTS} defaultValue="newest" />
+        </>,
+      ),
+    );
+    const names = [...host.querySelectorAll("fieldset")].map((group) => [...new Set([...group.querySelectorAll("input")].map((radio) => radio.name))]);
+    expect(names.map((list) => list.length)).toEqual([1, 1]);
+    expect(names[0]![0]).not.toBe(names[1]![0]);
+    await act(async () => host.querySelector<HTMLInputElement>('input[value="oldest"]')!.click());
+    expect(chosen).toEqual(["oldest"]);
+    expect([...host.querySelectorAll<HTMLInputElement>("input:checked")].map((radio) => radio.value)).toEqual(["oldest", "newest"]);
   });
 });
 
@@ -249,7 +278,7 @@ describe("Combobox", () => {
     return (
       <>
         <Combobox>
-          <Input
+          <input
             id="city"
             role="combobox"
             aria-controls="city-list"
@@ -329,7 +358,7 @@ describe("Combobox", () => {
       return (
         <>
           <Combobox>
-            <Input id="city" role="combobox" aria-controls="city-list" aria-expanded={expanded} aria-autocomplete="list" aria-label="City" />
+            <input id="city" role="combobox" aria-controls="city-list" aria-expanded={expanded} aria-autocomplete="list" aria-label="City" />
             <ComboboxList id="city-list" popover="manual" role="listbox" aria-label="Cities">
               <ComboboxOption role="option">Amsterdam</ComboboxOption>
             </ComboboxList>
@@ -571,11 +600,15 @@ const failures: Record<string, { codes: string[]; text: string[] }> = {
   "button-current-not-link": { codes: [], text: ["Property 'href' is missing"] },
   "button-link-disabled": { codes: [], text: ["Types of property 'disabled' are incompatible"] },
   "button-tooltip-icon-only": { codes: [], text: ["Types of property 'tooltip' are incompatible"] },
-  "field-error-hidden": { codes: ["ODD-FIELD-002"], text: [] },
-  "input-aria-disabled": { codes: ["ODD-FIELD-003"], text: [] },
-  "choice-aria-disabled": { codes: ["ODD-CHOICE-003"], text: [] },
-  "switch-aria-disabled": { codes: ["ODD-CHOICE-003"], text: [] },
-  "switch-type": { codes: [], text: ['"checkbox"', '"switch"'] },
+  "input-aria-disabled": { codes: ["ODD-REACT-001"], text: ["Types of property '\"aria-disabled\"' are incompatible"] },
+  "input-owned-aria": { codes: ["ODD-REACT-001"], text: ["Types of property '\"aria-invalid\"' are incompatible"] },
+  "input-unnamed": { codes: [], text: ["Property 'label' is missing"] },
+  "input-type-checkbox": { codes: [], text: ["'\"checkbox\"' is not assignable to type 'TextType | undefined'"] },
+  "checkbox-aria-disabled": { codes: ["ODD-REACT-001"], text: ["Types of property '\"aria-disabled\"' are incompatible"] },
+  "switch-aria-disabled": { codes: ["ODD-REACT-001"], text: ["Types of property '\"aria-disabled\"' are incompatible"] },
+  "switch-type": { codes: ["ODD-REACT-001"], text: ["'\"radio\"' is not assignable"] },
+  "radio-group-default-value": { codes: [], text: ["'\"secret\"' is not assignable to type '\"private\" | \"public\" | undefined'"] },
+  "radio-group-no-options": { codes: [], text: ["'[]' is not assignable"] },
   "badge-tone": { codes: [], text: ['"neutral"', '"primary"', '"success"', '"warning"', '"danger"', '"info"'] },
   "badge-data-variant": { codes: ["ODD-BADGE-004"], text: [] },
   "alert-tone": { codes: [], text: ['"info"', '"success"', '"warning"', '"danger"'] },

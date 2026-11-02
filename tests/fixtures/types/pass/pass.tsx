@@ -5,12 +5,11 @@ import { Badge, type BadgeTone } from "../../../../src/react/badge.tsx";
 import { Breadcrumb } from "../../../../src/react/breadcrumb.tsx";
 import { Button } from "../../../../src/react/button.tsx";
 import { Card, CardFooter, CardLink } from "../../../../src/react/card.tsx";
-import { Choice, Segmented, Switch } from "../../../../src/react/choice.tsx";
 import { Code, Pre } from "../../../../src/react/code.tsx";
 import { Combobox, ComboboxList, ComboboxOption } from "../../../../src/react/combobox.tsx";
 import { Dialog, DialogActions } from "../../../../src/react/dialog.tsx";
 import { Disclosure } from "../../../../src/react/disclosure.tsx";
-import { Field, FieldError, Hint, Input, Label, Select, Textarea } from "../../../../src/react/field.tsx";
+import { Checkbox, Input, RadioGroup, Segmented, Select, Switch, Textarea, type ChoiceOption } from "../../../../src/react/field.tsx";
 import { Kbd } from "../../../../src/react/kbd.tsx";
 import { Grid, GridItem, Row, Scope, SkipLink, Stack, VisuallyHidden, type GridSpan } from "../../../../src/react/layout.tsx";
 import { Menu, MenuItem } from "../../../../src/react/menu.tsx";
@@ -73,49 +72,33 @@ export function Fields({ error }: { error: string | undefined }) {
   const ref = useRef<HTMLInputElement>(null);
   return (
     <>
-      <Field className="wide">
-        <Label htmlFor="email">Email</Label>
-        <Input
-          id="email"
-          ref={ref}
-          type="email"
-          required
-          aria-invalid={error !== undefined}
-          aria-describedby={error === undefined ? "email-hint" : "email-hint email-error"}
-        />
-        <Hint id="email-hint">We never share it.</Hint>
-        {error === undefined ? null : <FieldError id="email-error">{error}</FieldError>}
-      </Field>
-      <Input id="owner" value="you" disabled readOnly />
-      <Textarea id="notes" rows={4} disabled />
-      <Select id="format" defaultValue="standard" disabled>
+      <Input label="Email" ref={ref} type="email" required hint="We never share it." error={error} aria-describedby="email-policy" className="wide" />
+      <Input label="Owner" id="owner" value="you" disabled readOnly />
+      <Input label="Search cards" hideLabel type="search" />
+      <Textarea label="Notes" id="notes" rows={4} disabled hint={<a href="#markdown">Markdown</a>} />
+      <Select label="Format" defaultValue="standard" disabled onChange={(event) => event.currentTarget.value}>
         <option value="standard">Standard</option>
       </Select>
-      <Input type="search" aria-label="Search cards" />
     </>
   );
 }
 
-export function Choices({ on, toggle }: { on: boolean; toggle: () => void }) {
+type View = "grid" | "list";
+
+const VIEWS: readonly [ChoiceOption<View>, ...ChoiceOption<View>[]] = [
+  { value: "grid", label: "Grid" },
+  { value: "list", label: "List", disabled: true },
+];
+
+export function Choices({ on, toggle, view, setView }: { on: boolean; toggle: () => void; view: View; setView: (view: View) => void }) {
   const ref = useRef<HTMLInputElement>(null);
   return (
     <>
-      <Choice className="wide">
-        <input type="checkbox" defaultChecked disabled /> Partner offers
-      </Choice>
-      <Choice>
-        <input type="radio" name="vis" value="public" /> Public
-      </Choice>
-      <Choice>
-        <Switch type="checkbox" role="switch" ref={ref} checked={on} onChange={toggle} disabled /> Compact grid
-      </Choice>
-      <Switch type="checkbox" role="switch" defaultChecked aria-label="Public" />
-      <Segmented disabled>
-        <legend>View</legend>
-        <label>
-          <input type="radio" name="view" defaultChecked /> Grid
-        </label>
-      </Segmented>
+      <Checkbox label="Partner offers" defaultChecked disabled className="wide" />
+      <Checkbox label={<>I accept the <a href="#rules">rules</a></>} name="rules" required />
+      <Switch label="Compact grid" ref={ref} checked={on} onChange={toggle} disabled />
+      <RadioGroup label="Visibility" name="vis" defaultValue="public" required options={[{ value: "public", label: "Public" }, { value: "private", label: "Private" }]} onValueChange={(value) => value === "public"} />
+      <Segmented label="View" options={VIEWS} defaultValue={view} onValueChange={setView} disabled />
     </>
   );
 }
@@ -341,7 +324,7 @@ export function CardFilter() {
         Filter cards
       </label>
       <svg aria-hidden="true" viewBox="0 0 24 24" />
-      <Input type="search" id="card-filter-q" value={query} onChange={(event) => setQuery(event.target.value)} />
+      <input className="odd-input" type="search" id="card-filter-q" value={query} onChange={(event) => setQuery(event.target.value)} />
     </Search>
   );
 }
@@ -358,7 +341,7 @@ export function SiteSearch({ onSearch }: { onSearch: (query: string) => void }) 
           Search the docs
         </label>
         <svg aria-hidden="true" viewBox="0 0 24 24" />
-        <Input type="search" id="site-search" name="q" />
+        <input className="odd-input" type="search" id="site-search" name="q" />
       </Search>
     </form>
   );
@@ -367,8 +350,10 @@ export function SiteSearch({ onSearch }: { onSearch: (query: string) => void }) 
 export function CopiesField() {
   const [copies, setCopies] = useState(3);
   return (
-    <Field>
-      <Label htmlFor="copies">Copies per card</Label>
+    <div className="odd-field">
+      <label className="odd-label" htmlFor="copies">
+        Copies per card
+      </label>
       <output className="odd-stat-value" htmlFor="copies">
         {copies} of 4
       </output>
@@ -381,8 +366,10 @@ export function CopiesField() {
         onChange={(event) => setCopies(event.currentTarget.valueAsNumber)}
         aria-describedby="copies-hint"
       />
-      <Hint id="copies-hint">Most formats allow up to 4.</Hint>
-    </Field>
+      <p className="odd-hint" id="copies-hint">
+        Most formats allow up to 4.
+      </p>
+    </div>
   );
 }
 
@@ -531,12 +518,12 @@ export function DeckTable({ decks }: { decks: readonly { id: string; name: strin
 export function CityField() {
   const root = useRef<HTMLDivElement>(null);
   return (
-    <Field>
-      <Label htmlFor="city" id="city-label">
+    <div className="odd-field">
+      <label className="odd-label" htmlFor="city" id="city-label">
         City
-      </Label>
+      </label>
       <Combobox ref={root} className="wide" data-testid="city">
-        <Input id="city" name="city" role="combobox" aria-controls="city-list" aria-expanded="false" aria-autocomplete="list" />
+        <input className="odd-input" id="city" name="city" role="combobox" aria-controls="city-list" aria-expanded="false" aria-autocomplete="list" />
         <ComboboxList id="city-list" popover="manual" role="listbox" aria-labelledby="city-label">
           <ComboboxOption role="option">Amsterdam</ComboboxOption>
           <ComboboxOption role="option" aria-disabled="true">
@@ -547,7 +534,7 @@ export function CityField() {
           </ComboboxOption>
         </ComboboxList>
       </Combobox>
-    </Field>
+    </div>
   );
 }
 
@@ -555,7 +542,7 @@ export function AssigneeField({ people, onAssign }: { people: readonly { id: str
   const [query, setQuery] = useState("");
   return (
     <Combobox>
-      <Input id="assignee" role="combobox" aria-controls="assignee-list" aria-expanded="false" aria-autocomplete="list" aria-label="Assignee" value={query} onChange={(event) => setQuery(event.target.value)} />
+      <input className="odd-input" id="assignee" role="combobox" aria-controls="assignee-list" aria-expanded="false" aria-autocomplete="list" aria-label="Assignee" value={query} onChange={(event) => setQuery(event.target.value)} />
       <ComboboxList id="assignee-list" popover="manual" role="listbox" aria-label="People" data-filter="manual">
         {people.map((person) => (
           <ComboboxOption key={person.id} role="option" onClick={() => onAssign(person.id)}>

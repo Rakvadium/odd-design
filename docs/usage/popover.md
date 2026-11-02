@@ -18,12 +18,12 @@ The browser does the rest with no JS. `command="toggle-popover"` opens the popov
 In React, `Popover` renders the `div`, and `Button` takes `commandfor` and `command`. The part holds no state. To read the open state, listen to `onToggle`.
 
 ```tsx
-import { Button, Choice, Popover } from "odd-design/react";
+import { Button, Checkbox, Popover } from "odd-design/react";
 
 <Button commandfor="filters" command="toggle-popover">Filters</Button>
 <Popover id="filters" popover="auto" role="dialog" aria-labelledby="filters-title">
   <p className="odd-eyebrow" id="filters-title">Filter decks</p>
-  <Choice><input type="checkbox" defaultChecked /> Legal only</Choice>
+  <Checkbox label="Legal only" defaultChecked />
   <Button size="sm" commandfor="filters" command="hide-popover">Apply</Button>
 </Popover>;
 

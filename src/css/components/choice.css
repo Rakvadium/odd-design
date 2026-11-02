@@ -21,6 +21,13 @@
   cursor: pointer;
 }
 
+/* A RadioGroup's fieldset groups its choices without drawing a box. */
+fieldset:has(> .odd-choice) {
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
 .odd-choice:has(:disabled) {
   cursor: not-allowed;
   opacity: var(--disabled-opacity);

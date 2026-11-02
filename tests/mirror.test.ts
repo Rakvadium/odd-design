@@ -13,15 +13,15 @@ export const illegal: readonly (() => Scene)[] = [
   // @ts-expect-error style is an object, as React takes it
   () => ({ of: "Field", props: { style: "max-inline-size: 26rem" } }),
   // @ts-expect-error a style value is a string, because React would add px to a number
-  () => ({ of: "Field", props: { style: { maxInlineSize: 26 } } }),
+  () => ({ of: "Badge", props: { style: { maxInlineSize: 26 } } }),
   // @ts-expect-error value needs an onChange, so a scene sets defaultValue
-  () => ({ of: "Input", props: { id: "owner", value: "you" } }),
+  () => ({ of: "input", props: { id: "owner", value: "you" } }),
   // @ts-expect-error checked needs an onChange too, so a scene sets defaultChecked
-  () => ({ of: "Input", props: { id: "opt", type: "checkbox", checked: true, disabled: true } }),
+  () => ({ of: "input", props: { id: "opt", type: "checkbox", checked: true, disabled: true } }),
   // @ts-expect-error a handler has no HTML form
   () => ({ of: "form", props: { onSubmit: () => undefined } }),
   // @ts-expect-error a wrapper's class goes through the wrapper
-  () => ({ of: "div", props: { className: "odd-field" } }),
+  () => ({ of: "span", props: { className: "odd-badge" } }),
 ];
 
 test("mirrorOf throws when parameters.mirror is missing, instead of rendering nothing", () => {

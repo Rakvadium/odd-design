@@ -28,7 +28,7 @@ export const Search = mirrored({
             children: [
               { of: "label", props: { className: "odd-visually-hidden", htmlFor: "card-search" }, children: ["Search cards"] },
               { icon: "search" },
-              { of: "Input", props: { type: "search", id: "card-search", name: "q", placeholder: "Search cards", defaultValue: "Ember" } },
+              { of: "input", props: { className: "odd-input", type: "search", id: "card-search", name: "q", placeholder: "Search cards", defaultValue: "Ember" } },
             ],
           },
         ],

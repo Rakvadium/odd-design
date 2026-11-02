@@ -1,16 +1,10 @@
-import { Alert, AlertTitle, Avatar, AvatarGroup, Badge, Button, Card, CardFooter, CardLink, Choice, Disclosure, Field, Hint, Input, Label, Meter, Search, Separator, Skeleton, Slider, Switch, Tabs, Toaster } from "odd-design/react";
+import { Alert, AlertTitle, Avatar, AvatarGroup, Badge, Button, Card, CardFooter, CardLink, Disclosure, Input, Meter, Search, Separator, Skeleton, Slider, Switch, Tabs, Toaster } from "odd-design/react";
 
 export function App() {
   return (
     <>
-      <Field>
-        <Label htmlFor="email">Email</Label>
-        <Input id="email" type="email" required aria-describedby="email-hint" />
-        <Hint id="email-hint">We never share it.</Hint>
-      </Field>
-      <Choice>
-        <Switch type="checkbox" role="switch" /> Compact grid
-      </Choice>
+      <Input label="Email" type="email" required hint="We never share it." />
+      <Switch label="Compact grid" />
       <Badge tone="success" solid>
         Legal
       </Badge>
@@ -56,12 +50,14 @@ export function App() {
           Search cards
         </label>
         <svg aria-hidden="true" viewBox="0 0 24 24" />
-        <Input type="search" id="card-search" placeholder="Search cards" />
+        <input className="odd-input" type="search" id="card-search" placeholder="Search cards" />
       </Search>
-      <Field>
-        <Label htmlFor="copies">Copies per card</Label>
+      <div className="odd-field">
+        <label className="odd-label" htmlFor="copies">
+          Copies per card
+        </label>
         <Slider type="range" id="copies" min={1} max={4} defaultValue={3} />
-      </Field>
+      </div>
       <div className="odd-stack">
         <div className="odd-row">
           <label className="odd-muted" htmlFor="actions">

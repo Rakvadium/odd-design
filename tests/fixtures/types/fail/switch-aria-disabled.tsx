@@ -1,3 +1,3 @@
-import { Switch } from "../../../../src/react/choice.tsx";
+import { Switch } from "../../../../src/react/field.tsx";
 
-export const view = <Switch type="checkbox" role="switch" aria-label="Public" aria-disabled="true" />;
+export const view = <Switch label="Public" aria-disabled="true" />;

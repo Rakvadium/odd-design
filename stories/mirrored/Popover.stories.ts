@@ -23,9 +23,9 @@ const filters = (id: string): Node<"Popover"> => ({
       props: { className: "odd-stack", style: { "--gap": "var(--space-3)" } },
       children: [
         { of: "p", props: { className: "odd-eyebrow", id: `${id}-title` }, children: ["Filter decks"] },
-        { of: "Choice", children: [{ of: "input", props: { type: "checkbox", defaultChecked: true } }, " Legal only"] },
-        { of: "Choice", children: [{ of: "input", props: { type: "checkbox" } }, " Has sideboard"] },
-        { of: "Choice", children: [{ of: "input", props: { type: "checkbox" } }, " Edited this week"] },
+        { of: "label", props: { className: "odd-choice" }, children: [{ of: "input", props: { type: "checkbox", defaultChecked: true } }, " Legal only"] },
+        { of: "label", props: { className: "odd-choice" }, children: [{ of: "input", props: { type: "checkbox" } }, " Has sideboard"] },
+        { of: "label", props: { className: "odd-choice" }, children: [{ of: "input", props: { type: "checkbox" } }, " Edited this week"] },
         { of: "Separator" },
         {
           of: "div",

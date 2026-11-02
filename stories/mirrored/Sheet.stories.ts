@@ -30,12 +30,13 @@ const sheet = (id: string, side?: PropsOf<"Sheet">["side"]): Node<"Sheet"> => ({
       props: { className: "odd-sheet-body" },
       children: [
         {
-          of: "Field",
+          of: "div",
+  props: { className: "odd-field" },
           children: [
-            { of: "Label", props: { htmlFor: `${id}-format` }, children: ["Format"] },
+            { of: "label", props: { className: "odd-label", htmlFor: `${id}-format` }, children: ["Format"] },
             {
-              of: "Select",
-              props: { id: `${id}-format` },
+              of: "select",
+              props: { className: "odd-select", id: `${id}-format` },
               children: [
                 { of: "option", children: ["Any"] },
                 { of: "option", children: ["Standard"] },
@@ -49,9 +50,9 @@ const sheet = (id: string, side?: PropsOf<"Sheet">["side"]): Node<"Sheet"> => ({
           props: { className: "odd-stack", style: { "--gap": "var(--space-2)", border: "0", padding: "0", margin: "0" } },
           children: [
             { of: "legend", props: { className: "odd-label", style: { marginBlockEnd: "var(--space-2)" } }, children: ["Status"] },
-            { of: "Choice", children: [{ of: "input", props: { type: "checkbox", defaultChecked: true } }, " Legal"] },
-            { of: "Choice", children: [{ of: "input", props: { type: "checkbox" } }, " Rotating"] },
-            { of: "Choice", children: [{ of: "input", props: { type: "checkbox" } }, " Banned"] },
+            { of: "label", props: { className: "odd-choice" }, children: [{ of: "input", props: { type: "checkbox", defaultChecked: true } }, " Legal"] },
+            { of: "label", props: { className: "odd-choice" }, children: [{ of: "input", props: { type: "checkbox" } }, " Rotating"] },
+            { of: "label", props: { className: "odd-choice" }, children: [{ of: "input", props: { type: "checkbox" } }, " Banned"] },
           ],
         },
       ],

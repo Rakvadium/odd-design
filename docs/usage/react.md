@@ -1,8 +1,8 @@
 # Use the React components
 
-`odd-design/react` exports `Button`, the Field parts, the Choice parts, `Badge`, the Alert parts, the Avatar parts, `Separator`, `Skeleton`, the Card parts, `Disclosure`, `Tabs`, `Search`, `Slider`, `Meter`, `Progress`, `Toaster`, `Popover`, `Dialog`, `DialogActions`, `Sheet`, `SheetHeader`, `SheetFooter`, `Menu`, `MenuItem`, `TableWrap`, `Table`, `TableSort`, `TextLink`, `Spinner`, `Combobox`, `ComboboxList`, `ComboboxOption`, `Breadcrumb`, `Kbd`, `Code`, `Pre`, the layout components (`Stack`, `Row`, `Grid`, `GridItem`, `VisuallyHidden`, `SkipLink`, and `Scope`), and the typography components (`Heading`, `Eyebrow`, and `Muted`). Each renders an `odd-` element from typed props. A contract mistake in those props is a TypeScript error that starts with its code, such as `ODD-BUTTON-007`. `Button` lives in `src/react/button.tsx`, the Field parts in `src/react/field.tsx`, the Choice parts in `src/react/choice.tsx`, `Badge` in `src/react/badge.tsx`, the Alert parts in `src/react/alert.tsx`, the Avatar parts in `src/react/avatar.tsx`, `Separator` in `src/react/separator.tsx`, `Skeleton` in `src/react/skeleton.tsx`, the Card parts in `src/react/card.tsx`, `Disclosure` in `src/react/disclosure.tsx`, `Tabs` in `src/react/tabs.tsx`, `Search` in `src/react/search.tsx`, `Slider` in `src/react/slider.tsx`, `Meter` and `Progress` in `src/react/meter.tsx`, `Toaster` in `src/react/toast.tsx`, `Popover` in `src/react/popover.tsx`, `Dialog` and `DialogActions` in `src/react/dialog.tsx`, `Sheet`, `SheetHeader`, and `SheetFooter` in `src/react/sheet.tsx`, `Menu` and `MenuItem` in `src/react/menu.tsx`, `TableWrap`, `Table`, and `TableSort` in `src/react/table.tsx`, `TextLink` in `src/react/text-link.tsx`, `Spinner` in `src/react/spinner.tsx`, `Combobox`, `ComboboxList`, and `ComboboxOption` in `src/react/combobox.tsx`, `Breadcrumb` in `src/react/breadcrumb.tsx`, `Kbd` in `src/react/kbd.tsx`, `Code` and `Pre` in `src/react/code.tsx`, the layout components in `src/react/layout.tsx`, and the typography components in `src/react/typography.tsx`. Codes and fixes are in [Button usage rules](button.md), [Field usage rules](field.md), [Choice usage rules](choice.md), [Badge usage rules](badge.md), [Alert usage rules](alert.md), [Avatar usage rules](avatar.md), [Separator usage rules](separator.md), [Skeleton usage rules](skeleton.md), [Card usage rules](card.md), [Disclosure usage rules](disclosure.md), [Tabs usage rules](tabs.md), [Search usage rules](search.md), [Slider usage rules](slider.md), [Meter usage rules](meter.md), [Toast usage rules](toast.md), [Popover usage rules](popover.md), [Dialog usage rules](dialog.md), [Sheet usage rules](sheet.md), [Menu usage rules](menu.md), [Table usage rules](table.md), [Link usage rules](link.md), [Spinner usage rules](spinner.md), [Combobox usage rules](combobox.md), [Breadcrumb usage rules](breadcrumb.md), [Kbd usage rules](kbd.md), [Code usage rules](code.md), [Base utilities usage rules](base.md), [Grid usage rules](grid.md), and [Typography usage rules](typography.md).
+`odd-design/react` exports `Button`, the field controls (`Input`, `Textarea`, `Select`, `Checkbox`, `Switch`, `RadioGroup`, and `Segmented`), `Badge`, the Alert parts, the Avatar parts, `Separator`, `Skeleton`, the Card parts, `Disclosure`, `Tabs`, `Search`, `Slider`, `Meter`, `Progress`, `Toaster`, `Popover`, `Dialog`, `DialogActions`, `Sheet`, `SheetHeader`, `SheetFooter`, `Menu`, `MenuItem`, `TableWrap`, `Table`, `TableSort`, `TextLink`, `Spinner`, `Combobox`, `ComboboxList`, `ComboboxOption`, `Breadcrumb`, `Kbd`, `Code`, `Pre`, the layout components (`Stack`, `Row`, `Grid`, `GridItem`, `VisuallyHidden`, `SkipLink`, and `Scope`), and the typography components (`Heading`, `Eyebrow`, and `Muted`). Each renders an `odd-` element from typed props. A contract mistake in those props is a TypeScript error that starts with its code, such as `ODD-BUTTON-007`. `Button` lives in `src/react/button.tsx`, the field controls in `src/react/field.tsx`, `Badge` in `src/react/badge.tsx`, the Alert parts in `src/react/alert.tsx`, the Avatar parts in `src/react/avatar.tsx`, `Separator` in `src/react/separator.tsx`, `Skeleton` in `src/react/skeleton.tsx`, the Card parts in `src/react/card.tsx`, `Disclosure` in `src/react/disclosure.tsx`, `Tabs` in `src/react/tabs.tsx`, `Search` in `src/react/search.tsx`, `Slider` in `src/react/slider.tsx`, `Meter` and `Progress` in `src/react/meter.tsx`, `Toaster` in `src/react/toast.tsx`, `Popover` in `src/react/popover.tsx`, `Dialog` and `DialogActions` in `src/react/dialog.tsx`, `Sheet`, `SheetHeader`, and `SheetFooter` in `src/react/sheet.tsx`, `Menu` and `MenuItem` in `src/react/menu.tsx`, `TableWrap`, `Table`, and `TableSort` in `src/react/table.tsx`, `TextLink` in `src/react/text-link.tsx`, `Spinner` in `src/react/spinner.tsx`, `Combobox`, `ComboboxList`, and `ComboboxOption` in `src/react/combobox.tsx`, `Breadcrumb` in `src/react/breadcrumb.tsx`, `Kbd` in `src/react/kbd.tsx`, `Code` and `Pre` in `src/react/code.tsx`, the layout components in `src/react/layout.tsx`, and the typography components in `src/react/typography.tsx`. Codes and fixes are in [Button usage rules](button.md), [Field usage rules](field.md), [Choice usage rules](choice.md), [Badge usage rules](badge.md), [Alert usage rules](alert.md), [Avatar usage rules](avatar.md), [Separator usage rules](separator.md), [Skeleton usage rules](skeleton.md), [Card usage rules](card.md), [Disclosure usage rules](disclosure.md), [Tabs usage rules](tabs.md), [Search usage rules](search.md), [Slider usage rules](slider.md), [Meter usage rules](meter.md), [Toast usage rules](toast.md), [Popover usage rules](popover.md), [Dialog usage rules](dialog.md), [Sheet usage rules](sheet.md), [Menu usage rules](menu.md), [Table usage rules](table.md), [Link usage rules](link.md), [Spinner usage rules](spinner.md), [Combobox usage rules](combobox.md), [Breadcrumb usage rules](breadcrumb.md), [Kbd usage rules](kbd.md), [Code usage rules](code.md), [Base utilities usage rules](base.md), [Grid usage rules](grid.md), and [Typography usage rules](typography.md).
 
-`button.tsx`, `tabs.tsx`, `toast.tsx`, `menu.tsx`, `table.tsx`, and `combobox.tsx` start with `"use client"`, so a React Server Components app can render `Button`, `Tabs`, `Toaster`, `Menu`, `MenuItem`, `TableWrap`, `Table`, `TableSort`, `Combobox`, `ComboboxList`, and `ComboboxOption` from a server component. `Tabs`, `Toaster`, `Menu`, `Table`, and `Combobox` wire themselves in a layout effect. The Field parts, the Choice parts, `Badge`, the Alert parts, the Avatar parts, `Separator`, `Skeleton`, the Card parts, `Disclosure`, `Search`, `Slider`, `Meter`, `Progress`, `Popover`, `Dialog`, `DialogActions`, `Sheet`, `SheetHeader`, `SheetFooter`, `TextLink`, `Spinner`, `Breadcrumb`, `Kbd`, `Code`, and `Pre` hold no state and no handlers, so `field.tsx`, `choice.tsx`, `badge.tsx`, `alert.tsx`, `avatar.tsx`, `separator.tsx`, `skeleton.tsx`, `card.tsx`, `disclosure.tsx`, `search.tsx`, `slider.tsx`, `meter.tsx`, `popover.tsx`, `dialog.tsx`, `sheet.tsx`, `text-link.tsx`, `spinner.tsx`, `breadcrumb.tsx`, `kbd.tsx`, `code.tsx`, `layout.tsx`, and `typography.tsx` have no directive. `SkipLink` renders its anchor through a client leaf that reads the router link from `OddProvider`. A component that holds the disclosure's, the popover's, the dialog's, or the sheet's state puts the directive in its own file.
+`button.tsx`, `field.tsx`, `tabs.tsx`, `toast.tsx`, `menu.tsx`, `table.tsx`, and `combobox.tsx` start with `"use client"`, so a React Server Components app can render `Button`, the field controls, `Tabs`, `Toaster`, `Menu`, `MenuItem`, `TableWrap`, `Table`, `TableSort`, `Combobox`, `ComboboxList`, and `ComboboxOption` from a server component. `Tabs`, `Toaster`, `Menu`, `Table`, and `Combobox` wire themselves in a layout effect. `Badge`, the Alert parts, the Avatar parts, `Separator`, `Skeleton`, the Card parts, `Disclosure`, `Search`, `Slider`, `Meter`, `Progress`, `Popover`, `Dialog`, `DialogActions`, `Sheet`, `SheetHeader`, `SheetFooter`, `TextLink`, `Spinner`, `Breadcrumb`, `Kbd`, `Code`, and `Pre` hold no state and no handlers, so `badge.tsx`, `alert.tsx`, `avatar.tsx`, `separator.tsx`, `skeleton.tsx`, `card.tsx`, `disclosure.tsx`, `search.tsx`, `slider.tsx`, `meter.tsx`, `popover.tsx`, `dialog.tsx`, `sheet.tsx`, `text-link.tsx`, `spinner.tsx`, `breadcrumb.tsx`, `kbd.tsx`, `code.tsx`, `layout.tsx`, and `typography.tsx` have no directive. `SkipLink` renders its anchor through a client leaf that reads the router link from `OddProvider`. A component that holds the disclosure's, the popover's, the dialog's, or the sheet's state puts the directive in its own file.
 
 When `Button`, `MenuItem`, or `TableSort` renders a `button`, it defaults to `type="button"` unless you pass `type`, so it does not submit a form around it. Pass `type="submit"` or `type="reset"` to opt in.
 
@@ -53,95 +53,77 @@ Set `disabled`. The button gets `aria-disabled="true"`, so it stays focusable an
 ## Build a field
 
 ```tsx
-import { Field, Hint, Input, Label } from "odd-design/react";
+import { Input, Select, Textarea } from "odd-design/react";
 
-<Field>
-  <Label htmlFor="email">Email</Label>
-  <Input id="email" type="email" required aria-describedby="email-hint" />
-  <Hint id="email-hint">We never share it.</Hint>
-</Field>;
+<Input label="Email" type="email" required hint="We never share it." error={error} />;
+<Textarea label="Notes" rows={4} />;
+<Select label="Format" defaultValue="standard">
+  <option value="standard">Standard</option>
+  <option value="extended">Extended</option>
+</Select>;
 ```
 
-Each part renders one element with its class, plus the words in `className`. Every other prop goes to the element as is.
+`Input`, `Textarea`, and `Select` each render a whole field. `label` is required.
 
-| Part | Element | Required prop |
-| --- | --- | --- |
-| `Field` | `div.odd-field` | |
-| `Label` | `label.odd-label` | `htmlFor` |
-| `Input` | `input.odd-input` | |
-| `Textarea` | `textarea.odd-textarea` | |
-| `Select` | `select.odd-select` | |
-| `Hint` | `p.odd-hint` | `id` |
-| `FieldError` | `p.odd-error` | `id` |
+| Prop | What the field gets |
+| --- | --- |
+| `label` | `label.odd-label`, paired with the control by `for` and `id` |
+| `hideLabel` | The label stays for a screen reader and gets `odd-visually-hidden` |
+| `hint` | `p.odd-hint`, which the control's `aria-describedby` points at |
+| `error` | `p.odd-error` while it is set, `aria-invalid="true"` on the control, and the error in `aria-describedby` |
+| `id` | The control's id. The component generates one when you leave it out, and derives the label, hint, and error ids from it. |
+| `className` | The outer `div.odd-field` |
+| `ref` and any other prop | The control |
 
-Wire `htmlFor`, `id`, and `aria-describedby` yourself, as in HTML. No checker follows these references, so a dangling `aria-describedby` is not an error. `Input` takes no required `id`, because a search box is named with `aria-label`. `FieldError` is named so it does not shadow the global `Error`.
+The rendered field is `div.odd-field > label.odd-label + input.odd-input + p.odd-hint + p.odd-error`, with `textarea.odd-textarea` or `select.odd-select` in place of the input. An `aria-describedby` you pass is merged ahead of the hint and the error. `Input` takes the text types (`text`, `email`, `password`, `search`, `tel`, `url`, `number`, and the date and time types). A checkbox is `Checkbox`, and a range is `Slider`.
 
 ## Show an error
 
-Render `FieldError` only while the field is invalid. Set `aria-invalid` on the control, and add the error's `id` to its `aria-describedby`.
+Pass `error` while the value is invalid, and leave it unset otherwise. The field renders the message, marks the control invalid, and adds the message to its description. It keeps no hidden error in the tree, because a screen reader still announces a hidden element that `aria-describedby` references.
 
 ```tsx
-import { Field, FieldError, Hint, Input, Label } from "odd-design/react";
-
-<Field>
-  <Label htmlFor="email">Email</Label>
-  <Input
-    id="email"
-    type="email"
-    required
-    aria-invalid={error === undefined ? undefined : "true"}
-    aria-describedby={error === undefined ? "email-hint" : "email-hint email-error"}
-  />
-  <Hint id="email-hint">We never share it.</Hint>
-  {error === undefined ? null : <FieldError id="email-error">{error}</FieldError>}
-</Field>;
+<Input label="Email" type="email" required error={valid ? undefined : "Enter an email address like name@example.com."} />
 ```
 
-Do not keep a hidden error in the tree. A screen reader still announces a hidden element that `aria-describedby` references. `hidden` and `aria-hidden` on `FieldError` are type errors.
+`aria-invalid`, `aria-label`, and `aria-labelledby` on a field control are type errors (`ODD-REACT-001`), because the field writes them.
 
 ## Disable a field with disabled
 
 A field control is the reverse of `Button`. Set `disabled` on `Input`, `Textarea`, or `Select`. The field styles only `:disabled`.
 
 ```tsx
-<Input id="owner" defaultValue="you" disabled />
+<Input label="Owner" defaultValue="you" disabled />
 ```
 
-`aria-disabled` on a field control is a type error. It leaves the control editable, and the control does not look disabled.
+`aria-disabled` on a field control is a type error (`ODD-REACT-001`). It leaves the control editable, and the control does not look disabled.
 
-## Build a checkbox, a switch, or a segmented control
+## Build a checkbox, a switch, or a radio group
 
 ```tsx
-import { Choice, Segmented, Switch } from "odd-design/react";
+import { Checkbox, RadioGroup, Segmented, Switch } from "odd-design/react";
 
-<Choice>
-  <input type="checkbox" defaultChecked /> Weekly digest
-</Choice>;
-<Choice>
-  <Switch type="checkbox" role="switch" /> Compact grid
-</Choice>;
-<Segmented>
-  <legend>View</legend>
-  <label>
-    <input type="radio" name="view" defaultChecked /> Grid
-  </label>
-  <label>
-    <input type="radio" name="view" /> List
-  </label>
-</Segmented>;
+<Checkbox label="Weekly digest" defaultChecked />;
+<Switch label="Compact grid" checked={compact} onChange={toggle} />;
+<RadioGroup
+  label="Visibility"
+  defaultValue="public"
+  options={[
+    { value: "public", label: "Public" },
+    { value: "private", label: "Private" },
+  ]}
+  onValueChange={setVisibility}
+/>;
+<Segmented label="View" defaultValue="grid" options={views} onValueChange={setView} />;
 ```
 
-Each part renders one element with its class, plus the words in `className`. Every other prop goes to the element as is.
+| Component | Element |
+| --- | --- |
+| `Checkbox` | `label.odd-choice > input[type=checkbox]` and the label |
+| `Switch` | `label.odd-choice > input.odd-switch[type=checkbox][role=switch]` and the label |
+| `RadioGroup` | `fieldset.odd-stack > legend.odd-label` and one `label.odd-choice > input[type=radio]` per option |
+| `Segmented` | `fieldset.odd-segmented > legend` and one `label > input[type=radio]` per option |
 
-| Part | Element | Required prop |
-| --- | --- | --- |
-| `Choice` | `label.odd-choice` | |
-| `Switch` | `input.odd-switch` | `type="checkbox"` and `role="switch"` |
-| `Segmented` | `fieldset.odd-segmented` | |
-
-The checkbox or radio inside `Choice`, and the `legend` and `label` children of `Segmented`, are plain elements. `Switch` takes `type` and `role` from you, as the HTML does. A `Switch` outside a `Choice` needs an `aria-label`. Start a choice with `defaultChecked`, or control it with `checked` and `onChange`.
-
-Disable a choice with the native `disabled` attribute on the input, or on `Segmented`. `aria-disabled` on any Choice part is a type error. It leaves the input toggling, and the choice does not look disabled.
+`Checkbox` and `Switch` pass every other prop, and `ref`, to the input. `type`, `role`, and `aria-disabled` on them are type errors (`ODD-REACT-001`). `RadioGroup` and `Segmented` take the legend as `label` and the options as a list, because each option writes a radio that shares the group's `name`. Leave `name` out and the group generates one, so two groups never merge by accident. `defaultValue` takes only a value from `options`. `onValueChange` gets the chosen option's value. `disabled` on the group disables the fieldset, and `disabled` on an option disables its radio. Start a choice with `defaultChecked` or `defaultValue`, or control a checkbox or a switch with `checked` and `onChange`.
 
 ## Show a status with a badge
 
@@ -706,9 +688,10 @@ The type error names the code and the fix. The table lists what each mistake pri
 | `label` without `iconOnly` | "Property 'iconOnly' is missing" |
 | `current` or `newTab` without `href` | "Property 'href' is missing" |
 | `disabled` or `busy` with `href` | "Types of property 'disabled' are incompatible" |
-| `hidden` or `aria-hidden` on `FieldError` | `ODD-FIELD-002` |
-| `aria-disabled` on `Input`, `Textarea`, or `Select` | `ODD-FIELD-003` |
-| `aria-disabled` on `Choice`, `Switch`, or `Segmented` | `ODD-CHOICE-003` |
+| `aria-disabled`, `aria-invalid`, `aria-label`, or `aria-labelledby` on `Input`, `Textarea`, or `Select` | `ODD-REACT-001` |
+| `type`, `role`, or `aria-disabled` on `Checkbox` or `Switch` | `ODD-REACT-001` |
+| A field control with no `label` | "Property 'label' is missing" |
+| A `RadioGroup` or `Segmented` `defaultValue` that is not one of its options | "is not assignable to type" with the option values |
 | A system `data-` attribute the badge does not take, such as `data-variant` | `ODD-BADGE-004` |
 | `role` or `aria-live` on `Alert` | `ODD-ALERT-003` |
 | A system `data-` attribute the alert does not take, such as `data-variant` | `ODD-ALERT-004` |
@@ -769,12 +752,11 @@ The type error names the code and the fix. The table lists what each mistake pri
 | `aria-sort` on `TableSort` | `ODD-TABLE-005` |
 | `Switch` without `type` or `role`, `Slider` without `type`, `Toaster` without `popover` or `aria-label`, `Popover` without `popover`, `Dialog`, `Sheet`, or `Breadcrumb` without `aria-label` or `aria-labelledby`, `Menu` without `popover`, `role`, `aria-label`, or `aria-labelledby`, `MenuItem` without `role`, `AvatarGroup` without `role`, `Skeleton` or `Spinner` without `aria-hidden`, `CardLink` or `TextLink` without `href`, `ComboboxList` without `popover`, `role`, `aria-label`, or `aria-labelledby`, or `ComboboxOption` without `role` | TypeScript's missing property error |
 | A `Switch` `type` other than `checkbox`, a `Switch` `role` other than `switch`, a `Slider` `type` other than `range`, a `Toaster` `popover` other than `manual`, a `Popover` `popover` other than `""` or `auto`, a `Popover` `role` other than `dialog`, a `Dialog` or `Sheet` `role` other than `alertdialog`, a `Dialog` or `Sheet` `closedby` other than `any` or `closerequest`, a `Menu` `popover` other than `""` or `auto`, a `Menu` `role` other than `menu`, a `MenuItem` `role` other than `menuitem`, `menuitemcheckbox`, or `menuitemradio`, a `TableWrap` `role` other than `region`, an `Avatar` or `AvatarGroup` `role` other than `img` or `group`, a `Separator` `role` other than `separator`, a `Skeleton` or `Spinner` `aria-hidden` other than `"true"`, a `ComboboxList` `popover` other than `manual`, a `ComboboxList` `role` other than `listbox`, a `ComboboxList` `data-filter` other than `manual`, or a `ComboboxOption` `role` other than `option` | The allowed value |
-| `Label` without `htmlFor`, or `Hint` or `FieldError` without `id` | TypeScript's missing property error |
 | A `variant`, `size`, `aria-current`, `tone`, `aria-orientation`, `shape`, or `side` value outside the contract | The allowed values |
 
 TypeScript shortens a long type in an error. Set `noErrorTruncation` in `tsconfig.json` to see the whole message.
 
-Some rules are not type errors. `Button` picks the element from `href`, so you cannot write an anchor without `href` (`ODD-BUTTON-009`) or a button with `href` (`ODD-BUTTON-010`). Those two codes apply to a raw `a` or `button` with the `odd-button` class. Each Field and Choice part, `Badge`, each Alert part, each Avatar part, `Separator`, `Skeleton`, each Card part, `Disclosure`, `Tabs`, `Search`, `Slider`, `Meter`, `Progress`, `Toaster`, `Popover`, `Dialog`, `DialogActions`, each Sheet part, `Menu`, `MenuItem`, `TableWrap`, `Table`, `TableSort`, `TextLink`, `Spinner`, `Combobox`, `ComboboxList`, `ComboboxOption`, `Breadcrumb`, `Kbd`, `Code`, and `Pre` picks its own element too, so `ODD-FIELD-001`, `ODD-CHOICE-001`, `ODD-BADGE-001`, `ODD-ALERT-001`, `ODD-AVATAR-001`, `ODD-SEPARATOR-001`, `ODD-SKELETON-001`, `ODD-CARD-001`, `ODD-DISCLOSURE-001`, `ODD-TABS-001`, `ODD-SEARCH-001`, `ODD-SLIDER-001`, `ODD-METER-001`, `ODD-TOAST-001`, `ODD-POPOVER-001`, `ODD-DIALOG-001`, `ODD-SHEET-001`, `ODD-MENU-001`, `ODD-TABLE-001`, `ODD-LINK-001`, `ODD-SPINNER-001`, `ODD-COMBOBOX-001`, `ODD-BREADCRUMB-001`, `ODD-KBD-001`, and `ODD-CODE-001` apply only to raw markup. the links and buttons in a card (`ODD-CARD-003`), the summary of a disclosure (`ODD-DISCLOSURE-002`), the tablist of a tab set (`ODD-TABS-002`), the tabs in a tab set (`ODD-TABS-004`), the input and the icon of a search (`ODD-SEARCH-002` and `ODD-SEARCH-003`), a `target` without `rel` on a link (`ODD-LINK-007`), the input and the list of a combobox (`ODD-COMBOBOX-002` and `ODD-COMBOBOX-003`), the list of a breadcrumb (`ODD-BREADCRUMB-003`), and a misspelled `data-` name are not type errors either. The [runtime checker](runtime.md) reports each of these.
+Some rules are not type errors. `Button` picks the element from `href`, so you cannot write an anchor without `href` (`ODD-BUTTON-009`) or a button with `href` (`ODD-BUTTON-010`). Those two codes apply to a raw `a` or `button` with the `odd-button` class. Each field control, `Badge`, each Alert part, each Avatar part, `Separator`, `Skeleton`, each Card part, `Disclosure`, `Tabs`, `Search`, `Slider`, `Meter`, `Progress`, `Toaster`, `Popover`, `Dialog`, `DialogActions`, each Sheet part, `Menu`, `MenuItem`, `TableWrap`, `Table`, `TableSort`, `TextLink`, `Spinner`, `Combobox`, `ComboboxList`, `ComboboxOption`, `Breadcrumb`, `Kbd`, `Code`, and `Pre` picks its own element too, so `ODD-FIELD-001`, `ODD-CHOICE-001`, `ODD-BADGE-001`, `ODD-ALERT-001`, `ODD-AVATAR-001`, `ODD-SEPARATOR-001`, `ODD-SKELETON-001`, `ODD-CARD-001`, `ODD-DISCLOSURE-001`, `ODD-TABS-001`, `ODD-SEARCH-001`, `ODD-SLIDER-001`, `ODD-METER-001`, `ODD-TOAST-001`, `ODD-POPOVER-001`, `ODD-DIALOG-001`, `ODD-SHEET-001`, `ODD-MENU-001`, `ODD-TABLE-001`, `ODD-LINK-001`, `ODD-SPINNER-001`, `ODD-COMBOBOX-001`, `ODD-BREADCRUMB-001`, `ODD-KBD-001`, and `ODD-CODE-001` apply only to raw markup. the links and buttons in a card (`ODD-CARD-003`), the summary of a disclosure (`ODD-DISCLOSURE-002`), the tablist of a tab set (`ODD-TABS-002`), the tabs in a tab set (`ODD-TABS-004`), the input and the icon of a search (`ODD-SEARCH-002` and `ODD-SEARCH-003`), a `target` without `rel` on a link (`ODD-LINK-007`), the input and the list of a combobox (`ODD-COMBOBOX-002` and `ODD-COMBOBOX-003`), the list of a breadcrumb (`ODD-BREADCRUMB-003`), and a misspelled `data-` name are not type errors either. The [runtime checker](runtime.md) reports each of these.
 
 ## Open a dialog or a popover with a command
 
@@ -783,12 +765,12 @@ Pass `command` and `commandfor` in lowercase. `@types/react` does not declare th
 `Popover` renders a `div` with the class `odd-popover`. Give it an `id` and `popover="auto"`, and open it from a `Button` whose `commandfor` names that `id`.
 
 ```tsx
-import { Button, Choice, Popover } from "odd-design/react";
+import { Button, Checkbox, Popover } from "odd-design/react";
 
 <Button commandfor="filters" command="toggle-popover">Filters</Button>
 <Popover id="filters" popover="auto" role="dialog" aria-labelledby="filters-title">
   <p className="odd-eyebrow" id="filters-title">Filter decks</p>
-  <Choice><input type="checkbox" defaultChecked /> Legal only</Choice>
+  <Checkbox label="Legal only" defaultChecked />
   <Button size="sm" commandfor="filters" command="hide-popover">Apply</Button>
 </Popover>;
 ```

@@ -41,6 +41,16 @@ for (const storybook of Object.keys(STORYBOOKS) as Storybook[]) {
       let incomplete = 0;
 
       const check = async (story: string, state: string) => {
+        // A focused interest invoker opens its tooltip after the show delay. Let it open and finish fading
+        // in, so axe reads the colors a reader sees rather than a frame of the transition.
+        await page.evaluate(async () => {
+          const invoker = document.activeElement;
+          const target = invoker?.matches("[interestfor]:focus-visible") ? document.getElementById(invoker.getAttribute("interestfor") ?? "") : null;
+          if (target === null) return;
+          const deadline = performance.now() + 1500;
+          while (!target.matches(":popover-open") && performance.now() < deadline) await new Promise((resolve) => setTimeout(resolve, 50));
+          await Promise.all(target.getAnimations().map((animation) => animation.finished));
+        });
         const r = await runAxe(page);
         runs++;
         incomplete += r.incomplete;

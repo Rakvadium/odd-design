@@ -1,4 +1,4 @@
-import { useEffect, useId, useLayoutEffect, type ComponentPropsWithRef, type JSX, type RefObject } from "react";
+import { useId, useLayoutEffect, type ComponentPropsWithRef, type JSX, type RefObject } from "react";
 import type { APPEARANCE_AXES, HEADLESS_ALLOWLIST, VOCABULARY } from "../js/usage/contract.ts";
 import { message, type MESSAGES, type UsageCode } from "../js/usage/format.ts";
 
@@ -79,7 +79,10 @@ export function useEnhancer<E extends Element>(ref: RefObject<E | null>, enhance
   useLayoutEffect(() => enhance(ref.current!)());
 }
 
-/** Installs a platform fallback on the document while the component is mounted. Fallbacks are refcounted per root. */
+/**
+ * Installs a platform fallback on the document while the component is mounted. Fallbacks are refcounted
+ * per document. A layout effect installs it before the first paint, so no hover can land before it listens.
+ */
 export function useFallback(fallback: () => () => void): void {
-  useEffect(() => fallback(), [fallback]);
+  useLayoutEffect(() => fallback(), [fallback]);
 }

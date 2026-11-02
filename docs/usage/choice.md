@@ -2,15 +2,27 @@
 
 These codes apply to `odd-choice`, `odd-switch`, and `odd-segmented`. Shared codes are in [General usage rules](general.md).
 
+In React, render `Checkbox`, `Switch`, `RadioGroup`, or `Segmented` from `odd-design/react`. Each one writes its own input `type`, `role`, and the group's shared `name`. [Build a checkbox, a switch, or a radio group](react.md#build-a-checkbox-a-switch-or-a-radio-group) covers the props.
+
+```tsx
+<Checkbox label="Weekly digest" />
+<Switch label="Compact grid" />
+<Segmented label="View" name="view" defaultValue="grid" options={[{ value: "grid", label: "Grid" }, { value: "list", label: "List" }]} />
+```
+
+The components compile to this HTML:
+
 ```html
-<label class="odd-choice"><input type="checkbox"> Weekly digest</label>
-<label class="odd-choice"><input type="checkbox" role="switch" class="odd-switch"> Compact grid</label>
+<label class="odd-choice"><input type="checkbox">Weekly digest</label>
+<label class="odd-choice"><input type="checkbox" role="switch" class="odd-switch">Compact grid</label>
 <fieldset class="odd-segmented">
   <legend>View</legend>
-  <label><input type="radio" name="view" checked> Grid</label>
-  <label><input type="radio" name="view"> List</label>
+  <label><input type="radio" name="view" value="grid" checked>Grid</label>
+  <label><input type="radio" name="view" value="list">List</label>
 </fieldset>
 ```
+
+A `RadioGroup` renders `fieldset.odd-stack > legend.odd-label` and one `label.odd-choice` per option. `choice.css` resets the border, padding, and margin of a fieldset whose direct children are `odd-choice` labels, so the group draws no box.
 
 The checkbox, radio, and switch are native inputs, so keyboard and forms work with no script. The other two parts are the `odd-choice` label and the `odd-segmented` fieldset, which wrap them. The checker reads one element at a time. It does not check the checkbox or radio inside `odd-choice`, or the `legend` and `label` children of `odd-segmented`. Write them as above.
 

@@ -21,31 +21,34 @@ export const Slider = {
       props: { className: "odd-stack", style: { "--gap": "var(--space-5)", maxInlineSize: "26rem" } },
       children: [
         {
-          of: "Field",
+          of: "div",
+  props: { className: "odd-field" },
           children: [
             {
               of: "div",
               props: { className: "odd-row", style: { justifyContent: "space-between" } },
               children: [
-                { of: "Label", props: { htmlFor: "copies" }, children: ["Copies per card"] },
+                { of: "label", props: { className: "odd-label", htmlFor: "copies" }, children: ["Copies per card"] },
                 { of: "output", props: { className: "odd-stat-value", id: "copies-value", htmlFor: "copies" }, children: ["3 of 4"] },
               ],
             },
             { of: "Slider", props: { type: "range", id: "copies", min: 1, max: 4, defaultValue: 3, "aria-describedby": "copies-hint" } },
-            { of: "Hint", props: { id: "copies-hint" }, children: ["Most formats allow up to 4."] },
+            { of: "p", props: { className: "odd-hint", id: "copies-hint" }, children: ["Most formats allow up to 4."] },
           ],
         },
         {
-          of: "Field",
+          of: "div",
+  props: { className: "odd-field" },
           children: [
-            { of: "Label", props: { htmlFor: "card-size" }, children: ["Card size"] },
+            { of: "label", props: { className: "odd-label", htmlFor: "card-size" }, children: ["Card size"] },
             { of: "Slider", props: { type: "range", id: "card-size", min: 0, max: 100, defaultValue: 65 } },
           ],
         },
         {
-          of: "Field",
+          of: "div",
+  props: { className: "odd-field" },
           children: [
-            { of: "Label", props: { htmlFor: "locked" }, children: ["Hand size (locked by format)"] },
+            { of: "label", props: { className: "odd-label", htmlFor: "locked" }, children: ["Hand size (locked by format)"] },
             { of: "Slider", props: { type: "range", id: "locked", min: 5, max: 9, defaultValue: 7, disabled: true } },
           ],
         },

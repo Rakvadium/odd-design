@@ -13,7 +13,7 @@ import {
   Card,
   CardFooter,
   CardLink,
-  Choice,
+  Checkbox,
   Code,
   Combobox,
   ComboboxList,
@@ -22,15 +22,11 @@ import {
   DialogActions,
   Disclosure,
   Eyebrow,
-  Field,
-  FieldError,
   Grid,
   GridItem,
   Heading,
-  Hint,
   Input,
   Kbd,
-  Label,
   Menu,
   MenuItem,
   Meter,
@@ -38,6 +34,7 @@ import {
   Popover,
   Pre,
   Progress,
+  RadioGroup,
   Row,
   Scope,
   Search,
@@ -335,28 +332,17 @@ const FIXTURES: { readonly [K in ExportName]: readonly [Fixture, ...Fixture[]] }
       ),
     },
   ],
-  Choice: [
+  Checkbox: [
     {
-      name: "a checkbox, a switch, and a segmented control",
-      uses: ["Switch", "Segmented"],
+      name: "checked, disabled, and with className",
       element: (
         <>
-          <Choice>
-            <input type="checkbox" defaultChecked /> Weekly digest
-          </Choice>
-          <Choice className="wide">
-            <Switch type="checkbox" role="switch" disabled /> Compact grid
-          </Choice>
-          <Segmented>
-            <legend>View</legend>
-            <label>
-              <input type="radio" name="view" defaultChecked /> Grid
-            </label>
-          </Segmented>
+          <Checkbox label="Weekly digest" defaultChecked name="digest" />
+          <Checkbox label="Partner offers" disabled className="wide" />
         </>
       ),
       markup:
-        '<label class="odd-choice"><input type="checkbox" checked=""/> Weekly digest</label><label class="odd-choice wide"><input type="checkbox" role="switch" disabled="" class="odd-switch"/> Compact grid</label><fieldset class="odd-segmented"><legend>View</legend><label><input type="radio" name="view" checked=""/> Grid</label></fieldset>',
+        '<label class="odd-choice"><input type="checkbox" name="digest" checked=""/>Weekly digest</label><label class="odd-choice wide"><input disabled="" type="checkbox"/>Partner offers</label>',
     },
   ],
   Code: [
@@ -380,14 +366,14 @@ const FIXTURES: { readonly [K in ExportName]: readonly [Fixture, ...Fixture[]] }
   Combobox: [
     {
       name: "in a field, before enhancement",
-      uses: ["Field", "Label", "Input", "ComboboxList", "ComboboxOption"],
+      uses: ["Input", "ComboboxList", "ComboboxOption"],
       element: (
-        <Field>
-          <Label htmlFor="city" id="city-label">
+        <div className="odd-field">
+          <label className="odd-label" htmlFor="city" id="city-label">
             City
-          </Label>
+          </label>
           <Combobox>
-            <Input id="city" name="city" role="combobox" aria-controls="city-list" aria-expanded="false" aria-autocomplete="list" />
+            <input className="odd-input" id="city" name="city" role="combobox" aria-controls="city-list" aria-expanded="false" aria-autocomplete="list" />
             <ComboboxList id="city-list" popover="manual" role="listbox" aria-labelledby="city-label">
               <ComboboxOption role="option">Amsterdam</ComboboxOption>
               <ComboboxOption role="option" aria-disabled="true">
@@ -396,10 +382,10 @@ const FIXTURES: { readonly [K in ExportName]: readonly [Fixture, ...Fixture[]] }
               <ComboboxOption role="option">Berlin</ComboboxOption>
             </ComboboxList>
           </Combobox>
-        </Field>
+        </div>
       ),
       markup:
-        '<div class="odd-field"><label for="city" id="city-label" class="odd-label">City</label><div class="odd-combobox"><input id="city" role="combobox" aria-controls="city-list" aria-expanded="false" aria-autocomplete="list" class="odd-input" name="city"/><div id="city-list" popover="manual" role="listbox" aria-labelledby="city-label" class="odd-combobox-list"><div role="option" class="odd-combobox-option">Amsterdam</div><div role="option" aria-disabled="true" class="odd-combobox-option">Atlantis</div><div role="option" class="odd-combobox-option">Berlin</div></div></div></div>',
+        '<div class="odd-field"><label class="odd-label" for="city" id="city-label">City</label><div class="odd-combobox"><input class="odd-input" id="city" role="combobox" aria-controls="city-list" aria-expanded="false" aria-autocomplete="list" name="city"/><div id="city-list" popover="manual" role="listbox" aria-labelledby="city-label" class="odd-combobox-list"><div role="option" class="odd-combobox-option">Amsterdam</div><div role="option" aria-disabled="true" class="odd-combobox-option">Atlantis</div><div role="option" class="odd-combobox-option">Berlin</div></div></div></div>',
     },
   ],
   ComboboxList: [
@@ -480,35 +466,6 @@ const FIXTURES: { readonly [K in ExportName]: readonly [Fixture, ...Fixture[]] }
         '<div class="odd-stack"><p class="odd-eyebrow">Season 4</p><span class="odd-eyebrow wide" data-tone="primary">New</span><p class="odd-eyebrow" data-tone="foreground">Pinned</p><h2 class="odd-heading">Your collection</h2></div>',
     },
   ],
-  Field: [
-    {
-      name: "with a hint and an error",
-      uses: ["Label", "Input", "Hint", "FieldError"],
-      element: (
-        <Field>
-          <Label htmlFor="email">Email</Label>
-          <Input id="email" type="email" required aria-invalid="true" aria-describedby="email-hint email-error" />
-          <Hint id="email-hint">We never share it.</Hint>
-          <FieldError id="email-error">Enter an email address.</FieldError>
-        </Field>
-      ),
-      markup:
-        '<div class="odd-field"><label for="email" class="odd-label">Email</label><input id="email" type="email" required="" aria-invalid="true" aria-describedby="email-hint email-error" class="odd-input"/><p id="email-hint" class="odd-hint">We never share it.</p><p id="email-error" class="odd-error">Enter an email address.</p></div>',
-    },
-  ],
-  FieldError: [
-    {
-      name: "described by its input",
-      uses: ["Field", "Label", "Input"],
-      element: (
-        <Field>
-          <Label htmlFor="deck-title">Title</Label>
-          <Input id="deck-title" required aria-invalid="true" aria-describedby="deck-title-error" />
-          <FieldError id="deck-title-error">Enter a title.</FieldError>
-        </Field>
-      ),
-    },
-  ],
   Grid: [
     {
       name: "a main grid of spans",
@@ -556,20 +513,29 @@ const FIXTURES: { readonly [K in ExportName]: readonly [Fixture, ...Fixture[]] }
       markup: '<h1 class="odd-heading" data-size="hero">Odd design</h1><h3 id="recent" class="odd-heading wide">Recent decks</h3>',
     },
   ],
-  Hint: [
+  Input: [
     {
-      name: "described by its input",
-      uses: ["Field", "Label", "Input"],
+      name: "a hint and an error, merged with the caller's description",
+      uses: ["Stack"],
       element: (
-        <Field>
-          <Label htmlFor="display-name">Display name</Label>
-          <Input id="display-name" aria-describedby="display-name-hint" />
-          <Hint id="display-name-hint">Shown on your profile.</Hint>
-        </Field>
+        <Stack>
+          <Input id="email" label="Email" type="email" required hint="We never share it." error="Enter an email address." aria-describedby="email-policy" />
+          <p id="email-policy">Read the privacy policy.</p>
+        </Stack>
       ),
+      markup:
+        '<div class="odd-stack"><div class="odd-field"><label class="odd-label" for="email" id="email-label">Email</label><input type="email" required="" aria-describedby="email-policy email-hint email-error" id="email" aria-invalid="true" class="odd-input"/><p class="odd-hint" id="email-hint">We never share it.</p><p class="odd-error" id="email-error">Enter an email address.</p></div><p id="email-policy">Read the privacy policy.</p></div>',
+    },
+    {
+      name: "a hidden label, className on the field, and a generated id",
+      element: <Input label="Deck name" hideLabel defaultValue="Ember Aggro" className="wide" />,
+    },
+    {
+      name: "valid, with no hint",
+      element: <Input id="title" label="Title" />,
+      markup: '<div class="odd-field"><label class="odd-label" for="title" id="title-label">Title</label><input id="title" class="odd-input"/></div>',
     },
   ],
-  Input: [{ name: "named, with a starting value", element: <Input aria-label="Deck name" defaultValue="Ember Aggro" /> }],
   Kbd: [
     {
       name: "keys in a sentence",
@@ -579,18 +545,6 @@ const FIXTURES: { readonly [K in ExportName]: readonly [Fixture, ...Fixture[]] }
         </p>
       ),
       markup: '<p>Press <kbd class="odd-kbd">Ctrl</kbd> <kbd class="odd-kbd wide">K</kbd> to search.</p>',
-    },
-  ],
-  Label: [
-    {
-      name: "for its input",
-      uses: ["Field", "Input"],
-      element: (
-        <Field>
-          <Label htmlFor="deck-format">Format</Label>
-          <Input id="deck-format" defaultValue="Standard" />
-        </Field>
-      ),
     },
   ],
   Menu: [
@@ -675,6 +629,38 @@ const FIXTURES: { readonly [K in ExportName]: readonly [Fixture, ...Fixture[]] }
       markup: '<progress id="sync" aria-label="Syncing decks" class="odd-progress"></progress>',
     },
   ],
+  RadioGroup: [
+    {
+      name: "a named group with a starting value and a disabled option",
+      element: (
+        <RadioGroup
+          label="Visibility"
+          name="visibility"
+          defaultValue="unlisted"
+          options={[
+            { value: "public", label: "Public" },
+            { value: "unlisted", label: "Unlisted" },
+            { value: "private", label: "Private", disabled: true },
+          ]}
+        />
+      ),
+      markup:
+        '<fieldset class="odd-stack"><legend class="odd-label">Visibility</legend><label class="odd-choice"><input type="radio" name="visibility" value="public"/>Public</label><label class="odd-choice"><input type="radio" name="visibility" checked="" value="unlisted"/>Unlisted</label><label class="odd-choice"><input type="radio" disabled="" name="visibility" value="private"/>Private</label></fieldset>',
+    },
+    {
+      name: "a generated name, disabled as a whole",
+      element: (
+        <RadioGroup
+          label="Sort"
+          disabled
+          options={[
+            { value: "newest", label: "Newest" },
+            { value: "oldest", label: "Oldest" },
+          ]}
+        />
+      ),
+    },
+  ],
   Row: [
     {
       name: "a named navigation row",
@@ -709,36 +695,48 @@ const FIXTURES: { readonly [K in ExportName]: readonly [Fixture, ...Fixture[]] }
             <VisuallyHidden>Search cards</VisuallyHidden>
           </label>
           <svg aria-hidden="true" viewBox="0 0 24 24" />
-          <Input type="search" id="card-search" placeholder="Search cards" />
+          <input className="odd-input" type="search" id="card-search" placeholder="Search cards" />
         </Search>
       ),
       markup:
-        '<search class="odd-search deck-search"><label for="card-search"><span class="odd-visually-hidden">Search cards</span></label><svg aria-hidden="true" viewBox="0 0 24 24"></svg><input type="search" id="card-search" placeholder="Search cards" class="odd-input"/></search>',
+        '<search class="odd-search deck-search"><label for="card-search"><span class="odd-visually-hidden">Search cards</span></label><svg aria-hidden="true" viewBox="0 0 24 24"></svg><input class="odd-input" type="search" id="card-search" placeholder="Search cards"/></search>',
     },
   ],
   Segmented: [
     {
-      name: "two radios under a legend",
+      name: "two options under a legend",
       element: (
-        <Segmented>
-          <legend>Sort</legend>
-          <label>
-            <input type="radio" name="sort" defaultChecked /> Newest
-          </label>
-          <label>
-            <input type="radio" name="sort" /> Oldest
-          </label>
-        </Segmented>
+        <Segmented
+          label="View"
+          name="view"
+          defaultValue="grid"
+          className="compact"
+          options={[
+            { value: "grid", label: "Grid" },
+            { value: "list", label: "List" },
+          ]}
+        />
       ),
+      markup:
+        '<fieldset class="odd-segmented compact"><legend>View</legend><label><input type="radio" name="view" checked="" value="grid"/>Grid</label><label><input type="radio" name="view" value="list"/>List</label></fieldset>',
     },
   ],
   Select: [
     {
-      name: "named, with a starting value",
+      name: "a starting value and an error",
       element: (
-        <Select aria-label="Format" defaultValue="Extended">
+        <Select id="format" label="Format" defaultValue="Extended" error="Pick a format this event allows.">
           <option>Standard</option>
           <option>Extended</option>
+        </Select>
+      ),
+      markup:
+        '<div class="odd-field"><label class="odd-label" for="format" id="format-label">Format</label><select id="format" aria-describedby="format-error" aria-invalid="true" class="odd-select"><option>Standard</option><option selected="">Extended</option></select><p class="odd-error" id="format-error">Pick a format this event allows.</p></div>',
+    },    {
+      name: "a hidden label and a hint",
+      element: (
+        <Select label="Sort by" hideLabel hint="Applies to every list.">
+          <option>Newest</option>
         </Select>
       ),
     },
@@ -881,13 +879,9 @@ const FIXTURES: { readonly [K in ExportName]: readonly [Fixture, ...Fixture[]] }
   ],
   Switch: [
     {
-      name: "inside a choice",
-      uses: ["Choice"],
-      element: (
-        <Choice>
-          <Switch type="checkbox" role="switch" defaultChecked /> Show card art
-        </Choice>
-      ),
+      name: "on by default",
+      element: <Switch label="Show card art" defaultChecked />,
+      markup: '<label class="odd-choice"><input type="checkbox" role="switch" class="odd-switch" checked=""/>Show card art</label>',
     },
   ],
   Table: [
@@ -991,17 +985,13 @@ const FIXTURES: { readonly [K in ExportName]: readonly [Fixture, ...Fixture[]] }
   ],
   Textarea: [
     {
-      name: "disabled, beside a select with className",
-      uses: ["Select"],
-      element: (
-        <>
-          <Textarea id="notes" disabled />
-          <Select id="format" className="wide">
-            <option>Standard</option>
-          </Select>
-        </>
-      ),
-      markup: '<textarea id="notes" disabled="" class="odd-textarea"></textarea><select id="format" class="odd-select wide"><option>Standard</option></select>',
+      name: "disabled, with a hint",
+      element: <Textarea id="notes" label="Notes" hint="Only you see these." disabled />,
+      markup:
+        '<div class="odd-field"><label class="odd-label" for="notes" id="notes-label">Notes</label><textarea disabled="" id="notes" aria-describedby="notes-hint" class="odd-textarea"></textarea><p class="odd-hint" id="notes-hint">Only you see these.</p></div>',
+    },    {
+      name: "a hidden label and an error",
+      element: <Textarea label="Deck description" hideLabel error="Keep it under 200 characters." />,
     },
   ],
   Toaster: [

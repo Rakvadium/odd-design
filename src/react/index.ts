@@ -4,7 +4,6 @@ export * from "./badge.tsx";
 export * from "./breadcrumb.tsx";
 export * from "./button.tsx";
 export * from "./card.tsx";
-export * from "./choice.tsx";
 export * from "./code.tsx";
 export * from "./combobox.tsx";
 export * from "./dialog.tsx";

@@ -395,16 +395,6 @@ export const WRAPPERS = {
     props: { variant: "data-variant", size: "data-size", iconOnly: "data-icon-only" },
     element: { attribute: "href", present: "a", absent: "button" },
   },
-  Field: { source: "odd-design/react", className: "odd-field", props: {}, element: "div" },
-  Label: { source: "odd-design/react", className: "odd-label", props: {}, element: "label" },
-  Input: { source: "odd-design/react", className: "odd-input", props: {}, element: "input" },
-  Textarea: { source: "odd-design/react", className: "odd-textarea", props: {}, element: "textarea" },
-  Select: { source: "odd-design/react", className: "odd-select", props: {}, element: "select" },
-  Hint: { source: "odd-design/react", className: "odd-hint", props: {}, element: "p" },
-  FieldError: { source: "odd-design/react", className: "odd-error", props: {}, element: "p" },
-  Choice: { source: "odd-design/react", className: "odd-choice", props: {}, element: "label" },
-  Switch: { source: "odd-design/react", className: "odd-switch", props: {}, element: "input" },
-  Segmented: { source: "odd-design/react", className: "odd-segmented", props: {}, element: "fieldset" },
   Badge: { source: "odd-design/react", className: "odd-badge", props: { tone: "data-tone", solid: "data-solid" }, element: "span" },
   Alert: { source: "odd-design/react", className: "odd-alert", props: { tone: "data-tone" }, element: "div" },
   AlertTitle: { source: "odd-design/react", className: "odd-alert-title", props: {}, element: "p" },
@@ -456,7 +446,7 @@ export type ExportName =
   | "Card"
   | "CardFooter"
   | "CardLink"
-  | "Choice"
+  | "Checkbox"
   | "Code"
   | "Combobox"
   | "ComboboxList"
@@ -465,15 +455,11 @@ export type ExportName =
   | "DialogActions"
   | "Disclosure"
   | "Eyebrow"
-  | "Field"
-  | "FieldError"
   | "Grid"
   | "GridItem"
   | "Heading"
-  | "Hint"
   | "Input"
   | "Kbd"
-  | "Label"
   | "Menu"
   | "MenuItem"
   | "Meter"
@@ -481,6 +467,7 @@ export type ExportName =
   | "Popover"
   | "Pre"
   | "Progress"
+  | "RadioGroup"
   | "Row"
   | "Scope"
   | "Search"
@@ -525,7 +512,7 @@ export const CLASSES = {
   "odd-card-footer": { by: ["CardFooter"] },
   "odd-card-link": { by: ["CardLink"] },
   "odd-card-title": { by: [] },
-  "odd-choice": { by: ["Choice"] },
+  "odd-choice": { by: ["Checkbox", "Switch", "RadioGroup"] },
   "odd-code": { by: ["Code"] },
   "odd-combobox": { by: ["Combobox"] },
   "odd-combobox-list": { by: ["ComboboxList"] },
@@ -535,16 +522,16 @@ export const CLASSES = {
   "odd-dialog-body": { by: [] },
   "odd-dialog-title": { by: [] },
   "odd-disclosure": { by: ["Disclosure"] },
-  "odd-error": { by: ["FieldError"] },
+  "odd-error": { by: ["Input", "Textarea", "Select"] },
   "odd-eyebrow": { by: ["Eyebrow"] },
-  "odd-field": { by: ["Field"] },
+  "odd-field": { by: ["Input", "Textarea", "Select"] },
   "odd-grid": { by: ["Grid"] },
   "odd-heading": { by: ["Heading"] },
-  "odd-hint": { by: ["Hint"] },
+  "odd-hint": { by: ["Input", "Textarea", "Select"] },
   "odd-hover-card": { by: [] },
   "odd-input": { by: ["Input"] },
   "odd-kbd": { by: ["Kbd"] },
-  "odd-label": { by: ["Label"] },
+  "odd-label": { by: ["Input", "Textarea", "Select", "RadioGroup"] },
   "odd-link": { by: ["TextLink"] },
   "odd-log": { by: [] },
   "odd-log-line": { by: [] },
@@ -576,7 +563,7 @@ export const CLASSES = {
   "odd-skip-link": { by: ["SkipLink"] },
   "odd-slider": { by: ["Slider"] },
   "odd-spinner": { by: ["Spinner"] },
-  "odd-stack": { by: ["Stack"] },
+  "odd-stack": { by: ["Stack", "RadioGroup"] },
   "odd-stat-value": { by: [] },
   "odd-switch": { by: ["Switch"] },
   "odd-table": { by: ["Table"] },
@@ -590,7 +577,7 @@ export const CLASSES = {
   "odd-toast-title": { by: [], via: "toast() from odd-design/enhance" },
   "odd-toaster": { by: ["Toaster"] },
   "odd-tooltip": { by: ["Button"] },
-  "odd-visually-hidden": { by: ["VisuallyHidden", "Button"] },
+  "odd-visually-hidden": { by: ["VisuallyHidden", "Button", "Input", "Textarea", "Select"] },
 } as const satisfies Record<`odd-${string}`, Owner>;
 
 export type ClassName = keyof typeof CLASSES;

@@ -38,21 +38,23 @@ type Box = {
   id: string;
   label: string;
   options: readonly Node<"ComboboxOption">[];
-  input?: Partial<Node<"Input">["props"]>;
+  input?: Partial<Node<"input">["props"]>;
   list?: Partial<Node<"ComboboxList">["props"]>;
   error?: string;
 };
 
-const field = ({ id, label, options, input = {}, list = {}, error }: Box): Node<"Field"> => ({
-  of: "Field",
+const field = ({ id, label, options, input = {}, list = {}, error }: Box): Node<"div"> => ({
+  of: "div",
+  props: { className: "odd-field" },
   children: [
-    { of: "Label", props: { htmlFor: id, id: `${id}-label` }, children: [label] },
+    { of: "label", props: { className: "odd-label", htmlFor: id, id: `${id}-label` }, children: [label] },
     {
       of: "Combobox",
       children: [
         {
-          of: "Input",
+          of: "input",
           props: {
+            className: "odd-input",
             id,
             role: "combobox",
             "aria-controls": `${id}-list`,
@@ -65,11 +67,11 @@ const field = ({ id, label, options, input = {}, list = {}, error }: Box): Node<
         { of: "ComboboxList", props: { id: `${id}-list`, popover: "manual", role: "listbox", "aria-labelledby": `${id}-label`, ...list }, children: options },
       ],
     },
-    ...(error === undefined ? [] : [{ of: "FieldError", props: { id: `${id}-error` }, children: [error] } satisfies Node<"FieldError">]),
+    ...(error === undefined ? [] : [{ of: "p", props: { className: "odd-error", id: `${id}-error` }, children: [error] } satisfies Node<"p">]),
   ],
 });
 
-const parts = (id: string): Node<"Field"> =>
+const parts = (id: string): Node<"div"> =>
   field({ id, label: "City", options: [option("Amsterdam"), option("Atlantis", { "aria-disabled": "true" }), option("Berlin")] });
 
 export const Playground = mirrored<Args>({
