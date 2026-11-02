@@ -71,7 +71,7 @@ test("messages include the code, Fix:, a docs heading in the named file, and no 
   const missingFix = USAGE_CODES.filter((code) => !message(code).includes("Fix:"));
   const missingDocs = USAGE_CODES.flatMap((code) => {
     const text = message(code);
-    const match = /docs\/usage\/([a-z]+\.md)#([a-z0-9-]+)/.exec(text);
+    const match = /docs\/usage\/([a-z-]+\.md)#([a-z0-9-]+)/.exec(text);
     if (match === null) return [code];
     const file = match[1]!;
     const anchor = match[2]!;

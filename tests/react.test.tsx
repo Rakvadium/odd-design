@@ -5,7 +5,12 @@ import { createRoot, type Root } from "react-dom/client";
 import { renderToStaticMarkup } from "react-dom/server";
 import { closedByFallback, enhance, enhanceTabs, interestForFallback, toast } from "../src/js/enhance.ts";
 import { Button } from "../src/react/button.tsx";
-import { Card } from "../src/react/card.tsx";
+import { Breadcrumb } from "../src/react/breadcrumb.tsx";
+import { Card, CardLink } from "../src/react/card.tsx";
+import type { AnchorProps } from "../src/react/context.ts";
+import { HoverCard, HoverCardLink } from "../src/react/hover-card.tsx";
+import { OddProvider } from "../src/react/provider.tsx";
+import { TextLink } from "../src/react/text-link.tsx";
 import { Combobox, ComboboxOption } from "../src/react/combobox.tsx";
 import { AlertDialog, Dialog } from "../src/react/dialog.tsx";
 import { RadioGroup } from "../src/react/field.tsx";
@@ -266,6 +271,98 @@ describe("Dialog, Sheet, and Popover", () => {
     );
     await act(async () => host.querySelector<HTMLButtonElement>('button[type="submit"]')!.click());
     expect(submits).toBe(1);
+  });
+});
+
+describe("OddProvider", () => {
+  function RouterLink(props: AnchorProps) {
+    return <a {...props} data-router="" />;
+  }
+
+  const links = (
+    <>
+      <TextLink href="/guide">Guide</TextLink>
+      <Button href="/docs">Docs</Button>
+      <Card interactive>
+        <h3>
+          <CardLink href="/decks/ember">Ember Aggro</CardLink>
+        </h3>
+      </Card>
+      <Breadcrumb aria-label="Breadcrumb">
+        <ol>
+          <li>
+            <TextLink href="/" current>
+              Home
+            </TextLink>
+          </li>
+        </ol>
+      </Breadcrumb>
+      <HoverCard preview="Midnight Control, by Mira Okafor">
+        <p>
+          <HoverCardLink href="/decks/midnight">Midnight Control</HoverCardLink>
+        </p>
+      </HoverCard>
+    </>
+  );
+
+  function routed(element: ReactNode): (string | null)[][] {
+    const root = document.createElement("div");
+    root.innerHTML = renderToStaticMarkup(element);
+    return [...root.querySelectorAll("a")].map((link) => [link.getAttribute("href"), link.getAttribute("data-router")]);
+  }
+
+  test("TextLink, Button href, the card's link, Breadcrumb's links, and HoverCardLink render through the router link", () => {
+    expect(routed(<OddProvider link={RouterLink}>{links}</OddProvider>)).toEqual([
+      ["/guide", ""],
+      ["/docs", ""],
+      ["/decks/ember", ""],
+      ["/", ""],
+      ["/decks/midnight", ""],
+    ]);
+  });
+
+  test("without a provider every link is a plain a", () => {
+    expect(routed(links).map(([, router]) => router)).toEqual([null, null, null, null, null]);
+  });
+
+  test("a HoverCard installs the interest fallback with no enhance() call, and its unmount removes it", async () => {
+    const counts = { added: 0, removed: 0 };
+    const add = document.addEventListener;
+    const remove = document.removeEventListener;
+    document.addEventListener = function (this: Document, ...args: Parameters<Document["addEventListener"]>) {
+      if (args[0] === "pointerover") counts.added += 1;
+      add.apply(this, args);
+    };
+    document.removeEventListener = function (this: Document, ...args: Parameters<Document["removeEventListener"]>) {
+      if (args[0] === "pointerover") counts.removed += 1;
+      remove.apply(this, args);
+    };
+    try {
+      const host = document.createElement("div");
+      document.body.append(host);
+      const root = createRoot(host);
+      mounted = root;
+      await act(async () =>
+        root.render(
+          <HoverCard preview="Midnight Control, by Mira Okafor">
+            <p>
+              <HoverCardLink href="/decks/midnight">Midnight Control</HoverCardLink>
+            </p>
+          </HoverCard>,
+        ),
+      );
+      expect(counts).toEqual({ added: 1, removed: 0 });
+      mounted = undefined;
+      await act(async () => root.unmount());
+      expect(counts).toEqual({ added: 1, removed: 1 });
+    } finally {
+      document.addEventListener = add;
+      document.removeEventListener = remove;
+    }
+  });
+
+  test("a HoverCardLink outside a HoverCard throws, because it names no card", () => {
+    expect(() => renderToStaticMarkup(<HoverCardLink href="/decks/midnight">Midnight Control</HoverCardLink>)).toThrow("HoverCardLink renders inside");
   });
 });
 
@@ -813,9 +910,12 @@ const failures: Record<string, { codes: string[]; text: string[] }> = {
   "text-link-href": { codes: [], text: ["Property 'href' is missing"] },
   "text-link-aria-disabled": { codes: ["ODD-LINK-003"], text: [] },
   "text-link-disabled": { codes: ["ODD-LINK-003"], text: [] },
-  "text-link-role": { codes: ["ODD-LINK-004"], text: [] },
-  "text-link-aria-current-value": { codes: [], text: ['"page"'] },
-  "text-link-data-variant": { codes: ["ODD-LINK-006"], text: [] },
+  "text-link-role": { codes: ["ODD-REACT-001"], text: [] },
+  "text-link-aria-current": { codes: ["ODD-REACT-001"], text: ["Types of property '\"aria-current\"' are incompatible"] },
+  "text-link-target": { codes: ["ODD-REACT-001"], text: [] },
+  "text-link-data-variant": { codes: ["ODD-REACT-002"], text: [] },
+  "hover-card-no-preview": { codes: [], text: ["Property 'preview' is missing"] },
+  "hover-card-link-interestfor": { codes: ["ODD-REACT-001"], text: [] },
   "spinner-aria-hidden": { codes: [], text: ["'\"aria-hidden\"' is missing"] },
   "spinner-text": { codes: ["ODD-SPINNER-002"], text: [] },
   "spinner-role": { codes: ["ODD-SPINNER-002"], text: [] },

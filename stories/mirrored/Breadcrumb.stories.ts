@@ -15,7 +15,7 @@ const meta = {
     docs: {
       description: {
         component:
-          "`Breadcrumb` from `odd-design/react` renders `nav.odd-breadcrumb`, the trail to the current page. Name it with `aria-label` or `aria-labelledby`, and put an `ol` inside with one `li` per level. Each level with a page is a `TextLink`, and the last one has `aria-current=\"page\"`. A level with no page of its own is plain text in its `li`. CSS draws the slashes, which screen readers do not read, and a long trail wraps.",
+          "`Breadcrumb` from `odd-design/react` renders `nav.odd-breadcrumb`, the trail to the current page. Name it with `aria-label` or `aria-labelledby`, and put an `ol` inside with one `li` per level. Each level with a page is a `TextLink`, and the last one takes `current`, which writes `aria-current=\"page\"`. A level with no page of its own is plain text in its `li`. CSS draws the slashes, which screen readers do not read, and a long trail wraps.",
       },
     },
   },
@@ -35,7 +35,7 @@ const LEVELS: readonly Level[] = [
 
 function crumb([label, href]: Level, current: boolean): Node<"li"> {
   if (href === null) return { of: "li", children: [label] };
-  return { of: "li", children: [{ of: "TextLink", props: { href, "aria-current": current ? "page" : undefined }, children: [label] }] };
+  return { of: "li", children: [{ of: "TextLink", props: { href, current }, children: [label] }] };
 }
 
 function trail(label: string, levels: readonly Level[]): Node<"Breadcrumb"> {

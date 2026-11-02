@@ -24,6 +24,8 @@ import { Slider } from "../../../../src/react/slider.tsx";
 import { Spinner } from "../../../../src/react/spinner.tsx";
 import { Tabs } from "../../../../src/react/tabs.tsx";
 import { TextLink } from "../../../../src/react/text-link.tsx";
+import { HoverCard, HoverCardLink } from "../../../../src/react/hover-card.tsx";
+import { OddProvider } from "../../../../src/react/provider.tsx";
 import { Toaster } from "../../../../src/react/toast.tsx";
 import { Eyebrow, Heading, Muted, type HeadingSize } from "../../../../src/react/typography.tsx";
 
@@ -210,12 +212,24 @@ export function DeckPlaceholder({ loading }: { loading: boolean }) {
 export function ProjectLinks({ href }: { href: string }) {
   return (
     <p>
-      Read the <TextLink href={href}>setup guide</TextLink>, then open <TextLink href="/projects" aria-current="page">Projects</TextLink> or the{" "}
-      <TextLink href="https://example.com/changelog" target="_blank" rel="noopener" className="external" data-testid="changelog">
-        changelog (opens in a new tab)
+      Read the <TextLink href={href}>setup guide</TextLink>, then open <TextLink href="/projects" current>Projects</TextLink> or the{" "}
+      <TextLink href="https://example.com/changelog" newTab tooltip="What changed this week" className="external" data-testid="changelog">
+        changelog
       </TextLink>
       .
     </p>
+  );
+}
+
+export function DeckPreview({ name, onOpen }: { name: string; onOpen: () => void }) {
+  return (
+    <OddProvider link={(props) => <a {...props} onClick={onOpen} />}>
+      <HoverCard id="preview" preview={<p>{name}, by Mira Okafor</p>} className="wide">
+        <p>
+          Last week’s winner was <HoverCardLink href="/decks/midnight" data-testid="winner">{name}</HoverCardLink>.
+        </p>
+      </HoverCard>
+    </OddProvider>
   );
 }
 
@@ -238,7 +252,7 @@ export function ProjectTrail({ archived }: { archived: boolean }) {
         </li>
         {archived ? <li>Archived</li> : null}
         <li>
-          <TextLink href="/projects/roadmap" aria-current="page">
+          <TextLink href="/projects/roadmap" current>
             Roadmap
           </TextLink>
         </li>

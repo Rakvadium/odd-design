@@ -9,6 +9,7 @@ export * from "./combobox.tsx";
 export * from "./dialog.tsx";
 export * from "./disclosure.tsx";
 export * from "./field.tsx";
+export * from "./hover-card.tsx";
 export * from "./kbd.tsx";
 export * from "./layout.tsx";
 export * from "./menu.tsx";

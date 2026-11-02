@@ -115,19 +115,23 @@ test.describe("tooltips and hover cards (interestfor)", () => {
     });
   }
 
-  test("a hover card opens under its link and stays open while the pointer is inside it", async ({ page }, testInfo) => {
-    await openStory(page, "components-overlays--hover-card", "mode:light");
-    await hoverFresh(page, 'a[interestfor="preview-midnight"]');
-    await waitOpen(page, "#preview-midnight");
-    const link = await rect(page, 'a[interestfor="preview-midnight"]');
-    const card = await rect(page, "#preview-midnight");
-    expect(Math.abs(card.left - link.left), "aligned to the link's start edge").toBeLessThan(2);
-    expect(Math.abs(card.top - link.bottom - 8), "8px below the link").toBeLessThan(1.5);
-    await page.locator("#preview-midnight .odd-badge").first().hover();
-    await page.waitForTimeout(800);
-    expect(await isOpen(page, "#preview-midnight"), "still open with the pointer inside").toBe(true);
-    await shot(page, testInfo, "hover-card.png");
-  });
+  // The React Storybook installs no page-wide interest fallback, so there the card opens through the one HoverCard installs.
+  for (const storybook of ["html", "react"] as const) {
+    test(`a hover card opens under its link and stays open while the pointer is inside it (${storybook})`, async ({ page }, testInfo) => {
+      await openStory(page, "components-overlays--hover-card", "mode:light", "", storybook);
+      await note(page, testInfo, "interestfor", `"interestForElement" in HTMLAnchorElement.prototype`);
+      await hoverFresh(page, 'a[interestfor="preview-midnight"]');
+      await waitOpen(page, "#preview-midnight");
+      const link = await rect(page, 'a[interestfor="preview-midnight"]');
+      const card = await rect(page, "#preview-midnight");
+      expect(Math.abs(card.left - link.left), "aligned to the link's start edge").toBeLessThan(2);
+      expect(Math.abs(card.top - link.bottom - 8), "8px below the link").toBeLessThan(1.5);
+      await page.locator("#preview-midnight .odd-badge").first().hover();
+      await page.waitForTimeout(800);
+      expect(await isOpen(page, "#preview-midnight"), "still open with the pointer inside").toBe(true);
+      await shot(page, testInfo, `hover-card-${storybook}.png`);
+    });
+  }
 });
 
 test.describe("popovers and dialogs", () => {

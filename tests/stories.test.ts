@@ -81,6 +81,8 @@ test("the catalog has every story file's stories, and the mirrored story ids equ
     "components-link--states",
     "components-overlays--alert-dialog",
     "components-overlays--alert-dialog-open",
+    "components-overlays--hover-card",
+    "components-overlays--hover-card-open",
     "components-overlays--popover",
     "components-overlays--popover-open",
     "components-overlays--sheet",

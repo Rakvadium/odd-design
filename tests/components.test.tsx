@@ -24,6 +24,8 @@ import {
   Grid,
   GridItem,
   Heading,
+  HoverCard,
+  HoverCardLink,
   Input,
   Kbd,
   Menu,
@@ -195,7 +197,7 @@ const FIXTURES: { readonly [K in ExportName]: readonly [Fixture, ...Fixture[]] }
             </li>
             <li>Archived</li>
             <li>
-              <TextLink href="#alerts" aria-current="page">
+              <TextLink href="#alerts" current>
                 Alerts
               </TextLink>
             </li>
@@ -545,6 +547,52 @@ const FIXTURES: { readonly [K in ExportName]: readonly [Fixture, ...Fixture[]] }
         </>
       ),
       markup: '<h1 class="odd-heading" data-size="hero">Odd design</h1><h3 id="recent" class="odd-heading wide">Recent decks</h3>',
+    },
+  ],
+  HoverCard: [
+    {
+      name: "after the paragraph that holds its link",
+      uses: ["HoverCardLink", "Heading", "Muted"],
+      element: (
+        <HoverCard
+          id="preview-midnight"
+          className="wide"
+          preview={
+            <>
+              <Heading level={2} size="sm">
+                Midnight Control
+              </Heading>
+              <Muted>by Mira Okafor</Muted>
+            </>
+          }
+        >
+          <p>
+            Last week’s winner was <HoverCardLink href="/decks/midnight">Midnight Control</HoverCardLink>.
+          </p>
+        </HoverCard>
+      ),
+      markup:
+        '<p>Last week’s winner was <a interestfor="preview-midnight" class="odd-link" href="/decks/midnight">Midnight Control</a>.</p><div class="odd-hover-card wide" id="preview-midnight" popover="hint"><h2 class="odd-heading" data-size="sm">Midnight Control</h2><p class="odd-muted">by Mira Okafor</p></div>',
+    },
+  ],
+  HoverCardLink: [
+    {
+      name: "two links to one card, with a generated id",
+      uses: ["HoverCard"],
+      element: (
+        <HoverCard preview="Ember Aggro, by Kai Nakamura">
+          <ul>
+            <li>
+              <HoverCardLink href="/decks/ember">Ember Aggro</HoverCardLink>
+            </li>
+            <li>
+              <HoverCardLink href="/decks/ember/versions" data-testid="versions">
+                Ember Aggro versions
+              </HoverCardLink>
+            </li>
+          </ul>
+        </HoverCard>
+      ),
     },
   ],
   Input: [
@@ -1082,13 +1130,36 @@ const FIXTURES: { readonly [K in ExportName]: readonly [Fixture, ...Fixture[]] }
       element: (
         <p>
           Read the <TextLink href="#guide">setup guide</TextLink> or open{" "}
-          <TextLink href="#roadmap" aria-current="page" className="nav">
+          <TextLink href="#roadmap" current className="nav">
             Roadmap
           </TextLink>
           .
         </p>
       ),
       markup: '<p>Read the <a href="#guide" class="odd-link">setup guide</a> or open <a href="#roadmap" aria-current="page" class="odd-link nav">Roadmap</a>.</p>',
+    },
+    {
+      name: "a new tab, and a tooltip merged into the caller's description",
+      uses: ["VisuallyHidden"],
+      element: (
+        <p id="rules-note">
+          See the{" "}
+          <TextLink href="https://example.com/rules" newTab tooltip="The official rules, updated monthly" aria-describedby="rules-note" id="rules">
+            rules
+          </TextLink>
+          .
+        </p>
+      ),
+      markup:
+        '<p id="rules-note">See the <a aria-describedby="rules-note rules-tooltip" id="rules" href="https://example.com/rules" interestfor="rules-tooltip" target="_blank" rel="noopener" class="odd-link">rules<span class="odd-visually-hidden"> (opens in a new tab)</span></a><span class="odd-tooltip" id="rules-tooltip" popover="hint" role="tooltip">The official rules, updated monthly</span>.</p>',
+    },
+    {
+      name: "a tooltip with a generated id",
+      element: (
+        <p>
+          Read the <TextLink href="#guide" tooltip="Ten minutes, start to finish">setup guide</TextLink>.
+        </p>
+      ),
     },
   ],
   Textarea: [

@@ -1,11 +1,10 @@
 "use client";
 
 import { use, type ComponentPropsWithRef, type MouseEvent, type ReactElement, type ReactNode } from "react";
-import { interestForFallback } from "../js/fallbacks.ts";
 import type { ButtonRule } from "../js/usage/contract.ts";
 import { Anchor, OverlayContext, TriggerContext } from "./context.ts";
-import { VisuallyHidden } from "./layout.tsx";
-import { cx, mergeIds, rejectBlank, useFallback, useOddId, type Passthrough, type Root, type Values } from "./own.ts";
+import { newTabParts, useTooltip } from "./invoker.ts";
+import { cx, rejectBlank, type Passthrough, type Root, type Values } from "./own.ts";
 
 export type ButtonVariant = Values<ButtonRule, "data-variant">;
 export type ButtonSize = Values<ButtonRule, "data-size">;
@@ -55,8 +54,6 @@ type AsButton = Passthrough<"button", ButtonOwned, "type" | "disabled"> & {
 
 export type ButtonProps = Shared & Naming & (AsLink | AsButton);
 
-const NEW_TAB = "(opens in a new tab)";
-
 function swallow(event: MouseEvent): void {
   event.preventDefault();
 }
@@ -68,33 +65,26 @@ function closes(command: ButtonCommand | undefined): boolean {
 export function Button(props: ButtonProps): ReactElement {
   const trigger = use(TriggerContext);
   const overlay = use(OverlayContext);
-  const tipId = `${useOddId(props.id)}-tooltip`;
-  const tip = props.iconOnly ? rejectBlank(props.label, "ODD-BUTTON-008") : props.tooltip;
-  useFallback(tip === undefined ? undefined : interestForFallback);
+  const text = props.iconOnly ? rejectBlank(props.label, "ODD-BUTTON-008") : props.tooltip;
+  const { invoker, tooltip } = useTooltip(props.id, text, props.iconOnly ? "name" : "description", props["aria-describedby"]);
 
   const shared = {
     className: cx("odd-button", props.className),
     "data-variant": props.variant,
     "data-size": props.size,
     "data-icon-only": props.iconOnly ? "" : undefined,
-    "aria-labelledby": props.iconOnly ? tipId : undefined,
-    "aria-describedby": mergeIds(props["aria-describedby"], tip !== undefined && !props.iconOnly && tipId),
-    interestfor: tip === undefined ? undefined : tipId,
+    ...invoker,
   };
-  const tooltip = tip === undefined ? null : (
-    <span className="odd-tooltip" id={tipId} popover="hint" role="tooltip">
-      {tip}
-    </span>
-  );
   const content = <TriggerContext value={null}>{props.children}</TriggerContext>;
 
   if (props.href !== undefined) {
     const { variant, size, iconOnly, label, tooltip: _tooltip, href, current, newTab, disabled, busy, className, children, ...rest } = props;
+    const tab = newTabParts(newTab);
     return (
       <>
-        <Anchor {...(rest as ComponentPropsWithRef<"a">)} {...shared} href={href} aria-current={current ? "page" : undefined} target={newTab ? "_blank" : undefined} rel={newTab ? "noopener" : undefined}>
+        <Anchor {...(rest as ComponentPropsWithRef<"a">)} {...shared} href={href} aria-current={current ? "page" : undefined} {...tab.attributes}>
           {content}
-          {newTab ? <VisuallyHidden> {NEW_TAB}</VisuallyHidden> : null}
+          {tab.words}
         </Anchor>
         {tooltip}
       </>

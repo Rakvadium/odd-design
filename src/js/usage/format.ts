@@ -111,6 +111,7 @@ export const USAGE_CODES = [
   "ODD-SCOPE-001",
   "ODD-SKIP-001",
   "ODD-TOOLTIP-001",
+  "ODD-HOVER-CARD-001",
   "ODD-GRID-001",
   "ODD-SHELL-001",
   "ODD-TYPOGRAPHY-001",
@@ -1014,6 +1015,13 @@ export const MESSAGES = {
     "popover hint and role tooltip on the odd-tooltip element",
     "set popover to hint and role to tooltip. In React, pass label to an icon-only Button, or tooltip to a Button, and it renders the tooltip.",
     "docs/usage/tooltip.md#odd-tooltip-001",
+  ),
+  "ODD-HOVER-CARD-001": text(
+    "ODD-HOVER-CARD-001",
+    "odd-hover-card needs popover hint. Without a popover it sits in the page as content, and interestfor does not open it. An auto popover closes an open menu or popover when it opens and takes light dismiss, which a preview on hover should not.",
+    "popover hint on the odd-hover-card element",
+    "set popover to hint. In React, render HoverCard around the block that holds a HoverCardLink, and it renders the card.",
+    "docs/usage/hover-card.md#odd-hover-card-001",
   ),
   "ODD-GRID-001": text(
     "ODD-GRID-001",

@@ -290,6 +290,11 @@ export const USAGE = {
     { kind: "required-attribute", code: "ODD-TOOLTIP-001", attribute: "role" },
     { kind: "enum", code: "ODD-TOOLTIP-001", attribute: "role", values: ["tooltip"], omit: [] },
   ] as const satisfies readonly UsageRule[],
+  hoverCard: [
+    { kind: "class", code: "ODD-HOVER-CARD-001", className: "odd-hover-card" },
+    { kind: "required-attribute", code: "ODD-HOVER-CARD-001", attribute: "popover" },
+    { kind: "enum", code: "ODD-HOVER-CARD-001", attribute: "popover", values: ["hint"], omit: [] },
+  ] as const satisfies readonly UsageRule[],
   grid: [
     { kind: "class", code: "ODD-GRID-001", className: "odd-grid" },
     { kind: "child-value", code: "ODD-GRID-001", attribute: "data-span", values: ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"] },
@@ -446,6 +451,8 @@ export type ExportName =
   | "Grid"
   | "GridItem"
   | "Heading"
+  | "HoverCard"
+  | "HoverCardLink"
   | "Input"
   | "Kbd"
   | "Menu"
@@ -519,11 +526,11 @@ export const CLASSES = {
   "odd-grid": { by: ["Grid"] },
   "odd-heading": { by: ["Heading"] },
   "odd-hint": { by: ["Input", "Textarea", "Select", "Slider", "Combobox"] },
-  "odd-hover-card": { by: [] },
+  "odd-hover-card": { by: ["HoverCard"] },
   "odd-input": { by: ["Input", "Search", "Combobox"] },
   "odd-kbd": { by: ["Kbd"] },
   "odd-label": { by: ["Input", "Textarea", "Select", "RadioGroup", "Slider", "Combobox"] },
-  "odd-link": { by: ["TextLink"] },
+  "odd-link": { by: ["TextLink", "HoverCardLink"] },
   "odd-log": { by: [] },
   "odd-log-line": { by: [] },
   "odd-menu": { by: ["Menu"] },
@@ -567,7 +574,7 @@ export const CLASSES = {
   "odd-toast-description": { by: [], via: "toast() from odd-design/enhance" },
   "odd-toast-title": { by: [], via: "toast() from odd-design/enhance" },
   "odd-toaster": { by: ["Toaster"] },
-  "odd-tooltip": { by: ["Button"] },
+  "odd-tooltip": { by: ["Button", "TextLink"] },
   "odd-visually-hidden": { by: ["VisuallyHidden", "Button", "Input", "Textarea", "Select", "Search", "Slider", "Combobox"] },
 } as const satisfies Record<`odd-${string}`, Owner>;
 

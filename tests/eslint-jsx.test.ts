@@ -75,7 +75,7 @@ test("odd-button on a button names Button as the fix", () => {
 });
 
 test("odd-link on a router link names TextLink as the fix", () => {
-  expect(lint("third-party.tsx").map((message) => message.message)).toEqual([`${REACT_003} Found odd-link. Render TextLink from odd-design/react.`]);
+  expect(lint("third-party.tsx").map((message) => message.message)).toEqual([`${REACT_003} Found odd-link. Render TextLink or HoverCardLink from odd-design/react.`]);
 });
 
 test("a class no export renders says so, a toast class names toast(), and an unknown class is ODD-CLASS-001", () => {
