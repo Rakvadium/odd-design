@@ -38,7 +38,7 @@ const FAMILIES: readonly Family[] = [
   { name: "Breadcrumb", classes: ["odd-breadcrumb"], css: "components/breadcrumb.css", js: [], react: ["Breadcrumb"] },
   { name: "Kbd", classes: ["odd-kbd"], css: "components/kbd.css", js: [], react: ["Kbd"] },
   { name: "Code", classes: ["odd-code", "odd-pre"], css: "components/code.css", js: [], react: ["Code", "Pre"] },
-  { name: "Table", classes: ["odd-table-wrap", "odd-table", "odd-table-sort"], css: "components/table.css", js: ["enhance.ts:47-100"], react: ["TableWrap", "Table", "TableSort"] },
+  { name: "Table", classes: ["odd-table-wrap", "odd-table", "odd-table-sort"], css: "components/table.css", js: ["enhance.ts:47-100"], react: ["Table"] },
   { name: "Popover", classes: ["odd-popover", "odd-hover-card", "odd-tooltip"], css: "components/popover.css", js: ["fallbacks.ts:9-81"], react: ["Popover"] },
   {
     name: "Dialog",

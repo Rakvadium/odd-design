@@ -31,7 +31,7 @@ Install the package.
 bun add odd-design
 ```
 
-The stylesheet, `odd-design/appearance`, `odd-design/enhance`, and `odd-design/palette` need nothing else. Install React 19 when you render `Button`, the field controls, `Badge`, the Alert parts, the Avatar parts, `Separator`, `Skeleton`, the Card parts, `Disclosure`, `Tabs`, `Search`, `Slider`, `Meter`, `Progress`, `Toaster`, `Popover`, `Dialog`, `AlertDialog`, `Sheet`, `Menu` and its items, `TableWrap`, `Table`, `TableSort`, `TextLink`, `HoverCard`, `HoverCardLink`, `Spinner`, `Combobox`, `ComboboxOption`, `Breadcrumb`, `Kbd`, `Code`, or `Pre`. React is an optional peer dependency.
+The stylesheet, `odd-design/appearance`, `odd-design/enhance`, and `odd-design/palette` need nothing else. Install React 19 when you render `Button`, the field controls, `Badge`, the Alert parts, the Avatar parts, `Separator`, `Skeleton`, the Card parts, `Disclosure`, `Tabs`, `Search`, `Slider`, `Meter`, `Progress`, `Toaster`, `Popover`, `Dialog`, `AlertDialog`, `Sheet`, `Menu` and its items, `Table`, `TextLink`, `HoverCard`, `HoverCardLink`, `Spinner`, `Combobox`, `ComboboxOption`, `Breadcrumb`, `Kbd`, `Code`, or `Pre`. React is an optional peer dependency.
 
 ```sh
 bun add react@^19 react-dom@^19
@@ -186,7 +186,7 @@ The five palettes ported from uvs-decks-gg went through the same repair. Their i
 | `odd-spinner` | `<span aria-hidden="true">`, empty | A ring 1em across in the text color. Put `aria-busy` and the loading words on the region, not on the spinner. A working button is a Button with `aria-busy`. `Spinner` from `odd-design/react` renders it. |
 | `odd-separator` | `<hr>` | `aria-orientation="vertical"` inside a row, not `data-orientation`. `role` takes only `separator`, and `aria-hidden` is not allowed. For a line that means nothing, use a border. |
 | `odd-avatar`, `odd-avatar-group` | `<span>` with `<img alt>` or `role="img"` initials, `<div role="group">` with a name | `data-size` on each avatar. |
-| `odd-table-wrap`, `odd-table`, `odd-table-sort` | `<div>` around a `<table>`, with sort `<button>`s | The wrapper scrolls and is focusable. `data-numeric` goes on a `th` and its cells, `aria-sort` on the sorted `th`, and a row checkbox tints the row. `enhanceSelectAll` wires a `data-select-all` header box. `TableWrap`, `Table`, and `TableSort` from `odd-design/react` render the three, and `Table` runs `enhanceSelectAll`. |
+| `odd-table-wrap`, `odd-table`, `odd-table-sort` | `<div>` around a `<table>`, with sort `<button>`s | The wrapper scrolls and is focusable. `data-numeric` goes on a `th` and its cells, `aria-sort` on the sorted `th`, and a row checkbox tints the row. `enhanceSelectAll` wires a `data-select-all` header box. `Table` from `odd-design/react` renders all three and runs `enhanceSelectAll`. |
 | `odd-slider` | `<input type="range">` | The filled track follows the thumb with no JS where scroll-driven animations exist. Disable it with `disabled`, not `aria-disabled`. `Slider` from `odd-design/react` renders it and takes `type="range"`. |
 | `odd-search` | `<search>` with a direct visually hidden `<label>`, `<svg aria-hidden="true">`, and `<input class="odd-input" type="search">` | Put a `<form>` around it to submit. `Search` from `odd-design/react` renders the `<search>`. |
 | `odd-popover` | `<div popover role="dialog">` | Open with `commandfor`/`command="toggle-popover"`. Anchors to the invoker and flips. Use `role="dialog"` and a name when it holds controls, and neither when it only shows text. `Popover` from `odd-design/react` renders it and its trigger. |

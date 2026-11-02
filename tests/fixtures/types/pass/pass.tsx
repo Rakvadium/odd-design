@@ -13,7 +13,7 @@ import { Checkbox, Input, RadioGroup, Segmented, Select, Switch, Textarea, type 
 import { Kbd } from "../../../../src/react/kbd.tsx";
 import { Grid, GridItem, Row, Scope, SkipLink, Stack, VisuallyHidden, type GridSpan } from "../../../../src/react/layout.tsx";
 import { Menu, MenuCheckboxItem, MenuGroup, MenuItem, MenuRadioGroup, MenuRadioItem, MenuSeparator } from "../../../../src/react/menu.tsx";
-import { Table, TableSort, TableWrap } from "../../../../src/react/table.tsx";
+import { SORT_DIRECTIONS, Table, type Sort } from "../../../../src/react/table.tsx";
 import { Meter, Progress, type MeterTone } from "../../../../src/react/meter.tsx";
 import { Popover } from "../../../../src/react/popover.tsx";
 import { Search } from "../../../../src/react/search.tsx";
@@ -476,44 +476,28 @@ export function DeckMenu({ label, onRename, onPrices }: { label: string; onRenam
 
 export function DeckTable({ decks }: { decks: readonly { id: string; name: string; cards: number }[] }) {
   const table = useRef<HTMLTableElement>(null);
-  const [selected, setSelected] = useState<readonly string[]>([]);
+  const [selected, setSelected] = useState<ReadonlySet<string>>(new Set());
+  const [sort, setSort] = useState<Sort<"name" | "cards">>({ column: "name", direction: SORT_DIRECTIONS[0] });
   return (
     <>
-      <TableWrap tabIndex={0} role="region" aria-labelledby="decks-caption" className="wide" data-testid="decks">
-        <Table ref={table} data-testid="table">
-          <caption id="decks-caption">Your decks</caption>
-          <thead>
-            <tr>
-              <th scope="col">
-                <input type="checkbox" data-select-all aria-label="Select all decks" />
-              </th>
-              <th scope="col" aria-sort="ascending">
-                <TableSort type="button" onClick={() => table.current?.focus()} data-col="name">Deck</TableSort>
-              </th>
-              <th scope="col" data-numeric>
-                <TableSort>Cards</TableSort>
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            {decks.map((deck) => (
-              <tr key={deck.id}>
-                <td>
-                  <input type="checkbox" aria-label={`Select ${deck.name}`} checked={selected.includes(deck.id)} onChange={() => setSelected((ids) => (ids.includes(deck.id) ? ids.filter((id) => id !== deck.id) : [...ids, deck.id]))} />
-                </td>
-                <th scope="row">{deck.name}</th>
-                <td data-numeric>{deck.cards}</td>
-              </tr>
-            ))}
-          </tbody>
-        </Table>
-      </TableWrap>
-      <TableWrap>
-        <Table>
-          <tbody />
-        </Table>
-      </TableWrap>
-      <TableWrap tabIndex={0} role="region" aria-label="Archived decks" />
+      <Table
+        ref={table}
+        id="decks"
+        className="wide"
+        data-testid="decks"
+        caption="Your decks"
+        rows={decks}
+        rowKey={(deck) => deck.id}
+        columns={[
+          { key: "name", header: "Deck", rowHeader: true, cell: (deck) => deck.name, footer: `${decks.length} decks` },
+          { key: "cards", header: "Cards", numeric: true, cell: (deck) => deck.cards },
+        ]}
+        sortable={["name", "cards"]}
+        sort={sort}
+        onSortChange={setSort}
+        selection={{ selected, onChange: setSelected, label: (deck) => `Select ${deck.name}`, allLabel: "Select all decks", disabled: (deck) => deck.cards < 40 }}
+      />
+      <Table caption="Archived decks" hideCaption scrollable={false} rows={[] as readonly { id: string }[]} rowKey={(deck) => deck.id} columns={[{ key: "id", header: "Deck", cell: (deck) => deck.id }]} />
     </>
   );
 }

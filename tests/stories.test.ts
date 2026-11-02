@@ -53,6 +53,7 @@ test("the catalog has every story file's stories, and the mirrored story ids equ
     "components-data-display--table",
     "components-data-display--table-overflow",
     "components-data-display--table-parts",
+    "components-data-display--table-playground",
     "components-data-display--table-states",
     "components-feedback--alert",
     "components-feedback--progress",
@@ -127,7 +128,6 @@ test("TableParts puts aria-sort on each sorted column's header", () => {
   expect(sorted).toEqual([
     ["Sorted by deck, A to Z", "Deck", "ascending"],
     ["Sorted by cards, most first", "Cards", "descending"],
-    ["Not sorted", "Deck", "none"],
   ]);
 });
 
@@ -181,7 +181,6 @@ const STYLED = [
   "stories/mirrored/Separator.stories.ts",
   "stories/mirrored/Skeleton.stories.ts",
   "stories/mirrored/Spinner.stories.ts",
-  "stories/mirrored/Table.stories.ts",
 ];
 
 test("no mirrored story renders a style attribute, except in the files still listed, and each listed file still renders one", () => {

@@ -38,9 +38,9 @@ In the same composed Storybook, open `http://127.0.0.1:6106/?path=/story/react_c
 
 ## React Table
 
-In the same composed Storybook, open `http://127.0.0.1:6106/?path=/story/react_components-data-display--table`. The preview is the Table story built from `TableWrap`, `Table`, three `TableSort` parts, and `Badge`, with the native caption, sections, rows, cells, links, and checkboxes, and the same ids and text as `components-data-display--table`. `Table` runs `enhanceSelectAll` on itself, so the two table recipes above work on the React side too.
+In the same composed Storybook, open `http://127.0.0.1:6106/?path=/story/react_components-data-display--table`. The preview is the Table story built from one `Table` with `columns`, `rows`, three `sortable` columns, a `selection` held in React state, and `Badge` cells, with the same text as `components-data-display--table`. `Table` runs `enhanceSelectAll` on itself, so the two table recipes above work on the React side too, and its sort buttons re-sort the rows there.
 
-The pair sweep checks the story against the `aria` literal in `stories/mirrored/Table.stories.ts`, which pins `checkbox "Select all decks" [checked=mixed]`, and the two screenshots are byte-identical. A side that skips select-all shows the header box unchecked and fails the sweep. `bunx playwright test e2e/behavior.spec.ts --project firefox -g select-all` runs the select-all test once per Storybook.
+The pair sweep checks the story against the `aria` literal in `stories/mirrored/Table.stories.tsx`, which pins `checkbox "Select all decks" [checked=mixed]`, and the two screenshots are byte-identical. A side that skips select-all shows the header box unchecked and fails the sweep. `bunx playwright test e2e/behavior.spec.ts --project firefox -g select-all` runs the select-all test once per Storybook.
 
 ## Gotchas
 

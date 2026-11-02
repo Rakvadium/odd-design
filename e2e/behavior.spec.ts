@@ -372,7 +372,7 @@ test.describe("keyboard widgets", () => {
           const a = document.querySelector<HTMLInputElement>("[data-select-all]")!;
           return { all: a.checked, mixed: a.indeterminate, rows: [...document.querySelectorAll<HTMLInputElement>("tbody input")].map((c) => c.checked) };
         });
-      expect(await state()).toEqual({ all: false, mixed: true, rows: [false, true, false, false] });
+      expect(await state()).toEqual({ all: false, mixed: true, rows: [true, false, false, false] });
       await all.click();
       expect(await state()).toEqual({ all: true, mixed: false, rows: [true, true, true, true] });
       await page.locator('input[aria-label="Select Tidecaller"]').click();

@@ -957,7 +957,7 @@ export const MESSAGES = {
     "ODD-TABLE-001",
     "this table class is on the wrong element. A span.odd-table-wrap does not scroll, so a wide table runs off the page. A p.odd-table-wrap ends before the table, so the table falls out of the border and the scroll. odd-table on anything but the table leaves the table at its content width. A span sort control is not in the Tab order, and an a sort control is underlined and skipped by Tab in Safari.",
     "odd-table-wrap on div, odd-table on table, odd-table-sort on button",
-    "put odd-table-wrap on the div around the table, odd-table on the table itself, and odd-table-sort on a button in the column header. In React, use TableWrap, Table, and TableSort.",
+    "put odd-table-wrap on the div around the table, odd-table on the table itself, and odd-table-sort on a button in the column header. In React, use Table.",
     "docs/usage/table.md#odd-table-001",
   ),
   "ODD-TABLE-002": text(

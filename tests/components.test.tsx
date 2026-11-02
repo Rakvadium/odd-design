@@ -55,8 +55,6 @@ import {
   Stack,
   Switch,
   Table,
-  TableSort,
-  TableWrap,
   Tabs,
   TextLink,
   Textarea,
@@ -69,8 +67,8 @@ import { hydrationErrors } from "./hydrate.ts";
 
 type Expect<T extends true> = T;
 
-/** Exports that render no odd- class. */
-type NonRendering = "OddProvider";
+/** Exports that render no odd- class: the provider, and the tuple a control reads its options from. */
+type NonRendering = "OddProvider" | "SORT_DIRECTIONS";
 
 type Rendering = Exclude<keyof typeof Odd, NonRendering>;
 
@@ -1041,67 +1039,32 @@ const FIXTURES: { readonly [K in ExportName]: readonly [Fixture, ...Fixture[]] }
   ],
   Table: [
     {
-      name: "in its scroll region, with a sortable header",
-      uses: ["TableWrap", "TableSort"],
+      name: "selectable and sorted in its scroll region, with a disabled row and a footer",
       element: (
-        <TableWrap tabIndex={0} role="region" aria-labelledby="decks-caption">
-          <Table>
-            <caption id="decks-caption">Your decks</caption>
-            <thead>
-              <tr>
-                <th scope="col" aria-sort="ascending">
-                  <TableSort>Deck</TableSort>
-                </th>
-              </tr>
-            </thead>
-            <tbody />
-          </Table>
-        </TableWrap>
+        <Table
+          id="decks"
+          className="wide"
+          caption="Your decks"
+          rows={[
+            { id: "ember", name: "Ember Aggro", cards: 60 },
+            { id: "faithful", name: "Old Faithful", cards: 55 },
+          ]}
+          rowKey={(deck) => deck.id}
+          columns={[
+            { key: "name", header: "Deck", rowHeader: true, cell: (deck) => deck.name, footer: "2 decks" },
+            { key: "cards", header: "Cards", numeric: true, cell: (deck) => deck.cards, footer: 115 },
+          ]}
+          sortable={["name", "cards"]}
+          sort={{ column: "cards", direction: "descending" }}
+          selection={{ selected: new Set(["ember"]), onChange: () => {}, label: (deck) => `Select ${deck.name}`, allLabel: "Select all decks", disabled: (deck) => deck.id === "faithful" }}
+        />
       ),
       markup:
-        '<div tabindex="0" role="region" aria-labelledby="decks-caption" class="odd-table-wrap"><table class="odd-table"><caption id="decks-caption">Your decks</caption><thead><tr><th scope="col" aria-sort="ascending"><button type="button" class="odd-table-sort">Deck</button></th></tr></thead><tbody></tbody></table></div>',
+        '<div role="region" tabindex="0" aria-labelledby="decks-caption" class="odd-table-wrap wide"><table id="decks" class="odd-table"><caption id="decks-caption">Your decks</caption><thead><tr><th scope="col"><input type="checkbox" data-select-all="" aria-label="Select all decks"/></th><th scope="col"><button type="button" class="odd-table-sort">Deck</button></th><th scope="col" data-numeric="" aria-sort="descending"><button type="button" class="odd-table-sort">Cards</button></th></tr></thead><tbody><tr><td><input type="checkbox" aria-label="Select Ember Aggro" checked=""/></td><th scope="row">Ember Aggro</th><td data-numeric="">60</td></tr><tr><td><input type="checkbox" aria-label="Select Old Faithful" disabled=""/></td><th scope="row">Old Faithful</th><td data-numeric="">55</td></tr></tbody><tfoot><tr><td></td><th scope="row">2 decks</th><td data-numeric="">115</td></tr></tfoot></table></div>',
     },
-  ],
-  TableSort: [
     {
-      name: "the only child of a sorted header",
-      uses: ["Table"],
-      element: (
-        <Table>
-          <caption>Cards by count</caption>
-          <thead>
-            <tr>
-              <th scope="col" aria-sort="descending">
-                <TableSort>Cards</TableSort>
-              </th>
-            </tr>
-          </thead>
-          <tbody />
-        </Table>
-      ),
-    },
-  ],
-  TableWrap: [
-    {
-      name: "a region named by its label",
-      uses: ["Table"],
-      element: (
-        <TableWrap tabIndex={0} role="region" aria-label="Decks">
-          <Table>
-            <caption>Decks</caption>
-            <thead>
-              <tr>
-                <th scope="col">Deck</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td>Ember Aggro</td>
-              </tr>
-            </tbody>
-          </Table>
-        </TableWrap>
-      ),
+      name: "a hidden caption with no region, no rows, and a generated id",
+      element: <Table caption="No decks yet" hideCaption scrollable={false} rows={[] as readonly { id: string }[]} rowKey={(deck) => deck.id} columns={[{ key: "id", header: "Deck", cell: (deck) => deck.id }]} />,
     },
   ],
   Tabs: [

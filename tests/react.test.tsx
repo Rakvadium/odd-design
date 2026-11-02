@@ -19,7 +19,7 @@ import { Menu, MenuCheckboxItem, MenuItem, MenuRadioGroup, MenuRadioItem } from 
 import { Popover } from "../src/react/popover.tsx";
 import { Sheet } from "../src/react/sheet.tsx";
 import { rejectBlank, useEnhancer } from "../src/react/own.ts";
-import { Table, TableSort } from "../src/react/table.tsx";
+import { Table, type Selection, type Sort } from "../src/react/table.tsx";
 import { Tabs } from "../src/react/tabs.tsx";
 import { Toaster } from "../src/react/toast.tsx";
 
@@ -682,79 +682,112 @@ describe("Combobox", () => {
   });
 });
 
+type Deck = { readonly id: string; readonly name: string; readonly cards: number };
+
+const DECKS: readonly Deck[] = [
+  { id: "a", name: "Aurora", cards: 60 },
+  { id: "b", name: "Bramble", cards: 55 },
+  { id: "c", name: "Cinder", cards: 62 },
+  { id: "d", name: "Dusk", cards: 40 },
+];
+
+function DeckTable({ rows, initial, onChange, disabled }: { rows: readonly Deck[]; initial: readonly string[]; onChange?: (selected: readonly string[]) => void; disabled?: (deck: Deck) => boolean }) {
+  const [selected, setSelected] = useState<ReadonlySet<string>>(() => new Set(initial));
+  const selection: Selection<Deck> = {
+    selected,
+    onChange: (next) => {
+      onChange?.([...next].sort());
+      setSelected(next);
+    },
+    label: (deck) => `Select ${deck.name}`,
+    allLabel: "Select all decks",
+    disabled,
+  };
+  return <Table caption="Decks" rows={rows} rowKey={(deck) => deck.id} columns={[{ key: "name", header: "Deck", rowHeader: true, cell: (deck) => deck.name }]} selection={selection} />;
+}
+
+async function mountTable(element: ReactNode) {
+  const host = document.createElement("div");
+  document.body.append(host);
+  const root = createRoot(host);
+  mounted = root;
+  const render = (next: ReactNode) => act(async () => root.render(next));
+  await render(element);
+  const all = () => host.querySelector<HTMLInputElement>("thead input[data-select-all]")!;
+  const state = () => [[...host.querySelectorAll<HTMLInputElement>("tbody input")].map((row) => row.checked), all().indeterminate ? "mixed" : all().checked ? "checked" : "unchecked"];
+  return { host, render, all, state };
+}
+
 describe("Table", () => {
-  test("select-all reaches React onChange once per changed row under StrictMode beside an app's enhance(), leaves a row that cancels its click, resyncs after React changes the rows, and finds a header box rendered after mount", async () => {
-    const host = document.createElement("div");
-    document.body.append(host);
-    const root = createRoot(host);
-    mounted = root;
-    const changed: string[] = [];
-    function SelectAll() {
-      const [generation, setGeneration] = useState(0);
-      return (
-        <th>
-          <input key={generation} type="checkbox" data-select-all aria-label="Select all decks" />
-          <button type="button" onClick={() => setGeneration(1)}>
-            Replace
-          </button>
-        </th>
-      );
-    }
-    function Decks() {
-      const [selected, setSelected] = useState<readonly string[]>(["b"]);
-      const toggle = (id: string) => {
-        changed.push(id);
-        setSelected((ids) => (ids.includes(id) ? ids.filter((each) => each !== id) : [...ids, id]));
-      };
-      return (
-        <>
-          <button type="button" onClick={() => setSelected([])}>
-            Clear
-          </button>
-          <Table>
-            <thead>
-              <tr>
-                <SelectAll />
-              </tr>
-            </thead>
-            <tbody>
-              {["a", "b", "c"].map((id) => (
-                <tr key={id}>
-                  <td>
-                    <input type="checkbox" aria-label={id} checked={selected.includes(id)} onChange={() => toggle(id)} />
-                  </td>
-                </tr>
-              ))}
-              <tr onClick={(event) => event.preventDefault()}>
-                <td>
-                  <input type="checkbox" aria-label="locked" />
-                </td>
-              </tr>
-            </tbody>
-          </Table>
-        </>
-      );
-    }
-    await act(async () =>
-      root.render(
-        <StrictMode>
-          <Decks />
-        </StrictMode>,
-      ),
+  test("select-all reaches onChange once per changed row with every key so far under StrictMode beside an app's enhance(), skips a disabled row, and clears", async () => {
+    const calls: (readonly string[])[] = [];
+    const { all, state } = await mountTable(
+      <StrictMode>
+        <DeckTable rows={DECKS} initial={["b"]} onChange={(keys) => calls.push(keys)} disabled={(deck) => deck.id === "d"} />
+      </StrictMode>,
     );
     const unwire = enhance(document);
-    const all = () => host.querySelector<HTMLInputElement>("[data-select-all]")!;
-    const press = (label: string) => act(async () => [...host.querySelectorAll("button")].find((button) => button.textContent === label)!.click());
-    const state = () => [[...host.querySelectorAll<HTMLInputElement>("tbody input")].map((row) => row.checked), all().indeterminate ? "mixed" : all().checked ? "checked" : "unchecked"];
     expect(state()).toEqual([[false, true, false, false], "mixed"]);
     await act(async () => all().click());
-    expect([changed, ...state()]).toEqual([["a", "c"], [true, true, true, false], "mixed"]);
-    await press("Clear");
-    expect(state()).toEqual([[false, false, false, false], "unchecked"]);
-    await press("Replace");
+    expect(calls).toEqual([
+      ["a", "b"],
+      ["a", "b", "c"],
+    ]);
+    expect(state()).toEqual([[true, true, true, false], "checked"]);
     await act(async () => all().click());
-    expect([changed, ...state()]).toEqual([["a", "c", "a", "b", "c"], [true, true, true, false], "mixed"]);
+    expect(state()).toEqual([[false, false, false, false], "unchecked"]);
     unwire();
+  });
+
+  test("a row added after every row was selected shows the header as mixed", async () => {
+    const { render, state } = await mountTable(<DeckTable rows={DECKS.slice(0, 2)} initial={["a", "b"]} />);
+    expect(state()).toEqual([[true, true], "checked"]);
+    await render(<DeckTable rows={DECKS.slice(0, 3)} initial={["a", "b"]} />);
+    expect(state()).toEqual([[true, true, false], "mixed"]);
+  });
+
+  test("the header holds select-all in thead, one aria-sort, and each sort button as its th's only child", () => {
+    const html = renderToStaticMarkup(
+      <Table
+        caption="Decks"
+        rows={DECKS}
+        rowKey={(deck) => deck.id}
+        columns={[
+          { key: "name", header: "Deck", cell: (deck) => deck.name },
+          { key: "cards", header: "Cards", numeric: true, cell: (deck) => deck.cards },
+        ]}
+        sortable={["name", "cards"]}
+        sort={{ column: "cards", direction: "ascending" }}
+        selection={{ selected: new Set(), onChange: () => {}, label: (deck) => deck.name, allLabel: "Select all decks" }}
+      />,
+    );
+    const root = document.createElement("div");
+    root.innerHTML = html;
+    expect([...root.querySelectorAll("[data-select-all]")].map((box) => box.closest("thead")?.tagName)).toEqual(["THEAD"]);
+    expect([...root.querySelectorAll("th[aria-sort]")].map((th) => [th.textContent, th.getAttribute("aria-sort")])).toEqual([["Cards", "ascending"]]);
+    expect([...root.querySelectorAll("th:has(> .odd-table-sort)")].map((th) => th.childNodes.length)).toEqual([1, 1]);
+  });
+
+  test("a sort button proposes the next sort and does not submit its form", async () => {
+    const sorts: Sort<"name" | "cards">[] = [];
+    const { counts, host, render } = await mountInForm();
+    const columns = [
+      { key: "name", header: "Deck", cell: (deck: Deck) => deck.name },
+      { key: "cards", header: "Cards", cell: (deck: Deck) => deck.cards },
+    ] as const;
+    await render(<Table caption="Decks" rows={DECKS} rowKey={(deck) => deck.id} columns={columns} sortable={["name", "cards"]} sort={{ column: "name", direction: "ascending" }} onSortChange={(sort) => sorts.push(sort)} />);
+    const [byName, byCards] = host.querySelectorAll<HTMLButtonElement>(".odd-table-sort");
+    await act(async () => byName!.click());
+    await act(async () => byCards!.click());
+    expect(sorts).toEqual([
+      { column: "name", direction: "descending" },
+      { column: "cards", direction: "ascending" },
+    ]);
+    expect(counts.submits).toBe(0);
+  });
+
+  test('a blank caption throws ODD-TABLE-003, because it names the table and its region', () => {
+    expect(() => renderToStaticMarkup(<Table caption=" " rows={DECKS} rowKey={(deck) => deck.id} columns={[{ key: "name", header: "Deck", cell: (deck) => deck.name }]} />)).toThrow("ODD-TABLE-003");
   });
 });
 
@@ -802,23 +835,6 @@ async function mountInForm() {
 }
 
 describe("Buttons in a form", () => {
-  test.each([
-    ["TableSort", <TableSort>Deck</TableSort>, <TableSort type="submit">Deck</TableSort>],
-  ])('%s submits its form only when written type="submit"', async (_name, plain, submit) => {
-    const { counts, host, render } = await mountInForm();
-    await render(
-      <>
-        {plain}
-        {submit}
-      </>,
-    );
-    const [first, second] = host.querySelectorAll("button");
-    await act(async () => first!.click());
-    expect(counts.submits).toBe(0);
-    await act(async () => second!.click());
-    expect(counts.submits).toBe(1);
-  });
-
   test('enhance() keeps menu items and toast buttons from submitting, and keeps a written type="submit"', () => {
     const form = document.createElement("form");
     let submits = 0;
@@ -961,13 +977,11 @@ const failures: Record<string, { codes: string[]; text: string[] }> = {
   "menu-item-tone": { codes: [], text: ["'\"info\"' is not assignable to type '\"danger\"'"] },
   "menu-item-aria-disabled": { codes: ["ODD-REACT-001"], text: ["Types of property '\"aria-disabled\"' are incompatible"] },
   "menu-checkbox-item-aria-checked": { codes: ["ODD-REACT-001"], text: ["Types of property '\"aria-checked\"' are incompatible"] },
-  "table-wrap-tabindex": { codes: ["ODD-TABLE-002"], text: [] },
-  "table-wrap-name": { codes: ["ODD-TABLE-003"], text: [] },
-  "table-wrap-name-undefined": { codes: ["ODD-TABLE-003"], text: [] },
-  "table-wrap-role": { codes: [], text: ['"region"'] },
-  "table-data-numeric": { codes: ["ODD-TABLE-004"], text: [] },
-  "table-sort-aria-sort": { codes: ["ODD-TABLE-005"], text: [] },
-  "table-sort-data-numeric": { codes: ["ODD-TABLE-004"], text: [] },
+  "table-data-numeric": { codes: ["ODD-REACT-002"], text: [] },
+  "table-uncaptioned": { codes: [], text: ["Property 'caption' is missing"] },
+  "table-sort-other": { codes: [], text: [`Type '"other"' is not assignable to type '"ascending" | "descending"'`] },
+  "table-sortable-unknown": { codes: [], text: [`Type '"deck"' is not assignable to type '"cards" | "name"'`] },
+  "table-sort-not-sortable": { codes: [], text: [`Type '"cards"' is not assignable to type '"name"'`] },
   "stack-gap": { codes: [], text: ["{ gap: number; children: string; }' is not assignable"] },
   "stack-style": { codes: [], text: ["{ style: { maxInlineSize: string; }; children: string; }' is not assignable"] },
   "row-role": { codes: ["ODD-REACT-001"], text: [] },

@@ -413,9 +413,6 @@ export const WRAPPERS = {
   Meter: { source: "odd-design/react", className: "odd-meter", props: { tone: "data-tone" }, element: "meter" },
   Progress: { source: "odd-design/react", className: "odd-progress", props: { tone: "data-tone" }, element: "progress" },
   Toaster: { source: "odd-design/react", className: "odd-toaster", props: {}, element: "section" },
-  TableWrap: { source: "odd-design/react", className: "odd-table-wrap", props: {}, element: "div" },
-  Table: { source: "odd-design/react", className: "odd-table", props: {}, element: "table" },
-  TableSort: { source: "odd-design/react", className: "odd-table-sort", props: {}, element: "button" },
   TextLink: { source: "odd-design/react", className: "odd-link", props: {}, element: "a" },
   Spinner: { source: "odd-design/react", className: "odd-spinner", props: {}, element: "span" },
   Combobox: { source: "odd-design/react", className: "odd-combobox", props: {}, element: "div" },
@@ -480,8 +477,6 @@ export type ExportName =
   | "Stack"
   | "Switch"
   | "Table"
-  | "TableSort"
-  | "TableWrap"
   | "Tabs"
   | "TextLink"
   | "Textarea"
@@ -563,8 +558,8 @@ export const CLASSES = {
   "odd-stat-value": { by: ["Slider"] },
   "odd-switch": { by: ["Switch"] },
   "odd-table": { by: ["Table"] },
-  "odd-table-sort": { by: ["TableSort"] },
-  "odd-table-wrap": { by: ["TableWrap"] },
+  "odd-table-sort": { by: ["Table"] },
+  "odd-table-wrap": { by: ["Table"] },
   "odd-tabs": { by: ["Tabs"] },
   "odd-textarea": { by: ["Textarea"] },
   "odd-toast": { by: [], via: "toast() from odd-design/enhance" },
@@ -573,7 +568,7 @@ export const CLASSES = {
   "odd-toast-title": { by: [], via: "toast() from odd-design/enhance" },
   "odd-toaster": { by: ["Toaster"] },
   "odd-tooltip": { by: ["Button", "TextLink"] },
-  "odd-visually-hidden": { by: ["VisuallyHidden", "Button", "Input", "Textarea", "Select", "Search", "Slider", "Combobox"] },
+  "odd-visually-hidden": { by: ["VisuallyHidden", "Button", "Input", "Textarea", "Select", "Search", "Slider", "Combobox", "Table"] },
 } as const satisfies Record<`odd-${string}`, Owner>;
 
 export type ClassName = keyof typeof CLASSES;

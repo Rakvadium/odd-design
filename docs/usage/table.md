@@ -2,9 +2,30 @@
 
 These codes apply to `odd-table-wrap`, `odd-table`, and `odd-table-sort`. Shared codes are in [General usage rules](general.md).
 
+In React, render `Table` from `odd-design/react`. It renders the wrap, the caption and its id, the region's name, each `th` with its `scope`, one `aria-sort`, each sort button as its `th`'s only child, `data-numeric` on a column's header and cells, the select-all box in `thead`, and a named checkbox per row, so the codes below cannot happen. [Build a table](react.md#build-a-table) covers the props.
+
+```tsx
+<Table
+  id="decks"
+  caption="Your decks"
+  rows={decks}
+  rowKey={(deck) => deck.id}
+  columns={[
+    { key: "name", header: "Deck", rowHeader: true, cell: (deck) => deck.name },
+    { key: "cards", header: "Cards", numeric: true, cell: (deck) => deck.cards },
+  ]}
+  sortable={["name"]}
+  sort={{ column: "name", direction: "ascending" }}
+  onSortChange={setSort}
+  selection={{ selected, onChange: setSelected, label: (deck) => `Select ${deck.name}`, allLabel: "Select all decks" }}
+/>
+```
+
+The component compiles to this HTML:
+
 ```html
 <div class="odd-table-wrap" tabindex="0" role="region" aria-labelledby="decks-caption">
-  <table class="odd-table">
+  <table class="odd-table" id="decks">
     <caption id="decks-caption">Your decks</caption>
     <thead>
       <tr>
@@ -20,37 +41,7 @@ These codes apply to `odd-table-wrap`, `odd-table`, and `odd-table-sort`. Shared
 </div>
 ```
 
-The wrap scrolls sideways when the table is wider than the page. `tabindex="0"`, `role="region"`, and a name let a keyboard user reach and scroll it. Drop all three if the table can never overflow. `data-numeric` goes on a `th` and its `td` cells. `aria-sort` goes on the sorted column's `th` only, and the page sorts the rows and moves `aria-sort`. No script wires a sort button, so write `type="button"` on it, or a click inside a form submits the form. `TableSort` writes it for you. `enhanceSelectAll`, which `enhance()` runs on every `table:has([data-select-all])`, makes the header box check or clear every row and show checked, mixed, or unchecked. It clicks each row it changes, so row listeners and React's `onChange` see the change.
-
-In React, `TableWrap` renders the `div`, `Table` renders the `table` and runs `enhanceSelectAll` on it after every commit, and `TableSort` renders each sort `button`. Write the caption, sections, rows, cells, and checkboxes as plain elements. Leave the header box uncontrolled, with no `checked`, because `Table` owns it. Row boxes can be uncontrolled or controlled with `onChange`, and a header click reaches each changed row's `onChange` once.
-
-React sets a controlled box's `checked` without a `change` event, so `Table` resyncs the header box each time it renders. A row list that re-renders on its own, such as a memoized `tbody` component, leaves the header box stale until `Table` renders again or a box changes. So does a header box that a child component remounts on its own, for example with a `key`. The new box shows unchecked until the next box change or `Table` render. Because it starts unchecked, the first click on it checks every row. Clearing takes a later click.
-
-```tsx
-import { Table, TableSort, TableWrap } from "odd-design/react";
-
-<TableWrap tabIndex={0} role="region" aria-labelledby="decks-caption">
-  <Table>
-    <caption id="decks-caption">Your decks</caption>
-    <thead>
-      <tr>
-        <th scope="col"><input type="checkbox" data-select-all aria-label="Select all decks" /></th>
-        <th scope="col" aria-sort="ascending"><TableSort onClick={sortByName}>Deck</TableSort></th>
-        <th scope="col" data-numeric>Cards</th>
-      </tr>
-    </thead>
-    <tbody>
-      {decks.map((deck) => (
-        <tr key={deck.id}>
-          <td><input type="checkbox" aria-label={`Select ${deck.name}`} checked={selected.has(deck.id)} onChange={() => toggle(deck.id)} /></td>
-          <th scope="row">{deck.name}</th>
-          <td data-numeric>{deck.cards}</td>
-        </tr>
-      ))}
-    </tbody>
-  </Table>
-</TableWrap>;
-```
+The wrap scrolls sideways when the table is wider than the page. `tabindex="0"`, `role="region"`, and a name let a keyboard user reach and scroll it. Drop all three if the table can never overflow. `data-numeric` goes on a `th` and its `td` cells. `aria-sort` goes on the sorted column's `th` only, and the page sorts the rows and moves `aria-sort`. No script wires a sort button, so write `type="button"` on it, or a click inside a form submits the form. `enhanceSelectAll`, which `enhance()` runs on every `table:has([data-select-all])`, makes the header box check or clear every row and show checked, mixed, or unchecked. It clicks each row it changes, so row listeners and React's `onChange` see the change.
 
 ## ODD-TABLE-001
 
@@ -58,7 +49,7 @@ Fails when `odd-table-wrap` is not on a `div`, `odd-table` is not on a `table`, 
 
 A `span` wrap does not scroll, so a wide table runs off the page. A `p` wrap ends before the table, so the table falls outside the border and the scroll. `odd-table` on a `div` around the table leaves the table at its content width. A `span` sort control is not in the Tab order. An `a` sort control is underlined, and Safari skips it on Tab.
 
-Put each class on its element. In React, use `TableWrap`, `Table`, and `TableSort`.
+Put each class on its element. In React, use `Table`.
 
 ## ODD-TABLE-002
 
@@ -66,7 +57,7 @@ Fails when `odd-table-wrap` has `tabindex`, `aria-label`, or `aria-labelledby` b
 
 A screen reader drops the name of a plain `div`, so focus lands on the scroll area and nothing names it. Another role announces the wrap as that role.
 
-Set `role="region"`. In React, `TableWrap` with `tabIndex` or a name and no `role` is a type error.
+Set `role="region"`. In React, `Table` writes all three, or none with `scrollable={false}`.
 
 ## ODD-TABLE-003
 
@@ -74,7 +65,7 @@ Fails when `odd-table-wrap` has `role="region"` and no non-empty `aria-label` or
 
 A screen reader announces only "region" when focus enters it.
 
-Give the caption an `id` and point `aria-labelledby` at it, or set `aria-label`. In React, `TableWrap` with `role="region"` and neither name is a type error.
+Give the caption an `id` and point `aria-labelledby` at it, or set `aria-label`. In React, `Table` names its region by its `caption`, and a blank `caption` throws this code outside production.
 
 ## ODD-TABLE-004
 
@@ -82,7 +73,7 @@ Fails when the wrap, the table, or a sort button has a system `data-*` attribute
 
 `table.css` reads `data-numeric` on a `th` and its `td` cells, so on the wrap or the table it does nothing. On a sort button, the column header stays start-aligned and the arrow stays after the label.
 
-Move `data-numeric` to the `th` and its cells. In React, `data-numeric` on `TableWrap`, `Table`, or `TableSort` is a type error.
+Move `data-numeric` to the `th` and its cells. In React, set `numeric` on the column, and `data-numeric` on `Table` is a type error (`ODD-REACT-002`).
 
 ## ODD-TABLE-005
 
@@ -90,7 +81,7 @@ Fails when `odd-table-sort` has `aria-sort`.
 
 `table.css` reads `aria-sort` on the `th` around the button. On the button, the arrow stays the neutral up-down mark.
 
-Move `aria-sort` to the `th` that holds the button. In React, `aria-sort` on `TableSort` is a type error.
+Move `aria-sort` to the `th` that holds the button. In React, `sort` writes it on the sorted column's `th`.
 
 ## ODD-TABLE-006
 
