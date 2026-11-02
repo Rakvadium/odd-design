@@ -1,5 +1,6 @@
 import { expect, test, type Page, type TestInfo } from "@playwright/test";
 import { CHROMES } from "../src/js/contract.ts";
+import { poll } from "./poll.ts";
 import { openStory } from "./story.ts";
 
 // Behavior that depends on the engine: native features each browser may or may not have, the JS
@@ -22,33 +23,6 @@ async function hoverFresh(page: Page, selector: string) {
 }
 
 const isOpen = (page: Page, selector: string) => page.locator(selector).evaluate((el) => el.matches(":popover-open, [open]"));
-
-/**
- * Calls `read`, a short page read, every 100 ms until one returns something other than null. Each
- * read starts on the timer, not after the one before returns: under load, Firefox can hold a read
- * until another message reaches the page. Waiting on that one read timed out 10 to 30 s after the
- * page saw the popover open (.verify/drop-in/hover/).
- */
-function poll<T>(read: () => Promise<T | null>, timeout = 30_000): Promise<T> {
-  return new Promise((resolve, reject) => {
-    let last: unknown = null;
-    const timer = setInterval(() => {
-      read().then(
-        (value) => {
-          if (value === null) return;
-          clearInterval(timer);
-          clearTimeout(limit);
-          resolve(value);
-        },
-        (error: unknown) => (last = error),
-      );
-    }, 100);
-    const limit = setTimeout(() => {
-      clearInterval(timer);
-      reject(new Error(`no page read returned a value in ${timeout} ms${last === null ? "" : `, last error: ${String(last)}`}`));
-    }, timeout);
-  });
-}
 
 /** Waits for a popover or dialog to open or close. */
 const waitOpen = (page: Page, selector: string, open = true) =>
