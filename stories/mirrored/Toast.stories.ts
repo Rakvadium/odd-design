@@ -1,5 +1,5 @@
-import { toast } from "../../src/js/enhance.ts";
-import { mirrored } from "../mirror.ts";
+import { toast, type ToastOptions } from "../../src/js/enhance.ts";
+import { mirrored, type Node } from "../mirror.ts";
 
 const meta = {
   title: "Components/Interactive",
@@ -70,5 +70,124 @@ export const Toast = {
         toast({ title: "Couldn’t sync", description: "Check your connection. Your changes are safe on this device.", tone: "danger", duration: Infinity }),
     };
     for (const button of canvasElement.querySelectorAll<HTMLButtonElement>("[data-toast]")) button.onclick = shows[button.dataset.toast as keyof typeof shows];
+  },
+};
+
+const dataToast = (index: number): Readonly<Record<string, string>> => ({ "data-toast": String(index) });
+
+type Shown = readonly (readonly [label: string, options: ToastOptions])[];
+
+const shownOnLoad = (shows: Shown, aria: string) =>
+  mirrored({
+    scene: () => ({
+      of: "div",
+      children: [
+        { of: "div", props: { className: "odd-row" }, children: shows.map(([label], i): Node<"Button"> => ({ of: "Button", props: { ...dataToast(i) }, children: [label] })) },
+        { of: "Toaster", props: { popover: "manual", "aria-label": "Notifications" } },
+      ],
+    }),
+    aria,
+  });
+
+const showAll = (canvasElement: HTMLElement, shows: Shown) => {
+  for (const button of canvasElement.querySelectorAll<HTMLButtonElement>("[data-toast]")) button.onclick = () => toast(shows[Number(button.dataset.toast)]![1]);
+  return shows.map(([, options]) => toast(options));
+};
+
+const tones: Shown = [
+  ["Save deck", { title: "Deck saved", description: "Midnight Control, version 15.", tone: "success", duration: Infinity }],
+  ["Check rotation", { title: "Rotation on May 1", description: "Ember Aggro leaves Standard.", tone: "warning", duration: Infinity }],
+  ["Fail to sync", { title: "Couldn’t sync", description: "Check your connection. Your changes are safe on this device.", tone: "danger", duration: Infinity }],
+];
+
+export const ToastVariants = {
+  ...shownOnLoad(tones, `
+- button "Save deck"
+- button "Check rotation"
+- button "Fail to sync"
+- region "Notifications":
+  - list:
+    - listitem:
+      - paragraph: Deck saved
+      - paragraph: Midnight Control, version 15.
+      - 'button "Dismiss: Deck saved"'
+    - listitem:
+      - paragraph: Rotation on May 1
+      - paragraph: Ember Aggro leaves Standard.
+      - 'button "Dismiss: Rotation on May 1"'
+    - listitem:
+      - paragraph: Couldn’t sync
+      - paragraph: Check your connection. Your changes are safe on this device.
+      - 'button "Dismiss: Couldn’t sync"'
+  - paragraph: Deck saved. Midnight Control, version 15.
+  - paragraph: Rotation on May 1. Ember Aggro leaves Standard.
+  - paragraph: Couldn’t sync. Check your connection. Your changes are safe on this device.`),
+  play: ({ canvasElement }: { canvasElement: HTMLElement }) => {
+    showAll(canvasElement, tones);
+  },
+};
+
+const parts: Shown = [
+  [
+    "Remove card",
+    {
+      title: "Removed “Ember Drake”",
+      description: "It goes back to your collection.",
+      tone: "info",
+      duration: Infinity,
+      action: { label: "Undo", onClick: () => toast({ title: "Card restored", tone: "success" }) },
+    },
+  ],
+];
+
+export const ToastParts = {
+  ...shownOnLoad(parts, `
+- button "Remove card"
+- region "Notifications":
+  - list:
+    - listitem:
+      - paragraph: Removed “Ember Drake”
+      - paragraph: It goes back to your collection.
+      - button "Undo"
+      - 'button "Dismiss: Removed “Ember Drake”"'
+  - paragraph: Removed “Ember Drake”. It goes back to your collection.`),
+  play: ({ canvasElement }: { canvasElement: HTMLElement }) => {
+    showAll(canvasElement, parts);
+  },
+};
+
+const freezeHalfwayOut = (element: Element) => {
+  for (const animation of element.getAnimations()) {
+    animation.pause();
+    animation.currentTime = Number(animation.effect!.getComputedTiming().activeDuration) / 2;
+  }
+};
+
+const states: Shown = [
+  ["Save draft", { title: "Draft saved", duration: Infinity }],
+  ["Finish upload", { title: "Upload finished", duration: Infinity }],
+];
+
+export const ToastStates = {
+  ...shownOnLoad(states, `
+- button "Save draft"
+- button "Finish upload"
+- region "Notifications":
+  - list:
+    - listitem:
+      - paragraph: Draft saved
+      - 'button "Dismiss: Draft saved"'
+    - listitem:
+      - paragraph: Upload finished
+      - 'button "Dismiss: Upload finished"'
+  - paragraph: Draft saved.`),
+  play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+    const [, upload] = showAll(canvasElement, states);
+    const closing = [...canvasElement.querySelectorAll<HTMLElement>(".odd-toast")].at(-1)!;
+    await Promise.all(closing.getAnimations().map((animation) => animation.finished));
+    // Reduced motion makes --duration-base 0ms, so dismiss() would find no exit to wait on and remove the toast.
+    closing.style.transitionDuration = "1s";
+    upload!.dismiss();
+    freezeHalfwayOut(closing);
   },
 };

@@ -15,7 +15,7 @@
   min-block-size: var(--control-height-lg);
   padding-block: var(--space-3);
   font-family: var(--font-heading);
-  font-weight: 600;
+  font-weight: var(--weight-semibold);
   text-transform: var(--heading-case);
   letter-spacing: var(--heading-tracking);
   list-style: none;

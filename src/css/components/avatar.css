@@ -22,7 +22,7 @@
   box-shadow: var(--shadow-control);
   font-family: var(--font-label);
   font-size: calc(var(--_size) * 0.38);
-  font-weight: 700;
+  font-weight: var(--weight-bold);
   line-height: 1;
   letter-spacing: 0.02em;
   text-transform: uppercase;

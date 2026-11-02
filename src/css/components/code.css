@@ -1,0 +1,43 @@
+/*
+ * <p>Set <code class="odd-code">--primary</code> on the scope.</p>
+ * <pre class="odd-pre"><code>bun add odd-design</code></pre>
+ * Code in the mono font. odd-code is a short piece of code inside a sentence. odd-pre is a block of code;
+ * put a bare code element inside it so screen readers know it is code. Leave the code out for command
+ * output. Long lines wrap instead of scrolling, so the block never needs a tab stop to be read with a
+ * keyboard. A code element inside odd-pre loses the inline chip.
+ */
+.odd-code {
+  padding: 0.1em 0.35em;
+  border: var(--border-width) solid var(--edge-control);
+  border-radius: min(var(--radius-control), var(--space-1));
+  background-color: var(--muted);
+  color: var(--foreground);
+  font-family: var(--font-mono);
+  font-size: 0.875em;
+  overflow-wrap: anywhere;
+  box-decoration-break: clone;
+  -webkit-box-decoration-break: clone;
+}
+
+.odd-pre {
+  margin: 0;
+  padding: var(--space-3);
+  border: var(--border-width) solid var(--edge-control);
+  border-radius: min(var(--radius-surface), var(--space-3));
+  background-color: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+  line-height: 1.45;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  tab-size: 2;
+}
+
+.odd-pre code {
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: none;
+  font: inherit;
+}

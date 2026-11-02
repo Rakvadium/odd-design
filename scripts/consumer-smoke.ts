@@ -7,7 +7,7 @@ const root = join(import.meta.dir, "..");
 const fixtures = join(root, "tests/fixtures/consumer");
 const manifest = JSON.parse(readFileSync(join(root, "package.json"), "utf8")) as { name: string; version: string };
 const expectedTarball = join(root, `${manifest.name}-${manifest.version}.tgz`);
-const CLIENT_MODULES = ["button.js", "tabs.js", "toast.js"];
+const CLIENT_MODULES = ["button.js", "combobox.js", "tabs.js", "toast.js"];
 
 const FORBIDDEN =
   "ODD-BUTTON-007: the disabled attribute is forbidden on odd-button. Allowed values: none. Fix: remove disabled and set aria-disabled. docs/usage/button.md#odd-button-007";
@@ -39,6 +39,9 @@ const REQUIRED = [
   "dist/js/palette.d.ts",
   "dist/eslint/plugin.js",
   "dist/eslint/plugin.d.ts",
+  "docs/recipes/number-stepper.md",
+  "docs/recipes/slider-with-number.md",
+  "docs/recipes/stat-row.md",
   "docs/usage/alert.md",
   "docs/usage/avatar.md",
   "docs/usage/badge.md",
@@ -63,13 +66,23 @@ const REQUIRED = [
   "docs/usage/sheet.md",
   "docs/usage/menu.md",
   "docs/usage/table.md",
+  "docs/usage/base.md",
+  "docs/usage/grid.md",
+  "docs/usage/shell.md",
+  "docs/usage/typography.md",
+  "docs/usage/link.md",
+  "docs/usage/spinner.md",
+  "docs/usage/combobox.md",
+  "docs/usage/breadcrumb.md",
+  "docs/usage/kbd.md",
+  "docs/usage/code.md",
   "src/css/index.css",
   "src/js/appearance.ts",
   "src/js/enhance.ts",
   "src/js/palette.ts",
 ];
 
-const ALLOWED = ["dist/", "docs/usage/", "src/css/", "src/js/"];
+const ALLOWED = ["dist/", "docs/recipes/", "docs/usage/", "src/css/", "src/js/"];
 
 const PACK_EXCLUDED = ["dist/eslint/html.js", "dist/eslint/jsx.js", "dist/eslint/html.d.ts", "dist/eslint/jsx.d.ts"];
 

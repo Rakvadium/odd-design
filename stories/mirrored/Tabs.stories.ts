@@ -71,3 +71,27 @@ export const Tabs = mirrored({
 - tabpanel "Season 7":
   - paragraph: Current season. Rotation on May 1.`,
 });
+
+export const TabsVertical = mirrored({
+  scene: () => ({
+    of: "Tabs",
+    props: { id: "settings-tabs", style: { maxInlineSize: "40rem" } },
+    children: [
+      {
+        of: "div",
+        props: { role: "tablist", "aria-label": "Deck settings", "aria-orientation": "vertical" },
+        children: [tab("general", "General", true), tab("sharing", "Sharing", false), tab("archive", "Archive", false)],
+      },
+      panel("general", false, ["Name, format, and cover card."]),
+      panel("sharing", true, ["Anyone with the link can view this deck."]),
+      panel("archive", true, ["Archived decks leave your list but keep their history."]),
+    ],
+  }),
+  aria: `
+- tablist "Deck settings":
+  - tab "General" [selected]
+  - tab "Sharing"
+  - tab "Archive"
+- tabpanel "General":
+  - paragraph: Name, format, and cover card.`,
+});

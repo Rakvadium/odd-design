@@ -457,6 +457,159 @@ const places: Record<string, readonly (readonly [string, number, number, string]
   "odd-table-005.bad.html": [
     ["ODD-TABLE-005", 2, 66, "aria-sort"],
   ],
+  "odd-table-006.bad.html": [
+    ["ODD-TABLE-006", 2, 1, "<table"],
+    ["ODD-TABLE-006", 3, 1, "<table"],
+  ],
+  "odd-scope-001.bad.html": [
+    ["ODD-SCOPE-001", 2, 1, "<div"],
+    ["ODD-SCOPE-001", 3, 1, "<section"],
+    ["ODD-SCOPE-001", 3, 1, "<section"],
+  ],
+  "odd-skip-001.bad.html": [
+    ["ODD-SKIP-001", 2, 9, "class"],
+    ["ODD-SKIP-001", 3, 1, "<a"],
+    ["ODD-SKIP-001", 4, 26, "href"],
+    ["ODD-SKIP-001", 5, 26, "href"],
+  ],
+  "odd-grid-001.bad.html": [
+    ["ODD-GRID-001", 2, 1, "<div"],
+    ["ODD-GRID-001", 2, 1, "<div"],
+    ["ODD-GRID-001", 2, 1, "<div"],
+  ],
+  "odd-shell-001.bad.html": [
+    ["ODD-SHELL-001", 3, 8, "class"],
+    ["ODD-SHELL-001", 4, 8, "class"],
+  ],
+  "odd-typography-001.bad.html": [
+    ["ODD-TYPOGRAPHY-001", 2, 6, "class"],
+    ["ODD-TYPOGRAPHY-001", 3, 4, "class"],
+  ],
+  "odd-typography-002.bad.html": [
+    ["ODD-TYPOGRAPHY-002", 2, 25, "data-size"],
+    ["ODD-TYPOGRAPHY-002", 3, 25, "data-size"],
+    ["ODD-TYPOGRAPHY-002", 4, 25, "data-size"],
+  ],
+  "odd-typography-003.bad.html": [
+    ["ODD-TYPOGRAPHY-003", 2, 24, "data-tone"],
+    ["ODD-TYPOGRAPHY-003", 3, 24, "data-tone"],
+  ],
+  "odd-link-001.bad.html": [
+    ["ODD-LINK-001", 2, 15, "class"],
+    ["ODD-LINK-001", 3, 9, "class"],
+  ],
+  "odd-link-002.bad.html": [["ODD-LINK-002", 2, 1, "<a"]],
+  "odd-link-003.bad.html": [
+    ["ODD-LINK-003", 2, 37, "aria-disabled"],
+    ["ODD-LINK-003", 3, 37, "disabled"],
+  ],
+  "odd-link-004.bad.html": [
+    ["ODD-LINK-004", 2, 38, 'role="button"'],
+    ["ODD-LINK-004", 3, 38, 'role="menuitem"'],
+  ],
+  "odd-link-005.bad.html": [
+    ["ODD-LINK-005", 2, 38, "aria-current"],
+    ["ODD-LINK-005", 3, 38, "aria-current"],
+  ],
+  "odd-link-006.bad.html": [
+    ["ODD-LINK-006", 2, 38, "data-variant"],
+    ["ODD-LINK-006", 3, 38, "data-icon-only"],
+  ],
+  "odd-link-007.bad.html": [
+    ["ODD-LINK-007", 2, 58, "target"],
+    ["ODD-LINK-007", 3, 55, "target"],
+  ],
+  "odd-spinner-001.bad.html": [
+    ["ODD-SPINNER-001", 2, 6, "class"],
+    ["ODD-SPINNER-001", 3, 4, "class"],
+  ],
+  "odd-spinner-002.bad.html": [
+    ["ODD-SPINNER-002", 2, 1, "<span"],
+    ["ODD-SPINNER-002", 3, 27, "aria-hidden"],
+    ["ODD-SPINNER-002", 4, 1, "<span"],
+    ["ODD-SPINNER-002", 5, 46, "role"],
+    ["ODD-SPINNER-002", 6, 46, "aria-label"],
+    ["ODD-SPINNER-002", 7, 46, "aria-busy"],
+  ],
+  "odd-spinner-003.bad.html": [["ODD-SPINNER-003", 2, 46, "data-size"]],
+  "odd-combobox-001.bad.html": [
+    ["ODD-COMBOBOX-001", 2, 10, 'class="odd-combobox"'],
+    ["ODD-COMBOBOX-001", 3, 167, 'class="odd-combobox-list"'],
+    ["ODD-COMBOBOX-001", 4, 266, 'class="odd-combobox-option"'],
+  ],
+  "odd-combobox-002.bad.html": [
+    ["ODD-COMBOBOX-002", 2, 1, "<div"],
+    ["ODD-COMBOBOX-003", 2, 1, "<div"],
+    ["ODD-COMBOBOX-002", 3, 1, "<div"],
+  ],
+  "odd-combobox-003.bad.html": [
+    ["ODD-COMBOBOX-003", 2, 1, "<div"],
+    ["ODD-COMBOBOX-003", 3, 1, "<div"],
+    ["ODD-COMBOBOX-003", 4, 1, "<div"],
+    ["ODD-COMBOBOX-003", 5, 1, "<div"],
+  ],
+  "odd-combobox-004.bad.html": [
+    ["ODD-COMBOBOX-004", 2, 163, "<div"],
+    ["ODD-COMBOBOX-004", 3, 206, 'popover="auto"'],
+    ["ODD-COMBOBOX-004", 4, 206, "popover"],
+  ],
+  "odd-combobox-005.bad.html": [
+    ["ODD-COMBOBOX-005", 2, 163, "<div"],
+    ["ODD-COMBOBOX-005", 3, 223, 'role="menu"'],
+  ],
+  "odd-combobox-006.bad.html": [
+    ["ODD-COMBOBOX-006", 2, 163, "<div"],
+    ["ODD-COMBOBOX-006", 3, 163, "<div"],
+  ],
+  "odd-combobox-007.bad.html": [
+    ["ODD-COMBOBOX-007", 2, 258, 'data-filter="auto"'],
+    ["ODD-COMBOBOX-007", 3, 258, 'data-filter="server"'],
+    ["ODD-COMBOBOX-007", 4, 27, 'data-filter="manual"'],
+  ],
+  "odd-combobox-008.bad.html": [
+    ["ODD-COMBOBOX-008", 2, 258, "<div"],
+    ["ODD-COMBOBOX-008", 3, 291, 'role="menuitem"'],
+  ],
+  "odd-combobox-009.bad.html": [
+    ["ODD-COMBOBOX-009", 2, 305, "disabled"],
+    ["ODD-COMBOBOX-009", 3, 305, 'aria-disabled="yes"'],
+  ],
+  "odd-combobox-010.bad.html": [
+    ["ODD-COMBOBOX-010", 2, 305, 'aria-selected="true"'],
+  ],
+  "odd-combobox-011.bad.html": [
+    ["ODD-COMBOBOX-011", 2, 27, 'role="combobox"'],
+    ["ODD-COMBOBOX-011", 3, 27, 'role="group"'],
+  ],
+  "odd-combobox-012.bad.html": [
+    ["ODD-COMBOBOX-012", 2, 27, 'data-size="sm"'],
+    ["ODD-COMBOBOX-012", 3, 258, 'data-tone="primary"'],
+    ["ODD-COMBOBOX-012", 4, 305, 'data-variant="ghost"'],
+  ],
+  "odd-breadcrumb-001.bad.html": [
+    ["ODD-BREADCRUMB-001", 2, 6, "class"],
+    ["ODD-BREADCRUMB-001", 3, 5, "class"],
+  ],
+  "odd-breadcrumb-002.bad.html": [["ODD-BREADCRUMB-002", 2, 1, "<nav"]],
+  "odd-breadcrumb-003.bad.html": [
+    ["ODD-BREADCRUMB-003", 2, 1, "<nav"],
+    ["ODD-BREADCRUMB-003", 3, 1, "<nav"],
+  ],
+  "odd-breadcrumb-004.bad.html": [["ODD-BREADCRUMB-004", 2, 53, 'data-tone="primary"']],
+  "odd-kbd-001.bad.html": [
+    ["ODD-KBD-001", 2, 16, "class"],
+    ["ODD-KBD-001", 2, 50, "class"],
+  ],
+  "odd-kbd-002.bad.html": [["ODD-KBD-002", 2, 31, 'aria-hidden="true"']],
+  "odd-kbd-003.bad.html": [["ODD-KBD-003", 2, 31, 'data-size="sm"']],
+  "odd-code-001.bad.html": [
+    ["ODD-CODE-001", 2, 14, "class"],
+    ["ODD-CODE-001", 3, 6, "class"],
+  ],
+  "odd-code-002.bad.html": [
+    ["ODD-CODE-002", 2, 31, 'data-size="sm"'],
+    ["ODD-CODE-002", 3, 22, 'data-tone="info"'],
+  ],
   "odd-class-001.bad.html": [
     ["ODD-CLASS-001", 2, 6, "class"],
     ["ODD-CLASS-001", 3, 4, "class"],

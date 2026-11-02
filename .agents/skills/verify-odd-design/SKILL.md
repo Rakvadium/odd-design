@@ -80,6 +80,7 @@ Rules for driving:
 - Prefer stable handles: ids and `commandfor`/`command` attributes in the stories, `input[name=…][value=…]`, `[role=switch]`, `aria-*`, and `.odd-*` classes. Do not use coordinates or nth-child.
 - Change state with `click`, `press`, and `type`, which send real input events. Use `eval` only to read state, never to set it. Setting `.value`, calling `.showModal()`, or toggling attributes bypasses exactly what you are trying to prove: `:user-invalid`, invoker commands, `closedby`, and the native radio behavior.
 - `mode:system` follows the browser's `prefers-color-scheme`, so pair it with `emulate`. `emulate` lasts until it is cleared or the run goes `down`.
+- `goto` and `axe` wait until a story's `play` has returned. The `--menu-open`, `--sheet-*`, and `--toast-*` stories open their overlay in `play`, so they are captured and scanned open.
 - Real feature recipes are in [`features/`](features/README.md). Read the matching file before driving.
 
 ## Evidence
@@ -169,7 +170,7 @@ Run this after changing the Button contract, the usage checker in `src/js/usage/
 bunx playwright test e2e/usage.spec.ts --project firefox
 ```
 
-`e2e/usage.spec.ts` builds `src/js/usage/dom.ts` once in the Firefox worker, during `beforeAll`, and writes `checker.js` under `.verify/playwright/usage-checker`. It injects that script the way `e2e/axe.spec.ts` injects axe. It opens every story and runs `checkRoot` on `#storybook-root`. It opens the Button Playground once per contract value. It clicks each toast trigger and runs `checkRoot` on `.odd-toaster`, because the action and dismiss buttons appear only after the click.
+`e2e/usage.spec.ts` builds `src/js/usage/dom.ts` once in the Firefox worker, during `beforeAll`, and writes `checker.js` under `.verify/playwright/usage-checker`. It injects that script the way `e2e/axe.spec.ts` injects axe. It opens every story and runs `checkRoot` on `#storybook-root`. It opens the Button Playground once per contract value. It clicks each toast trigger and runs `checkRoot` on `.odd-toaster`, because the action and dismiss buttons appear only after the click. A second test opens `--toast-states` in both Storybooks under `prefers-reduced-motion: reduce` and checks that its closing toast is still in the aria literal and that the two sides match.
 
 A clean run prints one line that starts with `[firefox]`, gives the number of stories the sweep checked, and ends with `0 diagnostics`. That number matches the pinned story list. A checker problem is one line, `<story id> [<state>] ODD-...`. A missing root is `<story id> [<state>] missing <selector>`. A Playground control that rendered the wrong attribute is `<story id> [<arg>=<value>] <attribute>=<actual>`. The disabled control adds ` disabled=true` or ` disabled=false` on that same line. If the injected script did not define `checkRoot`, the line is `<story id> [<state>] checkRoot is not installed`. The attached `usage-summary.json` stores those lines under `findings`. That file is not the axe report. Read it in the test output, or in the Playwright HTML report at `.verify/playwright/report`.
 

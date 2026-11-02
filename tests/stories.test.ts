@@ -58,6 +58,39 @@ test("the catalog has every story file's stories, and Button, Field, Choice, Bad
       "components-overlays--sheet",
       "components-interactive--menu",
       "components-data-display--table",
+      "components-data-display--table-parts",
+      "components-data-display--table-states",
+      "components-data-display--table-overflow",
+      "components-interactive--menu-open",
+      "components-interactive--tabs-vertical",
+      "components-overlays--sheet-end",
+      "components-overlays--sheet-start",
+      "components-overlays--sheet-top",
+      "components-overlays--sheet-bottom",
+      "components-overlays--sheet-right-to-left",
+      "components-interactive--toast-variants",
+      "components-interactive--toast-parts",
+      "components-interactive--toast-states",
+      "components-link--playground",
+      "components-link--states",
+      "components-link--in-text",
+      "components-spinner--playground",
+      "components-spinner--parts",
+      "components-spinner--states",
+      "components-combobox--playground",
+      "components-combobox--parts",
+      "components-combobox--states",
+      "components-combobox--open",
+      "components-combobox--async",
+      "components-breadcrumb--playground",
+      "components-breadcrumb--parts",
+      "components-breadcrumb--wrapping",
+      "components-kbd--playground",
+      "components-kbd--parts",
+      "components-kbd--shortcut-list",
+      "components-code--playground",
+      "components-code--parts",
+      "components-code--long-lines",
     ]),
   );
   expect(react.every((entry) => html.some((item) => item.id === entry.id))).toBe(true);
@@ -105,6 +138,71 @@ for (const entry of react) {
     expectSameDom(entry.mirror.scene(merged), entry.label);
   });
 }
+
+function bothRoots(id: string): ParentNode[] {
+  const entry = react.find((item) => item.id === id) ?? fail(`${id} is not mirrored`);
+  const htmlEntry = html.find((item) => item.id === id) ?? fail(`${id} has no HTML story`);
+  return [asRoot(renderHtml(htmlEntry), htmlEntry.label), reactRoot(entry)];
+}
+
+test("TableParts puts aria-sort on each sorted column's header", () => {
+  for (const root of bothRoots("components-data-display--table-parts")) {
+    const sorted = [...root.querySelectorAll("th[aria-sort]")].map((th) => [th.closest("table")?.querySelector("caption")?.textContent, th.textContent?.trim(), th.getAttribute("aria-sort")]);
+    expect(sorted).toEqual([
+      ["Sorted by deck, A to Z", "Deck", "ascending"],
+      ["Sorted by cards, most first", "Cards", "descending"],
+      ["Not sorted", "Deck", "none"],
+    ]);
+  }
+});
+
+test("LinkStates marks one link as the current page", () => {
+  for (const root of bothRoots("components-link--states")) {
+    const links = [...root.querySelectorAll("a.odd-link")].map((link) => [link.textContent, link.getAttribute("aria-current")]);
+    expect(links).toEqual([
+      ["Settings", null],
+      ["Roadmap", "page"],
+    ]);
+  }
+});
+
+test("SpinnerStates puts the spinner beside a busy Button's ring", () => {
+  for (const root of bothRoots("components-spinner--states")) {
+    expect(root.querySelector('[aria-busy="true"] > .odd-spinner[aria-hidden="true"]')).not.toBeNull();
+    expect(root.querySelector('.odd-button[aria-busy="true"]')?.textContent).toBe("Saving…");
+  }
+});
+
+test("ComboboxStates renders a disabled input, an invalid input, a disabled option, and options filtered to the value", () => {
+  for (const root of bothRoots("components-combobox--states")) {
+    expect(root.querySelector("input.odd-input:disabled")?.id).toBe("states-disabled");
+    expect(root.querySelector('input.odd-input[aria-invalid="true"]')?.id).toBe("states-invalid");
+    expect(root.querySelector('.odd-combobox-option[aria-disabled="true"]')?.textContent).toBe("Atlantis");
+    expect([...root.querySelectorAll("#states-filled-list > .odd-combobox-option:not([hidden])")].map((option) => option.textContent)).toEqual(["Berlin"]);
+  }
+});
+
+test("ComboboxAsync starts with an empty list that its code filters", () => {
+  for (const root of bothRoots("components-combobox--async")) {
+    expect(root.querySelector('.odd-combobox-list[data-filter="manual"]')?.childElementCount).toBe(0);
+  }
+});
+
+test("BreadcrumbParts marks each trail's last crumb, and only that crumb, as the current page", () => {
+  for (const root of bothRoots("components-breadcrumb--parts")) {
+    const trails = [...root.querySelectorAll("nav.odd-breadcrumb > ol")].map((list) => {
+      const current = [...list.querySelectorAll('[aria-current="page"]')];
+      return current.length === 1 && current[0] === list.querySelector(":scope > li:last-child > a.odd-link");
+    });
+    expect(trails).toEqual([true, true, true]);
+  }
+});
+
+test("TabsVertical's tablist is vertical", () => {
+  for (const root of bothRoots("components-interactive--tabs-vertical")) {
+    expect(root.querySelector('[role="tablist"]')?.getAttribute("aria-orientation")).toBe("vertical");
+  }
+});
 
 for (const entry of html) {
   test(entry.label, () => {
@@ -188,4 +286,93 @@ for (const [arg, attribute] of [
       expect(buttons.react.hasAttribute("disabled")).toBe(false);
     });
   }
+}
+
+const linkPlayground = react.find((entry) => entry.id === "components-link--playground") ?? fail("Link stories have no Playground");
+const currentRule = USAGE.link.find((item) => item.kind === "enum" && item.attribute === "aria-current");
+if (currentRule?.kind !== "enum") throw new Error("no enum rule for aria-current");
+const currentOptions = linkPlayground.meta.argTypes?.current?.options ?? fail("Link Playground argTypes.current has no options");
+
+test("Link Playground argTypes match the link contract", () => {
+  expect([...currentOptions].sort()).toEqual(["none", ...currentRule.values].sort());
+});
+
+for (const value of currentOptions) {
+  test(`Link Playground current=${value}`, () => {
+    const args = { current: value };
+    expectSameDom(linkPlayground.mirror.scene({ ...linkPlayground.meta.args, ...linkPlayground.story.args, ...args }), `Link Playground ${value}`);
+    const expected = value === "none" ? null : value;
+    for (const root of [asRoot(renderHtml(linkPlayground, args), linkPlayground.label), reactRoot(linkPlayground, args)]) {
+      checkRoot(root);
+      expect(root.querySelector("a.odd-link")?.getAttribute("aria-current")).toBe(expected);
+    }
+  });
+}
+
+const comboboxPlayground = react.find((entry) => entry.id === "components-combobox--playground") ?? fail("Combobox stories have no Playground");
+const filterRule = USAGE.comboboxList.find((item) => item.kind === "enum" && item.attribute === "data-filter");
+if (filterRule?.kind !== "enum") throw new Error("no enum rule for data-filter");
+const filterOptions = comboboxPlayground.meta.argTypes?.filter?.options ?? fail("Combobox Playground argTypes.filter has no options");
+const filterAbsent = filterRule.omit.filter((token) => filterOptions.includes(token));
+
+function comboboxRoots(args: Record<string, unknown>): ParentNode[] {
+  expectSameDom(comboboxPlayground.mirror.scene({ ...comboboxPlayground.meta.args, ...comboboxPlayground.story.args, ...args }), `Combobox Playground ${JSON.stringify(args)}`);
+  const roots = [asRoot(renderHtml(comboboxPlayground, args), comboboxPlayground.label), reactRoot(comboboxPlayground, args)];
+  for (const root of roots) checkRoot(root);
+  return roots;
+}
+
+test("Combobox Playground argTypes match the combobox contract", () => {
+  expect(filterAbsent).toHaveLength(1);
+  expect([...filterOptions].sort()).toEqual([...filterRule.values, filterAbsent[0]].sort());
+});
+
+for (const value of filterOptions) {
+  test(`Combobox Playground filter=${value}`, () => {
+    const expected = value === filterAbsent[0] ? null : value;
+    for (const root of comboboxRoots({ filter: value })) expect(root.querySelector(".odd-combobox-list")?.getAttribute("data-filter")).toBe(expected);
+  });
+}
+
+for (const disabled of [true, false]) {
+  test(`Combobox Playground disabled=${disabled}`, () => {
+    for (const root of comboboxRoots({ disabled })) {
+      const input = root.querySelector("input.odd-input");
+      expect([input?.hasAttribute("disabled"), input?.hasAttribute("aria-disabled")]).toEqual([disabled, false]);
+    }
+  });
+}
+
+function playgroundRoots(id: string, args: Record<string, unknown>): ParentNode[] {
+  const entry = react.find((item) => item.id === id) ?? fail(`${id} is not mirrored`);
+  expectSameDom(entry.mirror.scene({ ...entry.meta.args, ...entry.story.args, ...args }), `${entry.label} ${JSON.stringify(args)}`);
+  const roots = [asRoot(renderHtml(entry, args), entry.label), reactRoot(entry, args)];
+  for (const root of roots) checkRoot(root);
+  return roots;
+}
+
+for (const levels of [1, 2, 3, 4, 5]) {
+  test(`Breadcrumb Playground levels=${levels}`, () => {
+    for (const root of playgroundRoots("components-breadcrumb--playground", { levels })) {
+      expect(root.querySelectorAll("nav.odd-breadcrumb > ol > li")).toHaveLength(levels);
+      expect(root.querySelector('[aria-current="page"]')).toBe(root.querySelector("li:last-child > a.odd-link"));
+    }
+  });
+}
+
+test("Kbd Playground draws one key per word of keys", () => {
+  for (const root of playgroundRoots("components-kbd--playground", { keys: "Ctrl Shift P" })) {
+    expect([...root.querySelectorAll("kbd.odd-kbd")].map((key) => key.textContent)).toEqual(["Ctrl", "Shift", "P"]);
+  }
+});
+
+for (const [kind, selector] of [
+  ["inline", "p > code.odd-code"],
+  ["block", "pre.odd-pre > code:not([class])"],
+] as const) {
+  test(`Code Playground kind=${kind}`, () => {
+    for (const root of playgroundRoots("components-code--playground", { kind, text: "bun add odd-design" })) {
+      expect(root.querySelector(selector)?.textContent).toBe("bun add odd-design");
+    }
+  });
 }

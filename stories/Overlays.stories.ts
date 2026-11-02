@@ -55,7 +55,7 @@ export const HoverCard: Story = {
       <div class="odd-row" style="--gap: var(--space-3)">
         <span class="odd-avatar" aria-hidden="true">MO</span>
         <div>
-          <p class="odd-heading" data-size="sm">Midnight Control</p>
+          <h2 class="odd-heading" data-size="sm">Midnight Control</h2>
           <p class="odd-muted" style="font-size: var(--text-sm)">by Mira Okafor</p>
         </div>
       </div>

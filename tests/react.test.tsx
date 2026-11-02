@@ -8,12 +8,16 @@ import { checkRoot } from "../src/js/usage/dom.ts";
 import { Alert, AlertTitle } from "../src/react/alert.tsx";
 import { Avatar, AvatarGroup } from "../src/react/avatar.tsx";
 import { Badge } from "../src/react/badge.tsx";
+import { Breadcrumb } from "../src/react/breadcrumb.tsx";
 import { Button } from "../src/react/button.tsx";
 import { Card, CardFooter, CardLink } from "../src/react/card.tsx";
 import { Choice, Segmented, Switch } from "../src/react/choice.tsx";
+import { Code, Pre } from "../src/react/code.tsx";
+import { Combobox, ComboboxList, ComboboxOption } from "../src/react/combobox.tsx";
 import { Dialog, DialogActions } from "../src/react/dialog.tsx";
 import { Disclosure } from "../src/react/disclosure.tsx";
 import { Field, FieldError, Hint, Input, Label, Select, Textarea } from "../src/react/field.tsx";
+import { Kbd } from "../src/react/kbd.tsx";
 import { Menu, MenuItem } from "../src/react/menu.tsx";
 import { Meter, Progress } from "../src/react/meter.tsx";
 import { Popover } from "../src/react/popover.tsx";
@@ -22,8 +26,10 @@ import { Separator } from "../src/react/separator.tsx";
 import { Sheet, SheetFooter, SheetHeader } from "../src/react/sheet.tsx";
 import { Skeleton } from "../src/react/skeleton.tsx";
 import { Slider } from "../src/react/slider.tsx";
+import { Spinner } from "../src/react/spinner.tsx";
 import { Table, TableSort, TableWrap } from "../src/react/table.tsx";
 import { Tabs } from "../src/react/tabs.tsx";
+import { TextLink } from "../src/react/text-link.tsx";
 import { Toaster } from "../src/react/toast.tsx";
 
 Object.assign(globalThis, { IS_REACT_ACT_ENVIRONMENT: true });
@@ -185,6 +191,80 @@ const markup: readonly [string, ReactElement, string][] = [
       <CardFooter>60 cards</CardFooter>
     </Card>,
     '<article class="odd-card deck" data-interactive=""><h3 class="odd-card-title"><a href="/decks/ember" class="odd-card-link">Ember Aggro</a></h3><div class="odd-card-footer">60 cards</div></article>',
+  ],
+  [
+    "a text link and the current page",
+    <p>
+      Read the <TextLink href="#guide">setup guide</TextLink> or open <TextLink href="#roadmap" aria-current="page" className="nav">Roadmap</TextLink>.
+    </p>,
+    '<p>Read the <a href="#guide" class="odd-link">setup guide</a> or open <a href="#roadmap" aria-current="page" class="odd-link nav">Roadmap</a>.</p>',
+  ],
+  [
+    "a spinner in a busy region",
+    <div className="odd-row" aria-busy="true">
+      <Spinner aria-hidden="true" /> Loading projects…
+    </div>,
+    '<div class="odd-row" aria-busy="true"><span aria-hidden="true" class="odd-spinner"></span> Loading projects…</div>',
+  ],
+  [
+    "a breadcrumb trail with a plain level",
+    <Breadcrumb aria-label="Breadcrumb">
+      <ol>
+        <li>
+          <TextLink href="#home">Home</TextLink>
+        </li>
+        <li>Archived</li>
+        <li>
+          <TextLink href="#alerts" aria-current="page">
+            Alerts
+          </TextLink>
+        </li>
+      </ol>
+    </Breadcrumb>,
+    '<nav aria-label="Breadcrumb" class="odd-breadcrumb"><ol><li><a href="#home" class="odd-link">Home</a></li><li>Archived</li><li><a href="#alerts" aria-current="page" class="odd-link">Alerts</a></li></ol></nav>',
+  ],
+  [
+    "keys in a sentence",
+    <p>
+      Press <Kbd>Ctrl</Kbd> <Kbd className="wide">K</Kbd> to search.
+    </p>,
+    '<p>Press <kbd class="odd-kbd">Ctrl</kbd> <kbd class="odd-kbd wide">K</kbd> to search.</p>',
+  ],
+  [
+    "inline code and a block",
+    <div className="odd-stack">
+      <p>
+        Set <Code>--primary</Code> on the scope.
+      </p>
+      <Pre data-language="sh">
+        <code>bun add odd-design</code>
+      </Pre>
+    </div>,
+    '<div class="odd-stack"><p>Set <code class="odd-code">--primary</code> on the scope.</p><pre data-language="sh" class="odd-pre"><code>bun add odd-design</code></pre></div>',
+  ],
+  [
+    "a combobox in a field, before enhancement",
+    <Field>
+      <Label htmlFor="city" id="city-label">
+        City
+      </Label>
+      <Combobox>
+        <Input id="city" name="city" role="combobox" aria-controls="city-list" aria-expanded="false" aria-autocomplete="list" />
+        <ComboboxList id="city-list" popover="manual" role="listbox" aria-labelledby="city-label">
+          <ComboboxOption role="option">Amsterdam</ComboboxOption>
+          <ComboboxOption role="option" aria-disabled="true">
+            Atlantis
+          </ComboboxOption>
+          <ComboboxOption role="option">Berlin</ComboboxOption>
+        </ComboboxList>
+      </Combobox>
+    </Field>,
+    '<div class="odd-field"><label for="city" id="city-label" class="odd-label">City</label><div class="odd-combobox"><input id="city" role="combobox" aria-controls="city-list" aria-expanded="false" aria-autocomplete="list" class="odd-input" name="city"/><div id="city-list" popover="manual" role="listbox" aria-labelledby="city-label" class="odd-combobox-list"><div role="option" class="odd-combobox-option">Amsterdam</div><div role="option" aria-disabled="true" class="odd-combobox-option">Atlantis</div><div role="option" class="odd-combobox-option">Berlin</div></div></div></div>',
+  ],
+  [
+    "a combobox list that your code filters",
+    <ComboboxList id="people" popover="manual" role="listbox" aria-label="People" data-filter="manual" className="wide" />,
+    '<div id="people" popover="manual" role="listbox" aria-label="People" data-filter="manual" class="odd-combobox-list wide"></div>',
   ],
   [
     "open disclosure in a named group",
@@ -477,6 +557,117 @@ describe("Menu", () => {
   });
 });
 
+describe("Combobox", () => {
+  function CityField({ onChange }: { onChange: (value: string) => void }) {
+    const [value, setValue] = useState("");
+    const [renders, setRenders] = useState(0);
+    return (
+      <>
+        <Combobox>
+          <Input
+            id="city"
+            role="combobox"
+            aria-controls="city-list"
+            aria-expanded="false"
+            aria-autocomplete="list"
+            aria-label="City"
+            value={value}
+            onChange={(event) => {
+              onChange(event.target.value);
+              setValue(event.target.value);
+            }}
+          />
+          <ComboboxList id="city-list" popover="manual" role="listbox" aria-label="Cities">
+            <ComboboxOption role="option">Amsterdam</ComboboxOption>
+            <ComboboxOption role="option" aria-disabled="true">
+              Atlantis
+            </ComboboxOption>
+            <ComboboxOption role="option">Berlin</ComboboxOption>
+          </ComboboxList>
+        </Combobox>
+        <button type="button" onClick={() => setRenders(renders + 1)}>
+          Render {renders}
+        </button>
+      </>
+    );
+  }
+
+  const key = (input: HTMLInputElement, name: string) => input.dispatchEvent(new KeyboardEvent("keydown", { key: name, bubbles: true, cancelable: true }));
+  const active = (input: HTMLInputElement) => document.getElementById(input.getAttribute("aria-activedescendant") ?? "")?.textContent ?? null;
+
+  test("steps once per arrow under StrictMode beside an app's enhance(), and after the app's cleanup keeps open through a render, calls a controlled onChange once, and still steps", async () => {
+    const host = document.createElement("div");
+    document.body.append(host);
+    const root = createRoot(host);
+    mounted = root;
+    const changes: string[] = [];
+    await act(async () =>
+      root.render(
+        <StrictMode>
+          <CityField onChange={(value) => changes.push(value)} />
+        </StrictMode>,
+      ),
+    );
+    const unwire = enhance(document);
+    const input = host.querySelector("input")!;
+    key(input, "ArrowDown");
+    key(input, "ArrowDown");
+    expect(active(input)).toBe("Berlin");
+    unwire();
+    await act(async () => host.querySelector("button")!.click());
+    expect([input.getAttribute("aria-expanded"), active(input)]).toEqual(["true", "Berlin"]);
+    await act(async () => key(input, "Enter"));
+    expect([input.value, changes, input.getAttribute("aria-expanded")]).toEqual(["Berlin", ["Berlin"], "false"]);
+    key(input, "ArrowDown");
+    expect(active(input)).toBe("Berlin");
+  });
+
+  test("unmounting closes an open list and unwires the root", async () => {
+    const host = document.createElement("div");
+    document.body.append(host);
+    const root = createRoot(host);
+    await act(async () => root.render(<CityField onChange={() => {}} />));
+    const combobox = host.querySelector<HTMLElement>(".odd-combobox")!;
+    const input = combobox.querySelector("input")!;
+    key(input, "ArrowDown");
+    expect([input.getAttribute("aria-expanded"), active(input)]).toEqual(["true", "Amsterdam"]);
+    await act(async () => root.unmount());
+    expect([input.getAttribute("aria-expanded"), input.hasAttribute("aria-activedescendant")]).toEqual(["false", false]);
+    document.body.append(combobox);
+    key(input, "ArrowDown");
+    expect([input.getAttribute("aria-expanded"), input.hasAttribute("aria-activedescendant")]).toEqual(["false", false]);
+  });
+
+  test("a render that changes the input's aria-expanded prop keeps an open list's state on the input", async () => {
+    function Collapsing() {
+      const [expanded, setExpanded] = useState<"true" | "false">("true");
+      return (
+        <>
+          <Combobox>
+            <Input id="city" role="combobox" aria-controls="city-list" aria-expanded={expanded} aria-autocomplete="list" aria-label="City" />
+            <ComboboxList id="city-list" popover="manual" role="listbox" aria-label="Cities">
+              <ComboboxOption role="option">Amsterdam</ComboboxOption>
+            </ComboboxList>
+          </Combobox>
+          <button type="button" onClick={() => setExpanded("false")}>
+            Collapse
+          </button>
+        </>
+      );
+    }
+    const host = document.createElement("div");
+    document.body.append(host);
+    const root = createRoot(host);
+    mounted = root;
+    await act(async () => root.render(<Collapsing />));
+    const input = host.querySelector("input")!;
+    expect(input.getAttribute("aria-expanded")).toBe("false");
+    key(input, "ArrowDown");
+    await act(async () => host.querySelector("button")!.click());
+    expect([input.getAttribute("aria-expanded"), active(input)]).toEqual(["true", "Amsterdam"]);
+  });
+});
+
 describe("Table", () => {
   test("select-all reaches React onChange once per changed row under StrictMode beside an app's enhance(), leaves a row that cancels its click, resyncs after React changes the rows, and finds a header box rendered after mount", async () => {
     const host = document.createElement("div");
@@ -725,6 +916,33 @@ const failures: Record<string, { codes: string[]; text: string[] }> = {
   "skeleton-text": { codes: ["ODD-SKELETON-004"], text: [] },
   "skeleton-aria-busy": { codes: ["ODD-SKELETON-004"], text: [] },
   "skeleton-data-size": { codes: ["ODD-SKELETON-005"], text: [] },
+  "text-link-href": { codes: [], text: ["Property 'href' is missing"] },
+  "text-link-aria-disabled": { codes: ["ODD-LINK-003"], text: [] },
+  "text-link-disabled": { codes: ["ODD-LINK-003"], text: [] },
+  "text-link-role": { codes: ["ODD-LINK-004"], text: [] },
+  "text-link-aria-current-value": { codes: [], text: ['"page"'] },
+  "text-link-data-variant": { codes: ["ODD-LINK-006"], text: [] },
+  "spinner-aria-hidden": { codes: [], text: ["'\"aria-hidden\"' is missing"] },
+  "spinner-text": { codes: ["ODD-SPINNER-002"], text: [] },
+  "spinner-role": { codes: ["ODD-SPINNER-002"], text: [] },
+  "spinner-aria-label": { codes: ["ODD-SPINNER-002"], text: [] },
+  "spinner-data-size": { codes: ["ODD-SPINNER-003"], text: [] },
+  "combobox-role": { codes: ["ODD-COMBOBOX-011"], text: [] },
+  "combobox-data-filter": { codes: ["ODD-COMBOBOX-007"], text: [] },
+  "combobox-data-tone": { codes: ["ODD-COMBOBOX-012"], text: [] },
+  "combobox-list-popover": { codes: [], text: ["Property 'popover' is missing"] },
+  "combobox-list-popover-auto": { codes: [], text: ["'\"auto\"' is not assignable to type '\"manual\"'"] },
+  "combobox-list-role": { codes: [], text: ['"listbox"'] },
+  "combobox-list-name": { codes: [], text: ["Property '\"aria-labelledby\"' is missing"] },
+  "combobox-list-filter": { codes: [], text: ["'\"auto\"' is not assignable to type '\"manual\"'"] },
+  "combobox-option-disabled": { codes: ["ODD-COMBOBOX-009"], text: [] },
+  "combobox-option-selected": { codes: ["ODD-COMBOBOX-010"], text: [] },
+  "breadcrumb-name": { codes: [], text: ["Property '\"aria-labelledby\"' is missing"] },
+  "breadcrumb-data-tone": { codes: ["ODD-BREADCRUMB-004"], text: [] },
+  "kbd-aria-hidden": { codes: ["ODD-KBD-002"], text: [] },
+  "kbd-data-size": { codes: ["ODD-KBD-003"], text: [] },
+  "code-data-tone": { codes: ["ODD-CODE-002"], text: [] },
+  "pre-data-size": { codes: ["ODD-CODE-002"], text: [] },
   "card-on-click": { codes: ["ODD-CARD-004"], text: [] },
   "card-link-href": { codes: [], text: ["Property 'href' is missing"] },
   "card-data-tone": { codes: ["ODD-CARD-006"], text: [] },

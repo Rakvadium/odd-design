@@ -152,6 +152,42 @@ The plugin checks `Skeleton` as a `div` with `odd-skeleton`, from its entry of `
 
 So `<Skeleton aria-hidden="true" shape="circle">` reports `ODD-SKELETON-002`, `<Skeleton />` and `<Skeleton aria-hidden>` report `ODD-SKELETON-003`, `<Skeleton aria-hidden="true">Loading</Skeleton>` and `<Skeleton aria-hidden="true" aria-busy="true">` report `ODD-SKELETON-004`, and `<Skeleton aria-hidden="true" data-size="lg">` reports `ODD-SKELETON-005`. A bare `aria-hidden` is read as empty, which hides nothing. A computed `shape` gives the `ODD-STATIC-001` warning. A spread gives that warning too, and `ODD-SKELETON-003` then stays quiet, because the spread may hold `aria-hidden`. The plugin does not read a skeleton's parent, so a block with no busy region passes.
 
+### Combobox from odd-design/react
+
+The plugin checks `Combobox`, `ComboboxList`, and `ComboboxOption` as `div`s with `odd-combobox`, `odd-combobox-list`, and `odd-combobox-option`, from their entries of `WRAPPERS`. They map no props, so every prop is the attribute with the same name. The input is Field's `Input`, checked under Field's rules.
+
+So a `Combobox` without a direct `role="combobox"` child or a direct `ComboboxList` reports `ODD-COMBOBOX-002`, and an input without `aria-controls` or `aria-autocomplete="list"` reports `ODD-COMBOBOX-003`. `<ComboboxList popover="auto">` reports `ODD-COMBOBOX-004`, `role="menu"` reports `ODD-COMBOBOX-005`, a list with no name reports `ODD-COMBOBOX-006`, and `data-filter="auto"` reports `ODD-COMBOBOX-007`. `<ComboboxOption disabled>` reports `ODD-COMBOBOX-009`, `aria-selected` reports `ODD-COMBOBOX-010`, and `<Combobox role="combobox">` reports `ODD-COMBOBOX-011`. A raw `<section className="odd-combobox">` reports `ODD-COMBOBOX-001`. A computed `data-filter` or a spread gives the `ODD-STATIC-001` warning.
+
+### Spinner from odd-design/react
+
+The plugin checks `Spinner` as a `span` with `odd-spinner`, from its entry of `WRAPPERS`. It maps no props, so every prop is the attribute with the same name.
+
+So `<Spinner />`, `<Spinner aria-hidden>`, `<Spinner aria-hidden="true">Loading</Spinner>`, and `<Spinner aria-hidden="true" role="status" />` report `ODD-SPINNER-002`, and `<Spinner aria-hidden="true" data-size="lg" />` reports `ODD-SPINNER-003`. A raw `<div className="odd-spinner">` reports `ODD-SPINNER-001`. A spread gives the `ODD-STATIC-001` warning, and the missing `aria-hidden` then stays quiet. The plugin does not read a spinner's parent, so a spinner with no busy region passes.
+
+### TextLink from odd-design/react
+
+The plugin checks `TextLink` as an `a` with `odd-link`, from its entry of `WRAPPERS`, under any import alias. It maps no props, so every prop is the attribute with the same name.
+
+So `<TextLink>` without `href` reports `ODD-LINK-002`, `aria-disabled` or `disabled` reports `ODD-LINK-003`, `role="button"` reports `ODD-LINK-004`, `aria-current="true"` reports `ODD-LINK-005`, `data-variant` reports `ODD-LINK-006`, and `target="_blank"` without `rel` reports `ODD-LINK-007`. A raw `<span className="odd-link">` reports `ODD-LINK-001`. A router's `<Link className="odd-link">` is an unknown component, so it gives the `ODD-STATIC-001` warning and no link rules.
+
+### Breadcrumb from odd-design/react
+
+The plugin checks `Breadcrumb` as a `nav` with `odd-breadcrumb`, from its entry of `WRAPPERS`. It maps no props, so every prop is the attribute with the same name. The plugin reads its children, so the `ol` inside counts.
+
+So `<Breadcrumb aria-label="Breadcrumb">` around a `ul` reports `ODD-BREADCRUMB-003`, `<Breadcrumb>` with no `aria-label` and no `aria-labelledby` reports `ODD-BREADCRUMB-002`, and `data-tone` reports `ODD-BREADCRUMB-004`. A raw `<div className="odd-breadcrumb">` reports `ODD-BREADCRUMB-001`. The crumbs are `TextLink`s, checked under Link's rules. No rule requires a current crumb.
+
+### Kbd from odd-design/react
+
+The plugin checks `Kbd` as a `kbd` with `odd-kbd`, from its entry of `WRAPPERS`. It maps no props, so every prop is the attribute with the same name.
+
+So `<Kbd aria-hidden="true">` reports `ODD-KBD-002`, and `<Kbd data-size="sm">` reports `ODD-KBD-003`. A raw `<span className="odd-kbd">` reports `ODD-KBD-001`. A raw `<kbd className="odd-menu-shortcut" aria-hidden="true">` inside a `MenuItem` is not a `Kbd`, so `ODD-KBD-002` does not reach it.
+
+### Code and Pre from odd-design/react
+
+The plugin checks `Code` as a `code` with `odd-code` and `Pre` as a `pre` with `odd-pre`, from their entries of `WRAPPERS`. They map no props, so every prop is the attribute with the same name.
+
+So `<Pre data-size="sm">` and `<Code data-tone="primary">` report `ODD-CODE-002`, while `data-language` passes. A raw `<span className="odd-code">` or `<div className="odd-pre">` reports `ODD-CODE-001`.
+
 ### Card from odd-design/react
 
 The plugin checks `Card` as an `article` with `odd-card`, `CardLink` as an `a` with `odd-card-link`, and `CardFooter` as a `div` with `odd-card-footer`, from their entries of `WRAPPERS`. `interactive` on `Card` is read as `data-interactive`. A raw `data-interactive` gives nothing. `Card` sets that attribute from `interactive`, so it drops a raw one, and its type rejects one. Every other prop is the attribute with the same name. The plugin reads a card's children, so a `CardLink` in the title counts as the card's link, even with a computed `href`.
@@ -186,7 +222,7 @@ So `<Slider>` with no `type`, `<Slider type="number">`, and a raw `<input classN
 
 The plugin checks `Meter` as a `meter` with `odd-meter`, and `Progress` as a `progress` with `odd-progress`, from their entries of `WRAPPERS`. `tone` is read as `data-tone`. A raw `data-tone` gives nothing. Both parts set that attribute from `tone`, so they drop a raw one, and their types reject one. Every other prop is the attribute with the same name.
 
-So `<Meter tone="primary">` reports `ODD-METER-002`, and so does a raw `<progress className="odd-progress" data-tone="neutral">`. `<Progress data-size="sm">` reports `ODD-METER-003`. A raw `<div className="odd-progress">` or `<progress className="odd-meter">` reports `ODD-METER-001`. A computed `tone`, such as `<Meter tone={toneOf[kind]}>`, gives the `ODD-STATIC-001` warning, the same as a computed `tone` on `Badge`. The plugin does not read `low` and `high` beside `tone`, or the `odd-stat` around a bar.
+So `<Meter tone="primary">` reports `ODD-METER-002`, and so does a raw `<progress className="odd-progress" data-tone="neutral">`. `<Progress data-size="sm">` reports `ODD-METER-003`. A raw `<div className="odd-progress">` or `<progress className="odd-meter">` reports `ODD-METER-001`. A computed `tone`, such as `<Meter tone={toneOf[kind]}>`, gives the `ODD-STATIC-001` warning, the same as a computed `tone` on `Badge`. The plugin does not read `low` and `high` beside `tone`, or the stat row around a bar.
 
 ### Toaster from odd-design/react
 

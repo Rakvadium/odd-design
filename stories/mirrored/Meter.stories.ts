@@ -6,7 +6,7 @@ const meta = {
     docs: {
       description: {
         component:
-          "`Progress` and `Meter` from `odd-design/react` render `progress.odd-progress` for tasks and `meter.odd-meter` for measurements. Leave out `value` for an indeterminate progress bar. `tone` recolors a bar that has no `low` or `high`. With `low`, `high`, and `optimum`, a meter colors itself by range. Each bar is named by its `<label>` or `aria-label`, and the value is also shown as text. The `odd-stat` row around each bar is native markup.",
+          "`Progress` and `Meter` from `odd-design/react` render `progress.odd-progress` for tasks and `meter.odd-meter` for measurements. Leave out `value` for an indeterminate progress bar. `tone` recolors a bar that has no `low` or `high`. With `low`, `high`, and `optimum`, a meter colors itself by range. Each bar is named by its `<label>` or `aria-label`, and the value is also shown as text. Each bar sits in the Stat row recipe, which is native markup.",
       },
     },
   },
@@ -17,8 +17,18 @@ export default meta;
 function stat(id: string, label: string, value: Node<"span">["children"], bar: Node<"Meter"> | Node<"Progress">): Node<"div"> {
   return {
     of: "div",
-    props: { className: "odd-stat" },
-    children: [{ of: "label", props: { htmlFor: id }, children: [label] }, { of: "span", props: { className: "odd-stat-value" }, children: value }, bar],
+    props: { className: "odd-stack", style: { "--gap": "var(--space-1)" } },
+    children: [
+      {
+        of: "div",
+        props: { className: "odd-row", style: { justifyContent: "space-between" } },
+        children: [
+          { of: "label", props: { className: "odd-muted", htmlFor: id }, children: [label] },
+          { of: "span", props: { className: "odd-stat-value" }, children: value },
+        ],
+      },
+      bar,
+    ],
   };
 }
 

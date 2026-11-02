@@ -1,14 +1,3 @@
-/*
- * Range field: markup is described in src/css/components/range-field.css.
- *
- * enhanceRangeField copies the slider's min, max, and step to the number input, then keeps them in
- * sync. Moving the slider writes the number. Typing a valid number moves the slider and fires input
- * on it, and committing one fires change on it. The number input's own input and change events stop
- * at the number input, so a page listens to the slider and hears each change once. A number that
- * is out of range or off step leaves the slider where it is. On commit it gets aria-invalid and an
- * odd-error after the row, named by its aria-describedby, until the number is valid again. An
- * empty number on commit goes back to the slider's value.
- */
 export type RangeFieldOptions = {
   /** The error text for a number the slider can't take. */
   message?: (range: { min: string; max: string; step: string }) => string;
@@ -19,6 +8,22 @@ const defaultMessage = ({ min, max, step }: { min: string; max: string; step: st
 
 let ids = 0;
 
+/**
+ * Slider with number, laid out in docs/recipes/slider-with-number.md. Reads the first
+ * input[type="range"] and the first input[type="number"] under root:
+ *   <div class="odd-row">
+ *     <input class="odd-slider" type="range" id="speed" min="0" max="200" step="5" value="40">
+ *     <input class="odd-input" type="number" id="speed-number" aria-labelledby="speed-label speed-unit">
+ *     <span class="odd-muted" id="speed-unit">mm/s</span>
+ *   </div>
+ * It copies the slider's min, max, step, and value to the number input, then keeps the two in sync.
+ * Moving the slider writes the number. Typing a valid number moves the slider and fires input on it,
+ * and committing one fires change on it. The number input's own input and change events stop at the
+ * number input, so a page listens to the slider and hears each change once. A number that is out of
+ * range or off step leaves the slider where it is. On commit it gets aria-invalid and an odd-error
+ * after root, named by its aria-describedby, until the number is valid again. An empty number on
+ * commit goes back to the slider's value. enhance() does not find these, so call this on each root.
+ */
 export function enhanceRangeField(root: HTMLElement, { message = defaultMessage }: RangeFieldOptions = {}): () => void {
   const slider = root.querySelector<HTMLInputElement>('input[type="range"]');
   const number = root.querySelector<HTMLInputElement>('input[type="number"]');

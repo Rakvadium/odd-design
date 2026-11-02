@@ -4,11 +4,13 @@ type ChildValue = { attribute?: never; value?: never } | { attribute: string; va
 
 export type UsageRule =
   | { kind: "element"; code: UsageCode; className: string; elements: readonly string[] }
+  | { kind: "class"; code: UsageCode; className: string }
   | { kind: "enum"; code: UsageCode; attribute: string; values: readonly string[]; omit: readonly string[] }
   | { kind: "boolean-attribute"; code: UsageCode; attribute: string; values: readonly string[] }
   | { kind: "aria-boolean"; code: UsageCode; attribute: string; values: readonly string[] }
   | { kind: "forbidden-attribute"; code: UsageCode; attribute: string }
-  | { kind: "required-attribute"; code: UsageCode; element: string; attribute: string }
+  | { kind: "required-attribute"; code: UsageCode; element?: string; attribute: string }
+  | { kind: "fragment-link"; code: UsageCode; attribute: string }
   | { kind: "forbidden-on-element"; code: UsageCode; element: string; attribute: string }
   | { kind: "forbidden-value"; code: UsageCode; attribute: string; value: string; when: { readonly attribute: string; readonly value: string } }
   | { kind: "enum-on-element"; code: UsageCode; element: string; attribute: string }
@@ -22,6 +24,8 @@ export type UsageRule =
   | ({ kind: "required-child"; code: UsageCode; element: string; role: string } & ChildValue)
   | ({ kind: "required-child"; code: UsageCode; element: string; className: string } & ChildValue)
   | { kind: "role-descendant"; code: UsageCode; role: string; elements: readonly string[]; attribute: string }
+  | { kind: "child-value"; code: UsageCode; attribute: string; values: readonly string[] }
+  | { kind: "descendant-name"; code: UsageCode; attribute: string; names: readonly string[] }
   | { kind: "unknown-class"; code: UsageCode }
   | { kind: "computed-value"; code: UsageCode }
   | { kind: "untagged-template"; code: UsageCode };
@@ -261,11 +265,105 @@ export const USAGE = {
   table: [
     { kind: "element", code: "ODD-TABLE-001", className: "odd-table", elements: ["table"] },
     { kind: "system-data", code: "ODD-TABLE-004" },
+    { kind: "descendant-name", code: "ODD-TABLE-006", attribute: "data-select-all", names: ["aria-label", "aria-labelledby"] },
   ] as const satisfies readonly UsageRule[],
   tableSort: [
     { kind: "element", code: "ODD-TABLE-001", className: "odd-table-sort", elements: ["button"] },
     { kind: "forbidden-attribute", code: "ODD-TABLE-005", attribute: "aria-sort" },
     { kind: "system-data", code: "ODD-TABLE-004" },
+  ] as const satisfies readonly UsageRule[],
+  scope: [
+    { kind: "class", code: "ODD-SCOPE-001", className: "odd-scope" },
+    { kind: "required-attribute", code: "ODD-SCOPE-001", attribute: "data-chrome" },
+    { kind: "required-attribute", code: "ODD-SCOPE-001", attribute: "data-palette" },
+    { kind: "required-attribute", code: "ODD-SCOPE-001", attribute: "data-mode" },
+  ] as const satisfies readonly UsageRule[],
+  skipLink: [
+    { kind: "element", code: "ODD-SKIP-001", className: "odd-skip-link", elements: ["a"] },
+    { kind: "required-attribute", code: "ODD-SKIP-001", element: "a", attribute: "href" },
+    { kind: "fragment-link", code: "ODD-SKIP-001", attribute: "href" },
+  ] as const satisfies readonly UsageRule[],
+  grid: [
+    { kind: "class", code: "ODD-GRID-001", className: "odd-grid" },
+    { kind: "child-value", code: "ODD-GRID-001", attribute: "data-span", values: ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"] },
+  ] as const satisfies readonly UsageRule[],
+  shell: [
+    { kind: "element", code: "ODD-SHELL-001", className: "odd-shell-header", elements: ["header"] },
+    { kind: "element", code: "ODD-SHELL-001", className: "odd-shell-main", elements: ["main"] },
+  ] as const satisfies readonly UsageRule[],
+  heading: [
+    { kind: "element", code: "ODD-TYPOGRAPHY-001", className: "odd-heading", elements: ["h1", "h2", "h3", "h4", "h5", "h6"] },
+    { kind: "enum", code: "ODD-TYPOGRAPHY-002", attribute: "data-size", values: ["xs", "sm", "lg", "xl", "2xl", "hero"], omit: ["md"] },
+  ] as const satisfies readonly UsageRule[],
+  eyebrow: [
+    { kind: "class", code: "ODD-TYPOGRAPHY-003", className: "odd-eyebrow" },
+    { kind: "enum", code: "ODD-TYPOGRAPHY-003", attribute: "data-tone", values: ["primary", "foreground"], omit: [] },
+  ] as const satisfies readonly UsageRule[],
+  link: [
+    { kind: "element", code: "ODD-LINK-001", className: "odd-link", elements: ["a"] },
+    { kind: "required-attribute", code: "ODD-LINK-002", element: "a", attribute: "href" },
+    { kind: "forbidden-attribute", code: "ODD-LINK-003", attribute: "aria-disabled" },
+    { kind: "forbidden-attribute", code: "ODD-LINK-003", attribute: "disabled" },
+    { kind: "forbidden-attribute", code: "ODD-LINK-004", attribute: "role" },
+    { kind: "enum", code: "ODD-LINK-005", attribute: "aria-current", values: ["page"], omit: [] },
+    { kind: "system-data", code: "ODD-LINK-006" },
+    { kind: "name-requires", code: "ODD-LINK-007", attribute: "rel", names: ["target"] },
+  ] as const satisfies readonly UsageRule[],
+  spinner: [
+    { kind: "element", code: "ODD-SPINNER-001", className: "odd-spinner", elements: ["span"] },
+    { kind: "required-attribute", code: "ODD-SPINNER-002", element: "span", attribute: "aria-hidden" },
+    { kind: "enum", code: "ODD-SPINNER-002", attribute: "aria-hidden", values: ["true"], omit: [] },
+    { kind: "icon-only-text", code: "ODD-SPINNER-002", attribute: "aria-hidden", ignore: "aria-hidden" },
+    { kind: "forbidden-attribute", code: "ODD-SPINNER-002", attribute: "role" },
+    { kind: "forbidden-attribute", code: "ODD-SPINNER-002", attribute: "aria-label" },
+    { kind: "forbidden-attribute", code: "ODD-SPINNER-002", attribute: "aria-labelledby" },
+    { kind: "forbidden-attribute", code: "ODD-SPINNER-002", attribute: "aria-busy" },
+    { kind: "system-data", code: "ODD-SPINNER-003" },
+  ] as const satisfies readonly UsageRule[],
+  combobox: [
+    { kind: "element", code: "ODD-COMBOBOX-001", className: "odd-combobox", elements: ["div"] },
+    { kind: "required-child", code: "ODD-COMBOBOX-002", element: "div", role: "combobox" },
+    { kind: "required-child", code: "ODD-COMBOBOX-002", element: "div", className: "odd-combobox-list" },
+    { kind: "role-descendant", code: "ODD-COMBOBOX-003", role: "combobox", elements: ["input"], attribute: "aria-controls" },
+    { kind: "required-child", code: "ODD-COMBOBOX-003", element: "div", role: "combobox", attribute: "aria-autocomplete", value: "list" },
+    { kind: "forbidden-attribute", code: "ODD-COMBOBOX-007", attribute: "data-filter" },
+    { kind: "forbidden-attribute", code: "ODD-COMBOBOX-011", attribute: "role" },
+    { kind: "system-data", code: "ODD-COMBOBOX-012" },
+  ] as const satisfies readonly UsageRule[],
+  comboboxList: [
+    { kind: "element", code: "ODD-COMBOBOX-001", className: "odd-combobox-list", elements: ["div"] },
+    { kind: "required-attribute", code: "ODD-COMBOBOX-004", element: "div", attribute: "popover" },
+    { kind: "enum", code: "ODD-COMBOBOX-004", attribute: "popover", values: ["manual"], omit: [] },
+    { kind: "required-attribute", code: "ODD-COMBOBOX-005", element: "div", attribute: "role" },
+    { kind: "enum", code: "ODD-COMBOBOX-005", attribute: "role", values: ["listbox"], omit: [] },
+    { kind: "accessible-name", code: "ODD-COMBOBOX-006", element: "div", names: ["aria-label", "aria-labelledby"] },
+    { kind: "enum", code: "ODD-COMBOBOX-007", attribute: "data-filter", values: ["manual"], omit: ["auto"] },
+    { kind: "system-data", code: "ODD-COMBOBOX-012" },
+  ] as const satisfies readonly UsageRule[],
+  comboboxOption: [
+    { kind: "element", code: "ODD-COMBOBOX-001", className: "odd-combobox-option", elements: ["div"] },
+    { kind: "required-attribute", code: "ODD-COMBOBOX-008", element: "div", attribute: "role" },
+    { kind: "enum", code: "ODD-COMBOBOX-008", attribute: "role", values: ["option"], omit: [] },
+    { kind: "forbidden-attribute", code: "ODD-COMBOBOX-009", attribute: "disabled" },
+    { kind: "aria-boolean", code: "ODD-COMBOBOX-009", attribute: "aria-disabled", values: ["true", "false"] },
+    { kind: "forbidden-attribute", code: "ODD-COMBOBOX-010", attribute: "aria-selected" },
+    { kind: "system-data", code: "ODD-COMBOBOX-012" },
+  ] as const satisfies readonly UsageRule[],
+  breadcrumb: [
+    { kind: "element", code: "ODD-BREADCRUMB-001", className: "odd-breadcrumb", elements: ["nav"] },
+    { kind: "accessible-name", code: "ODD-BREADCRUMB-002", element: "nav", names: ["aria-label", "aria-labelledby"] },
+    { kind: "required-child", code: "ODD-BREADCRUMB-003", element: "nav", child: "ol" },
+    { kind: "system-data", code: "ODD-BREADCRUMB-004" },
+  ] as const satisfies readonly UsageRule[],
+  kbd: [
+    { kind: "element", code: "ODD-KBD-001", className: "odd-kbd", elements: ["kbd"] },
+    { kind: "forbidden-attribute", code: "ODD-KBD-002", attribute: "aria-hidden" },
+    { kind: "system-data", code: "ODD-KBD-003" },
+  ] as const satisfies readonly UsageRule[],
+  code: [
+    { kind: "element", code: "ODD-CODE-001", className: "odd-code", elements: ["code"] },
+    { kind: "element", code: "ODD-CODE-001", className: "odd-pre", elements: ["pre"] },
+    { kind: "system-data", code: "ODD-CODE-002" },
   ] as const satisfies readonly UsageRule[],
   shared: [
     { kind: "unknown-class", code: "ODD-CLASS-001" },
@@ -328,6 +426,15 @@ export const WRAPPERS = {
   TableWrap: { source: "odd-design/react", className: "odd-table-wrap", props: {}, element: "div" },
   Table: { source: "odd-design/react", className: "odd-table", props: {}, element: "table" },
   TableSort: { source: "odd-design/react", className: "odd-table-sort", props: {}, element: "button" },
+  TextLink: { source: "odd-design/react", className: "odd-link", props: {}, element: "a" },
+  Spinner: { source: "odd-design/react", className: "odd-spinner", props: {}, element: "span" },
+  Combobox: { source: "odd-design/react", className: "odd-combobox", props: {}, element: "div" },
+  ComboboxList: { source: "odd-design/react", className: "odd-combobox-list", props: {}, element: "div" },
+  ComboboxOption: { source: "odd-design/react", className: "odd-combobox-option", props: {}, element: "div" },
+  Breadcrumb: { source: "odd-design/react", className: "odd-breadcrumb", props: {}, element: "nav" },
+  Kbd: { source: "odd-design/react", className: "odd-kbd", props: {}, element: "kbd" },
+  Code: { source: "odd-design/react", className: "odd-code", props: {}, element: "code" },
+  Pre: { source: "odd-design/react", className: "odd-pre", props: {}, element: "pre" },
 } as const satisfies Record<string, Wrapper>;
 
 export const CLASS_REGISTRY = [
@@ -336,19 +443,23 @@ export const CLASS_REGISTRY = [
   "odd-avatar",
   "odd-avatar-group",
   "odd-badge",
+  "odd-breadcrumb",
   "odd-button",
   "odd-card",
   "odd-card-footer",
   "odd-card-link",
   "odd-card-title",
   "odd-choice",
+  "odd-code",
+  "odd-combobox",
+  "odd-combobox-list",
+  "odd-combobox-option",
   "odd-dialog",
   "odd-dialog-actions",
   "odd-dialog-body",
   "odd-dialog-title",
   "odd-disclosure",
   "odd-error",
-  "odd-estop",
   "odd-eyebrow",
   "odd-field",
   "odd-grid",
@@ -356,7 +467,9 @@ export const CLASS_REGISTRY = [
   "odd-hint",
   "odd-hover-card",
   "odd-input",
+  "odd-kbd",
   "odd-label",
+  "odd-link",
   "odd-log",
   "odd-log-line",
   "odd-menu",
@@ -366,8 +479,8 @@ export const CLASS_REGISTRY = [
   "odd-meter",
   "odd-muted",
   "odd-popover",
+  "odd-pre",
   "odd-progress",
-  "odd-range-field",
   "odd-row",
   "odd-scope",
   "odd-search",
@@ -386,10 +499,9 @@ export const CLASS_REGISTRY = [
   "odd-skeleton",
   "odd-skip-link",
   "odd-slider",
+  "odd-spinner",
   "odd-stack",
-  "odd-stat",
   "odd-stat-value",
-  "odd-stepper",
   "odd-switch",
   "odd-table",
   "odd-table-sort",
@@ -409,25 +521,29 @@ export const VOCABULARY = {
   alert: ["data-tone"],
   avatar: ["data-size"],
   badge: ["data-solid", "data-tone"],
+  breadcrumb: [],
   button: ["data-icon-only", "data-size", "data-variant"],
   card: ["data-interactive"],
   choice: [],
+  code: [],
+  combobox: [],
   dialog: [],
   disclosure: [],
-  estop: [],
   field: [],
+  grid: ["data-span"],
+  kbd: [],
+  link: [],
   log: ["data-tone"],
   menu: ["data-tone"],
   meter: ["data-tone"],
   popover: [],
-  "range-field": [],
   search: [],
   separator: [],
   sheet: ["data-side"],
-  shell: ["data-span"],
+  shell: [],
   skeleton: ["data-shape"],
   slider: [],
-  stepper: [],
+  spinner: [],
   table: ["data-numeric"],
   tabs: [],
   toast: ["data-state", "data-tone"],
@@ -469,3 +585,11 @@ export type MenuItemRule = (typeof USAGE.menuItem)[number];
 export type TableWrapRule = (typeof USAGE.tableWrap)[number];
 export type TableRule = (typeof USAGE.table)[number];
 export type TableSortRule = (typeof USAGE.tableSort)[number];
+export type LinkRule = (typeof USAGE.link)[number];
+export type SpinnerRule = (typeof USAGE.spinner)[number];
+export type ComboboxRule = (typeof USAGE.combobox)[number];
+export type ComboboxListRule = (typeof USAGE.comboboxList)[number];
+export type ComboboxOptionRule = (typeof USAGE.comboboxOption)[number];
+export type BreadcrumbRule = (typeof USAGE.breadcrumb)[number];
+export type KbdRule = (typeof USAGE.kbd)[number];
+export type CodeRule = (typeof USAGE.code)[number];

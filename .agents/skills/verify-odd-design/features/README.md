@@ -35,12 +35,14 @@ Each feature file starts with an H1 and one paragraph on the user-visible behavi
 - [Appearance axes](./appearance-axes.md) covers the chrome, palette, and mode globals; `mode:system` following the OS; scoped appearance; the Matrix; and the OS-preference overrides.
 - [Sample app appearance dialog](./sample-app.md) covers the Showcase screen's no-JS dialog that re-themes its own scope live.
 - [Buttons](./buttons.md) covers variants, sizes, icon-only, busy and disabled states, Playground args, and keyboard focus.
-- [Forms](./forms.md) covers text fields with `:user-invalid`, the select, checkboxes and radios, switches, and the segmented control.
+- [Forms](./forms.md) covers text fields with `:user-invalid`, the select, checkboxes and radios, switches, the segmented control, and the combobox keyboard, pointer, No results option, and async list.
 - [Surfaces](./surfaces.md) covers cards with a whole-card link, badges, the modal dialog via invoker commands, and the exclusive disclosure.
-- [Feedback](./feedback.md) covers alerts per tone, progress and meter bars (including range colors and forced colors), and skeletons with reduced motion.
+- [Feedback](./feedback.md) covers alerts per tone, progress and meter bars (including range colors and forced colors), skeletons with reduced motion, and the spinner with its busy region, reduced motion, and forced colors.
+- [Navigation](./navigation.md) covers text links, the current-page look, tab order, forced colors, and the breadcrumb's slashes, current crumb, and wrapping.
+- [Text](./text.md) covers keycaps that keep the line height, inline code, and code blocks that wrap instead of scrolling.
 - [Data display](./data-display.md) covers the table (row selection, sort indicators, focusable scroll wrapper), avatars and groups, and separators.
 - [Overlays](./overlays.md) covers the anchored popover and its flip, tooltips and hover cards via `interestfor`, sheets from each side, and the alert dialog.
 - [Interactive](./interactive.md) covers the menu keyboard and choosing, automatic and manual tabs, toasts (including over a modal dialog), table select-all, and the avatar image fallback.
-- [Machine controls](./machine-controls.md) covers the latching emergency stop, the stepper's steps, limits, and held repeat, the range field's sync and error, the log that follows new lines, and the app shell's grid.
+- [Machine controls](./machine-controls.md) covers the stepper's steps, limits, and held repeat, the range field's sync and error, the log that follows new lines, and the app shell's grid.
 - [Accessibility checks](./accessibility.md) covers the axe sweep with the one shared rule set, the rules record, manual mode for the addon, and the page-background contrast test.
 - [Contrast and foundations](./foundations.md) covers live WCAG ratios per palette (including soft tints), swatches, the type scale, headings, the custom palette generator, and the `bun test` contract.

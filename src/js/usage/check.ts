@@ -37,10 +37,14 @@ function ownAttributes(className: string): readonly string[] {
   return wrappers.flatMap((wrapper) => (wrapper.className === className ? Object.values(wrapper.props) : []));
 }
 
+function placesClass(rule: UsageRule): rule is Extract<UsageRule, { kind: "element" | "class" }> {
+  return rule.kind === "element" || rule.kind === "class";
+}
+
 const components: readonly Component[] = Object.values(byComponent).flatMap((rules: readonly UsageRule[]) =>
   rules.flatMap((rule) =>
-    rule.kind === "element"
-      ? [{ className: rule.className, rules: rules.filter((other) => other.kind !== "element" || other === rule), attributes: ownAttributes(rule.className) }]
+    placesClass(rule)
+      ? [{ className: rule.className, rules: rules.filter((other) => !placesClass(other) || other === rule), attributes: ownAttributes(rule.className) }]
       : [],
   ),
 );
@@ -198,6 +202,23 @@ function roleDescendantFindings(rule: Extract<UsageRule, { kind: "role-descendan
   });
 }
 
+function childValueFindings(rule: Extract<UsageRule, { kind: "child-value" }>, { node }: Scope): Diagnostic[] {
+  return node.children.flatMap((child) => {
+    if (typeof child === "string" || isComputed(child)) return [];
+    const attribute = find(child, rule.attribute);
+    if (attribute === undefined || isComputed(attribute.value) || rule.values.includes(attribute.value)) return [];
+    return [diagnose(rule.code, undefined, { found: `${rule.attribute}=${attribute.value === "" ? "empty" : attribute.value}` })];
+  });
+}
+
+function descendantNameFindings(rule: Extract<UsageRule, { kind: "descendant-name" }>, scope: Scope): Diagnostic[] {
+  const { found } = descendants(scope.node, scope.components.map((component) => component.className));
+  return found.flatMap((node) => {
+    if (find(node, rule.attribute) === undefined || hasUnknownAttributes(node) || rule.names.some((name) => hasName(node, name))) return [];
+    return [diagnose(rule.code, undefined, { found: `${rule.attribute} without ${rule.names.join(" or ")}` })];
+  });
+}
+
 function valueReadAttributes(scope: Scope): Set<string> {
   return new Set(
     scope.components.flatMap((component) =>
@@ -237,6 +258,8 @@ function apply(rule: UsageRule, scope: Scope): Diagnostic[] {
   switch (rule.kind) {
     case "element":
       return tag !== undefined && !rule.elements.includes(tag) ? [diagnose(rule.code, scope.classAttribute, { found: tag })] : [];
+    case "class":
+      return [];
     case "enum":
       return checkValue(rule.code, find(node, rule.attribute), rule.values, rule.omit);
     case "boolean-attribute":
@@ -247,7 +270,12 @@ function apply(rule: UsageRule, scope: Scope): Diagnostic[] {
       return attribute === undefined ? [] : [diagnose(rule.code, attribute)];
     }
     case "required-attribute":
-      return tag === rule.element && find(node, rule.attribute) === undefined && !hasUnknownAttributes(node) ? [diagnose(rule.code)] : [];
+      return (rule.element === undefined || tag === rule.element) && find(node, rule.attribute) === undefined && !hasUnknownAttributes(node) ? [diagnose(rule.code)] : [];
+    case "fragment-link": {
+      const attribute = find(node, rule.attribute);
+      if (attribute === undefined || isComputed(attribute.value) || /^#./.test(attribute.value)) return [];
+      return [diagnose(rule.code, attribute, { found: attribute.value === "" ? "empty" : attribute.value })];
+    }
     case "forbidden-on-element": {
       const attribute = find(node, rule.attribute);
       return tag === rule.element && attribute !== undefined ? [diagnose(rule.code, attribute)] : [];
@@ -282,6 +310,10 @@ function apply(rule: UsageRule, scope: Scope): Diagnostic[] {
       return requiredChildFindings(rule, scope);
     case "role-descendant":
       return roleDescendantFindings(rule, scope);
+    case "child-value":
+      return childValueFindings(rule, scope);
+    case "descendant-name":
+      return descendantNameFindings(rule, scope);
     case "unknown-class":
       return scope.words
         .filter((word) => word.startsWith("odd-") && !registry.includes(word))

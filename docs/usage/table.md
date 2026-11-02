@@ -91,3 +91,11 @@ Fails when `odd-table-sort` has `aria-sort`.
 `table.css` reads `aria-sort` on the `th` around the button. On the button, the arrow stays the neutral up-down mark.
 
 Move `aria-sort` to the `th` that holds the button. In React, `aria-sort` on `TableSort` is a type error.
+
+## ODD-TABLE-006
+
+Fails when a box with `data-select-all` inside `odd-table` has no `aria-label` or `aria-labelledby`, or an empty one.
+
+The header box usually has no visible text. Without a name, a screen reader announces only "checkbox", so nothing says that it checks or clears every row.
+
+Set `aria-label` on the header box, such as `aria-label="Select all decks"`, or point `aria-labelledby` at text that says what it selects. In React, write it on the plain `input` inside `Table`.

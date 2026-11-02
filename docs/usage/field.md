@@ -1,6 +1,6 @@
 # Field usage rules
 
-These codes apply to `odd-field` and its parts. Shared codes are in [General usage rules](general.md).
+These codes apply to `odd-field` and its parts. Shared codes are in [General usage rules](general.md). For a text field with suggestions that filter as you type, put the input in an `odd-combobox` ([Combobox usage rules](combobox.md)).
 
 ```html
 <div class="odd-field">

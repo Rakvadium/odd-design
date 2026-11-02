@@ -58,6 +58,11 @@ for (const mode of ["light", "dark"] as const) {
         for (let i = 0; i < count; i++) {
           const opener = openers.nth(i);
           if (!(await opener.isVisible())) continue;
+          const openedByPlay = await opener.evaluate((el) => {
+            const id = el.getAttribute("commandfor") ?? el.getAttribute("popovertarget") ?? el.getAttribute("interestfor");
+            return id !== null && document.getElementById(id)?.matches("[open], :popover-open") === true;
+          });
+          if (openedByPlay) continue;
           const hover = (await opener.getAttribute("interestfor")) !== null;
           const label = ((await opener.textContent())?.trim() || (await opener.getAttribute("aria-label")) || `#${i}`).slice(0, 40);
           const before = await page.evaluate(() => document.querySelectorAll("dialog[open], :popover-open").length);

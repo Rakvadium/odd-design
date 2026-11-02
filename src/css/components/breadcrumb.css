@@ -1,0 +1,37 @@
+/*
+ * <nav class="odd-breadcrumb" aria-label="Breadcrumb">
+ *   <ol>
+ *     <li><a class="odd-link" href="/">Home</a></li>
+ *     <li><a class="odd-link" href="/projects">Projects</a></li>
+ *     <li><a class="odd-link" href="/projects/roadmap" aria-current="page">Roadmap</a></li>
+ *   </ol>
+ * </nav>
+ * The trail to the current page. Each crumb is an odd-link; the last is the page you are on, with
+ * aria-current="page", which the link draws in the text color without an underline. A level with no page
+ * of its own is plain text in its li. The slashes between crumbs are drawn here and hidden from screen
+ * readers. A long trail wraps.
+ */
+.odd-breadcrumb {
+  font-size: var(--text-sm);
+}
+
+.odd-breadcrumb > ol {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-1) var(--space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.odd-breadcrumb > ol > li {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  color: var(--muted-foreground);
+}
+
+.odd-breadcrumb > ol > li + li::before {
+  content: "/" / "";
+}

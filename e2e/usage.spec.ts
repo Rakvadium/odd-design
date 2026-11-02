@@ -50,6 +50,33 @@ function ariaValues(attribute: "aria-disabled" | "aria-busy"): readonly ("true" 
   return rule.values;
 }
 
+const linkPlayground = react.find((entry) => entry.id === "components-link--playground") ?? fail("Link stories have no Playground");
+
+function currentValues(): readonly string[] {
+  const rule = USAGE.link.find((item) => item.kind === "enum" && item.attribute === "aria-current");
+  if (rule?.kind !== "enum") throw new Error("no enum rule for aria-current");
+  const options = linkPlayground.meta.argTypes?.current?.options;
+  if (options === undefined) throw new Error("Link Playground argTypes.current has no options");
+  const expected = ["none", ...rule.values].sort();
+  if (sorted(options).join() !== expected.join()) throw new Error(`Link Playground current options ${sorted(options).join(", ")} do not match ${expected.join(", ")}`);
+  return options;
+}
+
+const comboboxPlayground = react.find((entry) => entry.id === "components-combobox--playground") ?? fail("Combobox stories have no Playground");
+
+function filterValues(): { options: readonly string[]; absent: string } {
+  const rule = USAGE.comboboxList.find((item) => item.kind === "enum" && item.attribute === "data-filter");
+  if (rule?.kind !== "enum") throw new Error("no enum rule for data-filter");
+  const options = comboboxPlayground.meta.argTypes?.filter?.options;
+  if (options === undefined) throw new Error("Combobox Playground argTypes.filter has no options");
+  const absent = rule.omit.filter((token) => options.includes(token));
+  const expected = [...rule.values, ...absent].sort();
+  if (absent.length !== 1 || absent[0] === undefined || sorted(options).join() !== expected.join()) {
+    throw new Error(`Combobox Playground filter options ${sorted(options).join(", ")} do not match ${expected.join(", ")}`);
+  }
+  return { options, absent: absent[0] };
+}
+
 const variantControl = enumValues("data-variant", "variant");
 const sizeControl = enumValues("data-size", "size");
 
@@ -207,6 +234,45 @@ test("usage and mirror: every story in both Storybooks, each pair, the Playgroun
     await comparePair(`playground [${args}]`, htmlSide, reactSide, findings, testInfo);
   }
 
+  for (const value of currentValues()) {
+    const args = `current:${value}`;
+    const expected = value === "none" ? null : value;
+    const htmlSide = await see(page, "html", linkPlayground.id, args);
+    const htmlActual = await page.locator("#storybook-root .odd-link").getAttribute("aria-current");
+    const reactSide = await see(page, "react", linkPlayground.id, args);
+    const reactActual = await page.locator("#storybook-root .odd-link").getAttribute("aria-current");
+    if (htmlActual !== expected) findings.push(`${linkPlayground.id} [html current=${value}] aria-current=${String(htmlActual)}`);
+    if (reactActual !== expected) findings.push(`${linkPlayground.id} [react current=${value}] aria-current=${String(reactActual)}`);
+    await comparePair(`link playground [${args}]`, htmlSide, reactSide, findings, testInfo);
+  }
+
+  for (const [id, args, selector, count] of [
+    ["components-breadcrumb--playground", "levels:1", ".odd-breadcrumb li", 1],
+    ["components-breadcrumb--playground", "levels:5", ".odd-breadcrumb li", 5],
+    ["components-kbd--playground", "keys:Ctrl Shift P", ".odd-kbd", 3],
+    ["components-code--playground", "kind:block", ".odd-pre > code", 1],
+  ] as const) {
+    const htmlSide = await see(page, "html", id, args);
+    const htmlCount = await page.locator(`#storybook-root ${selector}`).count();
+    const reactSide = await see(page, "react", id, args);
+    const reactCount = await page.locator(`#storybook-root ${selector}`).count();
+    if (htmlCount !== count || reactCount !== count) findings.push(`${id} [${args}] ${selector} html=${htmlCount} react=${reactCount}, want ${count}`);
+    await comparePair(`${id} [${args}]`, htmlSide, reactSide, findings, testInfo);
+  }
+
+  const filterControl = filterValues();
+  for (const value of filterControl.options) {
+    const args = `filter:${value}`;
+    const expected = value === filterControl.absent ? null : value;
+    const htmlSide = await see(page, "html", comboboxPlayground.id, args);
+    const htmlActual = await page.locator("#storybook-root .odd-combobox-list").getAttribute("data-filter");
+    const reactSide = await see(page, "react", comboboxPlayground.id, args);
+    const reactActual = await page.locator("#storybook-root .odd-combobox-list").getAttribute("data-filter");
+    if (htmlActual !== expected) findings.push(`${comboboxPlayground.id} [html filter=${value}] data-filter=${String(htmlActual)}`);
+    if (reactActual !== expected) findings.push(`${comboboxPlayground.id} [react filter=${value}] data-filter=${String(reactActual)}`);
+    await comparePair(`combobox playground [${args}]`, htmlSide, reactSide, findings, testInfo);
+  }
+
   const triggers = [
     ["saved", "Save deck"],
     ["undo", "Remove card"],
@@ -234,6 +300,18 @@ test("usage and mirror: every story in both Storybooks, each pair, the Playgroun
     body: JSON.stringify({ stories: checked, pairs: react.length, findings }, null, 2),
   });
   expect(checked).toBe(html.length + react.length);
+  expect(findings, "usage diagnostics").toEqual([]);
+});
+
+test("under reduced motion, ToastStates and SpinnerStates still match in both Storybooks", async ({ page }, testInfo) => {
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  const findings: string[] = [];
+  for (const id of ["components-interactive--toast-states", "components-spinner--states"]) {
+    const entry = react.find((item) => item.id === id) ?? fail(`${id} is not mirrored`);
+    const htmlSide = await see(page, "html", entry.id, "", entry.mirror.aria);
+    const reactSide = await see(page, "react", entry.id, "", entry.mirror.aria);
+    await comparePair(`${entry.id} [reduced motion]`, htmlSide, reactSide, findings, testInfo);
+  }
   expect(findings, "usage diagnostics").toEqual([]);
 });
 

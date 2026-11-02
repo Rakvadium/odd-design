@@ -31,7 +31,7 @@ Install the package.
 bun add odd-design
 ```
 
-The stylesheet, `odd-design/appearance`, `odd-design/enhance`, and `odd-design/palette` need nothing else. Install React 19 when you render `Button`, the Field parts, the Choice parts, `Badge`, the Alert parts, the Avatar parts, `Separator`, `Skeleton`, the Card parts, `Disclosure`, `Tabs`, `Search`, `Slider`, `Meter`, `Progress`, `Toaster`, `Popover`, `Dialog`, `DialogActions`, `Sheet`, `SheetHeader`, `SheetFooter`, `Menu`, `MenuItem`, `TableWrap`, `Table`, or `TableSort`. React is an optional peer dependency.
+The stylesheet, `odd-design/appearance`, `odd-design/enhance`, and `odd-design/palette` need nothing else. Install React 19 when you render `Button`, the Field parts, the Choice parts, `Badge`, the Alert parts, the Avatar parts, `Separator`, `Skeleton`, the Card parts, `Disclosure`, `Tabs`, `Search`, `Slider`, `Meter`, `Progress`, `Toaster`, `Popover`, `Dialog`, `DialogActions`, `Sheet`, `SheetHeader`, `SheetFooter`, `Menu`, `MenuItem`, `TableWrap`, `Table`, `TableSort`, `TextLink`, `Spinner`, `Combobox`, `ComboboxList`, `ComboboxOption`, `Breadcrumb`, `Kbd`, `Code`, or `Pre`. React is an optional peer dependency.
 
 ```sh
 bun add react@^19 react-dom@^19
@@ -71,7 +71,7 @@ A subtree can have its own appearance: add `class="odd-scope"` and set all three
 
 `src/css/index.css` declares the cascade layers in order:
 
-1. `foundations`: fixed scales (type, space, durations, z-index), derived tokens, and default status colors.
+1. `foundations`: fixed scales (type, weight, space, durations, z-index), derived tokens, and default status colors.
 2. `palette`: `palettes/*.css`. Each color is `light-dark(light, dark)`, so mode is just `color-scheme` and `system` follows the OS without JS.
 3. `chrome`: `chromes/*.css`. Feel tokens only. A chrome can reference palette colors, such as a primary-tinted glow, but never contains a hue of its own.
 4. `preferences`: `prefers-contrast`, `prefers-reduced-motion`, `prefers-reduced-transparency`, and `forced-colors`. This layer beats palette and chrome.
@@ -108,7 +108,7 @@ bun .agents/skills/verify-odd-design/scripts/ctl.ts axe --run a11y    # every st
 
 ## Usage checks
 
-The package ships the button, field, choice, badge, alert, avatar, separator, skeleton, card, disclosure, tabs, search, slider, meter, toast, popover, dialog, sheet, menu, and table usage contracts and one message per pinned code. Each message names the code, the failure, and the fix. Types, ESLint, and the runtime checker report the same codes. The pages under [docs/usage/](docs/usage/) record the rules. Button codes are in [Button usage rules](docs/usage/button.md). Field codes are in [Field usage rules](docs/usage/field.md). Choice codes are in [Choice usage rules](docs/usage/choice.md). Badge codes are in [Badge usage rules](docs/usage/badge.md). Alert codes are in [Alert usage rules](docs/usage/alert.md). Avatar codes are in [Avatar usage rules](docs/usage/avatar.md). Separator codes are in [Separator usage rules](docs/usage/separator.md). Skeleton codes are in [Skeleton usage rules](docs/usage/skeleton.md). Card codes are in [Card usage rules](docs/usage/card.md). Disclosure codes are in [Disclosure usage rules](docs/usage/disclosure.md). Tabs codes are in [Tabs usage rules](docs/usage/tabs.md). Search codes are in [Search usage rules](docs/usage/search.md). Slider codes are in [Slider usage rules](docs/usage/slider.md). Meter and progress codes are in [Meter usage rules](docs/usage/meter.md). Toast codes are in [Toast usage rules](docs/usage/toast.md). Popover codes are in [Popover usage rules](docs/usage/popover.md). Dialog codes are in [Dialog usage rules](docs/usage/dialog.md). Sheet codes are in [Sheet usage rules](docs/usage/sheet.md). Menu codes are in [Menu usage rules](docs/usage/menu.md). Table codes are in [Table usage rules](docs/usage/table.md). Class and static codes are in [General usage rules](docs/usage/general.md).
+The package ships the button, field, choice, badge, alert, avatar, separator, skeleton, card, disclosure, tabs, search, slider, meter, toast, popover, dialog, sheet, menu, table, base utility, grid, shell, typography, link, spinner, combobox, breadcrumb, kbd, and code usage contracts and one message per pinned code. Each message names the code, the failure, and the fix. Types, ESLint, and the runtime checker report the same codes. The pages under [docs/usage/](docs/usage/) record the rules. Button codes are in [Button usage rules](docs/usage/button.md). Field codes are in [Field usage rules](docs/usage/field.md). Choice codes are in [Choice usage rules](docs/usage/choice.md). Badge codes are in [Badge usage rules](docs/usage/badge.md). Alert codes are in [Alert usage rules](docs/usage/alert.md). Avatar codes are in [Avatar usage rules](docs/usage/avatar.md). Separator codes are in [Separator usage rules](docs/usage/separator.md). Skeleton codes are in [Skeleton usage rules](docs/usage/skeleton.md). Card codes are in [Card usage rules](docs/usage/card.md). Disclosure codes are in [Disclosure usage rules](docs/usage/disclosure.md). Tabs codes are in [Tabs usage rules](docs/usage/tabs.md). Search codes are in [Search usage rules](docs/usage/search.md). Slider codes are in [Slider usage rules](docs/usage/slider.md). Meter and progress codes are in [Meter usage rules](docs/usage/meter.md). Toast codes are in [Toast usage rules](docs/usage/toast.md). Popover codes are in [Popover usage rules](docs/usage/popover.md). Dialog codes are in [Dialog usage rules](docs/usage/dialog.md). Sheet codes are in [Sheet usage rules](docs/usage/sheet.md). Menu codes are in [Menu usage rules](docs/usage/menu.md). Table codes are in [Table usage rules](docs/usage/table.md). Scope and skip link codes are in [Base utilities usage rules](docs/usage/base.md). Grid codes are in [Grid usage rules](docs/usage/grid.md). Shell codes are in [Shell usage rules](docs/usage/shell.md). Heading and eyebrow codes are in [Typography usage rules](docs/usage/typography.md). Link codes are in [Link usage rules](docs/usage/link.md). Spinner codes are in [Spinner usage rules](docs/usage/spinner.md). Combobox codes are in [Combobox usage rules](docs/usage/combobox.md). Breadcrumb codes are in [Breadcrumb usage rules](docs/usage/breadcrumb.md). Kbd codes are in [Kbd usage rules](docs/usage/kbd.md). Code and pre codes are in [Code usage rules](docs/usage/code.md). Class and static codes are in [General usage rules](docs/usage/general.md).
 
 ## Add a palette
 
@@ -165,16 +165,25 @@ The five palettes ported from uvs-decks-gg went through the same repair. Their i
 | --- | --- | --- |
 | `odd-button` | `<button>`, `<a>` | `data-variant`, `data-size`, `data-icon-only`. Use `aria-disabled` and `aria-busy`. |
 | `odd-field`, `odd-label`, `odd-input`, `odd-textarea`, `odd-select`, `odd-hint`, `odd-error` | native form controls | Errors style on `:user-invalid`. The select upgrades through `appearance: base-select`. |
+| `odd-combobox`, `odd-combobox-list`, `odd-combobox-option` | `<div>` around an `<input class="odd-input" role="combobox">` and a `<div popover="manual" role="listbox">` of `<div role="option">`s | A text field whose suggestions filter by prefix as you type. Needs `enhanceCombobox`, or `Combobox` from `odd-design/react`. The input takes `aria-controls` and `aria-autocomplete="list"`. Disable an option with `aria-disabled="true"`. `data-filter="manual"` on the list when your code filters. `ComboboxList` and `ComboboxOption` render the list and the options. |
 | `odd-choice`, `odd-switch` | checkbox, radio, `role="switch"` | |
 | `odd-segmented` | radio `<fieldset>` | Arrow keys come from the browser. |
 | `odd-card`, `odd-card-title`, `odd-card-link`, `odd-card-footer` | `<article>`, `<section>`, or `<div>` | The title is a heading at the level the page needs. `data-interactive` plus one `.odd-card-link` makes the whole card clickable through a single link, so the card holds no other link or button. |
 | `odd-badge` | `<span>` | `data-tone`, `data-solid`. |
 | `odd-dialog`, `odd-dialog-body`, `odd-dialog-title`, `odd-dialog-actions` | `<dialog>` with a `<div>` or `<form>` body, a heading title, and a `<div>` of actions | Open with `commandfor`/`command="show-modal"`, no JS. Name it with `aria-labelledby` or `aria-label`. Leave out `open`. `Dialog` and `DialogActions` from `odd-design/react` render the dialog and the actions. |
 | `odd-disclosure` | `<details>` | The question is a `<summary>` directly inside it, and the answer is one element after it. Disclosures that share a `name` form an exclusive accordion. |
+| `odd-link` | `<a href>` | A text link. It looks like a bare `a`. `aria-current="page"` marks the current page with the text color and no underline. A `target` needs `rel="noopener"` and words that say it opens a new tab. `TextLink` from `odd-design/react` renders it. |
+| `odd-breadcrumb` | `<nav aria-label>` around an `<ol>` of `<li>`s | The trail to the current page. Each level with a page is an `odd-link`, and the last has `aria-current="page"`. A level with no page is plain text. CSS draws the slashes, and a long trail wraps. `Breadcrumb` from `odd-design/react` renders the `nav`. |
+| `odd-kbd` | `<kbd>` | A key in running text, one `kbd` per key, named rather than drawn as a glyph. Never `aria-hidden`. A menu item's hint is `odd-menu-shortcut` instead. `Kbd` from `odd-design/react` renders it. |
+| `odd-code`, `odd-pre` | `<code>` in a sentence, `<pre>` around a bare `<code>` | Inline code on a chip, and a block whose long lines wrap instead of scrolling. Leave the inner `code` out for command output. `Code` and `Pre` from `odd-design/react` render them. |
 | `odd-heading`, `odd-eyebrow` | `<h1>`–`<h6>`, `<p>` | `data-size` (xs–2xl, hero) sets size apart from level. The eyebrow takes `data-tone`. |
+| `odd-stack`, `odd-row` | any container | A column, or a row that wraps. `--gap` sets the gap. |
+| `odd-grid` | any container, often `<main class="odd-shell-main odd-grid">` | 12 columns. `data-span="1"`–`"12"` on a child, usually an `odd-card`. Under 64rem of grid width, narrow children take half; under 40rem, all take the full row. `--gap` sets the gutter. |
+| `odd-muted`, `odd-visually-hidden`, `odd-skip-link`, `odd-scope` | any element, an `<a href="#id">` for the skip link | The skip link slides in on focus. `odd-scope` takes all three of `data-chrome`, `data-palette`, and `data-mode`. |
 | `odd-alert`, `odd-alert-title` | `<div>`, `<p>` | `data-tone` is `info`, `success`, `warning`, or `danger`. Leaving it out is the neutral tint. The title is a `p`. Static alerts need no role; insert later ones into an existing `role="status"` or `role="alert"` container. |
-| `odd-progress`, `odd-meter`, `odd-stat` | `<progress>`, `<meter>`, and a native `<div>` stat row | `data-tone` is `success`, `warning`, `danger`, or `info`. A meter with `low`/`high`/`optimum` colors itself by range. Always show the value as text too. `Progress` and `Meter` from `odd-design/react` render the bars. |
+| `odd-progress`, `odd-meter`, `odd-stat-value` | `<progress>`, `<meter>`, and a `<span>` or `<output>` value | `data-tone` is `success`, `warning`, `danger`, or `info`. A meter with `low`/`high`/`optimum` colors itself by range. Always show the value as text too. `odd-stat-value` sets it bold with tabular digits. `Progress` and `Meter` from `odd-design/react` render the bars. The [Stat row](docs/recipes/stat-row.md) recipe sets a label and a value above a bar. |
 | `odd-skeleton` | `<div aria-hidden="true">` | Put `aria-busy` and "Loading" text on the region, not on the block. The block takes no `role` or name. `data-shape="avatar"`. |
+| `odd-spinner` | `<span aria-hidden="true">`, empty | A ring 1em across in the text color. Put `aria-busy` and the loading words on the region, not on the spinner. A working button is a Button with `aria-busy`. `Spinner` from `odd-design/react` renders it. |
 | `odd-separator` | `<hr>` | `aria-orientation="vertical"` inside a row, not `data-orientation`. `role` takes only `separator`, and `aria-hidden` is not allowed. For a line that means nothing, use a border. |
 | `odd-avatar`, `odd-avatar-group` | `<span>` with `<img alt>` or `role="img"` initials, `<div role="group">` with a name | `data-size` on each avatar. |
 | `odd-table-wrap`, `odd-table`, `odd-table-sort` | `<div>` around a `<table>`, with sort `<button>`s | The wrapper scrolls and is focusable. `data-numeric` goes on a `th` and its cells, `aria-sort` on the sorted `th`, and a row checkbox tints the row. `enhanceSelectAll` wires a `data-select-all` header box. `TableWrap`, `Table`, and `TableSort` from `odd-design/react` render the three, and `Table` runs `enhanceSelectAll`. |
@@ -188,12 +197,18 @@ The five palettes ported from uvs-decks-gg went through the same repair. Their i
 | `odd-menu`, `odd-menu-item` | `<div popover role="menu">` | Needs `enhanceMenu`, or `Menu` from `odd-design/react`. Items are `<button>`s with a menu item `role`, and `MenuItem` renders them. `menuitemcheckbox` and `menuitemradio` take `aria-checked`. `data-tone="danger"` goes on an item. Disable an item with `aria-disabled="true"`, which keeps it reachable. |
 | `odd-tabs` | `<div>` with a direct `role="tablist"`, `<button role="tab">`, `role="tabpanel"` | Needs `enhanceTabs`, or `Tabs` from `odd-design/react`. Each tab's `aria-controls` names its panel. `data-activation="manual"` and `aria-orientation="vertical"` go on the tablist. |
 | `odd-toaster`, `odd-toast` | `<section popover="manual" aria-label="Notifications">`, once per page | Needs `enhanceToaster`, or `Toaster` from `odd-design/react`. `enhanceToaster` builds the list and a polite live region inside. `toast()` adds each `odd-toast`. A toast shown while a modal dialog is open moves the list inside the dialog, so the toasts stay live. Toasts already showing when it opens stay behind it until the next `toast()`. |
-| `odd-estop` | `<button>` | A big round stop. `aria-pressed="true"` draws it latched; the page sets it and owns any shortcut. Never disable it. |
-| `odd-stepper` | `<div role="group">` with step buttons around `<input type="number">` | Needs `enhanceStepper`. `data-step` counts input steps. Hold repeats; `input` per step, one `change` per press. Disable with `disabled` on the input. |
-| `odd-range-field` | `<div>` holding an `odd-slider`, an `odd-input type="number"`, and an optional unit | `enhanceRangeField` copies min, max, and step from the slider and keeps both in sync. Listen to the slider. A bad number shows an `odd-error` on commit. |
 | `odd-log`, `odd-log-line` | `<div role="log" tabindex="0">` of line `<div>`s, each with an optional `<time>` | Mono, scrolls past 20rem. `data-tone` on a line. Append with `appendLogLine`; `enhanceLog` keeps the newest line in view unless the reader scrolled up. |
 | `odd-shell`, `odd-shell-header`, `odd-shell-status`, `odd-shell-actions`, `odd-shell-main` | `<div>`, `<header>`, `<main>` | A full-height page under a sticky header bar: title, a status slot that takes the free space, and actions. |
-| `odd-grid` | any container, often `<main class="odd-shell-main odd-grid">` | 12 columns. `data-span="1"`–`"12"` on a child, usually an `odd-card`. Under 64rem of grid width, narrow children take half; under 40rem, all take the full row. `--gap` sets the gutter. |
+
+## Recipes
+
+A recipe is an arrangement of core classes for one task. It adds no class and no stylesheet. Each recipe has a page under `docs/recipes/` and stories under **Recipes** in the HTML Storybook.
+
+| Recipe | Built from | Behavior |
+| --- | --- | --- |
+| [Number stepper](docs/recipes/number-stepper.md) | An `odd-row` with `role="group"`, `odd-button`s with `data-step`, and an `odd-input type="number"` | `enhanceStepper` |
+| [Slider with number](docs/recipes/slider-with-number.md) | An `odd-row` holding an `odd-slider`, an `odd-input type="number"`, and an optional `odd-muted` unit | `enhanceRangeField` |
+| [Stat row](docs/recipes/stat-row.md) | An `odd-stack` holding an `odd-row` of a label and an `odd-stat-value`, then an `odd-meter` or `odd-progress` | None |
 
 ## Behaviors
 
@@ -202,11 +217,13 @@ Menus, tabs, toasts, steppers, range fields, and logs need behavior HTML doesn't
 ```js
 import { enhance, toast } from "odd-design/enhance";
 
-enhance();                   // menus, tab sets, toasters, steppers, range fields, logs, select-all tables, and the fallbacks below, under document
+enhance();                   // menus, tab sets, toasters, logs, select-all tables, and the fallbacks below, under document
 toast({ title: "Deck saved", tone: "success" });
 ```
 
-- `enhanceMenu(menu)`, `enhanceTabs(root)`, `enhanceToaster(region)`, `enhanceSelectAll(table)`, `enhanceStepper(root)`, `enhanceRangeField(root, { message })`, `enhanceLog(log)`: one widget each. Call them for elements added after `enhance()`.
+- `enhanceMenu(menu)`, `enhanceTabs(root)`, `enhanceToaster(region)`, `enhanceSelectAll(table)`, `enhanceLog(log)`: one widget each. Call them for elements added after `enhance()`.
+- `enhanceStepper(root)` wires the `button[data-step]`s under `root` to the first number input under it. `enhance()` does not find steppers, so call it on each one. The markup is in [Number stepper](docs/recipes/number-stepper.md).
+- `enhanceRangeField(root, { message })` syncs the first range input and the first number input under `root`, and shows an `odd-error` for a number the slider can't take. `enhance()` does not find these rows, so call it on each one. The markup is in [Slider with number](docs/recipes/slider-with-number.md).
 - `enhanceTabs(root)` wires a tab set once, however many times it is called. Each call returns its own cleanup, and the last cleanup unwires. A React `Tabs` runs it on itself, so `enhance()` beside it does not wire the set twice.
 - `enhanceToaster(region)` wires a `section.odd-toaster` once, however many times it is called, as `enhanceTabs` does. `toast({ title, description, tone, duration, action })` shows a toast on the newest wired region still in the document and returns `{ dismiss }`. It throws when no region is wired.
 - `appendLogLine(log, text, { tone, time, max })`: adds a line as text, with `time` as a `Date` or a string, and drops the oldest lines past `max` (500).

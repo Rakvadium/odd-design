@@ -2,12 +2,16 @@ import { useRef, useState, type FormEvent, type MouseEvent } from "react";
 import { Alert, AlertTitle, type AlertTone } from "../../../../src/react/alert.tsx";
 import { Avatar, AvatarGroup, type AvatarSize } from "../../../../src/react/avatar.tsx";
 import { Badge, type BadgeTone } from "../../../../src/react/badge.tsx";
+import { Breadcrumb } from "../../../../src/react/breadcrumb.tsx";
 import { Button } from "../../../../src/react/button.tsx";
 import { Card, CardFooter, CardLink } from "../../../../src/react/card.tsx";
 import { Choice, Segmented, Switch } from "../../../../src/react/choice.tsx";
+import { Code, Pre } from "../../../../src/react/code.tsx";
+import { Combobox, ComboboxList, ComboboxOption } from "../../../../src/react/combobox.tsx";
 import { Dialog, DialogActions } from "../../../../src/react/dialog.tsx";
 import { Disclosure } from "../../../../src/react/disclosure.tsx";
 import { Field, FieldError, Hint, Input, Label, Select, Textarea } from "../../../../src/react/field.tsx";
+import { Kbd } from "../../../../src/react/kbd.tsx";
 import { Menu, MenuItem } from "../../../../src/react/menu.tsx";
 import { Table, TableSort, TableWrap } from "../../../../src/react/table.tsx";
 import { Meter, Progress, type MeterTone } from "../../../../src/react/meter.tsx";
@@ -17,7 +21,9 @@ import { Separator } from "../../../../src/react/separator.tsx";
 import { Sheet, SheetFooter, SheetHeader, type SheetProps } from "../../../../src/react/sheet.tsx";
 import { Skeleton } from "../../../../src/react/skeleton.tsx";
 import { Slider } from "../../../../src/react/slider.tsx";
+import { Spinner } from "../../../../src/react/spinner.tsx";
 import { Tabs } from "../../../../src/react/tabs.tsx";
+import { TextLink } from "../../../../src/react/text-link.tsx";
 import { Toaster } from "../../../../src/react/toast.tsx";
 
 function save(event: MouseEvent<HTMLButtonElement>): void {
@@ -216,6 +222,65 @@ export function DeckPlaceholder({ loading }: { loading: boolean }) {
   );
 }
 
+export function ProjectLinks({ href }: { href: string }) {
+  return (
+    <p>
+      Read the <TextLink href={href}>setup guide</TextLink>, then open <TextLink href="/projects" aria-current="page">Projects</TextLink> or the{" "}
+      <TextLink href="https://example.com/changelog" target="_blank" rel="noopener" className="external" data-testid="changelog">
+        changelog (opens in a new tab)
+      </TextLink>
+      .
+    </p>
+  );
+}
+
+export function ProjectsLoading({ loading }: { loading: boolean }) {
+  if (!loading) return null;
+  return (
+    <div className="odd-row" aria-busy="true">
+      <Spinner aria-hidden="true" className="slow" data-testid="projects-spinner" />
+      <span className="odd-visually-hidden">Loading projects…</span>
+    </div>
+  );
+}
+
+export function ProjectTrail({ archived }: { archived: boolean }) {
+  return (
+    <Breadcrumb aria-label="Breadcrumb" className="trail" data-testid="trail">
+      <ol>
+        <li>
+          <TextLink href="/">Home</TextLink>
+        </li>
+        {archived ? <li>Archived</li> : null}
+        <li>
+          <TextLink href="/projects/roadmap" aria-current="page">
+            Roadmap
+          </TextLink>
+        </li>
+      </ol>
+    </Breadcrumb>
+  );
+}
+
+export function SearchHint() {
+  return (
+    <>
+      <h2 id="trail-heading">You are here</h2>
+      <Breadcrumb aria-labelledby="trail-heading">
+        <ol>
+          <li>Home</li>
+        </ol>
+      </Breadcrumb>
+      <p>
+        Press <Kbd>Ctrl</Kbd> <Kbd className="wide" data-testid="search-key">K</Kbd> to search, or set <Code data-testid="token">--primary</Code> on the scope.
+      </p>
+      <Pre data-language="sh" className="install">
+        <code>bun add odd-design</code>
+      </Pre>
+    </>
+  );
+}
+
 export function DeckCard({ href, name, selected }: { href: string; name: string; selected: boolean }) {
   return (
     <Card interactive={selected} aria-labelledby="deck-name" className="deck" data-span="4" data-testid="deck">
@@ -324,9 +389,13 @@ const typeTone: Record<"unit" | "action" | "asset", MeterTone | undefined> = { u
 export function DeckMix({ count, syncing }: { count: number; syncing: boolean }) {
   return (
     <>
-      <div className="odd-stat">
-        <label htmlFor="actions">Actions</label>
-        <span className="odd-stat-value">{count}</span>
+      <div className="odd-stack">
+        <div className="odd-row">
+          <label className="odd-muted" htmlFor="actions">
+            Actions
+          </label>
+          <span className="odd-stat-value">{count}</span>
+        </div>
         <Meter id="actions" min={0} max={60} value={count} tone={typeTone.action} />
       </div>
       <Meter id="store-high" value={0.93} low={0.6} high={0.85} optimum={0} aria-label="Storage" />
@@ -454,5 +523,49 @@ export function DeckTable({ decks }: { decks: readonly { id: string; name: strin
       </TableWrap>
       <TableWrap tabIndex={0} role="region" aria-label="Archived decks" />
     </>
+  );
+}
+
+export function CityField() {
+  const root = useRef<HTMLDivElement>(null);
+  return (
+    <Field>
+      <Label htmlFor="city" id="city-label">
+        City
+      </Label>
+      <Combobox ref={root} className="wide" data-testid="city">
+        <Input id="city" name="city" role="combobox" aria-controls="city-list" aria-expanded="false" aria-autocomplete="list" />
+        <ComboboxList id="city-list" popover="manual" role="listbox" aria-labelledby="city-label">
+          <ComboboxOption role="option">Amsterdam</ComboboxOption>
+          <ComboboxOption role="option" aria-disabled="true">
+            Atlantis
+          </ComboboxOption>
+          <ComboboxOption role="option" aria-disabled={false} data-id="ber">
+            Berlin
+          </ComboboxOption>
+        </ComboboxList>
+      </Combobox>
+    </Field>
+  );
+}
+
+export function AssigneeField({ people, onAssign }: { people: readonly { id: string; name: string }[]; onAssign: (id: string) => void }) {
+  const [query, setQuery] = useState("");
+  return (
+    <Combobox>
+      <Input id="assignee" role="combobox" aria-controls="assignee-list" aria-expanded="false" aria-autocomplete="list" aria-label="Assignee" value={query} onChange={(event) => setQuery(event.target.value)} />
+      <ComboboxList id="assignee-list" popover="manual" role="listbox" aria-label="People" data-filter="manual">
+        {people.map((person) => (
+          <ComboboxOption key={person.id} role="option" onClick={() => onAssign(person.id)}>
+            {person.name}
+          </ComboboxOption>
+        ))}
+        {query !== "" && people.length === 0 && (
+          <ComboboxOption role="option" aria-disabled="true">
+            No results
+          </ComboboxOption>
+        )}
+      </ComboboxList>
+    </Combobox>
   );
 }

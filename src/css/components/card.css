@@ -44,6 +44,7 @@
 }
 .odd-card-link:focus-visible {
   outline: none;
+  box-shadow: none;
 }
 
 .odd-card-title {
