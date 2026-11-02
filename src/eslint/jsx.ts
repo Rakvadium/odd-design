@@ -33,9 +33,7 @@ function report(className: string): string {
   const owner = owners[className];
   if (owner === undefined) return message("ODD-CLASS-001", { found: className });
   const base = message("ODD-REACT-003", { found: className });
-  if (owner.by.length > 0) return `${base} Render ${either(owner.by)} from odd-design/react.`;
-  if (owner.via !== undefined) return `${base} Use ${owner.via}.`;
-  return `${base} No odd-design/react component renders it yet.`;
+  return owner.by.length > 0 ? `${base} Render ${either(owner.by)} from odd-design/react.` : `${base} Use ${owner.via}.`;
 }
 
 /**

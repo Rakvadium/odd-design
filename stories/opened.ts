@@ -1,4 +1,4 @@
-import { mirrored, type Mirror, type MirroredStory } from "./mirror.ts";
+import { mirrored, type Mirror, type MirroredStory } from "./story.ts";
 
 type Play = { readonly play: (context: { readonly canvasElement: HTMLElement }) => Promise<void> };
 

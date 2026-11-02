@@ -122,6 +122,9 @@ It is Avatar's `NamedWhenRole` with the converse branch. Both branches read the 
 Each item is the default the build uses. Each one can be reversed after review.
 
 1. **One part, `Popover`.** Tooltip, hover card, and menu share `popover.css` but take other popover states and, for menu, behavior JS. They are out of scope.
+
+Superseded: `docs/plans/react-drop-in.md` makes components own their tags, ids, and ARIA, so this no longer holds. The state-ownership decisions here stay.
+
 2. **Stateless `part()`, no `open` prop, no trigger part.** The browser is the only state owner, as for Disclosure. `Button` is the trigger.
 3. **`popover` takes `""` or `auto`.** Both are the auto state in both engines. A bare `popover` is what the CSS header and README document. The scene and the React docs spell `auto`.
 4. **A new rule kind, `name-requires`.** A name on a role-less popover is the one silent failure of a correct-looking popover. The kind is the converse of `accessible-name`, not a general "A requires B".

@@ -12,7 +12,7 @@ Data display components present content: the `.odd-table` inside a focusable, sc
 
 ## How to get to it (user POV)
 
-- In Storybook, open **Components → Data Display**, which has Avatar Fallback, Avatar, Separator, and Table. Avatar, Separator, and Table sort after Avatar Fallback because they load from `stories/mirrored/`.
+- In Storybook, open **Components → Data Display**, which has Avatar Fallback, Avatar, Separator, and Table. Avatar, Separator, and Table sort after Avatar Fallback because they load from `stories/components/`.
 
 ## Driving it with ctl.ts
 
@@ -30,17 +30,17 @@ Preconditions:
 
 Build the composed Storybook and serve it, as in the React Field section of `forms.md`. Open `http://127.0.0.1:6106/?path=/story/react_components-data-display--avatar`. The preview is the Avatar story built from `Avatar` and `AvatarGroup`, the same as `components-data-display--avatar`. The broken-image fallback is HTML-only too, as **Avatar Fallback**, because `avatarFallback` replaces children React rendered.
 
-Run the pair sweep with `bunx playwright test e2e/usage.spec.ts --project firefox`. The Avatar pair matches the `aria` literal in `stories/mirrored/Avatar.stories.ts`, and the two screenshots are byte-identical.
+Run the pair sweep with `bunx playwright test e2e/usage.spec.ts --project firefox`. The Avatar pair matches the `aria` literal in `stories/components/Avatar.stories.tsx`, and the two screenshots are byte-identical.
 
 ## React Separator
 
-In the same composed Storybook, open `http://127.0.0.1:6106/?path=/story/react_components-data-display--separator`. The preview is the Separator story built from `Separator`, the same as `components-data-display--separator`. The pair sweep matches the `aria` literal in `stories/mirrored/Separator.stories.ts`: four `separator` entries, two of them between the links. Firefox prints no orientation on a separator, so the screenshot pair is what proves the vertical lines.
+In the same composed Storybook, open `http://127.0.0.1:6106/?path=/story/react_components-data-display--separator`. The preview is the Separator story built from `Separator`, the same as `components-data-display--separator`. The pair sweep matches the `aria` literal in `stories/components/Separator.stories.tsx`: four `separator` entries, two of them between the links. Firefox prints no orientation on a separator, so the screenshot pair is what proves the vertical lines.
 
 ## React Table
 
 In the same composed Storybook, open `http://127.0.0.1:6106/?path=/story/react_components-data-display--table`. The preview is the Table story built from one `Table` with `columns`, `rows`, three `sortable` columns, a `selection` held in React state, and `Badge` cells, with the same text as `components-data-display--table`. `Table` runs `enhanceSelectAll` on itself, so the two table recipes above work on the React side too, and its sort buttons re-sort the rows there.
 
-The pair sweep checks the story against the `aria` literal in `stories/mirrored/Table.stories.tsx`, which pins `checkbox "Select all decks" [checked=mixed]`, and the two screenshots are byte-identical. A side that skips select-all shows the header box unchecked and fails the sweep. `bunx playwright test e2e/behavior.spec.ts --project firefox -g select-all` runs the select-all test once per Storybook.
+The pair sweep checks the story against the `aria` literal in `stories/components/Table.stories.tsx`, which pins `checkbox "Select all decks" [checked=mixed]`, and the two screenshots are byte-identical. A side that skips select-all shows the header box unchecked and fails the sweep. `bunx playwright test e2e/behavior.spec.ts --project firefox -g select-all` runs the select-all test once per Storybook.
 
 ## Gotchas
 

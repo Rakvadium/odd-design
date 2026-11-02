@@ -4,7 +4,6 @@ import { expect, test } from "bun:test";
 import { USAGE } from "../src/js/usage/contract.ts";
 import { checkRoot } from "../src/js/usage/dom.ts";
 import { catalog, renderHtml, STORYBOOKS, type Entry, type MirroredEntry } from "../stories/catalog.ts";
-import { toReact } from "../stories/mirror-react.ts";
 import { hydrationErrors } from "./hydrate.ts";
 
 const repo = fileURLToPath(new URL("..", import.meta.url));
@@ -188,7 +187,7 @@ for (const entry of html) {
 
 for (const entry of react) {
   test(`${entry.label} hydrates`, async () => {
-    expect(await hydrationErrors(toReact(entry.mirror.scene({ ...entry.meta.args, ...entry.story.args })))).toEqual([]);
+    expect(await hydrationErrors(entry.mirror.scene({ ...entry.meta.args, ...entry.story.args }))).toEqual([]);
   });
 }
 

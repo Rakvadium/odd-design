@@ -2,7 +2,7 @@ import { existsSync, globSync, readFileSync } from "node:fs";
 import { basename } from "node:path";
 import { GlobalRegistrator } from "@happy-dom/global-registrator";
 import { catalog, renderHtml, type Entry } from "../stories/catalog.ts";
-import { CLASS_REGISTRY, USAGE, VOCABULARY, WRAPPERS, type UsageRule } from "../src/js/usage/contract.ts";
+import { CLASS_REGISTRY, CLASSES, USAGE, VOCABULARY, type UsageRule } from "../src/js/usage/contract.ts";
 
 type Family = {
   readonly name: string;
@@ -554,9 +554,7 @@ const report = FAMILIES.map((family) => {
       bad: codes.filter((code) => fixture(code, "bad")).length,
       missingFixtures: codes.flatMap((code) => (["good", "bad"] as const).filter((kind) => !fixture(code, kind)).map((kind) => `${code}.${kind}`)),
       vocabulary: vocabularyKey !== undefined ? { key: vocabularyKey, attributes: VOCABULARY[vocabularyKey as keyof typeof VOCABULARY] } : undefined,
-      wrappers: Object.entries(WRAPPERS)
-        .filter(([, wrapper]) => family.classes.includes(wrapper.className))
-        .map(([name]) => name),
+      exports: [...new Set(family.classes.flatMap((name) => (CLASSES as Readonly<Record<string, { readonly by: readonly string[] }>>)[name]?.by ?? []))],
       usagePage,
     },
     tests: { unit: familyTests(testFiles), e2e: familyTests(e2eFiles) },
@@ -651,7 +649,7 @@ const markdown = [
   ),
   table(
     "Contract",
-    ["Family", "Usage codes", "Codes", "Borrowed codes", "Good fixtures", "Bad fixtures", "Missing fixtures", "VOCABULARY", "WRAPPERS", "Usage page"],
+    ["Family", "Usage codes", "Codes", "Borrowed codes", "Good fixtures", "Bad fixtures", "Missing fixtures", "VOCABULARY", "Exports", "Usage page"],
     report.map((r) => [
       r.family,
       String(r.contract.codes.length),
@@ -661,7 +659,7 @@ const markdown = [
       String(r.contract.bad),
       r.contract.missingFixtures.join(", "),
       r.contract.vocabulary === undefined ? "" : `${r.contract.vocabulary.key}: ${code(r.contract.vocabulary.attributes)}`,
-      r.contract.wrappers.join(", "),
+      r.contract.exports.join(", "),
       r.contract.usagePage === undefined ? "" : `\`${r.contract.usagePage}\``,
     ]),
   ),

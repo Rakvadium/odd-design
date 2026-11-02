@@ -15,7 +15,7 @@ Patterns HTML has no element for, enhanced by `src/js/enhance.ts` on top of nati
 
 ## How to get to it (user POV)
 
-- In Storybook, open **Components → Interactive**, which has Menu, Tabs, and Toast, all from `stories/mirrored/`. The React section has the same three.
+- In Storybook, open **Components → Interactive**, which has Menu, Tabs, and Toast, all from `stories/components/`. The React section has the same three.
 - Select-all is on **Components → Data Display → Table**, and the avatar fallback is on **Avatar Fallback**.
 
 ## Driving it with ctl.ts
@@ -37,19 +37,19 @@ Preconditions:
 
 Build the composed Storybook and serve it, as in the React Field section of `forms.md`. Open `http://127.0.0.1:6106/?path=/story/react_components-interactive--tabs`. The preview is the Tabs story built from two `Tabs` parts with native tablist, `button`, and panel children, with the same ids and text as `components-interactive--tabs`. `Tabs` wires itself, so the two Tabs recipes above work on the React side too.
 
-Run the pair sweep with `bunx playwright test e2e/usage.spec.ts --project firefox`. The Tabs pair matches the `aria` literal in `stories/mirrored/Tabs.stories.ts`, and the two screenshots are byte-identical. `bunx playwright test e2e/behavior.spec.ts --project firefox -g tabs` runs the tabs test once per Storybook. It first waits for `#tab-s5` to have `tabindex="-1"`, which only `enhanceTabs` writes, so a part that does not wire itself fails there.
+Run the pair sweep with `bunx playwright test e2e/usage.spec.ts --project firefox`. The Tabs pair matches the `aria` literal in `stories/components/Tabs.stories.tsx`, and the two screenshots are byte-identical. `bunx playwright test e2e/behavior.spec.ts --project firefox -g tabs` runs the tabs test once per Storybook. It first waits for `#tab-s5` to have `tabindex="-1"`, which only `enhanceTabs` writes, so a part that does not wire itself fails there.
 
 ## React Menu
 
 Use the same composed build. Open `http://127.0.0.1:6106/?path=/story/react_components-interactive--menu`. The preview is the Menu story built from two `Button` parts, `Menu`, nine `MenuItem` parts, and three `Separator` parts, with the native label, shortcut, and radio group, and the same ids and text as `components-interactive--menu`. `Menu` wires itself, and the story's `play` writes the log on both sides, so the two menu recipes above work on the React side too.
 
-The pair sweep checks the closed story against the `aria` literal in `stories/mirrored/Menu.stories.ts`, the two buttons and the empty live `paragraph`, and the two screenshots are byte-identical. `bunx playwright test e2e/behavior.spec.ts --project firefox -g menu` runs the menu test once per Storybook, with a checkbox toggle and a radio choice.
+The pair sweep checks the closed story against the `aria` literal in `stories/components/Menu.stories.tsx`, the two buttons and the empty live `paragraph`, and the two screenshots are byte-identical. `bunx playwright test e2e/behavior.spec.ts --project firefox -g menu` runs the menu test once per Storybook, with a checkbox toggle and a radio choice.
 
 ## React Toast
 
 Use the same composed build. Open `http://127.0.0.1:6106/?path=/story/react_components-interactive--toast`. The preview is the Toast story built from four `Button` parts, the native Settings dialog, and `Toaster`, with the same ids and text as `components-interactive--toast`. `Toaster` wires itself, and the story's `play` wires the triggers on both sides, so the two toast recipes above work on the React side too.
 
-The pair sweep checks the story against the `aria` literal in `stories/mirrored/Toast.stories.ts`, which ends with `region "Notifications"` and its empty `list`, and the two screenshots are byte-identical. A `Toaster` that does not wire itself drops those two lines on the React side. `bunx playwright test e2e/behavior.spec.ts --project firefox -g toast` runs both toast tests once per Storybook.
+The pair sweep checks the story against the `aria` literal in `stories/components/Toast.stories.tsx`, which ends with `region "Notifications"` and its empty `list`, and the two screenshots are byte-identical. A `Toaster` that does not wire itself drops those two lines on the React side. `bunx playwright test e2e/behavior.spec.ts --project firefox -g toast` runs both toast tests once per Storybook.
 
 ## Gotchas
 

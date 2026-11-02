@@ -4,6 +4,8 @@ Button, Field, and Choice ship from `odd-design/react`, but they reach the DOM t
 
 This plan gives every part one shape. `part.ts` reads each part's row in `WRAPPERS` at runtime. One `lower` function turns props into DOM attributes for Button and for every fixed part. Prop types come from the `USAGE` rules by rule kind. After this change, Badge's React module is four lines once its contract rows exist. Markup, type errors, export names, and stories stay the same.
 
+Superseded: `docs/plans/react-drop-in.md` makes components own their tags, ids, and ARIA, so this no longer holds. The state-ownership decisions here stay.
+
 The work ships as one PR on `feat/react-uniformity`, built as four commits after a baseline capture. Each commit ends in a check. Nothing merges or deploys.
 
 This plan waits for approval. Nothing is built yet.

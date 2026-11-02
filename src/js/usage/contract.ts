@@ -396,26 +396,6 @@ export const USAGE = {
   ] as const satisfies readonly UsageRule[],
 };
 
-export type WrapperElement = string | { readonly attribute: string; readonly present: string; readonly absent: string };
-
-export type Wrapper = {
-  readonly source: string;
-  readonly className: string;
-  readonly props: Readonly<Record<string, string>>;
-  readonly element: WrapperElement;
-};
-
-export const WRAPPERS = {
-  Button: {
-    source: "odd-design/react",
-    className: "odd-button",
-    props: { variant: "data-variant", size: "data-size", iconOnly: "data-icon-only" },
-    element: { attribute: "href", present: "a", absent: "button" },
-  },
-  Combobox: { source: "odd-design/react", className: "odd-combobox", props: {}, element: "div" },
-  ComboboxOption: { source: "odd-design/react", className: "odd-combobox-option", props: {}, element: "div" },
-} as const satisfies Record<string, Wrapper>;
-
 /** Every rendering export of odd-design/react. */
 export type ExportName =
   | "Alert"

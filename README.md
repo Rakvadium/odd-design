@@ -139,25 +139,16 @@ The five palettes ported from uvs-decks-gg went through the same repair. Their i
 2. Add the id to `CHROMES` and import the file in `index.css`.
 3. Run `bun test`, then check **Showcase → Matrix** in Storybook.
 
-## Add a React part
+## Add a React component
 
-1. Add the part's `WRAPPERS` row and its `USAGE` rules to `src/js/usage/contract.ts`. Add each new code to `USAGE_CODES` and `MESSAGES` in `src/js/usage/format.ts`. A class's rules run only when its `USAGE` group has an `element` rule for it. Each data prop in the row needs an `enum` or `boolean-attribute` rule, which types the prop. The row's `props` are also the part's own `data-*` names, which a `system-data` rule allows and its message lists.
-2. Document each code in `docs/usage/<family>.md`.
-3. Write `src/react/<family>.tsx`. A part with a fixed tag needs three declarations. `Contract` types its props from its rules, and `part` renders its row.
-
-   ```tsx
-   interface BadgeContract extends Contract<"Badge", BadgeRule> {}
-   export interface BadgeProps extends BadgeContract, Native<"Badge", keyof BadgeContract> {}
-   export const Badge: (props: BadgeProps) => ReactElement = part("Badge");
-   ```
-
-   `Contract` does not type an `enum` rule on an attribute that is not in the row's `props`. Give each one its own line, `attribute?: Values<Rule, "attribute">`, as `Avatar` does for `role` and `Separator` does for `aria-orientation` and `role`.
-
+1. Add the class's `USAGE` rules to `src/js/usage/contract.ts`, and add each new code to `USAGE_CODES` and `MESSAGES` in `src/js/usage/format.ts`. A class's rules run only when its `USAGE` group has an `element` rule for it. Its `enum` and `boolean-attribute` rules are its own `data-*` names, which a `system-data` rule allows and its message lists.
+2. Document each code in `docs/usage/<family>.md`, with the React call at the top and the HTML labeled as its compiled output.
+3. Write `src/react/<family>.tsx` on `src/react/own.ts`. The component owns every attribute its markup's correctness depends on. Type each one, and `role`, through `Owned`, so passing it prints `ODD-REACT-001`. Take value unions from the rules with `Values`, take required structure as a required prop, and take ids from `useOddId` and `idsOf`. Spread the rest first and write the owned attributes last. Start the module with `"use client"` if it has a handler, an effect, state, or a context. `src/react/badge.tsx` is the smallest example.
 4. Export the module from `src/react/index.ts`.
-5. Mirror the part's stories in `stories/mirrored/<Family>.stories.ts`.
-6. Add the part to `ExportName` and its classes' `by` lists in `CLASSES` in `src/js/usage/contract.ts`, and give it fixtures in `FIXTURES` in `tests/components.test.tsx`. Add a `<part>-<rule>.tsx` fail fixture in `tests/fixtures/types/fail/` for each code its props reject, with its `failures` entry. Add the `places` entries for its ESLint fixtures in `tests/eslint-html.test.ts`. Add a `<code>.bad.html` and `<code>.good.html` pair in `tests/fixtures/usage/` for each runtime code, with the code in lower case, and list the code in `RUNTIME_CODES` in `tests/usage-check.test.ts`. Pin the mirrored story ids in `tests/stories.test.ts`.
+5. Write its stories in `stories/components/<Family>.stories.tsx`, each one `mirrored({ scene, aria })` from `stories/story.ts`. Both Storybooks render the scene, and the pair sweep checks the `aria` snapshot on each side.
+6. Add the component to `ExportName` and its classes' `by` lists in `CLASSES` in `src/js/usage/contract.ts`, and give it fixtures in `FIXTURES` in `tests/components.test.tsx`. Add the `places` entries for its ESLint fixtures in `tests/eslint-html.test.ts`. Add a `<code>.bad.html` and `<code>.good.html` pair in `tests/fixtures/usage/` for each runtime code, with the code in lower case, and list the code in `RUNTIME_CODES` in `tests/usage-check.test.ts`. Pin the story ids in `tests/stories.test.ts`.
 
-`scripts/build.ts` and `scripts/consumer-smoke.ts` read the `odd-design/react` barrel, so a new part adds no line to either. A new usage page goes in `REQUIRED` in `scripts/consumer-smoke.ts`.
+`scripts/build.ts` and `scripts/consumer-smoke.ts` read the `odd-design/react` barrel, so a new component adds no line to either. A new usage page goes in `REQUIRED` in `scripts/consumer-smoke.ts`.
 
 ## Components
 

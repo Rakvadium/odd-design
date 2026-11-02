@@ -7,8 +7,7 @@ import { applyAppearance, CHROMES, MODES, PALETTES, type Appearance } from "../s
 import { A11Y_OPTIONS } from "./a11y.ts";
 import { renderToStaticMarkup } from "react-dom/server";
 import { avatarFallback, closedByFallback, enhance, interestForFallback } from "../src/js/enhance.ts";
-import { mirrorOf } from "../stories/mirror.ts";
-import { toReact } from "../stories/mirror-react.ts";
+import { sceneOf } from "../stories/story.ts";
 
 // Page-wide fallbacks, installed once as an app would. Each is a no-op where the browser has the feature.
 closedByFallback();
@@ -57,7 +56,7 @@ const preview: Preview = {
     queueMicrotask(() => {
       unenhance = enhance(canvasElement);
     });
-    return renderToStaticMarkup(toReact(mirrorOf(parameters).scene(args)));
+    return renderToStaticMarkup(sceneOf(parameters)(args));
   },
 };
 

@@ -1,4 +1,4 @@
-import { APPEARANCE_AXES, HEADLESS_ALLOWLIST, USAGE, WRAPPERS } from "./contract.ts";
+import { APPEARANCE_AXES, HEADLESS_ALLOWLIST, USAGE } from "./contract.ts";
 
 export const USAGE_CODES = [
   "ODD-CLASS-001",
@@ -198,7 +198,7 @@ const variantRule = USAGE.button[1];
 const sizeRule = USAGE.button[2];
 const variantAllowed = enumAllowed(variantRule.values, variantRule.omit);
 const sizeAllowed = enumAllowed(sizeRule.values, sizeRule.omit);
-const buttonAttributes = comma([WRAPPERS.Button.props.variant, WRAPPERS.Button.props.size, WRAPPERS.Button.props.iconOnly]);
+const buttonAttributes = comma([variantRule.attribute, sizeRule.attribute, USAGE.button[3].attribute]);
 const toneRule = USAGE.badge[1];
 const badgeAttributes = comma([toneRule.attribute, USAGE.badge[2].attribute]);
 const alertToneRule = USAGE.alert[1];
