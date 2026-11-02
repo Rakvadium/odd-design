@@ -12,6 +12,7 @@ import { Dialog, DialogActions } from "../../../../src/react/dialog.tsx";
 import { Disclosure } from "../../../../src/react/disclosure.tsx";
 import { Field, FieldError, Hint, Input, Label, Select, Textarea } from "../../../../src/react/field.tsx";
 import { Kbd } from "../../../../src/react/kbd.tsx";
+import { Grid, GridItem, Row, Scope, SkipLink, Stack, VisuallyHidden, type GridSpan } from "../../../../src/react/layout.tsx";
 import { Menu, MenuItem } from "../../../../src/react/menu.tsx";
 import { Table, TableSort, TableWrap } from "../../../../src/react/table.tsx";
 import { Meter, Progress, type MeterTone } from "../../../../src/react/meter.tsx";
@@ -25,6 +26,7 @@ import { Spinner } from "../../../../src/react/spinner.tsx";
 import { Tabs } from "../../../../src/react/tabs.tsx";
 import { TextLink } from "../../../../src/react/text-link.tsx";
 import { Toaster } from "../../../../src/react/toast.tsx";
+import { Eyebrow, Heading, Muted, type HeadingSize } from "../../../../src/react/typography.tsx";
 
 function save(event: MouseEvent<HTMLButtonElement>): void {
   event.currentTarget.blur();
@@ -567,5 +569,34 @@ export function AssigneeField({ people, onAssign }: { people: readonly { id: str
         )}
       </ComboboxList>
     </Combobox>
+  );
+}
+
+export function Page({ span, size }: { span: GridSpan; size: HeadingSize }) {
+  return (
+    <>
+      <SkipLink href="#main" className="skip">
+        Skip to content
+      </SkipLink>
+      <Grid as="main" id="main" aria-label="Board">
+        <GridItem as="section" span={span} aria-labelledby="queue-title" data-testid="queue">
+          <Stack>
+            <Eyebrow tone="primary">Today</Eyebrow>
+            <Heading level={2} size={size} id="queue-title">
+              Queue
+            </Heading>
+            <Muted as="span">Updated just now</Muted>
+          </Stack>
+        </GridItem>
+        <GridItem>
+          <Row as="nav" aria-label="Sections">
+            <a href="#queue-title">Queue</a>
+          </Row>
+        </GridItem>
+      </Grid>
+      <Scope chrome="glass" palette="aurora" mode="dark" as="aside">
+        <VisuallyHidden as="p">4 of 5 stars</VisuallyHidden>
+      </Scope>
+    </>
   );
 }

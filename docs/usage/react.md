@@ -1,8 +1,8 @@
 # Use the React components
 
-`odd-design/react` exports `Button`, the Field parts, the Choice parts, `Badge`, the Alert parts, the Avatar parts, `Separator`, `Skeleton`, the Card parts, `Disclosure`, `Tabs`, `Search`, `Slider`, `Meter`, `Progress`, `Toaster`, `Popover`, `Dialog`, `DialogActions`, `Sheet`, `SheetHeader`, `SheetFooter`, `Menu`, `MenuItem`, `TableWrap`, `Table`, `TableSort`, `TextLink`, `Spinner`, `Combobox`, `ComboboxList`, `ComboboxOption`, `Breadcrumb`, `Kbd`, `Code`, and `Pre`. Each renders an `odd-` element from typed props. A contract mistake in those props is a TypeScript error that starts with its code, such as `ODD-BUTTON-007`. `Button` lives in `src/react/button.tsx`, the Field parts in `src/react/field.tsx`, the Choice parts in `src/react/choice.tsx`, `Badge` in `src/react/badge.tsx`, the Alert parts in `src/react/alert.tsx`, the Avatar parts in `src/react/avatar.tsx`, `Separator` in `src/react/separator.tsx`, `Skeleton` in `src/react/skeleton.tsx`, the Card parts in `src/react/card.tsx`, `Disclosure` in `src/react/disclosure.tsx`, `Tabs` in `src/react/tabs.tsx`, `Search` in `src/react/search.tsx`, `Slider` in `src/react/slider.tsx`, `Meter` and `Progress` in `src/react/meter.tsx`, `Toaster` in `src/react/toast.tsx`, `Popover` in `src/react/popover.tsx`, `Dialog` and `DialogActions` in `src/react/dialog.tsx`, `Sheet`, `SheetHeader`, and `SheetFooter` in `src/react/sheet.tsx`, `Menu` and `MenuItem` in `src/react/menu.tsx`, `TableWrap`, `Table`, and `TableSort` in `src/react/table.tsx`, `TextLink` in `src/react/text-link.tsx`, `Spinner` in `src/react/spinner.tsx`, `Combobox`, `ComboboxList`, and `ComboboxOption` in `src/react/combobox.tsx`, `Breadcrumb` in `src/react/breadcrumb.tsx`, `Kbd` in `src/react/kbd.tsx`, and `Code` and `Pre` in `src/react/code.tsx`. Codes and fixes are in [Button usage rules](button.md), [Field usage rules](field.md), [Choice usage rules](choice.md), [Badge usage rules](badge.md), [Alert usage rules](alert.md), [Avatar usage rules](avatar.md), [Separator usage rules](separator.md), [Skeleton usage rules](skeleton.md), [Card usage rules](card.md), [Disclosure usage rules](disclosure.md), [Tabs usage rules](tabs.md), [Search usage rules](search.md), [Slider usage rules](slider.md), [Meter usage rules](meter.md), [Toast usage rules](toast.md), [Popover usage rules](popover.md), [Dialog usage rules](dialog.md), [Sheet usage rules](sheet.md), [Menu usage rules](menu.md), [Table usage rules](table.md), [Link usage rules](link.md), [Spinner usage rules](spinner.md), [Combobox usage rules](combobox.md), [Breadcrumb usage rules](breadcrumb.md), [Kbd usage rules](kbd.md), and [Code usage rules](code.md).
+`odd-design/react` exports `Button`, the Field parts, the Choice parts, `Badge`, the Alert parts, the Avatar parts, `Separator`, `Skeleton`, the Card parts, `Disclosure`, `Tabs`, `Search`, `Slider`, `Meter`, `Progress`, `Toaster`, `Popover`, `Dialog`, `DialogActions`, `Sheet`, `SheetHeader`, `SheetFooter`, `Menu`, `MenuItem`, `TableWrap`, `Table`, `TableSort`, `TextLink`, `Spinner`, `Combobox`, `ComboboxList`, `ComboboxOption`, `Breadcrumb`, `Kbd`, `Code`, `Pre`, the layout components (`Stack`, `Row`, `Grid`, `GridItem`, `VisuallyHidden`, `SkipLink`, and `Scope`), and the typography components (`Heading`, `Eyebrow`, and `Muted`). Each renders an `odd-` element from typed props. A contract mistake in those props is a TypeScript error that starts with its code, such as `ODD-BUTTON-007`. `Button` lives in `src/react/button.tsx`, the Field parts in `src/react/field.tsx`, the Choice parts in `src/react/choice.tsx`, `Badge` in `src/react/badge.tsx`, the Alert parts in `src/react/alert.tsx`, the Avatar parts in `src/react/avatar.tsx`, `Separator` in `src/react/separator.tsx`, `Skeleton` in `src/react/skeleton.tsx`, the Card parts in `src/react/card.tsx`, `Disclosure` in `src/react/disclosure.tsx`, `Tabs` in `src/react/tabs.tsx`, `Search` in `src/react/search.tsx`, `Slider` in `src/react/slider.tsx`, `Meter` and `Progress` in `src/react/meter.tsx`, `Toaster` in `src/react/toast.tsx`, `Popover` in `src/react/popover.tsx`, `Dialog` and `DialogActions` in `src/react/dialog.tsx`, `Sheet`, `SheetHeader`, and `SheetFooter` in `src/react/sheet.tsx`, `Menu` and `MenuItem` in `src/react/menu.tsx`, `TableWrap`, `Table`, and `TableSort` in `src/react/table.tsx`, `TextLink` in `src/react/text-link.tsx`, `Spinner` in `src/react/spinner.tsx`, `Combobox`, `ComboboxList`, and `ComboboxOption` in `src/react/combobox.tsx`, `Breadcrumb` in `src/react/breadcrumb.tsx`, `Kbd` in `src/react/kbd.tsx`, `Code` and `Pre` in `src/react/code.tsx`, the layout components in `src/react/layout.tsx`, and the typography components in `src/react/typography.tsx`. Codes and fixes are in [Button usage rules](button.md), [Field usage rules](field.md), [Choice usage rules](choice.md), [Badge usage rules](badge.md), [Alert usage rules](alert.md), [Avatar usage rules](avatar.md), [Separator usage rules](separator.md), [Skeleton usage rules](skeleton.md), [Card usage rules](card.md), [Disclosure usage rules](disclosure.md), [Tabs usage rules](tabs.md), [Search usage rules](search.md), [Slider usage rules](slider.md), [Meter usage rules](meter.md), [Toast usage rules](toast.md), [Popover usage rules](popover.md), [Dialog usage rules](dialog.md), [Sheet usage rules](sheet.md), [Menu usage rules](menu.md), [Table usage rules](table.md), [Link usage rules](link.md), [Spinner usage rules](spinner.md), [Combobox usage rules](combobox.md), [Breadcrumb usage rules](breadcrumb.md), [Kbd usage rules](kbd.md), [Code usage rules](code.md), [Base utilities usage rules](base.md), [Grid usage rules](grid.md), and [Typography usage rules](typography.md).
 
-`button.tsx`, `tabs.tsx`, `toast.tsx`, `menu.tsx`, `table.tsx`, and `combobox.tsx` start with `"use client"`, so a React Server Components app can render `Button`, `Tabs`, `Toaster`, `Menu`, `MenuItem`, `TableWrap`, `Table`, `TableSort`, `Combobox`, `ComboboxList`, and `ComboboxOption` from a server component. `Tabs`, `Toaster`, `Menu`, `Table`, and `Combobox` wire themselves in a layout effect. The Field parts, the Choice parts, `Badge`, the Alert parts, the Avatar parts, `Separator`, `Skeleton`, the Card parts, `Disclosure`, `Search`, `Slider`, `Meter`, `Progress`, `Popover`, `Dialog`, `DialogActions`, `Sheet`, `SheetHeader`, `SheetFooter`, `TextLink`, `Spinner`, `Breadcrumb`, `Kbd`, `Code`, and `Pre` hold no state and no handlers, so `field.tsx`, `choice.tsx`, `badge.tsx`, `alert.tsx`, `avatar.tsx`, `separator.tsx`, `skeleton.tsx`, `card.tsx`, `disclosure.tsx`, `search.tsx`, `slider.tsx`, `meter.tsx`, `popover.tsx`, `dialog.tsx`, `sheet.tsx`, `text-link.tsx`, `spinner.tsx`, `breadcrumb.tsx`, `kbd.tsx`, and `code.tsx` have no directive. A component that holds the disclosure's, the popover's, the dialog's, or the sheet's state puts the directive in its own file.
+`button.tsx`, `tabs.tsx`, `toast.tsx`, `menu.tsx`, `table.tsx`, and `combobox.tsx` start with `"use client"`, so a React Server Components app can render `Button`, `Tabs`, `Toaster`, `Menu`, `MenuItem`, `TableWrap`, `Table`, `TableSort`, `Combobox`, `ComboboxList`, and `ComboboxOption` from a server component. `Tabs`, `Toaster`, `Menu`, `Table`, and `Combobox` wire themselves in a layout effect. The Field parts, the Choice parts, `Badge`, the Alert parts, the Avatar parts, `Separator`, `Skeleton`, the Card parts, `Disclosure`, `Search`, `Slider`, `Meter`, `Progress`, `Popover`, `Dialog`, `DialogActions`, `Sheet`, `SheetHeader`, `SheetFooter`, `TextLink`, `Spinner`, `Breadcrumb`, `Kbd`, `Code`, and `Pre` hold no state and no handlers, so `field.tsx`, `choice.tsx`, `badge.tsx`, `alert.tsx`, `avatar.tsx`, `separator.tsx`, `skeleton.tsx`, `card.tsx`, `disclosure.tsx`, `search.tsx`, `slider.tsx`, `meter.tsx`, `popover.tsx`, `dialog.tsx`, `sheet.tsx`, `text-link.tsx`, `spinner.tsx`, `breadcrumb.tsx`, `kbd.tsx`, `code.tsx`, `layout.tsx`, and `typography.tsx` have no directive. `SkipLink` renders its anchor through a client leaf that reads the router link from `OddProvider`. A component that holds the disclosure's, the popover's, the dialog's, or the sheet's state puts the directive in its own file.
 
 When `Button`, `MenuItem`, or `TableSort` renders a `button`, it defaults to `type="button"` unless you pass `type`, so it does not submit a form around it. Pass `type="submit"` or `type="reset"` to opt in.
 
@@ -641,6 +641,50 @@ import { Table, TableSort, TableWrap } from "odd-design/react";
 `TableWrap` renders the scroll `div` with the class `odd-table-wrap`, `Table` renders the `table` with the class `odd-table`, and `TableSort` renders a sort `button` with the class `odd-table-sort`. The caption, the sections, the rows, the cells, and the checkboxes are plain elements. `data-numeric` goes on a `th` and its cells, and `aria-sort` goes on the sorted column's `th`. A table that can never overflow drops the region, as in `<TableWrap><Table>…</Table></TableWrap>`. `tabIndex`, `aria-label`, or `aria-labelledby` on `TableWrap` needs `role="region"`, and `role="region"` needs a name.
 
 `Table` runs `enhanceSelectAll` on itself after every commit, so the header box checks or clears every row and shows checked, mixed, or unchecked. It clicks each row it changes, so each changed row's `onChange` runs once. Rows may be controlled or uncontrolled. Leave the header box uncontrolled, because `Table` owns it. A row list that re-renders without `Table`, such as a memoized `tbody` component, leaves the header box stale until `Table` renders again or a box changes. An `enhance()` call that runs after `Table` mounts uses the listener `Table` installed. One that runs before finds no table and adds nothing. Either way a row is not clicked twice. [Table usage rules](table.md) has the codes.
+
+## Lay out a page
+
+```tsx
+import { Grid, GridItem, Row, Scope, SkipLink, Stack, VisuallyHidden } from "odd-design/react";
+
+<>
+  <SkipLink href="#main">Skip to content</SkipLink>
+  <Grid as="main" id="main">
+    <GridItem span={8}>
+      <Stack as="section" aria-labelledby="queue-title">…</Stack>
+    </GridItem>
+    <GridItem span={4}>
+      <Row>…</Row>
+    </GridItem>
+  </Grid>
+  <Scope chrome="glass" palette="aurora" mode="dark">…</Scope>
+  <VisuallyHidden>4 of 5 stars</VisuallyHidden>
+</>;
+```
+
+| Component | Element | Props it owns |
+| --- | --- | --- |
+| `Stack` | `div.odd-stack`, or the tag in `as` | None. The gap is the stylesheet's default. |
+| `Row` | `div.odd-row`, or the tag in `as` | None. The gap is the stylesheet's default. |
+| `Grid` | `div.odd-grid`, or `main`, `section`, `ul`, or `ol` in `as` | None. |
+| `GridItem` | `div`, or `section`, `article`, or `li` in `as` | `span`, a whole number from 1 to 12, as `data-span`. Omit it for the full row. |
+| `VisuallyHidden` | `span.odd-visually-hidden`, or `p` in `as` | None. |
+| `SkipLink` | `a.odd-skip-link` through the router link | `href`, typed `` `#${string}` ``, so a link that is not a fragment is a type error (`ODD-SKIP-001`). |
+| `Scope` | `div.odd-scope`, or the tag in `as` | `chrome`, `palette`, and `mode`, all three required (`ODD-SCOPE-001`). |
+
+`Stack`, `Row`, and `Grid` take no `gap` and no `style`. Each one keeps the gap its stylesheet sets. `role` and system `data-` attributes, such as `data-span`, are type errors on every one of them (`ODD-REACT-001` and `ODD-REACT-002`). Other props, such as `id` and `aria-labelledby`, go to the element.
+
+## Set type
+
+```tsx
+import { Eyebrow, Heading, Muted } from "odd-design/react";
+
+<Eyebrow tone="primary">Season 4</Eyebrow>;
+<Heading level={2} size="xl">Your collection</Heading>;
+<Muted>Saved 2 minutes ago</Muted>;
+```
+
+`Heading` renders `h{level}.odd-heading`. `level` is required, because only the app knows where the heading sits in the outline. `size` takes `xs`, `sm`, `lg`, `xl`, `2xl`, or `hero`, and its absence is md (`ODD-TYPOGRAPHY-002`). `Eyebrow` renders `p.odd-eyebrow`, or a `span` with `as="span"`. `tone` takes `primary` or `foreground`, and its absence is muted (`ODD-TYPOGRAPHY-003`). `Muted` renders `p.odd-muted`, or a `span` with `as="span"`.
 
 ## Read a type error
 

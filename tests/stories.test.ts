@@ -31,6 +31,7 @@ test("the catalog has every story file's stories, and the mirrored story ids equ
   const skipped = storyFiles.filter((file) => !covered.has(file));
   expect(skipped).toEqual([]);
   expect(react.map((entry) => entry.id).sort()).toEqual([
+    "components-base-utilities--parts",
     "components-breadcrumb--parts",
     "components-breadcrumb--playground",
     "components-breadcrumb--wrapping",
@@ -63,6 +64,7 @@ test("the catalog has every story file's stories, and the mirrored story ids equ
     "components-forms--slider",
     "components-forms--switch",
     "components-forms--text-fields",
+    "components-grid--variants",
     "components-interactive--menu",
     "components-interactive--menu-open",
     "components-interactive--tabs",
@@ -92,6 +94,8 @@ test("the catalog has every story file's stories, and the mirrored story ids equ
     "components-surfaces--card",
     "components-surfaces--dialog",
     "components-surfaces--disclosure",
+    "components-typography--sizes",
+    "components-typography--variants",
   ]);
   expect(react.every((entry) => html.some((item) => item.id === entry.id))).toBe(true);
 });
@@ -156,6 +160,37 @@ test("BreadcrumbParts marks each trail's last crumb, and only that crumb, as the
 
 test("TabsVertical's tablist is vertical", () => {
   expect(checkedRoot("components-interactive--tabs-vertical").querySelector('[role="tablist"]')?.getAttribute("aria-orientation")).toBe("vertical");
+});
+
+/** Story files that still render an inline style. A family's commit rewrites its stories and removes its file. */
+const STYLED = [
+  "stories/mirrored/Alert.stories.ts",
+  "stories/mirrored/Avatar.stories.ts",
+  "stories/mirrored/Breadcrumb.stories.ts",
+  "stories/mirrored/Card.stories.ts",
+  "stories/mirrored/Choice.stories.ts",
+  "stories/mirrored/Code.stories.ts",
+  "stories/mirrored/Combobox.stories.ts",
+  "stories/mirrored/Disclosure.stories.ts",
+  "stories/mirrored/Field.stories.ts",
+  "stories/mirrored/Kbd.stories.ts",
+  "stories/mirrored/Menu.stories.ts",
+  "stories/mirrored/Meter.stories.ts",
+  "stories/mirrored/Popover.stories.ts",
+  "stories/mirrored/Search.stories.ts",
+  "stories/mirrored/Separator.stories.ts",
+  "stories/mirrored/Sheet.stories.ts",
+  "stories/mirrored/Skeleton.stories.ts",
+  "stories/mirrored/Slider.stories.ts",
+  "stories/mirrored/Spinner.stories.ts",
+  "stories/mirrored/Table.stories.ts",
+  "stories/mirrored/Tabs.stories.ts",
+];
+
+test("no mirrored story renders a style attribute, except in the files still listed, and each listed file still renders one", () => {
+  const styled = (entry: MirroredEntry) => rendered(entry).querySelector("[style]") !== null;
+  expect(react.filter((entry) => !STYLED.includes(entry.file) && styled(entry)).map((entry) => entry.id)).toEqual([]);
+  expect(STYLED.filter((file) => !react.some((entry) => entry.file === file && styled(entry)))).toEqual([]);
 });
 
 for (const entry of html) {

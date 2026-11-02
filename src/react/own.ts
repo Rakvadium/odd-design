@@ -53,9 +53,19 @@ export function mergeIds(...lists: readonly (string | false | undefined)[]): str
 // Bundlers replace process.env.NODE_ENV, as React's own builds rely on, so the package declares only what it reads.
 declare const process: { readonly env: { readonly NODE_ENV?: string } };
 
+// A typeof guard would survive a bundler's replacement and read a browser production build as development.
+// The read itself is replaced, and only an unbundled page throws here, which keeps the development default.
+function production(): boolean {
+  try {
+    return process.env.NODE_ENV === "production";
+  } catch {
+    return false;
+  }
+}
+
 /** A string type cannot exclude "", so a blank name throws its family's code outside production. */
 export function rejectBlank(value: string, code: UsageCode): string {
-  if (value.trim() === "" && process.env.NODE_ENV !== "production") throw new Error(message(code));
+  if (value.trim() === "" && !production()) throw new Error(message(code));
   return value;
 }
 

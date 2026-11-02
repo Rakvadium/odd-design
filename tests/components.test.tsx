@@ -21,8 +21,12 @@ import {
   Dialog,
   DialogActions,
   Disclosure,
+  Eyebrow,
   Field,
   FieldError,
+  Grid,
+  GridItem,
+  Heading,
   Hint,
   Input,
   Kbd,
@@ -30,9 +34,12 @@ import {
   Menu,
   MenuItem,
   Meter,
+  Muted,
   Popover,
   Pre,
   Progress,
+  Row,
+  Scope,
   Search,
   Segmented,
   Select,
@@ -40,9 +47,11 @@ import {
   Sheet,
   SheetFooter,
   SheetHeader,
+  SkipLink,
   Skeleton,
   Slider,
   Spinner,
+  Stack,
   Switch,
   Table,
   TableSort,
@@ -51,6 +60,7 @@ import {
   TextLink,
   Textarea,
   Toaster,
+  VisuallyHidden,
 } from "odd-design/react";
 import { CLASSES, type ClassName, type ExportName } from "../src/js/usage/contract.ts";
 import { checkRoot } from "../src/js/usage/dom.ts";
@@ -326,17 +336,16 @@ const FIXTURES: { readonly [K in ExportName]: readonly [Fixture, ...Fixture[]] }
   Code: [
     {
       name: "inline code beside a block",
-      uses: ["Pre"],
-      writes: ["odd-stack"],
+      uses: ["Pre", "Stack"],
       element: (
-        <div className="odd-stack">
+        <Stack>
           <p>
             Set <Code>--primary</Code> on the scope.
           </p>
           <Pre data-language="sh">
             <code>bun add odd-design</code>
           </Pre>
-        </div>
+        </Stack>
       ),
       markup:
         '<div class="odd-stack"><p>Set <code class="odd-code">--primary</code> on the scope.</p><pre data-language="sh" class="odd-pre"><code>bun add odd-design</code></pre></div>',
@@ -427,6 +436,24 @@ const FIXTURES: { readonly [K in ExportName]: readonly [Fixture, ...Fixture[]] }
       markup: '<details name="faq" open="" class="odd-disclosure faq"><summary>Does it need JavaScript?</summary><div>No.</div></details>',
     },
   ],
+  Eyebrow: [
+    {
+      name: "each tone above a heading",
+      uses: ["Heading", "Stack"],
+      element: (
+        <Stack>
+          <Eyebrow>Season 4</Eyebrow>
+          <Eyebrow tone="primary" as="span" className="wide">
+            New
+          </Eyebrow>
+          <Eyebrow tone="foreground">Pinned</Eyebrow>
+          <Heading level={2}>Your collection</Heading>
+        </Stack>
+      ),
+      markup:
+        '<div class="odd-stack"><p class="odd-eyebrow">Season 4</p><span class="odd-eyebrow wide" data-tone="primary">New</span><p class="odd-eyebrow" data-tone="foreground">Pinned</p><h2 class="odd-heading">Your collection</h2></div>',
+    },
+  ],
   Field: [
     {
       name: "with a hint and an error",
@@ -454,6 +481,53 @@ const FIXTURES: { readonly [K in ExportName]: readonly [Fixture, ...Fixture[]] }
           <FieldError id="deck-title-error">Enter a title.</FieldError>
         </Field>
       ),
+    },
+  ],
+  Grid: [
+    {
+      name: "a main grid of spans",
+      uses: ["GridItem"],
+      element: (
+        <Grid as="main" className="board" aria-label="Board">
+          <GridItem span={8}>Queue</GridItem>
+          <GridItem span={4}>Notes</GridItem>
+          <GridItem>History</GridItem>
+        </Grid>
+      ),
+      markup: '<main aria-label="Board" class="odd-grid board"><div data-span="8">Queue</div><div data-span="4">Notes</div><div>History</div></main>',
+    },
+  ],
+  GridItem: [
+    {
+      name: "a list item that spans half",
+      uses: ["Grid"],
+      element: (
+        <Grid as="ul">
+          <GridItem as="li" span={6} id="first">
+            Ember Aggro
+          </GridItem>
+          <GridItem as="li" span={6}>
+            Tide Control
+          </GridItem>
+        </Grid>
+      ),
+      markup: '<ul class="odd-grid"><li id="first" data-span="6">Ember Aggro</li><li data-span="6">Tide Control</li></ul>',
+    },
+  ],
+  Heading: [
+    {
+      name: "a level apart from its size",
+      element: (
+        <>
+          <Heading level={1} size="hero">
+            Odd design
+          </Heading>
+          <Heading level={3} className="wide" id="recent">
+            Recent decks
+          </Heading>
+        </>
+      ),
+      markup: '<h1 class="odd-heading" data-size="hero">Odd design</h1><h3 id="recent" class="odd-heading wide">Recent decks</h3>',
     },
   ],
   Hint: [
@@ -529,6 +603,23 @@ const FIXTURES: { readonly [K in ExportName]: readonly [Fixture, ...Fixture[]] }
       markup: '<meter id="actions" min="0" max="60" value="22" class="odd-meter" data-tone="info"></meter>',
     },
   ],
+  Muted: [
+    {
+      name: "a paragraph and a span",
+      element: (
+        <>
+          <Muted>Saved 2 minutes ago</Muted>
+          <p>
+            Upload finished.{" "}
+            <Muted as="span" className="time">
+              Just now
+            </Muted>
+          </p>
+        </>
+      ),
+      markup: '<p class="odd-muted">Saved 2 minutes ago</p><p>Upload finished. <span class="odd-muted time">Just now</span></p>',
+    },
+  ],
   Popover: [
     {
       name: "a dialog named by its title",
@@ -558,22 +649,45 @@ const FIXTURES: { readonly [K in ExportName]: readonly [Fixture, ...Fixture[]] }
       markup: '<progress id="sync" aria-label="Syncing decks" class="odd-progress"></progress>',
     },
   ],
+  Row: [
+    {
+      name: "a named navigation row",
+      element: (
+        <Row as="nav" aria-label="Sections" className="end">
+          <a href="#decks">Decks</a>
+          <a href="#cards">Cards</a>
+        </Row>
+      ),
+      markup: '<nav aria-label="Sections" class="odd-row end"><a href="#decks">Decks</a><a href="#cards">Cards</a></nav>',
+    },
+  ],
+  Scope: [
+    {
+      name: "all three appearance axes",
+      element: (
+        <Scope chrome="glass" palette="aurora" mode="dark" as="section" aria-label="Preview">
+          <p>Its own chrome, palette, and mode.</p>
+        </Scope>
+      ),
+      markup:
+        '<section aria-label="Preview" class="odd-scope" data-chrome="glass" data-palette="aurora" data-mode="dark"><p>Its own chrome, palette, and mode.</p></section>',
+    },
+  ],
   Search: [
     {
       name: "with a hidden label and a leading icon",
-      uses: ["Input"],
-      writes: ["odd-visually-hidden"],
+      uses: ["Input", "VisuallyHidden"],
       element: (
         <Search className="deck-search">
-          <label className="odd-visually-hidden" htmlFor="card-search">
-            Search cards
+          <label htmlFor="card-search">
+            <VisuallyHidden>Search cards</VisuallyHidden>
           </label>
           <svg aria-hidden="true" viewBox="0 0 24 24" />
           <Input type="search" id="card-search" placeholder="Search cards" />
         </Search>
       ),
       markup:
-        '<search class="odd-search deck-search"><label class="odd-visually-hidden" for="card-search">Search cards</label><svg aria-hidden="true" viewBox="0 0 24 24"></svg><input type="search" id="card-search" placeholder="Search cards" class="odd-input"/></search>',
+        '<search class="odd-search deck-search"><label for="card-search"><span class="odd-visually-hidden">Search cards</span></label><svg aria-hidden="true" viewBox="0 0 24 24"></svg><input type="search" id="card-search" placeholder="Search cards" class="odd-input"/></search>',
     },
   ],
   Segmented: [
@@ -680,16 +794,28 @@ const FIXTURES: { readonly [K in ExportName]: readonly [Fixture, ...Fixture[]] }
   Skeleton: [
     {
       name: "blocks in a busy region",
-      writes: ["odd-visually-hidden"],
+      uses: ["VisuallyHidden"],
       element: (
         <div aria-busy="true">
-          <span className="odd-visually-hidden">Loading decks…</span>
+          <VisuallyHidden>Loading decks…</VisuallyHidden>
           <Skeleton aria-hidden="true" shape="avatar" />
           <Skeleton aria-hidden="true" className="wide" />
         </div>
       ),
       markup:
         '<div aria-busy="true"><span class="odd-visually-hidden">Loading decks…</span><div aria-hidden="true" class="odd-skeleton" data-shape="avatar"></div><div aria-hidden="true" class="odd-skeleton wide"></div></div>',
+    },
+  ],
+  SkipLink: [
+    {
+      name: "to the main content",
+      element: (
+        <>
+          <SkipLink href="#main">Skip to content</SkipLink>
+          <main id="main">Decks</main>
+        </>
+      ),
+      markup: '<a href="#main" class="odd-skip-link">Skip to content</a><main id="main">Decks</main>',
     },
   ],
   Slider: [
@@ -702,13 +828,29 @@ const FIXTURES: { readonly [K in ExportName]: readonly [Fixture, ...Fixture[]] }
   Spinner: [
     {
       name: "in a busy region",
-      writes: ["odd-row"],
+      uses: ["Row"],
       element: (
-        <div className="odd-row" aria-busy="true">
+        <Row aria-busy="true">
           <Spinner aria-hidden="true" /> Loading projects…
-        </div>
+        </Row>
       ),
-      markup: '<div class="odd-row" aria-busy="true"><span aria-hidden="true" class="odd-spinner"></span> Loading projects…</div>',
+      markup: '<div aria-busy="true" class="odd-row"><span aria-hidden="true" class="odd-spinner"></span> Loading projects…</div>',
+    },
+  ],
+  Stack: [
+    {
+      name: "a named section",
+      uses: ["Heading"],
+      element: (
+        <Stack as="section" aria-labelledby="stack-title" className="narrow">
+          <Heading level={2} id="stack-title">
+            Settings
+          </Heading>
+          <p>Choose how decks sort.</p>
+        </Stack>
+      ),
+      markup:
+        '<section aria-labelledby="stack-title" class="odd-stack narrow"><h2 id="stack-title" class="odd-heading">Settings</h2><p>Choose how decks sort.</p></section>',
     },
   ],
   Switch: [
@@ -841,6 +983,18 @@ const FIXTURES: { readonly [K in ExportName]: readonly [Fixture, ...Fixture[]] }
       name: "a named region",
       element: <Toaster popover="manual" aria-label="Notifications" />,
       markup: '<section popover="manual" aria-label="Notifications" class="odd-toaster"></section>',
+    },
+  ],
+  VisuallyHidden: [
+    {
+      name: "a rating read as words",
+      element: (
+        <p>
+          <span aria-hidden="true">★★★★☆</span>
+          <VisuallyHidden>4 of 5 stars</VisuallyHidden>
+        </p>
+      ),
+      markup: '<p><span aria-hidden="true">★★★★☆</span><span class="odd-visually-hidden">4 of 5 stars</span></p>',
     },
   ],
 };

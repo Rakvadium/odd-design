@@ -457,8 +457,12 @@ export type ExportName =
   | "Dialog"
   | "DialogActions"
   | "Disclosure"
+  | "Eyebrow"
   | "Field"
   | "FieldError"
+  | "Grid"
+  | "GridItem"
+  | "Heading"
   | "Hint"
   | "Input"
   | "Kbd"
@@ -466,9 +470,12 @@ export type ExportName =
   | "Menu"
   | "MenuItem"
   | "Meter"
+  | "Muted"
   | "Popover"
   | "Pre"
   | "Progress"
+  | "Row"
+  | "Scope"
   | "Search"
   | "Segmented"
   | "Select"
@@ -477,8 +484,10 @@ export type ExportName =
   | "SheetFooter"
   | "SheetHeader"
   | "Skeleton"
+  | "SkipLink"
   | "Slider"
   | "Spinner"
+  | "Stack"
   | "Switch"
   | "Table"
   | "TableSort"
@@ -486,7 +495,8 @@ export type ExportName =
   | "Tabs"
   | "TextLink"
   | "Textarea"
-  | "Toaster";
+  | "Toaster"
+  | "VisuallyHidden";
 
 type Owner = {
   /** The exports whose rendered markup carries the class. */
@@ -519,10 +529,10 @@ export const CLASSES = {
   "odd-dialog-title": { by: [] },
   "odd-disclosure": { by: ["Disclosure"] },
   "odd-error": { by: ["FieldError"] },
-  "odd-eyebrow": { by: [] },
+  "odd-eyebrow": { by: ["Eyebrow"] },
   "odd-field": { by: ["Field"] },
-  "odd-grid": { by: [] },
-  "odd-heading": { by: [] },
+  "odd-grid": { by: ["Grid"] },
+  "odd-heading": { by: ["Heading"] },
   "odd-hint": { by: ["Hint"] },
   "odd-hover-card": { by: [] },
   "odd-input": { by: ["Input"] },
@@ -536,12 +546,12 @@ export const CLASSES = {
   "odd-menu-label": { by: [] },
   "odd-menu-shortcut": { by: [] },
   "odd-meter": { by: ["Meter"] },
-  "odd-muted": { by: [] },
+  "odd-muted": { by: ["Muted"] },
   "odd-popover": { by: ["Popover"] },
   "odd-pre": { by: ["Pre"] },
   "odd-progress": { by: ["Progress"] },
-  "odd-row": { by: [] },
-  "odd-scope": { by: [] },
+  "odd-row": { by: ["Row"] },
+  "odd-scope": { by: ["Scope"] },
   "odd-search": { by: ["Search"] },
   "odd-segmented": { by: ["Segmented"] },
   "odd-select": { by: ["Select"] },
@@ -556,10 +566,10 @@ export const CLASSES = {
   "odd-shell-main": { by: [] },
   "odd-shell-status": { by: [] },
   "odd-skeleton": { by: ["Skeleton"] },
-  "odd-skip-link": { by: [] },
+  "odd-skip-link": { by: ["SkipLink"] },
   "odd-slider": { by: ["Slider"] },
   "odd-spinner": { by: ["Spinner"] },
-  "odd-stack": { by: [] },
+  "odd-stack": { by: ["Stack"] },
   "odd-stat-value": { by: [] },
   "odd-switch": { by: ["Switch"] },
   "odd-table": { by: ["Table"] },
@@ -573,7 +583,7 @@ export const CLASSES = {
   "odd-toast-title": { by: [], via: "toast() from odd-design/enhance" },
   "odd-toaster": { by: ["Toaster"] },
   "odd-tooltip": { by: [] },
-  "odd-visually-hidden": { by: [] },
+  "odd-visually-hidden": { by: ["VisuallyHidden"] },
 } as const satisfies Record<`odd-${string}`, Owner>;
 
 export type ClassName = keyof typeof CLASSES;
@@ -656,3 +666,6 @@ export type ComboboxOptionRule = (typeof USAGE.comboboxOption)[number];
 export type BreadcrumbRule = (typeof USAGE.breadcrumb)[number];
 export type KbdRule = (typeof USAGE.kbd)[number];
 export type CodeRule = (typeof USAGE.code)[number];
+export type GridRule = (typeof USAGE.grid)[number];
+export type HeadingRule = (typeof USAGE.heading)[number];
+export type EyebrowRule = (typeof USAGE.eyebrow)[number];

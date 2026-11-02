@@ -8,7 +8,7 @@ import { Card } from "../src/react/card.tsx";
 import { Combobox, ComboboxList, ComboboxOption } from "../src/react/combobox.tsx";
 import { Input, Select } from "../src/react/field.tsx";
 import { Menu, MenuItem } from "../src/react/menu.tsx";
-import { useEnhancer } from "../src/react/own.ts";
+import { rejectBlank, useEnhancer } from "../src/react/own.ts";
 import { Table, TableSort } from "../src/react/table.tsx";
 import { Tabs } from "../src/react/tabs.tsx";
 import { Toaster } from "../src/react/toast.tsx";
@@ -628,6 +628,15 @@ const failures: Record<string, { codes: string[]; text: string[] }> = {
   "sheet-alert-closedby": { codes: [], text: ["'\"any\"' is not assignable to type '\"closerequest\"'"] },
   "sheet-data-tone": { codes: ["ODD-SHEET-003"], text: [] },
   "sheet-footer-data-variant": { codes: ["ODD-SHEET-003"], text: [] },
+  "stack-gap": { codes: [], text: ["{ gap: number; children: string; }' is not assignable"] },
+  "stack-style": { codes: [], text: ["{ style: { maxInlineSize: string; }; children: string; }' is not assignable"] },
+  "row-role": { codes: ["ODD-REACT-001"], text: [] },
+  "grid-item-span": { codes: [], text: ["'13' is not assignable"] },
+  "grid-item-data-span": { codes: ["ODD-REACT-002"], text: [] },
+  "skip-link-href": { codes: [], text: ["'`#${string}`'"] },
+  "scope-mode": { codes: [], text: ["Property 'mode' is missing"] },
+  "heading-level": { codes: [], text: ["Property 'level' is missing"] },
+  "heading-size": { codes: [], text: ["'\"md\"' is not assignable"] },
 };
 
 describe("platform fallbacks", () => {
@@ -663,6 +672,20 @@ describe("platform fallbacks", () => {
     } finally {
       document.addEventListener = add;
       document.removeEventListener = remove;
+    }
+  });
+});
+
+describe("rejectBlank", () => {
+  test("on a page with no process, as an unbundled browser has, a blank name throws its code and a name returns", () => {
+    const saved = Object.getOwnPropertyDescriptor(globalThis, "process")!;
+    Reflect.deleteProperty(globalThis, "process");
+    try {
+      expect(typeof (globalThis as { process?: unknown }).process).toBe("undefined");
+      expect(() => rejectBlank(" ", "ODD-BUTTON-008")).toThrow("ODD-BUTTON-008");
+      expect(rejectBlank("Close", "ODD-BUTTON-008")).toBe("Close");
+    } finally {
+      Object.defineProperty(globalThis, "process", saved);
     }
   });
 });
