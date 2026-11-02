@@ -228,6 +228,12 @@ test("data-varient suggests data-variant", () => {
   ]);
 });
 
+test("data-filtr on a combobox list suggests data-filter, which the list's own rules give values", () => {
+  expect(diagnose(`<div class="odd-combobox-list" id="cities" popover="manual" role="listbox" aria-label="Cities" data-filtr="manual"></div>`).map((diagnostic) => diagnostic.message)).toEqual([
+    "ODD-COMBOBOX-012: this combobox part does not take that data attribute. Allowed values: any app data attribute, the appearance axes, and the headless allowlist. Fix: remove the attribute. combobox.css reads no data attributes, and data-filter=manual goes on the list. Appearance axes: data-chrome, data-palette, data-mode. Headless allowlist: data-state, data-side, data-disabled, data-orientation, data-highlighted. docs/usage/combobox.md#odd-combobox-012 Found data-filtr. Did you mean data-filter?",
+  ]);
+});
+
 test("data-tone on a separator names data-orientation as the exception", () => {
   expect(diagnose(`<hr class="odd-separator" data-tone="danger">`).map((diagnostic) => diagnostic.message)).toEqual([
     "ODD-SEPARATOR-004: odd-separator does not take that data attribute. Allowed values: any app data attribute, the appearance axes, and the headless allowlist. Fix: remove the attribute. A separator takes aria-orientation and no system data attribute. Appearance axes: data-chrome, data-palette, data-mode. Headless allowlist: data-state, data-side, data-disabled, data-orientation, data-highlighted, except data-orientation, which is ODD-SEPARATOR-002. docs/usage/separator.md#odd-separator-004 Found data-tone.",

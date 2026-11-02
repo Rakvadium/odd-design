@@ -802,3 +802,27 @@ import { Button, Sheet, SheetFooter, SheetHeader } from "odd-design/react";
 With no `side`, the sheet slides in from the end edge. `side` takes `"start"`, `"top"`, or `"bottom"`, and `start` and the end follow the writing direction. Focus starts on the Close button, the first control in the header. The header, the body, and the footer are the sheet's three grid rows, so keep them as its direct children. The body is a `div` or a `form` with `odd-sheet-body`, because its tag is yours. To submit, make the body a `form` with an `id`, and point each footer button at it with `form`. A bottom sheet for a decision takes `role="alertdialog"` and leaves out `closedby="any"`. Like `Dialog`, `Sheet` holds no state and takes no `open` prop.
 
 `command` takes `show-modal`, `close`, `request-close`, `show-popover`, `hide-popover`, `toggle-popover`, or a custom command that starts with `--`.
+
+## ODD-REACT-001
+
+Fails when you pass `role`, or an attribute the component writes itself, to an `odd-design/react` component.
+
+The component writes every attribute its markup depends on, such as a name, a state, or an id reference. A value you pass would fight the one it writes.
+
+Remove the attribute, and pass the prop that sets it, such as `label`, `title`, `current`, `disabled`, or `busy`.
+
+## ODD-REACT-002
+
+Fails when you pass a system `data-` attribute to an `odd-design/react` component.
+
+A system `data-` attribute is one an `odd-` stylesheet reads, such as `data-tone` or `data-variant`. The component writes its own, and one from another family repaints the wrong thing. App attributes such as `data-testid` pass through.
+
+Remove the attribute, and pass the prop that sets it, such as `tone`, `variant`, `size`, `side`, or `shape`.
+
+## ODD-REACT-003
+
+Fails when JSX writes an `odd-` class in `className`.
+
+An `odd-` class is markup an `odd-design/react` component renders. A hand-written one skips the roles, ids, and wiring the component owns. The message names the component that renders the class.
+
+Remove the class, and render the component the message names.

@@ -3,6 +3,7 @@ import { readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { CLASS_REGISTRY, USAGE, VOCABULARY, WRAPPERS, type UsageRule, type Wrapper } from "../src/js/usage/contract.ts";
+import { ownAttributes } from "../src/js/usage/check.ts";
 import { MESSAGES, USAGE_CODES, message, type UsageCode } from "../src/js/usage/format.ts";
 import { read } from "./css.ts";
 
@@ -144,8 +145,21 @@ test("messages include the code, Fix:, a docs heading in the named file, and no 
   }
   expect(absent).toEqual([]);
 
-  const dataCodes = [...new Set([...rules.map((rule) => rule.code), "ODD-STATIC-003"])];
+  const dataCodes = [...new Set([...rules.map((rule) => rule.code), "ODD-STATIC-003", "ODD-REACT-001", "ODD-REACT-002", "ODD-REACT-003"])];
   expect(dataCodes.sort()).toEqual([...USAGE_CODES].sort());
+});
+
+test("a class's own data- attributes, read from its rules, equal its WRAPPERS row, except where the row left out a rule's attribute", () => {
+  const differ = CLASS_REGISTRY.flatMap((className) => {
+    const row = wrappers.flatMap((wrapper) => (wrapper.className === className ? Object.values(wrapper.props) : []));
+    const derived = ownAttributes(className);
+    return row.join() === derived.join() ? [] : [[className, row, derived]];
+  });
+  expect(differ).toEqual([
+    ["odd-combobox-list", [], ["data-filter"]],
+    ["odd-eyebrow", [], ["data-tone"]],
+    ["odd-heading", [], ["data-size"]],
+  ]);
 });
 
 const BASE_FAMILIES: Readonly<Record<string, string>> = { grid: "base.css" };

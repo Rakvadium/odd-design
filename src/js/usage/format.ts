@@ -149,6 +149,9 @@ export const USAGE_CODES = [
   "ODD-STATIC-001",
   "ODD-STATIC-002",
   "ODD-STATIC-003",
+  "ODD-REACT-001",
+  "ODD-REACT-002",
+  "ODD-REACT-003",
 ] as const;
 
 export type UsageCode = (typeof USAGE_CODES)[number];
@@ -1276,6 +1279,27 @@ export const MESSAGES = {
     "a written reason",
     "add a reason after the disable comment.",
     "docs/usage/general.md#odd-static-003",
+  ),
+  "ODD-REACT-001": text(
+    "ODD-REACT-001",
+    "an odd-design/react component writes role and the attributes it owns.",
+    "the component props",
+    "remove the attribute, and pass the prop that sets it, such as label, title, current, disabled, or busy.",
+    "docs/usage/react.md#odd-react-001",
+  ),
+  "ODD-REACT-002": text(
+    "ODD-REACT-002",
+    "an odd-design/react component writes its own data- attributes, and a system data- attribute repaints another family.",
+    "app data- attributes such as data-testid",
+    "remove the attribute, and pass the prop that sets it, such as tone, variant, size, side, or shape.",
+    "docs/usage/react.md#odd-react-002",
+  ),
+  "ODD-REACT-003": text(
+    "ODD-REACT-003",
+    "an odd- class in JSX hand-writes markup that odd-design/react renders, without the roles, ids, and wiring the component owns.",
+    "odd-design/react components",
+    "remove the class, and render the component this message names.",
+    "docs/usage/react.md#odd-react-003",
   ),
 } as const satisfies Record<UsageCode, string>;
 
