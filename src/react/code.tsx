@@ -1,15 +1,29 @@
-import type { ReactElement } from "react";
-import type { CodeRule } from "../js/usage/contract.ts";
-import { part, type Contract, type Native } from "./part.ts";
+import type { ComponentPropsWithRef, ReactElement, ReactNode } from "react";
+import { cx, type Passthrough, type Root } from "./own.ts";
 
-interface CodeContract extends Contract<"Code", CodeRule> {}
+export type CodeProps = Root & Passthrough<"code"> & { readonly children: ReactNode };
 
-export interface CodeProps extends CodeContract, Native<"Code", keyof CodeContract> {}
+/** code.odd-code, a short piece of code inside a sentence. */
+export function Code({ className, children, ...rest }: CodeProps): ReactElement {
+  return (
+    <code {...(rest as ComponentPropsWithRef<"code">)} className={cx("odd-code", className)}>
+      {children}
+    </code>
+  );
+}
 
-export const Code: (props: CodeProps) => ReactElement = part("Code");
+export type PreProps = Root &
+  Passthrough<"pre"> & {
+    /** Command output, which is not code: the text goes in the pre with no code inside. */
+    readonly output?: boolean;
+    readonly children: ReactNode;
+  };
 
-interface PreContract extends Contract<"Pre", CodeRule> {}
-
-export interface PreProps extends PreContract, Native<"Pre", keyof PreContract> {}
-
-export const Pre: (props: PreProps) => ReactElement = part("Pre");
+/** pre.odd-pre with its text in a bare code, whose long lines wrap. */
+export function Pre({ output, className, children, ...rest }: PreProps): ReactElement {
+  return (
+    <pre {...(rest as ComponentPropsWithRef<"pre">)} className={cx("odd-pre", className)}>
+      {output ? children : <code>{children}</code>}
+    </pre>
+  );
+}

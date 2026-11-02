@@ -2,6 +2,16 @@
 
 These codes apply to `odd-code` and `odd-pre`. Shared codes are in [General usage rules](general.md).
 
+In React, render `Code` from `odd-design/react` inside a sentence, and `Pre` for a block. `Pre` writes the inner `code`, and `output` leaves it out for command output. [The React guide](react.md#show-code) covers the props.
+
+```tsx
+<p>Set <Code>--primary</Code> on the scope.</p>
+<Pre>bun add odd-design</Pre>
+<Pre output>3 files changed, 12 insertions</Pre>
+```
+
+The component compiles to this HTML:
+
 ```html
 <p>Set <code class="odd-code">--primary</code> on the scope.</p>
 <pre class="odd-pre"><code>import { Button } from "odd-design/react";</code></pre>

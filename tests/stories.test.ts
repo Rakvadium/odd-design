@@ -173,16 +173,7 @@ test("TabsVertical's tablist is vertical", () => {
 
 /** Story files that still render an inline style. A family's commit rewrites its stories and removes its file. */
 const STYLED = [
-  "stories/mirrored/Alert.stories.ts",
-  "stories/mirrored/Avatar.stories.ts",
-  "stories/mirrored/Breadcrumb.stories.ts",
   "stories/mirrored/Card.stories.ts",
-  "stories/mirrored/Code.stories.ts",
-  "stories/mirrored/Kbd.stories.ts",
-  "stories/mirrored/Meter.stories.ts",
-  "stories/mirrored/Separator.stories.ts",
-  "stories/mirrored/Skeleton.stories.ts",
-  "stories/mirrored/Spinner.stories.ts",
 ];
 
 test("no mirrored story renders a style attribute, except in the files still listed, and each listed file still renders one", () => {

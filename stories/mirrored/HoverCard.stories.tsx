@@ -22,7 +22,7 @@ function winner() {
       preview={
         <Stack>
           <Row>
-            <Avatar aria-hidden="true">MO</Avatar>
+            <Avatar name="Mira Okafor" decorative />
             <div>
               <Heading level={2} size="sm">
                 Midnight Control

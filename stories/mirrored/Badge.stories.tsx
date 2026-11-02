@@ -1,3 +1,4 @@
+import { Badge as OddBadge, Row, Stack } from "odd-design/react";
 import { mirrored } from "../mirror.ts";
 
 const meta = {
@@ -24,15 +25,19 @@ const tones = [
 ] as const;
 
 export const Badge = mirrored({
-  scene: () => ({
-    of: "div",
-    props: { className: "odd-stack" },
-    children: [false, true].map((solid) => ({
-      of: "div",
-      props: { className: "odd-row" },
-      children: tones.map(([tone, label]) => ({ of: "Badge", props: { tone, solid }, children: [label] })),
-    })),
-  }),
+  scene: () => (
+    <Stack>
+      {[false, true].map((solid) => (
+        <Row key={String(solid)}>
+          {tones.map(([tone, label]) => (
+            <OddBadge key={label} tone={tone} solid={solid}>
+              {label}
+            </OddBadge>
+          ))}
+        </Row>
+      ))}
+    </Stack>
+  ),
   aria: `
 - text: Neutral Primary Legal Rotating Banned New set Neutral Primary Legal Rotating Banned New set`,
 });

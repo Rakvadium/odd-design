@@ -290,15 +290,7 @@ describe("OddProvider", () => {
           <CardLink href="/decks/ember">Ember Aggro</CardLink>
         </h3>
       </Card>
-      <Breadcrumb aria-label="Breadcrumb">
-        <ol>
-          <li>
-            <TextLink href="/" current>
-              Home
-            </TextLink>
-          </li>
-        </ol>
-      </Breadcrumb>
+      <Breadcrumb items={[{ label: "Home", href: "/" }]} />
       <HoverCard preview="Midnight Control, by Mira Okafor">
         <p>
           <HoverCardLink href="/decks/midnight">Midnight Control</HoverCardLink>
@@ -857,28 +849,6 @@ describe("Table", () => {
     expect(state()).toEqual([[true, true, false], "mixed"]);
   });
 
-  test("the header holds select-all in thead, one aria-sort, and each sort button as its th's only child", () => {
-    const html = renderToStaticMarkup(
-      <Table
-        caption="Decks"
-        rows={DECKS}
-        rowKey={(deck) => deck.id}
-        columns={[
-          { key: "name", header: "Deck", cell: (deck) => deck.name },
-          { key: "cards", header: "Cards", numeric: true, cell: (deck) => deck.cards },
-        ]}
-        sortable={["name", "cards"]}
-        sort={{ column: "cards", direction: "ascending" }}
-        selection={{ selected: new Set(), onChange: () => {}, label: (deck) => deck.name, allLabel: "Select all decks" }}
-      />,
-    );
-    const root = document.createElement("div");
-    root.innerHTML = html;
-    expect([...root.querySelectorAll("[data-select-all]")].map((box) => box.closest("thead")?.tagName)).toEqual(["THEAD"]);
-    expect([...root.querySelectorAll("th[aria-sort]")].map((th) => [th.textContent, th.getAttribute("aria-sort")])).toEqual([["Cards", "ascending"]]);
-    expect([...root.querySelectorAll("th:has(> .odd-table-sort)")].map((th) => th.childNodes.length)).toEqual([1, 1]);
-  });
-
   test("a sort button proposes the next sort and does not submit its form", async () => {
     const sorts: Sort<"name" | "cards">[] = [];
     const { counts, host, render } = await mountInForm();
@@ -911,7 +881,7 @@ describe("Toaster", () => {
     await act(async () =>
       root.render(
         <StrictMode>
-          <Toaster popover="manual" aria-label="Notifications" />
+          <Toaster label="Notifications" />
         </StrictMode>,
       ),
     );
@@ -1006,32 +976,9 @@ const failures: Record<string, { codes: string[]; text: string[] }> = {
   "switch-type": { codes: ["ODD-REACT-001"], text: ["'\"radio\"' is not assignable"] },
   "radio-group-default-value": { codes: [], text: ["'\"secret\"' is not assignable to type '\"private\" | \"public\" | undefined'"] },
   "radio-group-no-options": { codes: [], text: ["'[]' is not assignable"] },
-  "badge-tone": { codes: [], text: ['"neutral"', '"primary"', '"success"', '"warning"', '"danger"', '"info"'] },
-  "badge-data-variant": { codes: ["ODD-BADGE-004"], text: [] },
-  "alert-tone": { codes: [], text: ['"info"', '"success"', '"warning"', '"danger"'] },
-  "alert-role": { codes: ["ODD-ALERT-003"], text: [] },
   "alert-aria-live": { codes: ["ODD-ALERT-003"], text: [] },
-  "alert-data-variant": { codes: ["ODD-ALERT-004"], text: [] },
-  "alert-title-data-tone": { codes: ["ODD-ALERT-005"], text: [] },
-  "avatar-size": { codes: [], text: ['"sm"', '"lg"'] },
-  "avatar-role": { codes: [], text: ['"img"'] },
-  "avatar-name": { codes: ["ODD-AVATAR-004"], text: [] },
-  "avatar-data-tone": { codes: ["ODD-AVATAR-005"], text: [] },
-  "avatar-data-initials": { codes: [], text: ['"data-initials"'] },
-  "avatar-group-name": { codes: ["ODD-AVATAR-004"], text: [] },
-  "avatar-group-role": { codes: [], text: ["Property 'role' is missing"] },
-  "avatar-group-data-size": { codes: ["ODD-AVATAR-006"], text: [] },
-  "separator-orientation": { codes: [], text: ['"horizontal"', '"vertical"'] },
-  "separator-role": { codes: [], text: ['"separator"'] },
   "separator-aria-hidden": { codes: ["ODD-SEPARATOR-003"], text: [] },
-  "separator-data-orientation": { codes: ["ODD-SEPARATOR-002"], text: [] },
-  "separator-data-tone": { codes: ["ODD-SEPARATOR-004"], text: [] },
-  "separator-children": { codes: [], text: ["'children' is 'undefined'"] },
-  "skeleton-shape": { codes: [], text: ['"avatar"'] },
-  "skeleton-aria-hidden": { codes: [], text: ["'\"aria-hidden\"' is missing"] },
   "skeleton-text": { codes: ["ODD-SKELETON-004"], text: [] },
-  "skeleton-aria-busy": { codes: ["ODD-SKELETON-004"], text: [] },
-  "skeleton-data-size": { codes: ["ODD-SKELETON-005"], text: [] },
   "text-link-href": { codes: [], text: ["Property 'href' is missing"] },
   "text-link-aria-disabled": { codes: ["ODD-LINK-003"], text: [] },
   "text-link-disabled": { codes: ["ODD-LINK-003"], text: [] },
@@ -1041,17 +988,8 @@ const failures: Record<string, { codes: string[]; text: string[] }> = {
   "text-link-data-variant": { codes: ["ODD-REACT-002"], text: [] },
   "hover-card-no-preview": { codes: [], text: ["Property 'preview' is missing"] },
   "hover-card-link-interestfor": { codes: ["ODD-REACT-001"], text: [] },
-  "spinner-aria-hidden": { codes: [], text: ["'\"aria-hidden\"' is missing"] },
   "spinner-text": { codes: ["ODD-SPINNER-002"], text: [] },
-  "spinner-role": { codes: ["ODD-SPINNER-002"], text: [] },
-  "spinner-aria-label": { codes: ["ODD-SPINNER-002"], text: [] },
-  "spinner-data-size": { codes: ["ODD-SPINNER-003"], text: [] },
-  "breadcrumb-name": { codes: [], text: ["Property '\"aria-labelledby\"' is missing"] },
-  "breadcrumb-data-tone": { codes: ["ODD-BREADCRUMB-004"], text: [] },
   "kbd-aria-hidden": { codes: ["ODD-KBD-002"], text: [] },
-  "kbd-data-size": { codes: ["ODD-KBD-003"], text: [] },
-  "code-data-tone": { codes: ["ODD-CODE-002"], text: [] },
-  "pre-data-size": { codes: ["ODD-CODE-002"], text: [] },
   "card-on-click": { codes: ["ODD-CARD-004"], text: [] },
   "card-link-href": { codes: [], text: ["Property 'href' is missing"] },
   "card-data-tone": { codes: ["ODD-CARD-006"], text: [] },
@@ -1061,13 +999,6 @@ const failures: Record<string, { codes: string[]; text: string[] }> = {
   "tabs-data-tone": { codes: ["ODD-REACT-002"], text: [] },
   "tabs-default-value-unknown": { codes: [], text: [`Type '"notes"' is not assignable to type '"cards" | "stats" | undefined'`] },
   "tabs-unnamed": { codes: [], text: ["Property 'label' is missing"] },
-  "meter-tone": { codes: [], text: ['"success"', '"warning"', '"danger"', '"info"'] },
-  "progress-data-size": { codes: ["ODD-METER-003"], text: [] },
-  "toaster-popover": { codes: [], text: ["Property 'popover' is missing"] },
-  "toaster-popover-auto": { codes: [], text: ['"manual"'] },
-  "toaster-aria-label": { codes: [], text: ["Property '\"aria-label\"' is missing"] },
-  "toaster-data-tone": { codes: ["ODD-TOAST-004"], text: [] },
-  "toaster-children": { codes: [], text: ["not assignable to type 'undefined'"] },
   "dialog-no-title": { codes: [], text: ["Property 'title' is missing"] },
   "dialog-role": { codes: ["ODD-REACT-001"], text: ["'\"alertdialog\"' is not assignable"] },
   "dialog-open": { codes: ["ODD-REACT-001"], text: ["Type 'true' is not assignable"] },

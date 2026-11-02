@@ -21,7 +21,7 @@ export const illegal: readonly (() => Scene)[] = [
   // @ts-expect-error a handler has no HTML form
   () => ({ of: "form", props: { onSubmit: () => undefined } }),
   // @ts-expect-error a wrapper's class goes through the wrapper
-  () => ({ of: "span", props: { className: "odd-badge" } }),
+  () => ({ of: "span", props: { className: "odd-button" } }),
 ];
 
 test("mirrorOf throws when parameters.mirror is missing, instead of rendering nothing", () => {

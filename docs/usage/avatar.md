@@ -2,6 +2,18 @@
 
 These codes apply to `odd-avatar` and `odd-avatar-group`. Shared codes are in [General usage rules](general.md).
 
+In React, render `Avatar` from `odd-design/react` with a `name`, and `AvatarGroup` with a `label`. They write `alt`, `role="img"` and its name, `aria-hidden` for a `decorative` avatar, and the group's role and name, so ODD-AVATAR-003 and ODD-AVATAR-004 cannot happen. [The React guide](react.md#show-a-person-with-an-avatar) covers the props.
+
+```tsx
+<Avatar name="Kai Nakamura" src="kai.png" />
+<AvatarGroup label="Collaborators">
+  <Avatar name="Mira Okafor" src="mira.png" />
+  <Avatar name="and 3 more" initials="+3" />
+</AvatarGroup>
+```
+
+The component compiles to this HTML:
+
 ```html
 <span class="odd-avatar"><img src="kai.png" alt="Kai Nakamura"></span>
 <span class="odd-avatar" data-size="lg" role="img" aria-label="Ana Rojas">AR</span>
@@ -43,7 +55,7 @@ Fails when `odd-avatar` has a `role` other than `img`, or `odd-avatar-group` has
 
 An initials avatar is text that stands for a person, so `role="img"` makes it one named image. An image avatar needs no role, because its `img` is the image. `role="presentation"` or `role="none"` does not hide the initials, which are still read. The group's `role="group"` lets its name describe the set.
 
-Set `role="img"` on an initials avatar and leave it off an image avatar. To hide an avatar, use `aria-hidden="true"`. Set `role="group"` on the group. In React, `role` on `Avatar` takes only `"img"`, and `AvatarGroup` requires `role="group"`.
+Set `role="img"` on an initials avatar and leave it off an image avatar. To hide an avatar, use `aria-hidden="true"`. Set `role="group"` on the group. In React, `Avatar` and `AvatarGroup` write the role.
 
 ## ODD-AVATAR-004
 
@@ -51,7 +63,7 @@ Fails when an `odd-avatar` with `role="img"`, or an `odd-avatar-group` with `rol
 
 An image role with no name is read as an unnamed image, and the initials inside it are not read. A group with no name is read as a group with no hint of who is in it.
 
-Add `aria-label` with the person's name, such as `Ana Rojas`, or `aria-labelledby` that points at it. Name a group for the set, such as `Collaborators`. In React, `role="img"` on `Avatar`, or an `AvatarGroup`, with neither name is a type error.
+Add `aria-label` with the person's name, such as `Ana Rojas`, or `aria-labelledby` that points at it. Name a group for the set, such as `Collaborators`. In React, `name` and `label` are required, and a blank one throws this code outside production.
 
 ## ODD-AVATAR-005
 

@@ -1,5 +1,5 @@
 import { useRef, useState, type FormEvent, type MouseEvent } from "react";
-import { Alert, AlertTitle, type AlertTone } from "../../../../src/react/alert.tsx";
+import { Alert, type AlertTone } from "../../../../src/react/alert.tsx";
 import { Avatar, AvatarGroup, type AvatarSize } from "../../../../src/react/avatar.tsx";
 import { Badge, type BadgeTone } from "../../../../src/react/badge.tsx";
 import { Breadcrumb } from "../../../../src/react/breadcrumb.tsx";
@@ -14,7 +14,7 @@ import { Kbd } from "../../../../src/react/kbd.tsx";
 import { Grid, GridItem, Row, Scope, SkipLink, Stack, VisuallyHidden, type GridSpan } from "../../../../src/react/layout.tsx";
 import { Menu, MenuCheckboxItem, MenuGroup, MenuItem, MenuRadioGroup, MenuRadioItem, MenuSeparator } from "../../../../src/react/menu.tsx";
 import { SORT_DIRECTIONS, Table, type Sort } from "../../../../src/react/table.tsx";
-import { Meter, Progress, type MeterTone } from "../../../../src/react/meter.tsx";
+import { Meter, Progress, StatValue, type MeterTone } from "../../../../src/react/meter.tsx";
 import { Popover } from "../../../../src/react/popover.tsx";
 import { Search } from "../../../../src/react/search.tsx";
 import { Separator } from "../../../../src/react/separator.tsx";
@@ -112,12 +112,8 @@ const noticeTone: Record<"saved" | "offline", AlertTone> = { saved: "success", o
 
 export function Notice({ kind }: { kind: keyof typeof noticeTone }) {
   return (
-    <Alert tone={noticeTone[kind]}>
-      <svg aria-hidden="true" />
-      <div>
-        <AlertTitle>{kind}</AlertTitle>
-        <p>Kept on this device.</p>
-      </div>
+    <Alert tone={noticeTone[kind]} title={kind} icon={<svg />}>
+      <p>Kept on this device.</p>
     </Alert>
   );
 }
@@ -156,31 +152,19 @@ type Person = { name: string; initials: string; photo?: string };
 const avatarSize: Record<"row" | "profile", AvatarSize> = { row: "sm", profile: "lg" };
 
 export function PersonAvatar({ person, place }: { person: Person; place: keyof typeof avatarSize }) {
-  const [failed, setFailed] = useState(false);
-  if (person.photo === undefined || failed) {
-    return (
-      <Avatar size={avatarSize[place]} role="img" aria-label={person.name}>
-        {person.initials}
-      </Avatar>
-    );
-  }
-  return (
-    <Avatar size={avatarSize[place]}>
-      <img src={person.photo} alt={person.name} onError={() => setFailed(true)} />
-    </Avatar>
-  );
+  return <Avatar name={person.name} src={person.photo} initials={person.initials} size={avatarSize[place]} data-testid="person" />;
 }
 
 export function Collaborators({ people }: { people: Person[] }) {
   return (
     <>
       <h3 id="collaborators">Collaborators</h3>
-      <AvatarGroup role="group" aria-labelledby="collaborators">
+      <AvatarGroup label="Collaborators" className="row">
         {people.map((person) => (
           <PersonAvatar key={person.name} person={person} place="row" />
         ))}
       </AvatarGroup>
-      <Avatar aria-hidden="true">{people[0]?.initials}</Avatar>
+      <Avatar name={people[0]?.name ?? "Nobody"} decorative />
     </>
   );
 }
@@ -191,10 +175,10 @@ export function DeckActions() {
       <Separator />
       <div className="odd-row">
         <a href="/decks/1/edit">Edit</a>
-        <Separator aria-orientation="vertical" />
+        <Separator orientation="vertical" />
         <a href="/decks/1/export">Export</a>
       </div>
-      <Separator role="separator" data-testid="split" />
+      <Separator data-testid="split" />
     </>
   );
 }
@@ -204,8 +188,8 @@ export function DeckPlaceholder({ loading }: { loading: boolean }) {
   return (
     <div aria-busy="true">
       <span className="odd-visually-hidden">Loading decks…</span>
-      <Skeleton aria-hidden="true" shape="avatar" />
-      <Skeleton aria-hidden="true" className="title" style={{ inlineSize: "60%" }} data-testid="deck-title" />
+      <Skeleton shape="avatar" />
+      <Skeleton className="title" data-testid="deck-title" />
     </div>
   );
 }
@@ -238,45 +222,32 @@ export function ProjectsLoading({ loading }: { loading: boolean }) {
   if (!loading) return null;
   return (
     <div className="odd-row" aria-busy="true">
-      <Spinner aria-hidden="true" className="slow" data-testid="projects-spinner" />
-      <span className="odd-visually-hidden">Loading projects…</span>
+      <Spinner label="Loading projects…" className="slow" data-testid="projects-spinner" />
     </div>
   );
 }
 
 export function ProjectTrail({ archived }: { archived: boolean }) {
   return (
-    <Breadcrumb aria-label="Breadcrumb" className="trail" data-testid="trail">
-      <ol>
-        <li>
-          <TextLink href="/">Home</TextLink>
-        </li>
-        {archived ? <li>Archived</li> : null}
-        <li>
-          <TextLink href="/projects/roadmap" current>
-            Roadmap
-          </TextLink>
-        </li>
-      </ol>
-    </Breadcrumb>
+    <Breadcrumb
+      className="trail"
+      data-testid="trail"
+      items={[{ label: "Home", href: "/" }, ...(archived ? [{ label: "Archived" }] : []), { label: "Roadmap", href: "/projects/roadmap" }]}
+    />
   );
 }
 
 export function SearchHint() {
   return (
     <>
-      <h2 id="trail-heading">You are here</h2>
-      <Breadcrumb aria-labelledby="trail-heading">
-        <ol>
-          <li>Home</li>
-        </ol>
-      </Breadcrumb>
+      <Breadcrumb label="You are here" items={[{ label: "Home" }]} />
       <p>
         Press <Kbd>Ctrl</Kbd> <Kbd className="wide" data-testid="search-key">K</Kbd> to search, or set <Code data-testid="token">--primary</Code> on the scope.
       </p>
       <Pre data-language="sh" className="install">
-        <code>bun add odd-design</code>
+        bun add odd-design
       </Pre>
+      <Pre output>850 pass</Pre>
     </>
   );
 }
@@ -328,7 +299,7 @@ export function SeasonTabs() {
 
 export function Toasts() {
   const region = useRef<HTMLElement>(null);
-  return <Toaster ref={region} id="toasts" className="toasts" popover="manual" aria-label="Notifications" />;
+  return <Toaster ref={region} id="toasts" className="toasts" label="Notifications" />;
 }
 
 export function CardFilter() {
@@ -366,17 +337,10 @@ const typeTone: Record<"unit" | "action" | "asset", MeterTone | undefined> = { u
 export function DeckMix({ count, syncing }: { count: number; syncing: boolean }) {
   return (
     <>
-      <div className="odd-stack">
-        <div className="odd-row">
-          <label className="odd-muted" htmlFor="actions">
-            Actions
-          </label>
-          <span className="odd-stat-value">{count}</span>
-        </div>
-        <Meter id="actions" min={0} max={60} value={count} tone={typeTone.action} />
-      </div>
-      <Meter id="store-high" value={0.93} low={0.6} high={0.85} optimum={0} aria-label="Storage" />
-      {syncing ? <Progress id="sync" aria-label="Syncing decks" /> : <Progress id="import" value={40} max={100} tone="success" aria-label="Importing decks" />}
+      <StatValue className="count">{count}</StatValue>
+      <Meter id="actions" label="Actions" min={0} max={60} value={count} tone={typeTone.action} />
+      <Meter id="store-high" label="Storage" value={0.93} low={0.6} high={0.85} optimum={0} />
+      {syncing ? <Progress id="sync" label="Syncing decks" /> : <Progress id="import" label="Importing decks" value={40} max={100} tone="success" />}
     </>
   );
 }

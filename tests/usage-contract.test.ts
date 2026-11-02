@@ -2,7 +2,7 @@ import { expect, test } from "bun:test";
 import { readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
-import { CLASS_REGISTRY, USAGE, VOCABULARY, WRAPPERS, type UsageRule, type Wrapper } from "../src/js/usage/contract.ts";
+import { CLASS_REGISTRY, USAGE, VOCABULARY, type UsageRule } from "../src/js/usage/contract.ts";
 import { ownAttributes } from "../src/js/usage/check.ts";
 import { MESSAGES, USAGE_CODES, message, type UsageCode } from "../src/js/usage/format.ts";
 import { read } from "./css.ts";
@@ -28,34 +28,59 @@ function cssFiles(dir: string): string[] {
   });
 }
 
-const wrappers: readonly Wrapper[] = Object.values(WRAPPERS);
-const mapping = wrappers.filter((wrapper) => Object.keys(wrapper.props).length > 0);
+/** data- attributes a script reads and no stylesheet styles: enhanceCombobox reads data-filter. */
+const SCRIPTED = ["data-filter"];
+
+/** Each class with styled data- attributes of its own, read from its enum and boolean-attribute rules. */
+const mapping = CLASS_REGISTRY.flatMap((className) => {
+  const attributes = ownAttributes(className).filter((attribute) => !SCRIPTED.includes(attribute));
+  return attributes.length > 0 ? [{ className, attributes }] : [];
+});
 
 function rulesOf(className: string): readonly UsageRule[] {
   const rules: readonly (readonly UsageRule[])[] = Object.values(USAGE);
   return rules.find((group) => group.some((rule) => rule.kind === "element" && rule.className === className)) ?? [];
 }
 
-const SHARED_STYLESHEET: Readonly<Record<string, string>> = { "odd-progress": "meter", "odd-menu-item": "menu" };
+const SHARED_STYLESHEET: Readonly<Record<string, string>> = {
+  "odd-progress": "meter",
+  "odd-menu-item": "menu",
+  "odd-combobox-list": "combobox",
+  "odd-eyebrow": "typography",
+  "odd-heading": "typography",
+  "odd-log-line": "log",
+};
 
-function stylesheet(wrapper: Wrapper): string {
-  return SHARED_STYLESHEET[wrapper.className] ?? wrapper.className.replace(/^odd-/, "");
+function stylesheet(className: string): string {
+  return SHARED_STYLESHEET[className] ?? className.replace(/^odd-/, "");
 }
 
 test("MESSAGES has one message per code, in order", () => {
   expect(Object.keys(MESSAGES)).toEqual([...USAGE_CODES]);
 });
 
-test("each wrapper's enum data prop takes exactly the values its stylesheet styles", () => {
-  const compared = mapping.flatMap((wrapper) => {
-    const css = read(`components/${stylesheet(wrapper)}.css`);
-    return Object.values(wrapper.props).flatMap((attribute) =>
-      rulesOf(wrapper.className).flatMap((rule) =>
-        rule.kind === "enum" && rule.attribute === attribute ? [[attribute, [...rule.values].sort(), quotedAttr(css, attribute)]] : [],
+test("each class's own enum data attribute takes exactly the values its stylesheet styles", () => {
+  const compared = mapping.flatMap(({ className, attributes }) => {
+    const css = read(`components/${stylesheet(className)}.css`);
+    return attributes.flatMap((attribute) =>
+      rulesOf(className).flatMap((rule) =>
+        rule.kind === "enum" && rule.attribute === attribute ? [[`${className} ${attribute}`, [...rule.values].sort(), quotedAttr(css, attribute)]] : [],
       ),
     );
   });
-  expect(compared.map(([attribute]) => attribute)).toEqual(["data-variant", "data-size", "data-tone", "data-tone", "data-size", "data-shape", "data-tone", "data-tone"]);
+  expect(compared.map(([attribute]) => attribute)).toEqual([
+    "odd-alert data-tone",
+    "odd-avatar data-size",
+    "odd-badge data-tone",
+    "odd-button data-variant",
+    "odd-button data-size",
+    "odd-heading data-size",
+    "odd-menu-item data-tone",
+    "odd-meter data-tone",
+    "odd-progress data-tone",
+    "odd-sheet data-side",
+    "odd-skeleton data-shape",
+  ]);
   for (const [attribute, values, styled] of compared) expect([attribute, styled]).toEqual([attribute, values]);
   expect(read("components/button.css").includes(":disabled")).toBe(true);
 });
@@ -149,22 +174,6 @@ test("messages include the code, Fix:, a docs heading in the named file, and no 
   expect(dataCodes.sort()).toEqual([...USAGE_CODES].sort());
 });
 
-test("a class's own data- attributes, read from its rules, equal its WRAPPERS row, except where the row left out a rule's attribute", () => {
-  const differ = CLASS_REGISTRY.flatMap((className) => {
-    const row = wrappers.flatMap((wrapper) => (wrapper.className === className ? Object.values(wrapper.props) : []));
-    const derived = ownAttributes(className);
-    return row.join() === derived.join() ? [] : [[className, row, derived]];
-  });
-  expect(differ).toEqual([
-    ["odd-combobox-list", [], ["data-filter"]],
-    ["odd-eyebrow", [], ["data-tone"]],
-    ["odd-heading", [], ["data-size"]],
-    ["odd-log-line", [], ["data-tone"]],
-    ["odd-menu-item", [], ["data-tone"]],
-    ["odd-sheet", [], ["data-side"]],
-  ]);
-});
-
 const BASE_FAMILIES: Readonly<Record<string, string>> = { grid: "base.css" };
 
 test("vocabulary matches the data attributes in each component stylesheet and each base family", () => {
@@ -178,17 +187,13 @@ test("vocabulary matches the data attributes in each component stylesheet and ea
     expect([component, listed]).toEqual([component, found]);
   }
   const vocabulary: Record<string, readonly string[]> = VOCABULARY;
-  const unstyled = mapping.flatMap((wrapper) =>
-    Object.values(wrapper.props).filter((attribute) => !(vocabulary[stylesheet(wrapper)] ?? []).includes(attribute)),
-  );
+  const unstyled = mapping.flatMap(({ className, attributes }) => attributes.filter((attribute) => !(vocabulary[stylesheet(className)] ?? []).includes(attribute)));
   expect(unstyled).toEqual([]);
 });
 
-test("a system-data message names every attribute its class's wrapper maps", () => {
-  const unnamed = mapping.flatMap((wrapper) =>
-    rulesOf(wrapper.className).flatMap((rule) =>
-      rule.kind === "system-data" ? Object.values(wrapper.props).filter((attribute) => !MESSAGES[rule.code].includes(attribute)) : [],
-    ),
+test("a system-data message names every data- attribute its class owns", () => {
+  const unnamed = mapping.flatMap(({ className, attributes }) =>
+    rulesOf(className).flatMap((rule) => (rule.kind === "system-data" ? attributes.filter((attribute) => !MESSAGES[rule.code].includes(attribute)) : [])),
   );
   expect(unnamed).toEqual([]);
 });

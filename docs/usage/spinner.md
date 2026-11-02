@@ -2,6 +2,16 @@
 
 These codes apply to `odd-spinner`. Shared codes are in [General usage rules](general.md).
 
+In React, render `Spinner` from `odd-design/react` in a busy region. It writes `aria-hidden="true"`, and `label` writes the hidden loading words, so ODD-SPINNER-002 cannot happen. [The React guide](react.md#show-that-something-is-loading) covers the props.
+
+```tsx
+<Row aria-busy="true">
+  <Spinner label="Loading projects…" />
+</Row>
+```
+
+The component compiles to this HTML:
+
 ```html
 <div class="odd-row" aria-busy="true">
   <span class="odd-spinner" aria-hidden="true"></span> Loading projects…

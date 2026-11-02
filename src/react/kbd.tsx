@@ -1,9 +1,19 @@
-import type { ReactElement } from "react";
-import type { KbdRule } from "../js/usage/contract.ts";
-import { part, type Contract, type Native } from "./part.ts";
+import type { ComponentPropsWithRef, ReactElement, ReactNode } from "react";
+import { cx, type Message, type Passthrough, type Root } from "./own.ts";
 
-interface KbdContract extends Contract<"Kbd", KbdRule> {}
+export type KbdProps = Root &
+  Passthrough<"kbd", never, "aria-hidden"> & {
+    /** A key is read with its sentence. A hidden shortcut hint in a menu item is MenuItem's shortcut. */
+    readonly "aria-hidden"?: Message<"ODD-KBD-002">;
+    /** One key, by its name. */
+    readonly children: ReactNode;
+  };
 
-export interface KbdProps extends KbdContract, Native<"Kbd", keyof KbdContract> {}
-
-export const Kbd: (props: KbdProps) => ReactElement = part("Kbd");
+/** kbd.odd-kbd, a keycap in running text. */
+export function Kbd({ className, children, ...rest }: KbdProps): ReactElement {
+  return (
+    <kbd {...(rest as ComponentPropsWithRef<"kbd">)} className={cx("odd-kbd", className)}>
+      {children}
+    </kbd>
+  );
+}

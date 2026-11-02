@@ -412,34 +412,17 @@ export const WRAPPERS = {
     props: { variant: "data-variant", size: "data-size", iconOnly: "data-icon-only" },
     element: { attribute: "href", present: "a", absent: "button" },
   },
-  Badge: { source: "odd-design/react", className: "odd-badge", props: { tone: "data-tone", solid: "data-solid" }, element: "span" },
-  Alert: { source: "odd-design/react", className: "odd-alert", props: { tone: "data-tone" }, element: "div" },
-  AlertTitle: { source: "odd-design/react", className: "odd-alert-title", props: {}, element: "p" },
-  Avatar: { source: "odd-design/react", className: "odd-avatar", props: { size: "data-size" }, element: "span" },
-  AvatarGroup: { source: "odd-design/react", className: "odd-avatar-group", props: {}, element: "div" },
-  Separator: { source: "odd-design/react", className: "odd-separator", props: {}, element: "hr" },
-  Skeleton: { source: "odd-design/react", className: "odd-skeleton", props: { shape: "data-shape" }, element: "div" },
   Card: { source: "odd-design/react", className: "odd-card", props: { interactive: "data-interactive" }, element: "article" },
   CardLink: { source: "odd-design/react", className: "odd-card-link", props: {}, element: "a" },
   CardFooter: { source: "odd-design/react", className: "odd-card-footer", props: {}, element: "div" },
-  Meter: { source: "odd-design/react", className: "odd-meter", props: { tone: "data-tone" }, element: "meter" },
-  Progress: { source: "odd-design/react", className: "odd-progress", props: { tone: "data-tone" }, element: "progress" },
-  Toaster: { source: "odd-design/react", className: "odd-toaster", props: {}, element: "section" },
-  TextLink: { source: "odd-design/react", className: "odd-link", props: {}, element: "a" },
-  Spinner: { source: "odd-design/react", className: "odd-spinner", props: {}, element: "span" },
   Combobox: { source: "odd-design/react", className: "odd-combobox", props: {}, element: "div" },
   ComboboxOption: { source: "odd-design/react", className: "odd-combobox-option", props: {}, element: "div" },
-  Breadcrumb: { source: "odd-design/react", className: "odd-breadcrumb", props: {}, element: "nav" },
-  Kbd: { source: "odd-design/react", className: "odd-kbd", props: {}, element: "kbd" },
-  Code: { source: "odd-design/react", className: "odd-code", props: {}, element: "code" },
-  Pre: { source: "odd-design/react", className: "odd-pre", props: {}, element: "pre" },
 } as const satisfies Record<string, Wrapper>;
 
 /** Every rendering export of odd-design/react. */
 export type ExportName =
   | "Alert"
   | "AlertDialog"
-  | "AlertTitle"
   | "Avatar"
   | "AvatarGroup"
   | "Badge"
@@ -489,6 +472,7 @@ export type ExportName =
   | "Slider"
   | "Spinner"
   | "Stack"
+  | "StatValue"
   | "Switch"
   | "Table"
   | "Tabs"
@@ -507,7 +491,7 @@ type Owner = {
 /** Every odd- class, and who renders it. A class's ODD-REACT-003 message names its owners. */
 export const CLASSES = {
   "odd-alert": { by: ["Alert"] },
-  "odd-alert-title": { by: ["AlertTitle"] },
+  "odd-alert-title": { by: ["Alert"] },
   "odd-avatar": { by: ["Avatar"] },
   "odd-avatar-group": { by: ["AvatarGroup"] },
   "odd-badge": { by: ["Badge"] },
@@ -569,7 +553,7 @@ export const CLASSES = {
   "odd-slider": { by: ["Slider"] },
   "odd-spinner": { by: ["Spinner"] },
   "odd-stack": { by: ["Stack", "RadioGroup"] },
-  "odd-stat-value": { by: ["Slider"] },
+  "odd-stat-value": { by: ["StatValue", "Slider"] },
   "odd-switch": { by: ["Switch"] },
   "odd-table": { by: ["Table"] },
   "odd-table-sort": { by: ["Table"] },

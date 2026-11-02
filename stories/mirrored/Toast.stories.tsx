@@ -1,6 +1,6 @@
 import { toast, type ToastOptions } from "../../src/js/enhance.ts";
 import { Button, Dialog, Row, Toaster } from "odd-design/react";
-import { mirrored, type Node } from "../mirror.ts";
+import { mirrored } from "../mirror.ts";
 
 const meta = {
   title: "Components/Interactive",
@@ -8,7 +8,7 @@ const meta = {
     docs: {
       description: {
         component:
-          "`Toaster` from `odd-design/react` renders `section.odd-toaster` with `popover=\"manual\"` and an `aria-label`, and runs `enhanceToaster` on it. Render it once per page. `toast()` from `odd-design/enhance` then shows a toast on it from any code. Toasts pause while hovered or focused, keep at most three, and leave after six seconds. The danger toast stays until dismissed. Save inside Settings shows a toast above the open modal dialog.",
+          "`Toaster` from `odd-design/react` renders `section.odd-toaster` with `popover=\"manual\"`, named by its `label`, and runs `enhanceToaster` on it. Render it once per page. `toast()` from `odd-design/enhance` then shows a toast on it from any code. Toasts pause while hovered or focused, keep at most three, and leave after six seconds. The danger toast stays until dismissed. Save inside Settings shows a toast above the open modal dialog.",
       },
     },
   },
@@ -42,7 +42,7 @@ export const Toast = {
             }
           />
         </Row>
-        <Toaster popover="manual" aria-label="Notifications" />
+        <Toaster label="Notifications" />
       </div>
     ),
     aria: `
@@ -64,19 +64,22 @@ export const Toast = {
   },
 };
 
-const dataToast = (index: number): Readonly<Record<string, string>> => ({ "data-toast": String(index) });
-
 type Shown = readonly (readonly [label: string, options: ToastOptions])[];
 
 const shownOnLoad = (shows: Shown, aria: string) =>
   mirrored({
-    scene: () => ({
-      of: "div",
-      children: [
-        { of: "div", props: { className: "odd-row" }, children: shows.map(([label], i): Node<"Button"> => ({ of: "Button", props: { ...dataToast(i) }, children: [label] })) },
-        { of: "Toaster", props: { popover: "manual", "aria-label": "Notifications" } },
-      ],
-    }),
+    scene: () => (
+      <div>
+        <Row>
+          {shows.map(([label], i) => (
+            <Button key={label} data-toast={String(i)}>
+              {label}
+            </Button>
+          ))}
+        </Row>
+        <Toaster label="Notifications" />
+      </div>
+    ),
     aria,
   });
 

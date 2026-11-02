@@ -28,8 +28,8 @@ export const Card = mirrored({
           {
             of: "CardFooter",
             children: [
-              { of: "Badge", props: { tone: "success" }, children: ["Legal"] },
-              { of: "Badge", children: ["60 cards"] },
+              { of: "span", props: { className: "odd-badge", "data-tone": "success" }, children: ["Legal"] },
+              { of: "span", props: { className: "odd-badge" }, children: ["60 cards"] },
             ],
           },
         ],
@@ -41,7 +41,7 @@ export const Card = mirrored({
           { of: "p", props: { className: "odd-eyebrow" }, children: ["Interactive"] },
           { of: "h3", props: { className: "odd-card-title" }, children: [{ of: "CardLink", props: { href: "#" }, children: ["Ember Aggro"] }] },
           { of: "p", props: { className: "odd-muted" }, children: ["The whole card is clickable. Screen readers hear a single link."] },
-          { of: "CardFooter", children: [{ of: "Badge", props: { tone: "warning" }, children: ["Rotating soon"] }] },
+          { of: "CardFooter", children: [{ of: "span", props: { className: "odd-badge", "data-tone": "warning" }, children: ["Rotating soon"] }] },
         ],
       },
     ],

@@ -30,7 +30,7 @@ function toolbar() {
         <Button variant="ghost" iconOnly label="Delete deck" id="delete">
           {icon("trash")}
         </Button>
-        <Separator aria-orientation="vertical" />
+        <Separator orientation="vertical" />
         <Button variant="primary" tooltip="Anyone with the link can view it" id="publish">
           Publish
         </Button>

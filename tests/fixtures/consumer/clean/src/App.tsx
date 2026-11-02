@@ -1,4 +1,4 @@
-import { Alert, AlertTitle, Avatar, AvatarGroup, Badge, Button, Card, CardFooter, CardLink, Disclosure, Input, Meter, Search, Separator, Skeleton, Slider, Switch, Tabs, Toaster } from "odd-design/react";
+import { Alert, Avatar, AvatarGroup, Badge, Button, Card, CardFooter, CardLink, Disclosure, Input, Meter, Muted, Row, Search, Separator, Skeleton, Slider, Stack, StatValue, Switch, Tabs, Toaster, VisuallyHidden } from "odd-design/react";
 
 export function App() {
   return (
@@ -8,23 +8,17 @@ export function App() {
       <Badge tone="success" solid>
         Legal
       </Badge>
-      <Alert tone="warning">
-        <svg aria-hidden="true" />
-        <div>
-          <AlertTitle>Rotation is coming</AlertTitle>
-          <p>Three decks lose legality on May 1.</p>
-        </div>
+      <Alert tone="warning" icon={<svg />} title="Rotation is coming">
+        <p>Three decks lose legality on May 1.</p>
       </Alert>
-      <AvatarGroup role="group" aria-label="Collaborators">
-        <Avatar size="sm" role="img" aria-label="Ana Rojas">
-          AR
-        </Avatar>
+      <AvatarGroup label="Collaborators">
+        <Avatar size="sm" name="Ana Rojas" />
       </AvatarGroup>
       <Separator />
-      <div aria-busy="true">
-        <span className="odd-visually-hidden">Loading decks…</span>
-        <Skeleton aria-hidden="true" shape="avatar" />
-      </div>
+      <Stack aria-busy="true">
+        <VisuallyHidden>Loading decks…</VisuallyHidden>
+        <Skeleton shape="avatar" />
+      </Stack>
       <Card interactive>
         <h3 className="odd-card-title">
           <CardLink href="/decks/ember">Ember Aggro</CardLink>
@@ -43,17 +37,15 @@ export function App() {
       />
       <Search label="Search cards" placeholder="Search cards" />
       <Slider label="Copies per card" min={1} max={4} defaultValue={3} showValue />
-      <div className="odd-stack">
-        <div className="odd-row">
-          <label className="odd-muted" htmlFor="actions">
-            Actions
-          </label>
-          <span className="odd-stat-value">22</span>
-        </div>
-        <Meter id="actions" min={0} max={60} value={22} tone="info" />
-      </div>
+      <Stack>
+        <Row>
+          <Muted as="span">Actions</Muted>
+          <StatValue>22</StatValue>
+        </Row>
+        <Meter label="Actions" min={0} max={60} value={22} tone="info" />
+      </Stack>
       <Button variant="primary">Save</Button>
-      <Toaster popover="manual" aria-label="Notifications" />
+      <Toaster label="Notifications" />
     </>
   );
 }

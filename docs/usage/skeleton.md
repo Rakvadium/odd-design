@@ -2,15 +2,27 @@
 
 These codes apply to `odd-skeleton`. Shared codes are in [General usage rules](general.md).
 
+In React, render `Skeleton` from `odd-design/react` for each block. It writes `aria-hidden="true"`, so ODD-SKELETON-003 cannot happen, and its container sizes it. [The React guide](react.md#hold-the-place-of-loading-content) covers the props.
+
+```tsx
+<Stack aria-busy="true">
+  <VisuallyHidden>Loading decks…</VisuallyHidden>
+  <Skeleton shape="avatar" />
+  <Skeleton />
+</Stack>
+```
+
+The component compiles to this HTML:
+
 ```html
 <div aria-busy="true">
   <span class="odd-visually-hidden">Loading decks…</span>
   <div class="odd-skeleton" aria-hidden="true" data-shape="avatar"></div>
-  <div class="odd-skeleton" aria-hidden="true" style="inline-size: 60%"></div>
+  <div class="odd-skeleton" aria-hidden="true"></div>
 </div>
 ```
 
-A skeleton block is decoration. Each block is an empty `div` with `aria-hidden="true"`. The region that is filling in has `aria-busy="true"` and says "Loading" in an `odd-visually-hidden` span. Remove the blocks, the span, and `aria-busy` when the content arrives. Size a block with `inline-size` and `block-size` in `style`. In React, `Skeleton` renders the `div`, `shape="avatar"` sets `data-shape`, and you pass `aria-hidden="true"` as on the element.
+A skeleton block is decoration. Each block is an empty `div` with `aria-hidden="true"`. The region that is filling in has `aria-busy="true"` and says "Loading" in an `odd-visually-hidden` span. Remove the blocks, the span, and `aria-busy` when the content arrives. A block fills its container's width at 1em tall, so its container sizes it, such as a grid column.
 
 No checker reads the region. A block without a busy region and loading text beside it passes every code below, and a screen reader then hears nothing while the page loads.
 
@@ -28,7 +40,7 @@ Fails when `data-shape` is not `avatar`.
 
 `skeleton.css` draws one shape, `avatar`, which matches a default avatar. The shape follows the chrome's chip radius. Any other value draws the plain block. `text`, `line`, `rect`, `rectangular`, and `rounded` name that block, so they mean remove the attribute. `circle` and `circular` mean `avatar`.
 
-Remove `data-shape` for a line or a block, and size it with `inline-size` and `block-size`. Set `avatar` for an avatar placeholder beside text. In React, `shape` takes only `"avatar"`, and a raw `data-shape` is a type error.
+Remove `data-shape` for a line, and size it through its container. Set `avatar` for an avatar placeholder beside text. In React, `shape` takes only `"avatar"`, and a raw `data-shape` is a type error.
 
 ## ODD-SKELETON-003
 
@@ -36,7 +48,7 @@ Fails when `odd-skeleton` has no `aria-hidden`, or has a value other than `true`
 
 A bare `aria-hidden` is an empty value, and ARIA treats an empty value as not hidden. Copying a block out of a hidden card drops the card's `aria-hidden`. The checker reads each block on its own, so a block inside a hidden card still needs its own attribute.
 
-Set `aria-hidden="true"` on every block. In React, `aria-hidden="true"` is a required prop, and `aria-hidden` with no value or `{true}` is a type error.
+Set `aria-hidden="true"` on every block. In React, `Skeleton` writes it.
 
 ## ODD-SKELETON-004
 

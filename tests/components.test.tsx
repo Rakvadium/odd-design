@@ -5,7 +5,6 @@ import type * as Odd from "odd-design/react";
 import {
   Alert,
   AlertDialog,
-  AlertTitle,
   Avatar,
   AvatarGroup,
   Badge,
@@ -55,6 +54,7 @@ import {
   Slider,
   Spinner,
   Stack,
+  StatValue,
   Switch,
   Table,
   Tabs,
@@ -91,23 +91,18 @@ type Fixture = {
 const FIXTURES: { readonly [K in ExportName]: readonly [Fixture, ...Fixture[]] } = {
   Alert: [
     {
-      name: "tone and title",
-      uses: ["AlertTitle"],
+      name: "tone, title, and icon",
       element: (
         <>
-          <Alert>
-            <AlertTitle>Drafts are private</AlertTitle>
+          <Alert title="Drafts are private">Only you can see a deck until you publish it.</Alert>
+          <Alert tone="warning" className="wide" icon={<svg viewBox="0 0 24 24" />}>
+            <p>Rotation is coming</p>
           </Alert>
-          <Alert tone="warning" className="wide">
-            Rotation is coming
-          </Alert>
-          <Alert tone="danger" data-testid="notice">
-            <AlertTitle>Could not save</AlertTitle>
-          </Alert>
+          <Alert tone="danger" title="Could not save" data-testid="notice" />
         </>
       ),
       markup:
-        '<div class="odd-alert"><p class="odd-alert-title">Drafts are private</p></div><div class="odd-alert wide" data-tone="warning">Rotation is coming</div><div data-testid="notice" class="odd-alert" data-tone="danger"><p class="odd-alert-title">Could not save</p></div>',
+        '<div class="odd-alert"><div><p class="odd-alert-title">Drafts are private</p>Only you can see a deck until you publish it.</div></div><div class="odd-alert wide" data-tone="warning"><svg viewBox="0 0 24 24" aria-hidden="true"></svg><div><p>Rotation is coming</p></div></div><div data-testid="notice" class="odd-alert" data-tone="danger"><div><p class="odd-alert-title">Could not save</p></div></div>',
     },
   ],
   AlertDialog: [
@@ -127,44 +122,33 @@ const FIXTURES: { readonly [K in ExportName]: readonly [Fixture, ...Fixture[]] }
         '<button class="odd-button" data-variant="danger" type="button" command="show-modal" commandfor="discard">Discard changes…</button><dialog id="discard" aria-labelledby="discard-title" aria-describedby="discard-description" class="odd-dialog" role="alertdialog"><div class="odd-dialog-body"><h2 class="odd-dialog-title" id="discard-title">Discard unsaved changes?</h2><p id="discard-description" class="odd-muted">You’ve edited 6 cards since your last save.</p><div class="odd-dialog-actions"><button class="odd-button" type="button" command="close" commandfor="discard">Keep editing</button></div></div></dialog>',
     },
   ],
-  AlertTitle: [
-    {
-      name: "inside an alert",
-      uses: ["Alert"],
-      element: (
-        <Alert tone="danger">
-          <AlertTitle>Could not save</AlertTitle>
-          Try again in a minute.
-        </Alert>
-      ),
-    },
-  ],
   Avatar: [
     {
-      name: "small, with a name",
+      name: "initials from the name or given, and a decorative avatar",
       element: (
-        <Avatar size="sm" role="img" aria-label="Kai Nakamura">
-          KN
-        </Avatar>
+        <>
+          <Avatar size="sm" name="Kai Nakamura" />
+          <Avatar name="and 3 more" initials="+3" />
+          <Avatar name="Mira Okafor" decorative className="wide" />
+        </>
       ),
+      markup:
+        '<span class="odd-avatar" data-size="sm" role="img" aria-label="Kai Nakamura">KN</span><span class="odd-avatar" role="img" aria-label="and 3 more">+3</span><span class="odd-avatar wide" aria-hidden="true">MO</span>',
     },
+    { name: "an image named by its alt", element: <Avatar name="Mira Okafor" src="/mira.png" size="lg" /> },
   ],
   AvatarGroup: [
     {
       name: "a named group of avatars",
       uses: ["Avatar"],
       element: (
-        <AvatarGroup role="group" aria-label="Collaborators" className="wide">
-          <Avatar size="lg" role="img" aria-label="Mira Okafor">
-            MO
-          </Avatar>
-          <Avatar role="img" aria-label="and 3 more">
-            +3
-          </Avatar>
+        <AvatarGroup label="Collaborators" className="wide">
+          <Avatar size="lg" name="Mira Okafor" />
+          <Avatar name="and 3 more" initials="+3" />
         </AvatarGroup>
       ),
       markup:
-        '<div role="group" aria-label="Collaborators" class="odd-avatar-group wide"><span role="img" aria-label="Mira Okafor" class="odd-avatar" data-size="lg">MO</span><span role="img" aria-label="and 3 more" class="odd-avatar">+3</span></div>',
+        '<div class="odd-avatar-group wide" role="group" aria-label="Collaborators"><span class="odd-avatar" data-size="lg" role="img" aria-label="Mira Okafor">MO</span><span class="odd-avatar" role="img" aria-label="and 3 more">+3</span></div>',
     },
   ],
   Badge: [
@@ -187,25 +171,16 @@ const FIXTURES: { readonly [K in ExportName]: readonly [Fixture, ...Fixture[]] }
   ],
   Breadcrumb: [
     {
-      name: "a trail with a plain level",
+      name: "a trail with a plain level, named by default",
       uses: ["TextLink"],
-      element: (
-        <Breadcrumb aria-label="Breadcrumb">
-          <ol>
-            <li>
-              <TextLink href="#home">Home</TextLink>
-            </li>
-            <li>Archived</li>
-            <li>
-              <TextLink href="#alerts" current>
-                Alerts
-              </TextLink>
-            </li>
-          </ol>
-        </Breadcrumb>
-      ),
+      element: <Breadcrumb items={[{ label: "Home", href: "#home" }, { label: "Archived" }, { label: "Alerts", href: "#alerts" }]} />,
       markup:
-        '<nav aria-label="Breadcrumb" class="odd-breadcrumb"><ol><li><a href="#home" class="odd-link">Home</a></li><li>Archived</li><li><a href="#alerts" aria-current="page" class="odd-link">Alerts</a></li></ol></nav>',
+        '<nav class="odd-breadcrumb" aria-label="Breadcrumb"><ol><li><a href="#home" class="odd-link">Home</a></li><li>Archived</li><li><a href="#alerts" aria-current="page" class="odd-link">Alerts</a></li></ol></nav>',
+    },
+    {
+      name: "a second trail with its own name",
+      uses: ["TextLink"],
+      element: <Breadcrumb label="Settings breadcrumb" items={[{ label: "Home", href: "#home" }]} className="wide" />,
     },
   ],
   Button: [
@@ -376,9 +351,7 @@ const FIXTURES: { readonly [K in ExportName]: readonly [Fixture, ...Fixture[]] }
           <p>
             Set <Code>--primary</Code> on the scope.
           </p>
-          <Pre data-language="sh">
-            <code>bun add odd-design</code>
-          </Pre>
+          <Pre data-language="sh">bun add odd-design</Pre>
         </Stack>
       ),
       markup:
@@ -786,9 +759,10 @@ const FIXTURES: { readonly [K in ExportName]: readonly [Fixture, ...Fixture[]] }
   ],
   Meter: [
     {
-      name: "with a tone",
-      element: <Meter id="actions" min={0} max={60} value={22} tone="info" />,
-      markup: '<meter id="actions" min="0" max="60" value="22" class="odd-meter" data-tone="info"></meter>',
+      name: "named, with a tone",
+      element: <Meter id="actions" label="Actions" min={0} max={60} value={22} tone="info" />,
+      markup:
+        '<meter id="actions" min="0" max="60" value="22" class="odd-meter" aria-label="Actions" data-tone="info"></meter>',
     },
   ],
   Muted: [
@@ -829,19 +803,25 @@ const FIXTURES: { readonly [K in ExportName]: readonly [Fixture, ...Fixture[]] }
   ],
   Pre: [
     {
-      name: "a block of code",
+      name: "code, and command output",
       element: (
-        <Pre>
-          <code>bun add odd-design</code>
-        </Pre>
+        <>
+          <Pre>bun add odd-design</Pre>
+          <Pre output className="wide">
+            850 pass
+          </Pre>
+        </>
       ),
+      markup:
+        '<pre class="odd-pre"><code>bun add odd-design</code></pre><pre class="odd-pre wide">850 pass</pre>',
     },
   ],
   Progress: [
     {
       name: "indeterminate, with no value",
-      element: <Progress id="sync" aria-label="Syncing decks" />,
-      markup: '<progress id="sync" aria-label="Syncing decks" class="odd-progress"></progress>',
+      element: <Progress id="sync" label="Syncing decks" />,
+      markup:
+        '<progress id="sync" class="odd-progress" aria-label="Syncing decks"></progress>',
     },
   ],
   RadioGroup: [
@@ -959,10 +939,11 @@ const FIXTURES: { readonly [K in ExportName]: readonly [Fixture, ...Fixture[]] }
       element: (
         <>
           <Separator />
-          <Separator aria-orientation="vertical" className="tall" />
+          <Separator orientation="vertical" className="tall" />
         </>
       ),
-      markup: '<hr class="odd-separator"/><hr aria-orientation="vertical" class="odd-separator tall"/>',
+      markup:
+        '<hr class="odd-separator"/><hr class="odd-separator tall" aria-orientation="vertical"/>',
     },
   ],
   Sheet: [
@@ -1008,12 +989,12 @@ const FIXTURES: { readonly [K in ExportName]: readonly [Fixture, ...Fixture[]] }
       element: (
         <div aria-busy="true">
           <VisuallyHidden>Loading decks…</VisuallyHidden>
-          <Skeleton aria-hidden="true" shape="avatar" />
-          <Skeleton aria-hidden="true" className="wide" />
+          <Skeleton shape="avatar" />
+          <Skeleton className="wide" />
         </div>
       ),
       markup:
-        '<div aria-busy="true"><span class="odd-visually-hidden">Loading decks…</span><div aria-hidden="true" class="odd-skeleton" data-shape="avatar"></div><div aria-hidden="true" class="odd-skeleton wide"></div></div>',
+        '<div aria-busy="true"><span class="odd-visually-hidden">Loading decks…</span><div class="odd-skeleton" aria-hidden="true" data-shape="avatar"></div><div class="odd-skeleton wide" aria-hidden="true"></div></div>',
     },
   ],
   SkipLink: [
@@ -1042,14 +1023,20 @@ const FIXTURES: { readonly [K in ExportName]: readonly [Fixture, ...Fixture[]] }
   ],
   Spinner: [
     {
-      name: "in a busy region",
-      uses: ["Row"],
+      name: "in busy regions, with words beside it and with a label",
+      uses: ["Row", "VisuallyHidden"],
       element: (
-        <Row aria-busy="true">
-          <Spinner aria-hidden="true" /> Loading projects…
-        </Row>
+        <>
+          <Row aria-busy="true">
+            <Spinner /> Loading projects…
+          </Row>
+          <Row aria-busy="true">
+            <Spinner label="Loading reports…" className="wide" />
+          </Row>
+        </>
       ),
-      markup: '<div aria-busy="true" class="odd-row"><span aria-hidden="true" class="odd-spinner"></span> Loading projects…</div>',
+      markup:
+        '<div aria-busy="true" class="odd-row"><span class="odd-spinner" aria-hidden="true"></span> Loading projects…</div><div aria-busy="true" class="odd-row"><span class="odd-spinner wide" aria-hidden="true"></span><span class="odd-visually-hidden">Loading reports…</span></div>',
     },
   ],
   Stack: [
@@ -1066,6 +1053,19 @@ const FIXTURES: { readonly [K in ExportName]: readonly [Fixture, ...Fixture[]] }
       ),
       markup:
         '<section aria-labelledby="stack-title" class="odd-stack narrow"><h2 id="stack-title" class="odd-heading">Settings</h2><p>Choose how decks sort.</p></section>',
+    },
+  ],
+  StatValue: [
+    {
+      name: "a share in tabular figures",
+      uses: ["Muted"],
+      element: (
+        <StatValue className="wide">
+          24 <Muted as="span">(40%)</Muted>
+        </StatValue>
+      ),
+      markup:
+        '<span class="odd-stat-value wide">24 <span class="odd-muted">(40%)</span></span>',
     },
   ],
   Switch: [
@@ -1191,8 +1191,9 @@ const FIXTURES: { readonly [K in ExportName]: readonly [Fixture, ...Fixture[]] }
   Toaster: [
     {
       name: "a named region",
-      element: <Toaster popover="manual" aria-label="Notifications" />,
-      markup: '<section popover="manual" aria-label="Notifications" class="odd-toaster"></section>',
+      element: <Toaster label="Notifications" />,
+      markup:
+        '<section class="odd-toaster" popover="manual" aria-label="Notifications"></section>',
     },
   ],
   VisuallyHidden: [

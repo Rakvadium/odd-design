@@ -2,6 +2,14 @@
 
 These codes apply to `odd-kbd`. Shared codes are in [General usage rules](general.md).
 
+In React, render `Kbd` from `odd-design/react` for each key. [The React guide](react.md#show-a-key) covers the props.
+
+```tsx
+<p>Press <Kbd>Ctrl</Kbd> <Kbd>K</Kbd> to search.</p>
+```
+
+The component compiles to this HTML:
+
 ```html
 <p>Press <kbd class="odd-kbd">Ctrl</kbd> <kbd class="odd-kbd">K</kbd> to search.</p>
 <p><kbd class="odd-kbd">Esc</kbd> closes the dialog.</p>

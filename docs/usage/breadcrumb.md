@@ -2,6 +2,14 @@
 
 These codes apply to `odd-breadcrumb`. Shared codes are in [General usage rules](general.md).
 
+In React, render `Breadcrumb` from `odd-design/react` with `items`. It writes the name, the `ol`, the links, and `aria-current="page"` on the last one, so ODD-BREADCRUMB-002 and ODD-BREADCRUMB-003 cannot happen. [The React guide](react.md#show-where-the-page-sits) covers the props.
+
+```tsx
+<Breadcrumb items={[{ label: "Home", href: "/" }, { label: "Archived" }, { label: "Alerts", href: "/settings/archived/alerts" }]} />
+```
+
+The component compiles to this HTML:
+
 ```html
 <nav class="odd-breadcrumb" aria-label="Breadcrumb">
   <ol>
@@ -31,7 +39,7 @@ Fails when a `nav` with `odd-breadcrumb` has no `aria-label` and no `aria-labell
 
 A page often has two navigations: the main one and the breadcrumb. An unnamed breadcrumb is listed as a bare `navigation` beside `navigation "Primary"`, so a screen reader user can't tell which is which.
 
-Set `aria-label`, such as "Breadcrumb", or point `aria-labelledby` at a visible heading. In React, `Breadcrumb` requires one of them.
+Set `aria-label`, such as "Breadcrumb", or point `aria-labelledby` at a visible heading. In React, `Breadcrumb` is named "Breadcrumb" unless `label` says otherwise.
 
 ## ODD-BREADCRUMB-003
 
@@ -39,7 +47,7 @@ Fails when a `nav` with `odd-breadcrumb` has no `ol` as a direct child.
 
 `breadcrumb.css` draws the trail on `nav > ol > li`. A `ul` keeps its bullets and draws no slashes, in Firefox and WebKit. Links placed straight in the `nav` lose the list, so a screen reader no longer says how many levels the trail has. An `ol` says the levels come in order.
 
-Put the crumbs in an `ol` directly inside the `nav`, with one `li` per level. The React types do not check the children, so in a React app the runtime checker reports it.
+Put the crumbs in an `ol` directly inside the `nav`, with one `li` per level. In React, `Breadcrumb` writes the list from `items`.
 
 ## ODD-BREADCRUMB-004
 

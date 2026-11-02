@@ -2,6 +2,16 @@
 
 These codes apply to `odd-alert` and `odd-alert-title`. Shared codes are in [General usage rules](general.md).
 
+In React, render `Alert` from `odd-design/react` with a `tone`, an `icon`, and a `title`. It writes the icon first, hidden, and the body `div` with the title, so ODD-ALERT-001 and ODD-ALERT-005 cannot happen. [The React guide](react.md#show-a-message-with-an-alert) covers the props.
+
+```tsx
+<Alert tone="warning" icon={<WarningIcon />} title="Rotation is coming">
+  <p>Three of your decks lose legality on May 1.</p>
+</Alert>
+```
+
+The component compiles to this HTML:
+
 ```html
 <div class="odd-alert">
   <svg aria-hidden="true"></svg>
@@ -19,7 +29,7 @@ These codes apply to `odd-alert` and `odd-alert-title`. Shared codes are in [Gen
 </div>
 ```
 
-`data-tone` colors the border, the tint, and the icon. The text stays `--foreground`. No `data-tone` is the neutral tint. The title is a label, not a heading. In React, `Alert` renders the `div` and `AlertTitle` renders the `p`. Pass `tone` to `Alert`. The icon and the body `div` stay yours.
+`data-tone` colors the border, the tint, and the icon. The text stays `--foreground`. No `data-tone` is the neutral tint. The title is a label, not a heading. In React, `Alert` renders all of it from `tone`, `icon`, and `title`.
 
 A message that is on the page from the start needs no role. For one that appears later, keep an empty `role="status"` container on the page, or `role="alert"` for an error, and insert the alert into it.
 
@@ -34,7 +44,7 @@ Fails when `odd-alert` is not on a `div`, or `odd-alert-title` is not on a `p`.
 | `odd-alert` | `div` |
 | `odd-alert-title` | `p` |
 
-Move the class onto its element. In React, use `Alert` and `AlertTitle`, which render those elements.
+Move the class onto its element. In React, use `Alert`, which renders those elements.
 
 ## ODD-ALERT-002
 
@@ -66,4 +76,4 @@ Fails when `odd-alert-title` has a system `data-` attribute.
 
 The title reads no `data-` attribute. `data-tone` on the title does nothing, because `alert.css` selects the tone on `odd-alert` only. An app `data-` attribute passes. The appearance axes and the headless allowlist pass.
 
-Remove the attribute. Put `data-tone` on the alert. In React, `data-tone` on `AlertTitle` is a type error.
+Remove the attribute. Put `data-tone` on the alert. In React, `Alert` writes the title.

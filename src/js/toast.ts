@@ -50,7 +50,7 @@ export function toast(options: ToastOptions): { dismiss: () => void } {
   const newest = [...toasters.values()].at(-1);
   if (newest === undefined)
     throw new Error(
-      'toast() found no toaster. Write <section class="odd-toaster" popover="manual" aria-label="Notifications"></section> and call enhance(), or render <Toaster popover="manual" aria-label="Notifications" /> from odd-design/react.',
+      'toast() found no toaster. Write <section class="odd-toaster" popover="manual" aria-label="Notifications"></section> and call enhance(), or render <Toaster label="Notifications" /> from odd-design/react.',
     );
   return newest.show(options);
 }

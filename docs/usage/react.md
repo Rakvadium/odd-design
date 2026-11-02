@@ -137,145 +137,98 @@ const toneOf: Record<Status, BadgeTone> = { draft: "neutral", legal: "success", 
 <Badge tone={toneOf[deck.status]}>{deck.status}</Badge>;
 ```
 
-`Badge` renders a `span` with the class `odd-badge`, plus the words in `className`.
-
-| Prop | What the element gets |
-| --- | --- |
-| `tone` | `data-tone`. It takes `neutral`, `primary`, `success`, `warning`, `danger`, or `info`. Leave it out for a neutral badge. |
-| `solid` | `data-solid` with an empty value. `solid={false}` leaves it out. |
-| Any other prop | The attribute with the same name. |
-
-Use `tone` and `solid`. Passing `data-tone` or `data-solid` yourself is a type error, and `Badge` drops the raw attribute. A `solid` that is not a boolean, such as `solid="false"`, is a type error too. Without types, it renders `data-solid="false"`, which is solid, and the runtime checker reports `ODD-BADGE-003`. `BadgeTone` is the type of `tone`, for a map from your data to a tone.
+`Badge` renders `span.odd-badge`. `tone` writes `data-tone` and takes `neutral`, `primary`, `success`, `warning`, `danger`, or `info`. Leave it out for a neutral badge. `solid` writes an empty `data-solid`. A raw `data-tone` or `data-solid` is a type error (`ODD-REACT-002`). `BadgeTone` is the type of `tone`, for a map from your data to a tone.
 
 ## Show a message with an alert
 
 ```tsx
-import { Alert, AlertTitle, type AlertTone } from "odd-design/react";
+import { Alert, type AlertTone } from "odd-design/react";
 
-<Alert tone="warning">
-  <WarningIcon aria-hidden="true" />
-  <div>
-    <AlertTitle>Rotation is coming</AlertTitle>
-    <p>Three of your decks lose legality on May 1.</p>
-  </div>
+<Alert tone="warning" icon={<WarningIcon />} title="Rotation is coming">
+  <p>Three of your decks lose legality on May 1.</p>
 </Alert>;
 
 const toneOf: Record<SaveState, AlertTone> = { saved: "success", offline: "danger" };
-<div role="status">
-  {state && (
-    <Alert tone={toneOf[state]}>
-      <div>
-        <AlertTitle>{titles[state]}</AlertTitle>
-      </div>
-    </Alert>
-  )}
-</div>;
+<div role="status">{state && <Alert tone={toneOf[state]} title={titles[state]} />}</div>;
 ```
 
-`Alert` renders a `div` with the class `odd-alert`. `AlertTitle` renders a `p` with the class `odd-alert-title`. The icon and the body stay yours. Put the icon `svg` first and one body `div` after it, with the title and the text inside, the same way the HTML story does. Each other direct child becomes a column beside the icon, so a title followed by bare text puts the text beside the title. No checker reports that.
+`Alert` renders `div.odd-alert`. Its `icon`, an `svg`, comes first with `aria-hidden="true"`. Then one body `div` holds `p.odd-alert-title` with the `title`, and the children. `tone` writes `data-tone` and takes `info`, `success`, `warning`, or `danger`. Leave it out for the neutral tint. `AlertTone` is the type of `tone`.
 
-| Prop | What the element gets |
-| --- | --- |
-| `tone` on `Alert` | `data-tone`. It takes `info`, `success`, `warning`, or `danger`. Leave it out for the neutral tint. |
-| Any other prop | The attribute with the same name. |
-
-`AlertTone` is the type of `tone`. It has no `neutral` and no `primary`. Leaving `tone` out is the neutral tint, and `tone="neutral"` is a type error. Passing `data-tone` yourself is a type error, and `Alert` drops the raw attribute. `role` or `aria-live` on `Alert` is a type error (`ODD-ALERT-003`). A static alert needs no role. For a message that appears later, keep an empty `role="status"` element on the page, or `role="alert"` for an error, and render the alert inside it, as in the second example. A system `data-` attribute on `AlertTitle`, such as `data-tone`, is a type error (`ODD-ALERT-005`). A computed `tone`, such as `<Alert tone={toneOf[state]}>`, gives the `ODD-STATIC-001` warning, the same as a computed `tone` on `Badge`.
+`role` is a type error (`ODD-REACT-001`), and so is `aria-live` (`ODD-ALERT-003`). A static alert needs no role. For a message that appears later, keep an empty `role="status"` element on the page, or `role="alert"` for an error, and render the alert inside it, as in the second example.
 
 ## Show a person with an avatar
 
 ```tsx
 import { Avatar, AvatarGroup, type AvatarSize } from "odd-design/react";
 
-<Avatar size="lg">
-  <img src={kai.photo} alt="Kai Nakamura" />
-</Avatar>;
-<Avatar role="img" aria-label="Ana Rojas">AR</Avatar>;
+<Avatar name="Kai Nakamura" src={kai.photo} size="lg" />;
+<Avatar name="Ana Rojas" />;
 <p>
-  <Avatar aria-hidden="true">MO</Avatar> Mira Okafor
+  <Avatar name="Mira Okafor" decorative /> Mira Okafor
 </p>;
 
-<AvatarGroup role="group" aria-label="Collaborators">
+<AvatarGroup label="Collaborators">
   {people.map((person) => (
-    <PersonAvatar key={person.id} person={person} />
+    <Avatar key={person.id} name={person.name} src={person.photo} />
   ))}
+  <Avatar name="and 3 more" initials="+3" />
 </AvatarGroup>;
-
-function PersonAvatar({ person }: { person: Person }) {
-  const [failed, setFailed] = useState(false);
-  if (person.photo === undefined || failed) {
-    return (
-      <Avatar role="img" aria-label={person.name}>
-        {person.initials}
-      </Avatar>
-    );
-  }
-  return (
-    <Avatar>
-      <img src={person.photo} alt={person.name} onError={() => setFailed(true)} />
-    </Avatar>
-  );
-}
 ```
 
-`Avatar` renders a `span` with the class `odd-avatar`. `AvatarGroup` renders a `div` with the class `odd-avatar-group`. The image, the initials, and the name stay yours. An image avatar's `img` has `alt`. An initials avatar is `role="img"` with an `aria-label`. Next to a visible name, hide the avatar with `aria-hidden="true"`.
+`Avatar` renders `span.odd-avatar` from a `name`. With a `src`, it holds an `img` whose `alt` is the name. Without one, or once the image fails to load, it shows initials as `role="img"` named by the name. `initials` overrides the first letters of the first two words of the name. `decorative` hides the avatar beside a visible name, with `aria-hidden="true"` and an empty `alt`. `size` writes `data-size` and takes `sm` or `lg`. `AvatarSize` is the type of `size`.
 
-| Prop | What the element gets |
-| --- | --- |
-| `size` on `Avatar` | `data-size`. It takes `sm` or `lg`. Leave it out for the default size. |
-| `role` on `Avatar` | `role`. It takes only `img`. |
-| `role` on `AvatarGroup` | `role`. It is required and takes only `group`. |
-| Any other prop | The attribute with the same name. |
+`AvatarGroup` renders `div.odd-avatar-group` with `role="group"`, named by its `label`. Put `size` on each `Avatar`. A blank `name` or `label` throws `ODD-AVATAR-004` outside production. `role`, `aria-label`, `aria-labelledby`, and `aria-hidden` are type errors (`ODD-REACT-001`).
 
-`AvatarSize` is the type of `size`. `size="md"` is a type error. Passing `data-size` yourself is a type error, and `Avatar` drops the raw attribute. `role="img"` on `Avatar` with no `aria-label` and no `aria-labelledby` is a type error (`ODD-AVATAR-004`), and so is an `AvatarGroup` with neither. `data-size` on `AvatarGroup` is a type error (`ODD-AVATAR-006`). Put `size` on each `Avatar`.
-
-`data-initials` on `Avatar` is a type error. `avatarFallback` from `odd-design/enhance` swaps a failed image for those initials by replacing the avatar's children, and React throws on its next render of children a script replaced. Render the initials yourself when the image's `onError` fires, as `PersonAvatar` does. A computed `size`, such as `<Avatar size={sizeOf[place]}>`, gives the `ODD-STATIC-001` warning, the same as a computed `tone` on `Badge`.
+The image fallback is React state, and `Avatar` never writes `data-initials`, so a page-level `avatarFallback()` from `odd-design/enhance` leaves it alone.
 
 ## Split sections with a separator
 
 ```tsx
-import { Separator } from "odd-design/react";
+import { Row, Separator } from "odd-design/react";
 
 <Separator />;
-<div className="odd-row">
+<Row>
   <a href="/decks/1/edit">Edit</a>
-  <Separator aria-orientation="vertical" />
+  <Separator orientation="vertical" />
   <a href="/decks/1/export">Export</a>
-</div>;
+</Row>;
 ```
 
-`Separator` renders an `hr` with the class `odd-separator`. Screen readers announce it as a separator. A horizontal line needs no props. Between inline items, pass `aria-orientation="vertical"`, as on the element, and put it inside an `odd-row`, which stretches it to the row's height. No checker reports a vertical separator outside a row.
-
-`Separator` takes no children, because React throws on an `hr` with children. Put a label beside it. `role` takes only `separator`, and `aria-hidden` is a type error (`ODD-SEPARATOR-003`). For a line that means nothing, draw a border on the container instead. `data-orientation` is a type error (`ODD-SEPARATOR-002`), because the stylesheet does not read it. A computed `aria-orientation`, such as `<Separator aria-orientation={orientation}>`, gives the `ODD-STATIC-001` warning, the same as a computed `role` on `Avatar`.
+`Separator` renders `hr.odd-separator`, which screen readers announce. A horizontal line needs no props. Between inline items, pass `orientation="vertical"`, which writes `aria-orientation`, and put it inside a `Row`, which stretches it to the row's height. It takes no children. `aria-hidden` is a type error (`ODD-SEPARATOR-003`). For a line that means nothing, draw a border on the container instead.
 
 ## Hold the place of loading content
 
 ```tsx
-import { Skeleton } from "odd-design/react";
+import { Skeleton, Stack, VisuallyHidden } from "odd-design/react";
 
-<div aria-busy="true">
-  <span className="odd-visually-hidden">Loading decks…</span>
-  <Skeleton aria-hidden="true" shape="avatar" />
-  <Skeleton aria-hidden="true" style={{ inlineSize: "60%" }} />
-</div>;
+<Stack aria-busy="true">
+  <VisuallyHidden>Loading decks…</VisuallyHidden>
+  <Skeleton shape="avatar" />
+  <Skeleton />
+  <Skeleton />
+</Stack>;
 ```
 
-`Skeleton` renders a `div` with the class `odd-skeleton`, a block that pulses while content loads. Pass `aria-hidden="true"` on every block, as on the element. It is a required prop, and it takes only the string `"true"`. `aria-hidden={true}` and a bare `aria-hidden` are type errors. Leaving `shape` out draws a bar 1em tall. `shape="avatar"` draws a block that matches a default avatar. The shape follows the chrome's chip radius. Size each block with `inlineSize` and `blockSize` in `style`.
+`Skeleton` renders `div.odd-skeleton` with `aria-hidden="true"`, a block that pulses while content loads. A block fills its container's width at 1em tall, so the container sizes it: a `GridItem` span, a column, or your own class through `className`. `shape="avatar"` draws a block that matches a default avatar, with the chrome's chip radius. `Skeleton` takes no `style`.
 
-The block is hidden, so it cannot say that the page is loading. Set `aria-busy="true"` on the region that is filling in, and put the loading words in an `odd-visually-hidden` span inside it. Remove the blocks, the span, and `aria-busy` when the content arrives. No checker reads the region, so a block with no busy region beside it passes. Children, `aria-busy`, `role`, `aria-label`, and `aria-labelledby` on `Skeleton` are type errors (`ODD-SKELETON-004`). A computed `shape`, such as `<Skeleton shape={shapeOf[kind]}>`, gives the `ODD-STATIC-001` warning, the same as a computed `size` on `Avatar`.
+The block is hidden, so it cannot say that the page is loading. Set `aria-busy="true"` on the region that is filling in, and put the loading words in a `VisuallyHidden` inside it. Remove the blocks, the words, and `aria-busy` when the content arrives. No checker reads the region. Children, `aria-busy`, `aria-label`, and `aria-labelledby` on `Skeleton` are type errors (`ODD-SKELETON-004`).
 
 ## Show that something is loading
 
 ```tsx
-import { Spinner } from "odd-design/react";
+import { Row, Spinner } from "odd-design/react";
 
-<div className="odd-row" aria-busy="true">
-  <Spinner aria-hidden="true" /> Loading projects…
-</div>;
+<Row aria-busy="true">
+  <Spinner /> Loading projects…
+</Row>;
+<Row aria-busy="true">
+  <Spinner label="Loading reports…" />
+</Row>;
 ```
 
-`Spinner` renders a `span` with the class `odd-spinner`, a ring 1em across in the text color that turns while something loads. Pass `aria-hidden="true"`, as on the element. It is a required prop, and it takes only the string `"true"`. The font size where the ring sits sets its size. Under reduced motion it turns slower instead of stopping.
+`Spinner` renders `span.odd-spinner` with `aria-hidden="true"`, a ring 1em across in the text color, so the text it sits in sets its size. Under reduced motion it turns slower instead of stopping. With `label`, it renders the words in a hidden span after the ring, for a region with no visible words.
 
-The spinner is decoration, like a skeleton block. Set `aria-busy="true"` on the region that is loading, and put the loading words beside the spinner or in an `odd-visually-hidden` span inside that region. Remove the spinner, the words, and `aria-busy` when the content arrives. No checker reads the region. Children, `role`, `aria-label`, `aria-labelledby`, and `aria-busy` on `Spinner` are type errors (`ODD-SPINNER-002`). A `Button` that is working takes `busy` and draws its own ring, so don't put a `Spinner` inside it.
+Set `aria-busy="true"` on the region that is loading, and remove the spinner, the words, and `aria-busy` when the content arrives. No checker reads the region. Children, `aria-busy`, `aria-label`, and `aria-labelledby` on `Spinner` are type errors (`ODD-SPINNER-002`). A `Button` that is working takes `busy` and draws its own ring, so a `Spinner` does not go inside it.
 
 ## Link to a page
 
@@ -360,26 +313,18 @@ When your code filters, pass `filter="manual"`, render the results as children, 
 ## Show where the page sits
 
 ```tsx
-import { Breadcrumb, TextLink } from "odd-design/react";
+import { Breadcrumb } from "odd-design/react";
 
-<Breadcrumb aria-label="Breadcrumb">
-  <ol>
-    <li>
-      <TextLink href="/">Home</TextLink>
-    </li>
-    <li>Archived</li>
-    <li>
-      <TextLink href="/archived/alerts" aria-current="page">
-        Alerts
-      </TextLink>
-    </li>
-  </ol>
-</Breadcrumb>;
+<Breadcrumb
+  items={[
+    { label: "Home", href: "/" },
+    { label: "Archived" },
+    { label: "Alerts", href: "/archived/alerts" },
+  ]}
+/>;
 ```
 
-`Breadcrumb` renders a `nav` with the class `odd-breadcrumb`. Pass `aria-label` or `aria-labelledby`. One of them is a required prop. Write the `ol`, the `li`s, and the `TextLink`s yourself. Each level with a page of its own is a `TextLink`, and the last one has `aria-current="page"`. A level with no page of its own is plain text in its `li`. CSS draws the slashes between crumbs, which screen readers do not read, and a long trail wraps.
-
-The types do not read the children. A `ul` or bare links in place of the `ol` (`ODD-BREADCRUMB-003`) pass the types, and the runtime checker reports them. No checker requires the current crumb, so a trail without `aria-current="page"` passes, and its last crumb looks like every other link.
+`Breadcrumb` renders `nav.odd-breadcrumb` named "Breadcrumb", an `ol`, and one `li` per item. An item with an `href` is a `TextLink` through the router link from `OddProvider`, and the last item's link takes `aria-current="page"`. An item with no `href` is plain text. A second trail on the page takes a `label` of its own. A blank `label` throws `ODD-BREADCRUMB-002` outside production. CSS draws the slashes between crumbs, which screen readers do not read, and a long trail wraps.
 
 ## Show a key
 
@@ -391,7 +336,7 @@ import { Kbd } from "odd-design/react";
 </p>;
 ```
 
-`Kbd` renders a `kbd` with the class `odd-kbd`, drawn as a keycap and read with the sentence. Write one `Kbd` per key, and write the key's name rather than a glyph. `aria-hidden` on `Kbd` is a type error (`ODD-KBD-002`). A shortcut hint at the end of a `MenuItem` is a raw `kbd` with `odd-menu-shortcut` and `aria-hidden="true"`, beside `aria-keyshortcuts` on the item.
+`Kbd` renders `kbd.odd-kbd`, drawn as a keycap and read with the sentence. Write one `Kbd` per key, and write the key's name rather than a glyph. `aria-hidden` on `Kbd` is a type error (`ODD-KBD-002`). A shortcut hint at the end of a menu item is `MenuItem`'s `shortcut`.
 
 ## Show code
 
@@ -401,12 +346,11 @@ import { Code, Pre } from "odd-design/react";
 <p>
   Set <Code>--primary</Code> on the scope.
 </p>;
-<Pre>
-  <code>bun add odd-design</code>
-</Pre>;
+<Pre>bun add odd-design</Pre>;
+<Pre output>{"850 pass\n0 fail"}</Pre>;
 ```
 
-`Code` renders a `code` with the class `odd-code`, a short piece of code inside a sentence. `Pre` renders a `pre` with the class `odd-pre`, a block. Put a raw `code` inside `Pre` when the block is code, and leave it out for command output. Long lines wrap instead of scrolling, so the block needs no `tabIndex`. An app attribute such as `data-language` passes, and a system `data-` attribute such as `data-size` on either is a type error (`ODD-CODE-002`).
+`Code` renders `code.odd-code`, a short piece of code inside a sentence. `Pre` renders `pre.odd-pre` with its text in a bare `code`. `output` leaves the `code` out, for command output. Long lines wrap instead of scrolling, so the block needs no `tabIndex`. An app attribute such as `data-language` passes.
 
 ## Make a whole card clickable
 
@@ -525,32 +469,25 @@ export function CopiesField() {
 ## Show progress or a measurement
 
 ```tsx
-import { Meter, Progress, type MeterTone } from "odd-design/react";
+import { Meter, Muted, Progress, Row, Stack, StatValue, type MeterTone } from "odd-design/react";
 
-<Progress id="import" value={40} max={100} aria-label="Importing decks" />;
-<Progress id="sync" aria-label="Syncing collection" />;
+<Progress label="Importing decks" value={40} max={100} />;
+<Progress label="Syncing collection" />;
 
-<div className="odd-stack">
-  <div className="odd-row">
-    <label className="odd-muted" htmlFor="actions">Actions</label>
-    <span className="odd-stat-value">22 <span className="odd-muted">(37%)</span></span>
-  </div>
-  <Meter id="actions" min={0} max={60} value={22} tone="info" />
-</div>;
+<Stack>
+  <Row>
+    <Muted as="span">Actions</Muted>
+    <StatValue>
+      22 <Muted as="span">(37%)</Muted>
+    </StatValue>
+  </Row>
+  <Meter label="Actions" min={0} max={60} value={22} tone="info" />
+</Stack>;
 
-<Meter id="store-high" value={0.93} low={0.6} high={0.85} optimum={0} aria-label="Exports" />;
+<Meter label="Exports" value={0.93} low={0.6} high={0.85} optimum={0} />;
 ```
 
-`Progress` renders a `progress` with the class `odd-progress`, for a task. Leave out `value` for an indeterminate bar. `Meter` renders a `meter` with the class `odd-meter`, for a measurement in a known range. Name each bar with a `label` or `aria-label`, and show the value as text too.
-
-| Prop | What the element gets |
-| --- | --- |
-| `tone` | `data-tone`. It takes `success`, `warning`, `danger`, or `info`. Leave it out for the default bar. |
-| Any other prop | The attribute with the same name, such as `value`, `max`, `low`, `high`, and `optimum`. |
-
-`MeterTone` is the type of `tone`, for both bars. It has no `primary` and no `neutral`, and either one is a type error. Passing `data-tone` yourself is a type error, and the part drops the raw attribute. A system `data-` attribute other than `data-tone`, such as `data-size`, is a type error (`ODD-METER-003`). With `low` or `high`, a `Meter` colors itself by range, so give it no `tone`. No checker reads the two together yet. A computed `tone`, such as `<Meter tone={toneOf[kind]}>`, gives the `ODD-STATIC-001` warning, the same as a computed `tone` on `Badge`.
-
-The `Meter` above sits in the [Stat row](../recipes/stat-row.md) recipe, which has no part. Write it as native markup around the bar. `Label` adds `odd-label` and is not the stat's label.
+`Progress` renders `progress.odd-progress`, for a task. Leave out `value` for an indeterminate bar. `Meter` renders `meter.odd-meter`, for a measurement in a known range. Each is named by its `label`, through `aria-label`, so show the value as text too. `tone` writes `data-tone` and takes `success`, `warning`, `danger`, or `info`. With `low` or `high`, a `Meter` colors itself by range, so give it no `tone`. `MeterTone` is the type of `tone`. `StatValue` renders `span.odd-stat-value`, a number in tabular figures. The row above is the [Stat row](../recipes/stat-row.md) recipe, built from `Stack`, `Row`, and `StatValue`.
 
 ## Show a toast
 
@@ -560,17 +497,17 @@ import { toast } from "odd-design/enhance";
 
 <body>
   {children}
-  <Toaster popover="manual" aria-label="Notifications" />
+  <Toaster label="Notifications" />
 </body>;
 
 <Button onClick={() => toast({ title: "Deck saved", description: "Midnight Control, version 15.", tone: "success" })}>Save</Button>;
 ```
 
-`Toaster` renders an empty `section` with the class `odd-toaster` and runs `enhanceToaster` on it, which builds the list and a hidden polite live region inside and opens the region. Render it once, in the app shell. `popover="manual"` and `aria-label` are required, as `type="range"` is on `Slider`, so the JSX reads like the HTML. An `enhance()` call elsewhere in the app does not wire the region twice.
+`Toaster` renders an empty `section.odd-toaster` with `popover="manual"`, named by its `label`, and runs `enhanceToaster` on it, which builds the list and a hidden polite live region inside and opens the region. Render it once, in the app shell. A blank `label` throws `ODD-TOAST-003` outside production. An `enhance()` call elsewhere in the app does not wire the region twice.
 
 `toast({ title, description, tone, duration, action })` from `odd-design/enhance` shows a toast on the newest `Toaster` still on the page and returns `{ dismiss }`. Call it from any component or from code outside React. No provider, context, or ref is needed. It throws when no `Toaster` is mounted, so a missing one fails the first time the code runs. Each toast announces its title and description as one sentence, pauses while the pointer or focus is on it, and leaves after `duration`, 6 seconds by default. Pass `Infinity` to keep it. At most three show at once. A toast shown while a modal dialog is open moves the list inside the dialog, so the toasts stay live and clickable. Toasts already showing when the dialog opens stay behind it, inert, until the next `toast()`.
 
-`Toaster` takes no children, and children are a type error, because `enhanceToaster` owns what is inside. A system `data-` attribute on `Toaster`, such as `data-tone`, is a type error (`ODD-TOAST-004`). Pass `tone` to `toast()` instead.
+`Toaster` takes no children, because `enhanceToaster` owns what is inside. Pass `tone` to `toast()`.
 
 ## Build a table
 
@@ -670,22 +607,13 @@ The type error names the code and the fix. The table lists what each mistake pri
 | `type`, `role`, or `aria-disabled` on `Checkbox` or `Switch` | `ODD-REACT-001` |
 | A field control with no `label` | "Property 'label' is missing" |
 | A `RadioGroup` or `Segmented` `defaultValue` that is not one of its options | "is not assignable to type" with the option values |
-| A system `data-` attribute the badge does not take, such as `data-variant` | `ODD-BADGE-004` |
-| `role` or `aria-live` on `Alert` | `ODD-ALERT-003` |
-| A system `data-` attribute the alert does not take, such as `data-variant` | `ODD-ALERT-004` |
-| A system `data-` attribute on `AlertTitle`, such as `data-tone` | `ODD-ALERT-005` |
-| `role="img"` on `Avatar`, or an `AvatarGroup`, with no `aria-label` and no `aria-labelledby` | `ODD-AVATAR-004` |
-| A system `data-` attribute the avatar does not take, such as `data-tone` | `ODD-AVATAR-005` |
-| A system `data-` attribute on `AvatarGroup`, such as `data-size` | `ODD-AVATAR-006` |
-| `data-initials` on `Avatar` | `Types of property '"data-initials"' are incompatible` |
-| `data-orientation` on `Separator` | `ODD-SEPARATOR-002` |
+| `aria-live` on `Alert` | `ODD-ALERT-003` |
+| `role` or an attribute a display component writes, such as `aria-hidden` on `Skeleton` or `Spinner`, `aria-orientation` on `Separator`, `aria-label` on `Avatar`, `Meter`, `Progress`, `Breadcrumb`, or `Toaster`, or `popover` on `Toaster` | `ODD-REACT-001` |
+| A system `data-` attribute on a display component, such as `data-variant` on `Badge` or `data-size` on `Skeleton` | `ODD-REACT-002` |
+| `Avatar` with no `name`, `AvatarGroup` or `Toaster` with no `label`, `Meter` or `Progress` with no `label`, or `Breadcrumb` with no `items` | "Property 'name' is missing", "Property 'label' is missing", or "Property 'items' is missing" |
 | `aria-hidden` on `Separator` | `ODD-SEPARATOR-003` |
-| A system `data-` attribute on `Separator`, such as `data-tone` | `ODD-SEPARATOR-004` |
-| Children on `Separator` | `the expected type of 'children' is 'undefined'` |
-| Children, `aria-busy`, `role`, `aria-label`, or `aria-labelledby` on `Skeleton` | `ODD-SKELETON-004` |
-| A system `data-` attribute on `Skeleton`, such as `data-size` | `ODD-SKELETON-005` |
-| Children, `role`, `aria-label`, `aria-labelledby`, or `aria-busy` on `Spinner` | `ODD-SPINNER-002` |
-| A system `data-` attribute on `Spinner`, such as `data-size` | `ODD-SPINNER-003` |
+| Children, `aria-busy`, `aria-label`, or `aria-labelledby` on `Skeleton` | `ODD-SKELETON-004` |
+| Children, `aria-label`, `aria-labelledby`, or `aria-busy` on `Spinner` | `ODD-SPINNER-002` |
 | `aria-disabled` or `disabled` on `TextLink` | `ODD-LINK-003` |
 | `role`, `aria-current`, `target`, `rel`, or `interestfor` on `TextLink`, or `interestfor` on `HoverCardLink` | `ODD-REACT-001` |
 | A system `data-` attribute on `TextLink`, such as `data-variant` | `ODD-REACT-002` |
@@ -693,10 +621,7 @@ The type error names the code and the fix. The table lists what each mistake pri
 | `role`, `aria-controls`, `aria-autocomplete`, `aria-expanded`, or `aria-activedescendant` on `Combobox`, or `aria-selected` or `aria-disabled` on `ComboboxOption` | `ODD-REACT-001` |
 | A system `data-` attribute on `Combobox` or `ComboboxOption`, such as `data-tone` | `ODD-REACT-002` |
 | A `filter` other than `manual` on `Combobox` | `'"auto"' is not assignable to type '"manual"'` |
-| A system `data-` attribute on `Breadcrumb`, such as `data-tone` | `ODD-BREADCRUMB-004` |
 | `aria-hidden` on `Kbd` | `ODD-KBD-002` |
-| A system `data-` attribute on `Kbd`, such as `data-size` | `ODD-KBD-003` |
-| A system `data-` attribute on `Code` or `Pre`, such as `data-size` | `ODD-CODE-002` |
 | `onClick` or `tabIndex` on `Card` | `ODD-CARD-004` |
 | A system `data-` attribute on `Card` other than `data-span`, such as `data-tone` | `ODD-CARD-006` |
 | A system `data-` attribute on `CardLink` or `CardFooter`, such as `data-interactive` | `ODD-CARD-007` |
@@ -708,9 +633,6 @@ The type error names the code and the fix. The table lists what each mistake pri
 | A `defaultValue` that names no tab in `tabs` | `Type '"notes"' is not assignable to type '"cards" \| "stats" \| undefined'` |
 | `type` or `aria-label` on `Search`, or `type` or `aria-disabled` on `Slider` | `ODD-REACT-001` |
 | A system `data-` attribute on `Search` or `Slider`, such as `data-tone` | `ODD-REACT-002` |
-| A system `data-` attribute on `Meter` or `Progress` other than `data-tone`, such as `data-size` | `ODD-METER-003` |
-| A system `data-` attribute on `Toaster`, such as `data-tone` | `ODD-TOAST-004` |
-| Children on `Toaster` | `not assignable to type 'undefined'` |
 | `role`, `popover`, `aria-label`, or `aria-labelledby` on `Popover` | `ODD-REACT-001` |
 | `role`, `open`, `closedby`, `aria-label`, `aria-labelledby`, or `aria-describedby` on `Dialog`, `AlertDialog`, or `Sheet`, or `data-side` on `Sheet` | `ODD-REACT-001` |
 | A system `data-` attribute on `Popover`, `Dialog`, `AlertDialog`, or `Sheet`, such as `data-tone` | `ODD-REACT-002` |
