@@ -12,7 +12,7 @@ import { Disclosure } from "../../../../src/react/disclosure.tsx";
 import { Checkbox, Input, RadioGroup, Segmented, Select, Switch, Textarea, type ChoiceOption } from "../../../../src/react/field.tsx";
 import { Kbd } from "../../../../src/react/kbd.tsx";
 import { Grid, GridItem, Row, Scope, SkipLink, Stack, VisuallyHidden, type GridSpan } from "../../../../src/react/layout.tsx";
-import { Menu, MenuItem } from "../../../../src/react/menu.tsx";
+import { Menu, MenuCheckboxItem, MenuGroup, MenuItem, MenuRadioGroup, MenuRadioItem, MenuSeparator } from "../../../../src/react/menu.tsx";
 import { Table, TableSort, TableWrap } from "../../../../src/react/table.tsx";
 import { Meter, Progress, type MeterTone } from "../../../../src/react/meter.tsx";
 import { Popover } from "../../../../src/react/popover.tsx";
@@ -436,22 +436,26 @@ export function FilterSheet({ side, onApply }: { side: SheetSide | undefined; on
   );
 }
 
-export function DeckMenu({ label, onRename }: { label: string; onRename: () => void }) {
+export function DeckMenu({ label, onRename, onPrices }: { label: string; onRename: () => void; onPrices: (on: boolean) => void }) {
   const menu = useRef<HTMLDivElement>(null);
   return (
     <>
-      <Button id="deck-actions-trigger" commandfor="deck-actions" command="toggle-popover" aria-haspopup="menu">Deck actions</Button>
-      <Menu ref={menu} id="deck-actions" popover="auto" role="menu" aria-labelledby="deck-actions-trigger" className="wide" data-testid="actions">
-        <MenuItem role="menuitem" onClick={onRename}>Rename</MenuItem>
-        <MenuItem role="menuitem" aria-disabled="true">Merge</MenuItem>
-        <Separator />
-        <MenuItem role="menuitemcheckbox" aria-checked="true" onClick={(event) => event.currentTarget.getAttribute("aria-checked") === "true"}>Show prices</MenuItem>
-        <div role="group" aria-label="Sort by">
-          <MenuItem role="menuitemradio" aria-checked="false" data-testid="sort-name">Name</MenuItem>
-        </div>
-        <MenuItem role="menuitem" tone="danger" onClick={() => menu.current?.hidePopover()}>Delete deck</MenuItem>
+      <Menu ref={menu} id="deck-actions" label={label} trigger={<Button iconOnly label={label}>⋯</Button>} className="wide" data-testid="actions" data-state="open">
+        <MenuItem shortcut="F2" onClick={onRename}>Rename</MenuItem>
+        <MenuItem disabled>Merge</MenuItem>
+        <MenuSeparator />
+        <MenuCheckboxItem defaultChecked onClick={(event) => onPrices(event.currentTarget.getAttribute("aria-checked") === "true")}>Show prices</MenuCheckboxItem>
+        <MenuRadioGroup label="Sort by" id="deck-sort">
+          <MenuRadioItem defaultChecked data-testid="sort-name">Name</MenuRadioItem>
+          <MenuRadioItem>Last edited</MenuRadioItem>
+        </MenuRadioGroup>
+        <MenuGroup label="Danger zone">
+          <MenuItem tone="danger" command="show-modal" commandfor="delete-deck">Delete deck…</MenuItem>
+        </MenuGroup>
       </Menu>
-      <Menu popover="" role="menu" aria-label={label} />
+      <Menu label="Sort" trigger={<Button>Sort</Button>}>
+        <MenuItem onClick={() => menu.current?.hidePopover()}>Close the other menu</MenuItem>
+      </Menu>
     </>
   );
 }

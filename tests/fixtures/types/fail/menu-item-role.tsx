@@ -1,3 +1,4 @@
-import { MenuItem } from "../../../../src/react/menu.tsx";
+import { Button } from "../../../../src/react/button.tsx";
+import { Menu, MenuCheckboxItem, MenuItem } from "../../../../src/react/menu.tsx";
 
-export const view = <MenuItem>Rename</MenuItem>;
+export const view = <MenuItem role="menuitemcheckbox">Rename</MenuItem>;

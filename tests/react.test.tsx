@@ -10,7 +10,7 @@ import { Combobox, ComboboxOption } from "../src/react/combobox.tsx";
 import { AlertDialog, Dialog } from "../src/react/dialog.tsx";
 import { RadioGroup } from "../src/react/field.tsx";
 import { Slider } from "../src/react/slider.tsx";
-import { Menu, MenuItem } from "../src/react/menu.tsx";
+import { Menu, MenuCheckboxItem, MenuItem, MenuRadioGroup, MenuRadioItem } from "../src/react/menu.tsx";
 import { Popover } from "../src/react/popover.tsx";
 import { Sheet } from "../src/react/sheet.tsx";
 import { rejectBlank, useEnhancer } from "../src/react/own.ts";
@@ -358,12 +358,10 @@ describe("Menu", () => {
     await act(async () =>
       root.render(
         <StrictMode>
-          <Menu id="deck-actions" popover="auto" role="menu" aria-label="Deck actions">
-            <MenuItem role="menuitem">Rename</MenuItem>
-            <MenuItem role="menuitem">Share</MenuItem>
-            <MenuItem role="menuitemcheckbox" aria-checked="false">
-              Show prices
-            </MenuItem>
+          <Menu id="deck-actions" label="Deck actions" trigger={<Button>Deck actions</Button>}>
+            <MenuItem>Rename</MenuItem>
+            <MenuItem>Share</MenuItem>
+            <MenuCheckboxItem>Show prices</MenuCheckboxItem>
           </Menu>
         </StrictMode>,
       ),
@@ -378,6 +376,75 @@ describe("Menu", () => {
     expect(arrowDown()).toBe("Rename");
     prices!.click();
     expect(prices!.getAttribute("aria-checked")).toBe("false");
+  });
+
+  function ViewMenu({ prices, sort }: { prices: boolean; sort: "name" | "edited" | "count" }) {
+    return (
+      <Menu id="view" label="View" trigger={<Button>View</Button>}>
+        <MenuCheckboxItem defaultChecked={prices}>Show prices</MenuCheckboxItem>
+        <MenuRadioGroup label="Sort by">
+          <MenuRadioItem defaultChecked={sort === "name"}>Name</MenuRadioItem>
+          <MenuRadioItem defaultChecked={sort === "edited"}>Last edited</MenuRadioItem>
+          <MenuRadioItem defaultChecked={sort === "count"}>Card count</MenuRadioItem>
+        </MenuRadioGroup>
+      </Menu>
+    );
+  }
+
+  async function mountView(props: { prices: boolean; sort: "name" | "edited" | "count" }) {
+    const host = document.createElement("div");
+    document.body.append(host);
+    const root = createRoot(host);
+    mounted = root;
+    const render = (next: typeof props) => act(async () => root.render(<ViewMenu {...next} />));
+    await render(props);
+    const item = (name: string) => [...host.querySelectorAll<HTMLElement>(".odd-menu-item")].find((each) => each.textContent === name)!;
+    const checked = () => [...host.querySelectorAll('.odd-menu-item[aria-checked="true"]')].map((each) => each.textContent);
+    return { render, item, checked };
+  }
+
+  test("a checked item stays checked when the parent renders again, even with a new defaultChecked", async () => {
+    const { render, item } = await mountView({ prices: true, sort: "name" });
+    await act(async () => item("Show prices").click());
+    await act(async () => item("Show prices").click());
+    await render({ prices: true, sort: "name" });
+    expect(item("Show prices").getAttribute("aria-checked")).toBe("true");
+    await render({ prices: false, sort: "name" });
+    expect(item("Show prices").getAttribute("aria-checked")).toBe("true");
+  });
+
+  test("a chosen radio stays the only checked one when the parent renders again with another default", async () => {
+    const { render, item, checked } = await mountView({ prices: false, sort: "name" });
+    await act(async () => item("Last edited").click());
+    expect(checked()).toEqual(["Last edited"]);
+    await render({ prices: false, sort: "count" });
+    expect(checked()).toEqual(["Last edited"]);
+  });
+
+  test("ArrowDown on the trigger opens a menu whose id React generated, from that trigger", async () => {
+    const host = document.createElement("div");
+    document.body.append(host);
+    const root = createRoot(host);
+    mounted = root;
+    await act(async () =>
+      root.render(
+        <Menu label="Deck actions" trigger={<Button>Deck actions</Button>}>
+          <MenuItem>Rename</MenuItem>
+          <MenuItem>Share</MenuItem>
+        </Menu>,
+      ),
+    );
+    const trigger = host.querySelector<HTMLButtonElement>('button[aria-haspopup="menu"]')!;
+    const menu = host.querySelector<HTMLElement>(".odd-menu")!;
+    expect(trigger.getAttribute("commandfor")).toBe(menu.id);
+    // happy-dom never matches :popover-open, so the test reads the call enhanceMenu makes.
+    const sources: (string | undefined)[] = [];
+    menu.showPopover = (options?: ShowPopoverOptions) => void sources.push(options?.source === trigger ? "trigger" : options?.source?.textContent ?? undefined);
+    trigger.focus();
+    await act(async () => {
+      trigger.dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowDown", bubbles: true, cancelable: true }));
+    });
+    expect(sources).toEqual(["trigger"]);
   });
 });
 
@@ -611,7 +678,6 @@ async function mountInForm() {
 
 describe("Buttons in a form", () => {
   test.each([
-    ["MenuItem", <MenuItem role="menuitem">Rename</MenuItem>, <MenuItem role="menuitem" type="submit">Archive</MenuItem>],
     ["TableSort", <TableSort>Deck</TableSort>, <TableSort type="submit">Deck</TableSort>],
   ])('%s submits its form only when written type="submit"', async (_name, plain, submit) => {
     const { counts, host, render } = await mountInForm();
@@ -708,6 +774,7 @@ const failures: Record<string, { codes: string[]; text: string[] }> = {
   "button-current-not-link": { codes: [], text: ["Property 'href' is missing"] },
   "button-link-disabled": { codes: [], text: ["Types of property 'disabled' are incompatible"] },
   "button-tooltip-icon-only": { codes: [], text: ["Types of property 'tooltip' are incompatible"] },
+  "button-aria-haspopup": { codes: ["ODD-REACT-001"], text: ["Types of property '\"aria-haspopup\"' are incompatible"] },
   "input-aria-disabled": { codes: ["ODD-REACT-001"], text: ["Types of property '\"aria-disabled\"' are incompatible"] },
   "input-owned-aria": { codes: ["ODD-REACT-001"], text: ["Types of property '\"aria-invalid\"' are incompatible"] },
   "input-unnamed": { codes: [], text: ["Property 'label' is missing"] },
@@ -786,13 +853,14 @@ const failures: Record<string, { codes: string[]; text: string[] }> = {
   "sheet-data-tone": { codes: ["ODD-REACT-002"], text: [] },
   "popover-role": { codes: ["ODD-REACT-001"], text: ["'\"menu\"' is not assignable"] },
   "popover-data-tone": { codes: ["ODD-REACT-002"], text: [] },
-  "menu-popover": { codes: [], text: ["Property 'popover' is missing"] },
-  "menu-role": { codes: [], text: ['"menu"'] },
-  "menu-name": { codes: [], text: ["Property '\"aria-labelledby\"' is missing"] },
-  "menu-data-tone": { codes: ["ODD-MENU-004"], text: [] },
-  "menu-item-role": { codes: [], text: ["Property 'role' is missing"] },
+  "menu-popover": { codes: ["ODD-REACT-001"], text: ["'\"auto\"' is not assignable"] },
+  "menu-role": { codes: ["ODD-REACT-001"], text: ["'\"menu\"' is not assignable"] },
+  "menu-name": { codes: [], text: ["Property 'label' is missing"] },
+  "menu-data-tone": { codes: ["ODD-REACT-002"], text: [] },
+  "menu-item-role": { codes: ["ODD-REACT-001"], text: ["'\"menuitemcheckbox\"' is not assignable"] },
   "menu-item-tone": { codes: [], text: ["'\"info\"' is not assignable to type '\"danger\"'"] },
-  "menu-item-disabled": { codes: ["ODD-MENU-007"], text: [] },
+  "menu-item-aria-disabled": { codes: ["ODD-REACT-001"], text: ["Types of property '\"aria-disabled\"' are incompatible"] },
+  "menu-checkbox-item-aria-checked": { codes: ["ODD-REACT-001"], text: ["Types of property '\"aria-checked\"' are incompatible"] },
   "table-wrap-tabindex": { codes: ["ODD-TABLE-002"], text: [] },
   "table-wrap-name": { codes: ["ODD-TABLE-003"], text: [] },
   "table-wrap-name-undefined": { codes: ["ODD-TABLE-003"], text: [] },

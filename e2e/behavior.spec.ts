@@ -317,18 +317,28 @@ test.describe("keyboard widgets", () => {
     });
   }
 
-  test("ArrowDown opens the menu after the HTML story renders it again", async ({ page }) => {
-    const errors: Error[] = [];
-    page.on("pageerror", (error) => errors.push(error));
-    await openStory(page, "components-interactive--menu", "mode:light");
-    const old = await page.locator("#deck-actions").elementHandle();
-    await page.evaluate(() => (window as any).__STORYBOOK_PREVIEW__.channel.emit("forceReRender"));
-    await page.waitForFunction((menu) => !menu!.isConnected, old);
-    await page.locator('button[commandfor="deck-actions"]').focus();
-    await page.keyboard.press("ArrowDown");
-    await expect(page.locator(".odd-menu-item", { hasText: "Duplicate" })).toBeFocused();
-    expect(errors.map((error) => error.message)).toEqual([]);
-  });
+  // The HTML story renders fresh markup, which leaves the old menu detached. The React story keeps its nodes.
+  for (const storybook of ["html", "react"] as const) {
+    test(`ArrowDown opens the menu after the story renders it again (${storybook})`, async ({ page }) => {
+      const errors: Error[] = [];
+      page.on("pageerror", (error) => errors.push(error));
+      await openStory(page, "components-interactive--menu", "mode:light", "", storybook);
+      const old = await page.locator("#deck-actions").elementHandle();
+      await page.evaluate(
+        () =>
+          new Promise<void>((resolve) => {
+            const channel = (window as any).__STORYBOOK_PREVIEW__.channel;
+            channel.once("storyRendered", () => resolve());
+            channel.emit("forceReRender");
+          }),
+      );
+      expect(await old!.evaluate((menu) => menu.isConnected)).toBe(storybook === "react");
+      await page.locator('button[commandfor="deck-actions"]').focus();
+      await page.keyboard.press("ArrowDown");
+      await expect(page.locator(".odd-menu-item", { hasText: "Duplicate" })).toBeFocused();
+      expect(errors.map((error) => error.message)).toEqual([]);
+    });
+  }
 
   for (const storybook of ["html", "react"] as const) {
     test(`select-all checks every row, shows mixed, and clears (${storybook})`, async ({ page }) => {

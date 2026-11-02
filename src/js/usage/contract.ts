@@ -410,8 +410,6 @@ export const WRAPPERS = {
   Meter: { source: "odd-design/react", className: "odd-meter", props: { tone: "data-tone" }, element: "meter" },
   Progress: { source: "odd-design/react", className: "odd-progress", props: { tone: "data-tone" }, element: "progress" },
   Toaster: { source: "odd-design/react", className: "odd-toaster", props: {}, element: "section" },
-  Menu: { source: "odd-design/react", className: "odd-menu", props: {}, element: "div" },
-  MenuItem: { source: "odd-design/react", className: "odd-menu-item", props: { tone: "data-tone" }, element: "button" },
   TableWrap: { source: "odd-design/react", className: "odd-table-wrap", props: {}, element: "div" },
   Table: { source: "odd-design/react", className: "odd-table", props: {}, element: "table" },
   TableSort: { source: "odd-design/react", className: "odd-table-sort", props: {}, element: "button" },
@@ -451,7 +449,12 @@ export type ExportName =
   | "Input"
   | "Kbd"
   | "Menu"
+  | "MenuCheckboxItem"
+  | "MenuGroup"
   | "MenuItem"
+  | "MenuRadioGroup"
+  | "MenuRadioItem"
+  | "MenuSeparator"
   | "Meter"
   | "Muted"
   | "Popover"
@@ -524,9 +527,9 @@ export const CLASSES = {
   "odd-log": { by: [] },
   "odd-log-line": { by: [] },
   "odd-menu": { by: ["Menu"] },
-  "odd-menu-item": { by: ["MenuItem"] },
-  "odd-menu-label": { by: [] },
-  "odd-menu-shortcut": { by: [] },
+  "odd-menu-item": { by: ["MenuItem", "MenuCheckboxItem", "MenuRadioItem"] },
+  "odd-menu-label": { by: ["MenuGroup", "MenuRadioGroup"] },
+  "odd-menu-shortcut": { by: ["MenuItem"] },
   "odd-meter": { by: ["Meter"] },
   "odd-muted": { by: ["Muted"] },
   "odd-popover": { by: ["Popover"] },

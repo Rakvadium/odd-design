@@ -1,3 +1,4 @@
-import { Menu } from "../../../../src/react/menu.tsx";
+import { Button } from "../../../../src/react/button.tsx";
+import { Menu, MenuCheckboxItem, MenuItem } from "../../../../src/react/menu.tsx";
 
-export const view = <Menu id="deck-actions" popover="auto" role="listbox" aria-label="Deck actions" />;
+export const view = <Menu label="Deck actions" trigger={<Button>Actions</Button>} role="menu"><MenuItem>Rename</MenuItem></Menu>;

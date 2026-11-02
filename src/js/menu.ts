@@ -1,7 +1,9 @@
 import { defaultToButtonType } from "./button-type.ts";
 import { roving } from "./roving.ts";
 
-const holders = new WeakMap<HTMLElement, { count: number; stop: () => void }>();
+type Holder = { count: number; stop: () => void; project: () => void };
+
+const holders = new WeakMap<HTMLElement, Holder>();
 
 /*
  * <button class="odd-button" commandfor="deck-actions" command="toggle-popover" aria-haspopup="menu">Actions</button>
@@ -29,16 +31,19 @@ const holders = new WeakMap<HTMLElement, { count: number; stop: () => void }>();
  *
  * A menu is wired once however many callers enhance it, and its listeners go when the last caller
  * cleans up. Its triggers are found by id when they are used, so a trigger added later works too.
+ * The menu keeps each choice the user makes, and a later call writes those choices back onto the
+ * items, so a framework that renders aria-checked again cannot undo them.
  */
 const ITEM = '[role="menuitem"], [role="menuitemcheckbox"], [role="menuitemradio"]';
 
 export function enhanceMenu(menu: HTMLElement): () => void {
   let hold = holders.get(menu);
   if (hold === undefined) {
-    hold = { count: 0, stop: wire(menu) };
+    hold = { count: 0, ...wire(menu) };
     holders.set(menu, hold);
   }
   hold.count++;
+  hold.project();
   let released = false;
   return () => {
     if (released) return;
@@ -49,13 +54,24 @@ export function enhanceMenu(menu: HTMLElement): () => void {
   };
 }
 
-function wire(menu: HTMLElement): () => void {
+function wire(menu: HTMLElement): Omit<Holder, "count"> {
   const items = () => [...menu.querySelectorAll<HTMLElement>(ITEM)];
   const unavailable = (el: Element) => el.matches(':disabled, [aria-disabled="true"]');
   const enabled = () => items().filter((el) => !unavailable(el));
   const triggerSelector = () => `[commandfor="${CSS.escape(menu.id)}"], [popovertarget="${CSS.escape(menu.id)}"]`;
   const triggers = () => (menu.id ? [...document.querySelectorAll<HTMLElement>(triggerSelector())] : []);
   const triggerOf = (event: Event) => (menu.id ? (event.target as Element).closest?.<HTMLElement>(triggerSelector()) : null) ?? undefined;
+  const chosen = new Map<HTMLElement, string>();
+  const choose = (item: HTMLElement, checked: boolean) => {
+    item.setAttribute("aria-checked", String(checked));
+    chosen.set(item, String(checked));
+  };
+  const project = () => {
+    for (const [item, checked] of chosen) {
+      if (!menu.contains(item)) chosen.delete(item);
+      else if (item.getAttribute("aria-checked") !== checked) item.setAttribute("aria-checked", checked);
+    }
+  };
   let openAt: "first" | "last" = "first";
   let lastTrigger: HTMLElement | undefined;
 
@@ -86,10 +102,10 @@ function wire(menu: HTMLElement): () => void {
     if (!item || !menu.contains(item) || unavailable(item)) return;
     const role = item.getAttribute("role");
     if (role === "menuitemcheckbox") {
-      item.setAttribute("aria-checked", String(item.getAttribute("aria-checked") !== "true"));
+      choose(item, item.getAttribute("aria-checked") !== "true");
     } else if (role === "menuitemradio") {
       const group = item.closest('[role="group"]') ?? menu;
-      for (const radio of group.querySelectorAll('[role="menuitemradio"]')) radio.setAttribute("aria-checked", String(radio === item));
+      for (const radio of group.querySelectorAll<HTMLElement>('[role="menuitemradio"]')) choose(radio, radio === item);
     } else {
       menu.hidePopover();
     }
@@ -125,7 +141,7 @@ function wire(menu: HTMLElement): () => void {
   document.addEventListener("keydown", onTriggerKeyDown, true);
   document.addEventListener("click", onTriggerUse, true);
 
-  return () => {
+  const stop = () => {
     stopRoving();
     menu.removeEventListener("toggle", onToggle);
     menu.removeEventListener("click", onDisabledClick, true);
@@ -134,4 +150,5 @@ function wire(menu: HTMLElement): () => void {
     document.removeEventListener("keydown", onTriggerKeyDown, true);
     document.removeEventListener("click", onTriggerUse, true);
   };
+  return { stop, project };
 }

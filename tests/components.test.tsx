@@ -27,7 +27,12 @@ import {
   Input,
   Kbd,
   Menu,
+  MenuCheckboxItem,
+  MenuGroup,
   MenuItem,
+  MenuRadioGroup,
+  MenuRadioItem,
+  MenuSeparator,
   Meter,
   Muted,
   Popover,
@@ -578,29 +583,120 @@ const FIXTURES: { readonly [K in ExportName]: readonly [Fixture, ...Fixture[]] }
   ],
   Menu: [
     {
-      name: "with a danger item",
-      uses: ["MenuItem"],
+      name: "a trigger, items, a shortcut, a checkbox, a radio group, and a separator",
+      uses: ["Button", "MenuItem", "MenuCheckboxItem", "MenuRadioGroup", "MenuRadioItem", "MenuSeparator", "Separator"],
       element: (
-        <Menu id="deck-actions" popover="auto" role="menu" aria-label="Deck actions">
-          <MenuItem role="menuitem">Rename</MenuItem>
-          <MenuItem role="menuitem" tone="danger" aria-disabled="true">
-            Delete
-          </MenuItem>
+        <Menu id="deck-actions" label="Deck actions" trigger={<Button>Deck actions</Button>} className="wide">
+          <MenuItem shortcut="Control+D">Duplicate</MenuItem>
+          <MenuCheckboxItem defaultChecked>Show prices</MenuCheckboxItem>
+          <MenuSeparator />
+          <MenuRadioGroup label="Sort by" id="deck-sort">
+            <MenuRadioItem defaultChecked>Name</MenuRadioItem>
+            <MenuRadioItem>Card count</MenuRadioItem>
+          </MenuRadioGroup>
         </Menu>
       ),
       markup:
-        '<div id="deck-actions" popover="auto" role="menu" aria-label="Deck actions" class="odd-menu"><button role="menuitem" type="button" class="odd-menu-item">Rename</button><button role="menuitem" aria-disabled="true" type="button" class="odd-menu-item" data-tone="danger">Delete</button></div>',
+        '<button class="odd-button" type="button" command="toggle-popover" commandfor="deck-actions" aria-haspopup="menu">Deck actions</button><div id="deck-actions" class="odd-menu wide" popover="auto" role="menu" aria-label="Deck actions"><button aria-keyshortcuts="Control+D" class="odd-menu-item" type="button" role="menuitem">Duplicate<kbd class="odd-menu-shortcut" aria-hidden="true">Ctrl D</kbd></button><button aria-checked="true" class="odd-menu-item" type="button" role="menuitemcheckbox">Show prices</button><hr class="odd-separator"/><p class="odd-menu-label" id="deck-sort-label" aria-hidden="true">Sort by</p><div id="deck-sort" role="group" aria-labelledby="deck-sort-label"><button aria-checked="true" class="odd-menu-item" type="button" role="menuitemradio">Name</button><button aria-checked="false" class="odd-menu-item" type="button" role="menuitemradio">Card count</button></div></div>',
+    },
+    {
+      name: "a generated id",
+      uses: ["Button", "MenuItem"],
+      element: (
+        <Menu label="Row actions" trigger={<Button>Actions</Button>}>
+          <MenuItem>Rename</MenuItem>
+        </Menu>
+      ),
+    },
+  ],
+  MenuCheckboxItem: [
+    {
+      name: "unchecked, and checked and disabled",
+      uses: ["Menu", "Button"],
+      element: (
+        <Menu id="view-options" label="View options" trigger={<Button>View</Button>}>
+          <MenuCheckboxItem>Compact grid</MenuCheckboxItem>
+          <MenuCheckboxItem defaultChecked disabled>
+            Show prices
+          </MenuCheckboxItem>
+        </Menu>
+      ),
+    },
+  ],
+  MenuGroup: [
+    {
+      name: "a named group of items",
+      uses: ["Menu", "Button", "MenuItem"],
+      element: (
+        <Menu id="share-menu" label="Share" trigger={<Button>Share</Button>}>
+          <MenuGroup label="Copy" id="copy-group" className="copy">
+            <MenuItem>Link</MenuItem>
+            <MenuItem>Embed code</MenuItem>
+          </MenuGroup>
+        </Menu>
+      ),
+      markup:
+        '<button class="odd-button" type="button" command="toggle-popover" commandfor="share-menu" aria-haspopup="menu">Share</button><div id="share-menu" class="odd-menu" popover="auto" role="menu" aria-label="Share"><p class="odd-menu-label" id="copy-group-label" aria-hidden="true">Copy</p><div class="copy" id="copy-group" role="group" aria-labelledby="copy-group-label"><button class="odd-menu-item" type="button" role="menuitem">Link</button><button class="odd-menu-item" type="button" role="menuitem">Embed code</button></div></div>',
     },
   ],
   MenuItem: [
     {
-      name: "a checked checkbox item",
-      uses: ["Menu"],
+      name: "danger, disabled, and a remote command",
+      uses: ["Menu", "Button", "Dialog"],
       element: (
-        <Menu id="view-options" popover="auto" role="menu" aria-label="View options">
-          <MenuItem role="menuitemcheckbox" aria-checked="true">
-            Show card counts
-          </MenuItem>
+        <>
+          <Menu id="row-actions" label="Row actions" trigger={<Button>Actions</Button>}>
+            <MenuItem disabled shortcut="F2" data-testid="rename">
+              Rename
+            </MenuItem>
+            <MenuItem tone="danger" command="show-modal" commandfor="delete-deck">
+              Delete…
+            </MenuItem>
+          </Menu>
+          <Dialog id="delete-deck" title="Delete deck?" />
+        </>
+      ),
+      markup:
+        '<button class="odd-button" type="button" command="toggle-popover" commandfor="row-actions" aria-haspopup="menu">Actions</button><div id="row-actions" class="odd-menu" popover="auto" role="menu" aria-label="Row actions"><button data-testid="rename" aria-keyshortcuts="F2" class="odd-menu-item" type="button" role="menuitem" aria-disabled="true">Rename<kbd class="odd-menu-shortcut" aria-hidden="true">F2</kbd></button><button data-tone="danger" command="show-modal" commandfor="delete-deck" class="odd-menu-item" type="button" role="menuitem">Delete…</button></div><dialog id="delete-deck" aria-labelledby="delete-deck-title" class="odd-dialog"><div class="odd-dialog-body"><h2 class="odd-dialog-title" id="delete-deck-title">Delete deck?</h2></div></dialog>',
+    },
+  ],
+  MenuRadioGroup: [
+    {
+      name: "one radio checked",
+      uses: ["Menu", "Button", "MenuRadioItem"],
+      element: (
+        <Menu id="sort-menu" label="Sort" trigger={<Button>Sort</Button>}>
+          <MenuRadioGroup label="Sort by">
+            <MenuRadioItem>Name</MenuRadioItem>
+            <MenuRadioItem defaultChecked>Last edited</MenuRadioItem>
+          </MenuRadioGroup>
+        </Menu>
+      ),
+    },
+  ],
+  MenuRadioItem: [
+    {
+      name: "in a radio group",
+      uses: ["Menu", "Button", "MenuRadioGroup"],
+      element: (
+        <Menu id="density-menu" label="Density" trigger={<Button>Density</Button>}>
+          <MenuRadioGroup label="Density">
+            <MenuRadioItem defaultChecked>Comfortable</MenuRadioItem>
+            <MenuRadioItem>Compact</MenuRadioItem>
+          </MenuRadioGroup>
+        </Menu>
+      ),
+    },
+  ],
+  MenuSeparator: [
+    {
+      name: "between two items",
+      uses: ["Menu", "Button", "MenuItem", "Separator"],
+      element: (
+        <Menu id="file-menu" label="File" trigger={<Button>File</Button>}>
+          <MenuItem>Save</MenuItem>
+          <MenuSeparator />
+          <MenuItem>Close</MenuItem>
         </Menu>
       ),
     },

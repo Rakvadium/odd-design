@@ -176,7 +176,6 @@ const STYLED = [
   "stories/mirrored/Code.stories.ts",
   "stories/mirrored/Disclosure.stories.ts",
   "stories/mirrored/Kbd.stories.ts",
-  "stories/mirrored/Menu.stories.ts",
   "stories/mirrored/Meter.stories.ts",
   "stories/mirrored/Separator.stories.ts",
   "stories/mirrored/Skeleton.stories.ts",

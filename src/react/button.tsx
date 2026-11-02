@@ -11,7 +11,7 @@ export type ButtonVariant = Values<ButtonRule, "data-variant">;
 export type ButtonSize = Values<ButtonRule, "data-size">;
 export type ButtonCommand = "show-modal" | "close" | "request-close" | "show-popover" | "hide-popover" | "toggle-popover" | `--${string}`;
 
-type ButtonOwned = "aria-disabled" | "aria-busy" | "aria-current" | "aria-label" | "aria-labelledby" | "interestfor" | "target" | "rel";
+type ButtonOwned = "aria-disabled" | "aria-busy" | "aria-current" | "aria-label" | "aria-labelledby" | "aria-haspopup" | "interestfor" | "target" | "rel";
 
 type Shared = Root & {
   readonly variant?: ButtonVariant;
@@ -113,7 +113,7 @@ export function Button(props: ButtonProps): ReactElement {
         type={type}
         {...{ command: chosen, commandfor: wired?.commandfor ?? commandfor ?? (closes(chosen) ? overlay?.id : undefined) }}
         form={form ?? (type === "submit" ? overlay?.form : undefined)}
-        aria-haspopup={wired?.haspopup ?? rest["aria-haspopup"]}
+        aria-haspopup={wired?.haspopup}
         aria-disabled={disabled ? "true" : undefined}
         aria-busy={busy ? "true" : undefined}
         onClick={blocked ? swallow : onClick}
