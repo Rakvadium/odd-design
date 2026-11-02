@@ -12,7 +12,7 @@ export type BreadcrumbProps = Root &
   Passthrough<"nav", "aria-label" | "aria-labelledby"> & {
     /** The trail's name. "Breadcrumb" when omitted. A second trail on the page needs a name of its own. */
     readonly label?: string;
-    /** From the top level to the current page. The last item's link is the current page. */
+    /** From the top level to the current page. The last item is the current page, with or without an href. */
     readonly items: readonly [BreadcrumbItem, ...BreadcrumbItem[]];
   };
 
@@ -21,17 +21,22 @@ export function Breadcrumb({ label = "Breadcrumb", items, className, ...rest }: 
   return (
     <nav {...(rest as ComponentPropsWithRef<"nav">)} className={cx("odd-breadcrumb", className)} aria-label={rejectBlank(label, "ODD-BREADCRUMB-002")}>
       <ol>
-        {items.map((item, index) => (
-          <li key={index}>
-            {item.href === undefined ? (
-              item.label
-            ) : (
-              <TextLink href={item.href} current={index === items.length - 1}>
-                {item.label}
-              </TextLink>
-            )}
-          </li>
-        ))}
+        {items.map((item, index) => {
+          const current = index === items.length - 1;
+          return (
+            <li key={index}>
+              {item.href !== undefined ? (
+                <TextLink href={item.href} current={current}>
+                  {item.label}
+                </TextLink>
+              ) : current ? (
+                <span aria-current="page">{item.label}</span>
+              ) : (
+                item.label
+              )}
+            </li>
+          );
+        })}
       </ol>
     </nav>
   );

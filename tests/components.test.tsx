@@ -175,6 +175,12 @@ const FIXTURES: { readonly [K in ExportName]: readonly [Fixture, ...Fixture[]] }
         '<nav class="odd-breadcrumb" aria-label="Breadcrumb"><ol><li><a href="#home" class="odd-link">Home</a></li><li>Archived</li><li><a href="#alerts" aria-current="page" class="odd-link">Alerts</a></li></ol></nav>',
     },
     {
+      name: "a trail whose current page has no link",
+      uses: ["TextLink"],
+      element: <Breadcrumb items={[{ label: "Home", href: "#home" }, { label: "Alerts" }]} />,
+      markup: '<nav class="odd-breadcrumb" aria-label="Breadcrumb"><ol><li><a href="#home" class="odd-link">Home</a></li><li><span aria-current="page">Alerts</span></li></ol></nav>',
+    },
+    {
       name: "a second trail with its own name",
       uses: ["TextLink"],
       element: <Breadcrumb label="Settings breadcrumb" items={[{ label: "Home", href: "#home" }]} className="wide" />,

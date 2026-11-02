@@ -324,7 +324,7 @@ import { Breadcrumb } from "odd-design/react";
 />;
 ```
 
-`Breadcrumb` renders `nav.odd-breadcrumb` named "Breadcrumb", an `ol`, and one `li` per item. An item with an `href` is a `TextLink` through the router link from `OddProvider`, and the last item's link takes `aria-current="page"`. An item with no `href` is plain text. A second trail on the page takes a `label` of its own. A blank `label` throws `ODD-BREADCRUMB-002` outside production. CSS draws the slashes between crumbs, which screen readers do not read, and a long trail wraps.
+`Breadcrumb` renders `nav.odd-breadcrumb` named "Breadcrumb", an `ol`, and one `li` per item. An item with an `href` is a `TextLink` through the router link from `OddProvider`, and the last item takes `aria-current="page"`, on its link or, with no `href`, on a `span` around its label. Any other item with no `href` is plain text. A second trail on the page takes a `label` of its own. A blank `label` throws `ODD-BREADCRUMB-002` outside production. CSS draws the slashes between crumbs, which screen readers do not read, and a long trail wraps.
 
 ## Show a key
 
