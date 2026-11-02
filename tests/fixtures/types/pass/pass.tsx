@@ -6,7 +6,7 @@ import { Breadcrumb } from "../../../../src/react/breadcrumb.tsx";
 import { Button } from "../../../../src/react/button.tsx";
 import { Card, CardFooter, CardLink } from "../../../../src/react/card.tsx";
 import { Code, Pre } from "../../../../src/react/code.tsx";
-import { Combobox, ComboboxList, ComboboxOption } from "../../../../src/react/combobox.tsx";
+import { Combobox, ComboboxOption, type ComboboxFilter } from "../../../../src/react/combobox.tsx";
 import { Dialog, DialogActions } from "../../../../src/react/dialog.tsx";
 import { Disclosure } from "../../../../src/react/disclosure.tsx";
 import { Checkbox, Input, RadioGroup, Segmented, Select, Switch, Textarea, type ChoiceOption } from "../../../../src/react/field.tsx";
@@ -318,58 +318,31 @@ export function Toasts() {
 
 export function CardFilter() {
   const [query, setQuery] = useState("");
-  return (
-    <Search id="card-filter" className="filter" data-testid="card-filter" data-state="idle">
-      <label className="odd-visually-hidden" htmlFor="card-filter-q">
-        Filter cards
-      </label>
-      <svg aria-hidden="true" viewBox="0 0 24 24" />
-      <input className="odd-input" type="search" id="card-filter-q" value={query} onChange={(event) => setQuery(event.target.value)} />
-    </Search>
-  );
+  return <Search id="card-filter" label="Filter cards" className="filter" data-testid="card-filter" data-state="idle" value={query} onChange={(event) => setQuery(event.target.value)} />;
 }
 
 export function SiteSearch({ onSearch }: { onSearch: (query: string) => void }) {
+  const ref = useRef<HTMLInputElement>(null);
   const submit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     onSearch(String(new FormData(event.currentTarget).get("q")));
   };
-  return (
-    <form action="/search" onSubmit={submit}>
-      <Search>
-        <label className="odd-visually-hidden" htmlFor="site-search">
-          Search the docs
-        </label>
-        <svg aria-hidden="true" viewBox="0 0 24 24" />
-        <input className="odd-input" type="search" id="site-search" name="q" />
-      </Search>
-    </form>
-  );
+  return <Search label="Search the docs" name="q" ref={ref} onSubmit={submit} />;
 }
 
 export function CopiesField() {
   const [copies, setCopies] = useState(3);
   return (
-    <div className="odd-field">
-      <label className="odd-label" htmlFor="copies">
-        Copies per card
-      </label>
-      <output className="odd-stat-value" htmlFor="copies">
-        {copies} of 4
-      </output>
-      <Slider
-        type="range"
-        id="copies"
-        min={1}
-        max={4}
-        value={copies}
-        onChange={(event) => setCopies(event.currentTarget.valueAsNumber)}
-        aria-describedby="copies-hint"
-      />
-      <p className="odd-hint" id="copies-hint">
-        Most formats allow up to 4.
-      </p>
-    </div>
+    <Slider
+      label="Copies per card"
+      min={1}
+      max={4}
+      value={copies}
+      onChange={(event) => setCopies(event.currentTarget.valueAsNumber)}
+      hint="Most formats allow up to 4."
+      showValue
+      formatValue={(value) => `${value} of 4`}
+    />
   );
 }
 
@@ -515,46 +488,29 @@ export function DeckTable({ decks }: { decks: readonly { id: string; name: strin
   );
 }
 
-export function CityField() {
-  const root = useRef<HTMLDivElement>(null);
+export function CityField({ filter }: { filter: ComboboxFilter | undefined }) {
+  const input = useRef<HTMLInputElement>(null);
   return (
-    <div className="odd-field">
-      <label className="odd-label" htmlFor="city" id="city-label">
-        City
-      </label>
-      <Combobox ref={root} className="wide" data-testid="city">
-        <input className="odd-input" id="city" name="city" role="combobox" aria-controls="city-list" aria-expanded="false" aria-autocomplete="list" />
-        <ComboboxList id="city-list" popover="manual" role="listbox" aria-labelledby="city-label">
-          <ComboboxOption role="option">Amsterdam</ComboboxOption>
-          <ComboboxOption role="option" aria-disabled="true">
-            Atlantis
-          </ComboboxOption>
-          <ComboboxOption role="option" aria-disabled={false} data-id="ber">
-            Berlin
-          </ComboboxOption>
-        </ComboboxList>
-      </Combobox>
-    </div>
+    <Combobox id="city" label="City" name="city" ref={input} filter={filter} className="wide" data-testid="city" hint="Type to filter.">
+      <ComboboxOption>Amsterdam</ComboboxOption>
+      <ComboboxOption disabled>Atlantis</ComboboxOption>
+      <ComboboxOption disabled={false} data-id="ber">
+        Berlin
+      </ComboboxOption>
+    </Combobox>
   );
 }
 
 export function AssigneeField({ people, onAssign }: { people: readonly { id: string; name: string }[]; onAssign: (id: string) => void }) {
   const [query, setQuery] = useState("");
   return (
-    <Combobox>
-      <input className="odd-input" id="assignee" role="combobox" aria-controls="assignee-list" aria-expanded="false" aria-autocomplete="list" aria-label="Assignee" value={query} onChange={(event) => setQuery(event.target.value)} />
-      <ComboboxList id="assignee-list" popover="manual" role="listbox" aria-label="People" data-filter="manual">
-        {people.map((person) => (
-          <ComboboxOption key={person.id} role="option" onClick={() => onAssign(person.id)}>
-            {person.name}
-          </ComboboxOption>
-        ))}
-        {query !== "" && people.length === 0 && (
-          <ComboboxOption role="option" aria-disabled="true">
-            No results
-          </ComboboxOption>
-        )}
-      </ComboboxList>
+    <Combobox label="Assignee" filter="manual" value={query} onChange={(event) => setQuery(event.target.value)}>
+      {people.map((person) => (
+        <ComboboxOption key={person.id} onClick={() => onAssign(person.id)}>
+          {person.name}
+        </ComboboxOption>
+      ))}
+      {query !== "" && people.length === 0 && <ComboboxOption disabled>No results</ComboboxOption>}
     </Combobox>
   );
 }

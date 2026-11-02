@@ -1,3 +1,7 @@
-import { ComboboxOption } from "../../../../src/react/combobox.tsx";
+import { Combobox, ComboboxOption } from "../../../../src/react/combobox.tsx";
 
-export const view = <ComboboxOption role="option" aria-selected="true">Amsterdam</ComboboxOption>;
+export const view = (
+  <Combobox label="City">
+    <ComboboxOption aria-selected="true">Amsterdam</ComboboxOption>
+  </Combobox>
+);

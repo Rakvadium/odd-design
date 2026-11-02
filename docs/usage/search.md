@@ -2,6 +2,14 @@
 
 These codes apply to `odd-search`. Shared codes are in [General usage rules](general.md). For search with suggestions, wrap an `odd-combobox` in a plain `<search>` element instead ([Combobox usage rules](combobox.md)), because `odd-search` needs its own search input as a direct child.
 
+In React, render `Search` from `odd-design/react`. It writes the hidden label, the magnifier, and the input, so the structural codes below cannot happen. [Build a search](react.md#build-a-search) covers the props.
+
+```tsx
+<Search id="card-search" label="Search cards" placeholder="Search cards" />
+```
+
+The component compiles to this HTML:
+
 ```html
 <search class="odd-search">
   <label class="odd-visually-hidden" for="card-search">Search cards</label>
@@ -10,7 +18,7 @@ These codes apply to `odd-search`. Shared codes are in [General usage rules](gen
 </search>
 ```
 
-A search is a `search` element, the search landmark, with three direct children: a visually hidden `label`, the magnifier `svg` with `aria-hidden="true"`, and an `input.odd-input` with `type="search"`. Enter does nothing, so filter as the user types. To submit on Enter, put a `form` around the search. `odd-search` on a `form` directly inside a plain `search` also works, as `search.css` documents. In React, `Search` renders the `search`, and a `form` around it submits.
+A search is a `search` element, the search landmark, with three direct children: a visually hidden `label`, the magnifier `svg` with `aria-hidden="true"`, and an `input.odd-input` with `type="search"`. Enter does nothing, so filter as the user types. To submit on Enter, put a `form` around the search. `odd-search` on a `form` directly inside a plain `search` also works, as `search.css` documents. In React, `Search` with `onSubmit` renders `form.odd-search` inside the `search`.
 
 ## ODD-SEARCH-001
 

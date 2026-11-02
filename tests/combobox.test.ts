@@ -1,6 +1,8 @@
 import { afterEach, expect, test } from "bun:test";
 import { enhanceCombobox } from "../src/js/combobox.ts";
 
+const EMPTY = '<div class="odd-combobox-option" id="city-list-empty" role="option" aria-disabled="true" hidden>No results</div>';
+
 function mount(listAttributes = "", options = ["Amsterdam", "Atlantis:disabled", "Berlin", "Bogotá", "Cairo"]) {
   const rows = options.map((option) => {
     const [text, disabled] = option.split(":");
@@ -10,7 +12,7 @@ function mount(listAttributes = "", options = ["Amsterdam", "Atlantis:disabled",
     <form>
       <div class="odd-combobox">
         <input class="odd-input" id="city" role="combobox" aria-controls="city-list" aria-expanded="false" aria-autocomplete="list" aria-label="City">
-        <div class="odd-combobox-list" id="city-list" popover="manual" role="listbox" aria-label="Cities" ${listAttributes}>${rows.join("")}</div>
+        <div class="odd-combobox-list" id="city-list" popover="manual" role="listbox" aria-label="Cities" ${listAttributes}>${rows.join("")}${EMPTY}</div>
       </div>
     </form>`;
   const root = document.querySelector<HTMLElement>(".odd-combobox")!;
@@ -79,17 +81,17 @@ test("choosing the text the input already holds dispatches nothing", () => {
   expect([input.value, events]).toEqual(["Amsterdam", 2]);
 });
 
-test("an open list with no match shows a disabled No results option the arrows and Enter pass over", () => {
+test("an open list with no match shows its own hidden No results option, adds no node, and the arrows and Enter pass over it", () => {
   const { root, list, key, type, active, expanded } = mount();
   enhance(root);
+  const children = list.childElementCount;
   type("zz");
-  const rows = [...list.querySelectorAll('[role="option"]:not([hidden])')].map((option) => [option.textContent, option.getAttribute("aria-disabled")]);
-  expect([expanded(), rows]).toEqual(["true", [["No results", "true"]]]);
+  const rows = [...list.querySelectorAll('[role="option"]:not([hidden])')].map((option) => [option.id, option.textContent, option.getAttribute("aria-disabled")]);
+  expect([expanded(), rows, list.childElementCount]).toEqual(["true", [["city-list-empty", "No results", "true"]], children]);
   key("ArrowDown");
   expect(active()).toBe(null);
   key("Enter");
-  expect(expanded()).toBe("false");
-  expect(list.textContent).not.toContain("No results");
+  expect([expanded(), document.getElementById("city-list-empty")!.hidden, list.childElementCount]).toEqual(["false", true, children]);
   type("c");
   expect(list.querySelectorAll('[role="option"]:not([hidden])').length).toBe(1);
 });

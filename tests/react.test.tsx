@@ -6,8 +6,9 @@ import { renderToStaticMarkup } from "react-dom/server";
 import { closedByFallback, enhance, enhanceTabs, interestForFallback, toast } from "../src/js/enhance.ts";
 import { Button } from "../src/react/button.tsx";
 import { Card } from "../src/react/card.tsx";
-import { Combobox, ComboboxList, ComboboxOption } from "../src/react/combobox.tsx";
+import { Combobox, ComboboxOption } from "../src/react/combobox.tsx";
 import { RadioGroup } from "../src/react/field.tsx";
+import { Slider } from "../src/react/slider.tsx";
 import { Menu, MenuItem } from "../src/react/menu.tsx";
 import { rejectBlank, useEnhancer } from "../src/react/own.ts";
 import { Table, TableSort } from "../src/react/table.tsx";
@@ -76,6 +77,42 @@ describe("Button with disabled or busy", () => {
     expect(counts).toEqual({ clicks: 1, submits: 1 });
     await act(async () => pressEnter(field));
     expect(counts).toEqual({ clicks: 2, submits: 2 });
+  });
+});
+
+describe("field labels", () => {
+  test("a blank Combobox label throws ODD-COMBOBOX-006, because the label names the list too", () => {
+    expect(() => renderToStaticMarkup(<Combobox label=" " />)).toThrow("ODD-COMBOBOX-006");
+  });
+});
+
+describe("Slider", () => {
+  // React tracks the value it last wrote, so a test moves the thumb through the element's own setter, as a user's drag does.
+  const move = (input: HTMLInputElement, value: string) => {
+    Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, "value")!.set!.call(input, value);
+    input.dispatchEvent(new Event("input", { bubbles: true }));
+  };
+
+  test("the shown value follows the thumb when uncontrolled, and follows value when controlled", async () => {
+    function Copies() {
+      const [copies, setCopies] = useState(2);
+      return (
+        <>
+          <Slider id="free" label="Card size" min={0} max={100} defaultValue={65} showValue />
+          <Slider id="held" label="Copies" min={1} max={4} value={copies} onChange={(event) => setCopies(event.currentTarget.valueAsNumber)} showValue formatValue={(value) => `${value} of 4`} />
+        </>
+      );
+    }
+    const host = document.createElement("div");
+    document.body.append(host);
+    const root = createRoot(host);
+    mounted = root;
+    await act(async () => root.render(<Copies />));
+    const output = (id: string) => host.querySelector(`#${id}-value`)?.textContent;
+    expect([output("free"), output("held")]).toEqual(["65", "2 of 4"]);
+    await act(async () => move(host.querySelector<HTMLInputElement>("#free")!, "40"));
+    await act(async () => move(host.querySelector<HTMLInputElement>("#held")!, "4"));
+    expect([output("free"), output("held")]).toEqual(["40", "4 of 4"]);
   });
 });
 
@@ -277,27 +314,18 @@ describe("Combobox", () => {
     const [renders, setRenders] = useState(0);
     return (
       <>
-        <Combobox>
-          <input
-            id="city"
-            role="combobox"
-            aria-controls="city-list"
-            aria-expanded="false"
-            aria-autocomplete="list"
-            aria-label="City"
-            value={value}
-            onChange={(event) => {
-              onChange(event.target.value);
-              setValue(event.target.value);
-            }}
-          />
-          <ComboboxList id="city-list" popover="manual" role="listbox" aria-label="Cities">
-            <ComboboxOption role="option">Amsterdam</ComboboxOption>
-            <ComboboxOption role="option" aria-disabled="true">
-              Atlantis
-            </ComboboxOption>
-            <ComboboxOption role="option">Berlin</ComboboxOption>
-          </ComboboxList>
+        <Combobox
+          id="city"
+          label="City"
+          value={value}
+          onChange={(event) => {
+            onChange(event.target.value);
+            setValue(event.target.value);
+          }}
+        >
+          <ComboboxOption>Amsterdam</ComboboxOption>
+          <ComboboxOption disabled>Atlantis</ComboboxOption>
+          <ComboboxOption>Berlin</ComboboxOption>
         </Combobox>
         <button type="button" onClick={() => setRenders(renders + 1)}>
           Render {renders}
@@ -352,19 +380,18 @@ describe("Combobox", () => {
     expect([input.getAttribute("aria-expanded"), input.hasAttribute("aria-activedescendant")]).toEqual(["false", false]);
   });
 
-  test("a render that changes the input's aria-expanded prop keeps an open list's state on the input", async () => {
-    function Collapsing() {
-      const [expanded, setExpanded] = useState<"true" | "false">("true");
+  test("no match shows the No results option React rendered, adds no node, and a render that adds an option keeps the list whole", async () => {
+    function Cities() {
+      const [cities, setCities] = useState(["Amsterdam", "Berlin"]);
       return (
         <>
-          <Combobox>
-            <input id="city" role="combobox" aria-controls="city-list" aria-expanded={expanded} aria-autocomplete="list" aria-label="City" />
-            <ComboboxList id="city-list" popover="manual" role="listbox" aria-label="Cities">
-              <ComboboxOption role="option">Amsterdam</ComboboxOption>
-            </ComboboxList>
+          <Combobox id="city" label="City">
+            {cities.map((city) => (
+              <ComboboxOption key={city}>{city}</ComboboxOption>
+            ))}
           </Combobox>
-          <button type="button" onClick={() => setExpanded("false")}>
-            Collapse
+          <button type="button" onClick={() => setCities([...cities, "Zagreb"])}>
+            More
           </button>
         </>
       );
@@ -373,12 +400,20 @@ describe("Combobox", () => {
     document.body.append(host);
     const root = createRoot(host);
     mounted = root;
-    await act(async () => root.render(<Collapsing />));
+    await act(async () => root.render(<Cities />));
     const input = host.querySelector("input")!;
-    expect(input.getAttribute("aria-expanded")).toBe("false");
-    key(input, "ArrowDown");
+    const list = host.querySelector<HTMLElement>('[role="listbox"]')!;
+    const type = (value: string) => {
+      input.value = value;
+      input.dispatchEvent(new InputEvent("input", { bubbles: true, inputType: "insertText", data: value }));
+    };
+    const shown = () => [...list.querySelectorAll<HTMLElement>('[role="option"]')].filter((option) => !option.hidden).map((option) => option.textContent);
+    type("zz");
+    expect([shown(), list.childElementCount, list.lastElementChild?.id]).toEqual([["No results"], 3, "city-list-empty"]);
     await act(async () => host.querySelector("button")!.click());
-    expect([input.getAttribute("aria-expanded"), active(input)]).toEqual(["true", "Amsterdam"]);
+    expect([shown(), list.childElementCount, list.lastElementChild?.id]).toEqual([["No results"], 4, "city-list-empty"]);
+    type("z");
+    expect(shown()).toEqual(["Zagreb"]);
   });
 });
 
@@ -646,16 +681,6 @@ const failures: Record<string, { codes: string[]; text: string[] }> = {
   "spinner-role": { codes: ["ODD-SPINNER-002"], text: [] },
   "spinner-aria-label": { codes: ["ODD-SPINNER-002"], text: [] },
   "spinner-data-size": { codes: ["ODD-SPINNER-003"], text: [] },
-  "combobox-role": { codes: ["ODD-COMBOBOX-011"], text: [] },
-  "combobox-data-filter": { codes: ["ODD-COMBOBOX-007"], text: [] },
-  "combobox-data-tone": { codes: ["ODD-COMBOBOX-012"], text: [] },
-  "combobox-list-popover": { codes: [], text: ["Property 'popover' is missing"] },
-  "combobox-list-popover-auto": { codes: [], text: ["'\"auto\"' is not assignable to type '\"manual\"'"] },
-  "combobox-list-role": { codes: [], text: ['"listbox"'] },
-  "combobox-list-name": { codes: [], text: ["Property '\"aria-labelledby\"' is missing"] },
-  "combobox-list-filter": { codes: [], text: ["'\"auto\"' is not assignable to type '\"manual\"'"] },
-  "combobox-option-disabled": { codes: ["ODD-COMBOBOX-009"], text: [] },
-  "combobox-option-selected": { codes: ["ODD-COMBOBOX-010"], text: [] },
   "breadcrumb-name": { codes: [], text: ["Property '\"aria-labelledby\"' is missing"] },
   "breadcrumb-data-tone": { codes: ["ODD-BREADCRUMB-004"], text: [] },
   "kbd-aria-hidden": { codes: ["ODD-KBD-002"], text: [] },
@@ -669,11 +694,6 @@ const failures: Record<string, { codes: string[]; text: string[] }> = {
   "tabs-aria-orientation": { codes: ["ODD-TABS-003"], text: [] },
   "tabs-data-tone": { codes: ["ODD-TABS-005"], text: [] },
   "tabs-default-value": { codes: [], text: ["not assignable to type 'undefined'"] },
-  "search-on-submit": { codes: ["ODD-SEARCH-004"], text: [] },
-  "search-data-tone": { codes: ["ODD-SEARCH-005"], text: [] },
-  "slider-type": { codes: [], text: ['"range"'] },
-  "slider-aria-disabled": { codes: ["ODD-SLIDER-003"], text: [] },
-  "slider-data-tone": { codes: ["ODD-SLIDER-004"], text: [] },
   "meter-tone": { codes: [], text: ['"success"', '"warning"', '"danger"', '"info"'] },
   "progress-data-size": { codes: ["ODD-METER-003"], text: [] },
   "toaster-popover": { codes: [], text: ["Property 'popover' is missing"] },
@@ -723,6 +743,19 @@ const failures: Record<string, { codes: string[]; text: string[] }> = {
   "scope-mode": { codes: [], text: ["Property 'mode' is missing"] },
   "heading-level": { codes: [], text: ["Property 'level' is missing"] },
   "heading-size": { codes: [], text: ["'\"md\"' is not assignable"] },
+  "combobox-role": { codes: ["ODD-REACT-001"], text: ["'\"combobox\"' is not assignable"] },
+  "combobox-data-tone": { codes: ["ODD-REACT-002"], text: ["Types of property '\"data-tone\"' are incompatible"] },
+  "combobox-filter-auto": { codes: [], text: ["'\"auto\"' is not assignable to type '\"manual\"'"] },
+  "combobox-unnamed": { codes: [], text: ["Property 'label' is missing"] },
+  "combobox-aria-expanded": { codes: ["ODD-REACT-001"], text: ["Types of property '\"aria-expanded\"' are incompatible"] },
+  "combobox-option-aria-disabled": { codes: ["ODD-REACT-001"], text: ["Types of property '\"aria-disabled\"' are incompatible"] },
+  "combobox-option-selected": { codes: ["ODD-REACT-001"], text: ["Types of property '\"aria-selected\"' are incompatible"] },
+  "search-data-tone": { codes: ["ODD-REACT-002"], text: ["Types of property '\"data-tone\"' are incompatible"] },
+  "search-unnamed": { codes: [], text: ["Property 'label' is missing"] },
+  "search-type": { codes: ["ODD-REACT-001"], text: ["'\"text\"' is not assignable"] },
+  "slider-type": { codes: ["ODD-REACT-001"], text: ["'\"text\"' is not assignable"] },
+  "slider-aria-disabled": { codes: ["ODD-REACT-001"], text: ["Types of property '\"aria-disabled\"' are incompatible"] },
+  "slider-data-tone": { codes: ["ODD-REACT-002"], text: ["Types of property '\"data-tone\"' are incompatible"] },
 };
 
 describe("platform fallbacks", () => {

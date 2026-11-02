@@ -1,4 +1,6 @@
-import { mirrored, type Node, type Scene } from "../mirror.ts";
+import type { ReactNode } from "react";
+import { Combobox, ComboboxOption, Grid, GridItem, Stack } from "odd-design/react";
+import { mirrored, type Scene } from "../mirror.ts";
 
 type Args = {
   label: string;
@@ -18,7 +20,7 @@ const meta = {
     docs: {
       description: {
         component:
-          "`Combobox` from `odd-design/react` renders `div.odd-combobox` and runs `enhanceCombobox` on it. Inside it go Field's `Input` with `role=\"combobox\"`, `aria-controls`, and `aria-autocomplete=\"list\"`, and a `ComboboxList` with `popover=\"manual\"` and `role=\"listbox\"` that holds each `ComboboxOption`. Typing filters by prefix and opens the list. The arrows move between options and skip disabled ones, Enter or a click chooses, and Escape closes. Focus stays in the input. Set `data-filter=\"manual\"` on the list when your code filters, and render the results as options.",
+          "`Combobox` from `odd-design/react` renders a whole field: the label, `div.odd-combobox` with the input and its listbox, and a hint or error. Pass each `ComboboxOption` as a child. The component writes the input's role, `aria-controls`, and `aria-autocomplete`, names the list by the label, and renders a hidden No results option. `enhanceCombobox` runs on it, so typing filters by prefix and opens the list, the arrows move between options and skip disabled ones, Enter or a click chooses, and Escape closes. Focus stays in the input. Pass `filter=\"manual\"` when your code filters, and render the results as options.",
       },
     },
   },
@@ -28,97 +30,83 @@ export default meta;
 
 const CITIES = ["Amsterdam", "Athens", "Atlantis", "Berlin", "Bogotá", "Cairo"];
 
-const option = (text: string, props: Partial<Node<"ComboboxOption">["props"]> = {}): Node<"ComboboxOption"> => ({
-  of: "ComboboxOption",
-  props: { role: "option", ...props },
-  children: [text],
-});
+function column(field: ReactNode) {
+  return (
+    <Grid>
+      <GridItem span={4}>{field}</GridItem>
+    </Grid>
+  );
+}
 
-type Box = {
-  id: string;
-  label: string;
-  options: readonly Node<"ComboboxOption">[];
-  input?: Partial<Node<"input">["props"]>;
-  list?: Partial<Node<"ComboboxList">["props"]>;
-  error?: string;
-};
-
-const field = ({ id, label, options, input = {}, list = {}, error }: Box): Node<"div"> => ({
-  of: "div",
-  props: { className: "odd-field" },
-  children: [
-    { of: "label", props: { className: "odd-label", htmlFor: id, id: `${id}-label` }, children: [label] },
-    {
-      of: "Combobox",
-      children: [
-        {
-          of: "input",
-          props: {
-            className: "odd-input",
-            id,
-            role: "combobox",
-            "aria-controls": `${id}-list`,
-            "aria-expanded": "false",
-            "aria-autocomplete": "list",
-            ...(error === undefined ? {} : { "aria-invalid": "true", "aria-describedby": `${id}-error` }),
-            ...input,
-          },
-        },
-        { of: "ComboboxList", props: { id: `${id}-list`, popover: "manual", role: "listbox", "aria-labelledby": `${id}-label`, ...list }, children: options },
-      ],
-    },
-    ...(error === undefined ? [] : [{ of: "p", props: { className: "odd-error", id: `${id}-error` }, children: [error] } satisfies Node<"p">]),
-  ],
-});
-
-const parts = (id: string): Node<"div"> =>
-  field({ id, label: "City", options: [option("Amsterdam"), option("Atlantis", { "aria-disabled": "true" }), option("Berlin")] });
+function parts(id: string) {
+  return (
+    <Combobox id={id} label="City">
+      <ComboboxOption>Amsterdam</ComboboxOption>
+      <ComboboxOption disabled>Atlantis</ComboboxOption>
+      <ComboboxOption>Berlin</ComboboxOption>
+    </Combobox>
+  );
+}
 
 export const Playground = mirrored<Args>({
-  scene: ({ label, filter, disabled, invalid, disabledOption }) => ({
-    of: "div",
-    props: { style: { maxInlineSize: "20rem" } },
-    children: [
-      field({
-        id: "playground-city",
-        label,
-        options: CITIES.map((city) => option(city, disabledOption && city === "Atlantis" ? { "aria-disabled": "true" } : {})),
-        input: { disabled },
-        list: { "data-filter": filter === "auto" ? undefined : filter },
-        ...(invalid ? { error: "Pick a city from the list." } : {}),
-      }),
-    ],
-  }),
+  scene: ({ label, filter, disabled, invalid, disabledOption }) =>
+    column(
+      <Combobox
+        id="playground-city"
+        label={label}
+        filter={filter === "auto" ? undefined : filter}
+        disabled={disabled}
+        error={invalid ? "Pick a city from the list." : undefined}
+      >
+        {CITIES.map((city) => (
+          <ComboboxOption key={city} disabled={disabledOption && city === "Atlantis"}>
+            {city}
+          </ComboboxOption>
+        ))}
+      </Combobox>,
+    ),
   aria: `
 - text: City
 - combobox "City"`,
 });
 
 export const Parts = mirrored<Args>({
-  scene: () => ({ of: "div", props: { style: { maxInlineSize: "20rem" } }, children: [parts("parts-city")] }),
+  scene: () => column(parts("parts-city")),
   aria: `
 - text: City
 - combobox "City"`,
 });
 
-const filled = (value: string) => CITIES.map((city) => option(city, city.startsWith(value) ? {} : { hidden: true }));
+function filled(value: string) {
+  return CITIES.map((city) => (
+    <ComboboxOption key={city} hidden={!city.startsWith(value)}>
+      {city}
+    </ComboboxOption>
+  ));
+}
 
 export const States = mirrored<Args>({
-  scene: () => ({
-    of: "div",
-    props: { className: "odd-stack", style: { maxInlineSize: "20rem" } },
-    children: [
-      field({
-        id: "states-empty",
-        label: "Empty",
-        options: CITIES.map((city) => option(city, city === "Atlantis" ? { "aria-disabled": "true" } : {})),
-        input: { placeholder: "Search cities" },
-      }),
-      field({ id: "states-filled", label: "Filled", options: filled("Berlin"), input: { defaultValue: "Berlin" } }),
-      field({ id: "states-invalid", label: "Invalid", options: filled("Atlantis"), input: { defaultValue: "Atlantis" }, error: "Pick a city from the list." }),
-      field({ id: "states-disabled", label: "Disabled", options: filled("Cairo"), input: { defaultValue: "Cairo", disabled: true } }),
-    ],
-  }),
+  scene: () =>
+    column(
+      <Stack>
+        <Combobox id="states-empty" label="Empty" placeholder="Search cities">
+          {CITIES.map((city) => (
+            <ComboboxOption key={city} disabled={city === "Atlantis"}>
+              {city}
+            </ComboboxOption>
+          ))}
+        </Combobox>
+        <Combobox id="states-filled" label="Filled" defaultValue="Berlin">
+          {filled("Berlin")}
+        </Combobox>
+        <Combobox id="states-invalid" label="Invalid" defaultValue="Atlantis" error="Pick a city from the list.">
+          {filled("Atlantis")}
+        </Combobox>
+        <Combobox id="states-disabled" label="Disabled" defaultValue="Cairo" disabled>
+          {filled("Cairo")}
+        </Combobox>
+      </Stack>,
+    ),
   aria: `
 - text: Empty
 - combobox "Empty"
@@ -133,7 +121,7 @@ export const States = mirrored<Args>({
 
 export const Open = {
   ...mirrored<Args>({
-    scene: () => ({ of: "div", props: { style: { maxInlineSize: "20rem", minBlockSize: "16rem" } }, children: [parts("open-city")] }),
+    scene: () => column(parts("open-city")),
     aria: `
 - text: City
 - combobox "City" [expanded]
@@ -153,6 +141,7 @@ export const Open = {
 
 const PEOPLE = ["Ada Lovelace", "Alan Turing", "Grace Hopper", "Katherine Johnson", "Margaret Hamilton"];
 
+// No component renders a dialog's title and body yet, so this story stays a scene, which can write their classes.
 const assign: Scene = {
   of: "div",
   children: [
@@ -166,7 +155,7 @@ const assign: Scene = {
           props: { className: "odd-dialog-body" },
           children: [
             { of: "h2", props: { className: "odd-dialog-title", id: "assign-title" }, children: ["Assign the review"] },
-            field({ id: "assignee", label: "Assignee", options: [], list: { "data-filter": "manual" } }),
+            { of: "Combobox", props: { id: "assignee", label: "Assignee", filter: "manual" } },
             { of: "p", props: { className: "odd-muted", id: "assign-log", "aria-live": "polite" } },
             {
               of: "DialogActions",

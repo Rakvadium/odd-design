@@ -98,6 +98,12 @@ const opened = (id: string, label: string, side: PropsOf<"Sheet">["side"], aria:
   play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
     canvasElement.querySelector<HTMLButtonElement>(`[commandfor="${id}"]`)!.click();
     await Promise.all(canvasElement.querySelector(`#${id}`)!.getAnimations({ subtree: true }).map((animation) => animation.finished));
+    // The close button takes focus, and whether its tooltip opens on that focus depends on the engine and on
+    // the page's last input. Open it here, so every engine and run shows the same sheet.
+    const close = canvasElement.querySelector<HTMLElement>(`#${id} [aria-labelledby$="-tooltip"]`)!;
+    const tip = canvasElement.ownerDocument.getElementById(close.getAttribute("aria-labelledby")!)!;
+    if (!tip.matches(":popover-open")) tip.showPopover({ source: close } as ShowPopoverOptions);
+    await Promise.all(tip.getAnimations().map((animation) => animation.finished));
   },
 });
 
@@ -106,6 +112,7 @@ export const SheetEnd = opened("sheet-open-end", "End", undefined, `
 - dialog "Filters":
   - heading "Filters" [level=2]
   - button "Close"
+  - tooltip "Close"
   - text: Format
   - combobox "Format":
     - option "Any" [selected]
@@ -127,6 +134,7 @@ export const SheetStart = opened("sheet-open-start", "Start", "start", `
 - dialog "Filters":
   - heading "Filters" [level=2]
   - button "Close"
+  - tooltip "Close"
   - text: Format
   - combobox "Format":
     - option "Any" [selected]
@@ -148,6 +156,7 @@ export const SheetTop = opened("sheet-open-top", "Top", "top", `
 - dialog "Filters":
   - heading "Filters" [level=2]
   - button "Close"
+  - tooltip "Close"
   - text: Format
   - combobox "Format":
     - option "Any" [selected]
@@ -169,6 +178,7 @@ export const SheetBottom = opened("sheet-open-bottom", "Bottom", "bottom", `
 - dialog "Filters":
   - heading "Filters" [level=2]
   - button "Close"
+  - tooltip "Close"
   - text: Format
   - combobox "Format":
     - option "Any" [selected]
@@ -190,6 +200,7 @@ export const SheetRightToLeft = opened("sheet-open-rtl", "End, right to left", u
 - dialog "Filters":
   - heading "Filters" [level=2]
   - button "Close"
+  - tooltip "Close"
   - text: Format
   - combobox "Format":
     - option "Any" [selected]

@@ -45,19 +45,8 @@ export function App() {
           60 cards
         </div>
       </Tabs>
-      <Search>
-        <label className="odd-visually-hidden" htmlFor="card-search">
-          Search cards
-        </label>
-        <svg aria-hidden="true" viewBox="0 0 24 24" />
-        <input className="odd-input" type="search" id="card-search" placeholder="Search cards" />
-      </Search>
-      <div className="odd-field">
-        <label className="odd-label" htmlFor="copies">
-          Copies per card
-        </label>
-        <Slider type="range" id="copies" min={1} max={4} defaultValue={3} />
-      </div>
+      <Search label="Search cards" placeholder="Search cards" />
+      <Slider label="Copies per card" min={1} max={4} defaultValue={3} showValue />
       <div className="odd-stack">
         <div className="odd-row">
           <label className="odd-muted" htmlFor="actions">

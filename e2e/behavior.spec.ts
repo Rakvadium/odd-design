@@ -34,27 +34,35 @@ const waitOpen = (page: Page, selector: string, open = true) =>
     { timeout: 10_000 },
   );
 
-/** Records, in page time, when the pointer enters and leaves `invoker` and when `target` opens and closes. */
+/**
+ * Records, in page time, when the pointer enters and leaves `invoker` and when `target` opens and closes.
+ * The listeners capture on the document, so the record survives a React story rendering fresh nodes.
+ */
 const watchHover = (page: Page, invoker: string, target: string) =>
   page.evaluate(
     ([inv, tgt]) => {
       const log: Record<string, number[]> = ((window as any).__hover = { enter: [], leave: [], open: [], closed: [] });
-      const i = document.querySelector(inv)!;
-      i.addEventListener("pointerenter", () => log.enter!.push(performance.now()));
-      i.addEventListener("pointerleave", () => log.leave!.push(performance.now()));
-      document.querySelector(tgt)!.addEventListener("toggle", (e) => log[(e as ToggleEvent).newState]!.push(performance.now()));
+      const on = (type: string, selector: string, record: (event: Event) => void) =>
+        document.addEventListener(type, (event) => (event.target instanceof Element && event.target.matches(selector) ? record(event) : undefined), true);
+      on("pointerenter", inv, () => log.enter!.push(performance.now()));
+      on("pointerleave", inv, () => log.leave!.push(performance.now()));
+      on("toggle", tgt, (event) => log[(event as ToggleEvent).newState]!.push(performance.now()));
     },
     [invoker, target] as const,
   );
 
-/** Page-time ms from the last pointer `from` event to the target's last `to` toggle, once both have happened. */
+/**
+ * Page-time ms from the last pointer `from` event before the target's last `to` toggle to that toggle.
+ * Firefox can fire another pointerenter after the page changes under a resting pointer, so the last
+ * entry overall may come after the open it caused.
+ */
 const hoverDelay = async (page: Page, from: "enter" | "leave", to: "open" | "closed") => {
   const handle = await page.waitForFunction(
     ([f, t]) => {
       const log = (window as any).__hover as Record<string, number[]>;
-      const a = log[f]!.at(-1);
       const b = log[t]!.at(-1);
-      return a !== undefined && b !== undefined && b >= a ? { ms: b - a } : null;
+      const a = b === undefined ? undefined : log[f]!.filter((at) => at <= b).at(-1);
+      return a !== undefined && b !== undefined ? { ms: b - a } : null;
     },
     [from, to] as const,
     { timeout: 10_000 },

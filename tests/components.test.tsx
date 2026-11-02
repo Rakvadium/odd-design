@@ -16,7 +16,6 @@ import {
   Checkbox,
   Code,
   Combobox,
-  ComboboxList,
   ComboboxOption,
   Dialog,
   DialogActions,
@@ -365,44 +364,32 @@ const FIXTURES: { readonly [K in ExportName]: readonly [Fixture, ...Fixture[]] }
   ],
   Combobox: [
     {
-      name: "in a field, before enhancement",
-      uses: ["Input", "ComboboxList", "ComboboxOption"],
+      name: "a field with a disabled option and the hidden No results option",
+      uses: ["ComboboxOption"],
       element: (
-        <div className="odd-field">
-          <label className="odd-label" htmlFor="city" id="city-label">
-            City
-          </label>
-          <Combobox>
-            <input className="odd-input" id="city" name="city" role="combobox" aria-controls="city-list" aria-expanded="false" aria-autocomplete="list" />
-            <ComboboxList id="city-list" popover="manual" role="listbox" aria-labelledby="city-label">
-              <ComboboxOption role="option">Amsterdam</ComboboxOption>
-              <ComboboxOption role="option" aria-disabled="true">
-                Atlantis
-              </ComboboxOption>
-              <ComboboxOption role="option">Berlin</ComboboxOption>
-            </ComboboxList>
-          </Combobox>
-        </div>
+        <Combobox id="city" label="City" name="city" hint="Type to filter.">
+          <ComboboxOption>Amsterdam</ComboboxOption>
+          <ComboboxOption disabled>Atlantis</ComboboxOption>
+        </Combobox>
       ),
       markup:
-        '<div class="odd-field"><label class="odd-label" for="city" id="city-label">City</label><div class="odd-combobox"><input class="odd-input" id="city" role="combobox" aria-controls="city-list" aria-expanded="false" aria-autocomplete="list" name="city"/><div id="city-list" popover="manual" role="listbox" aria-labelledby="city-label" class="odd-combobox-list"><div role="option" class="odd-combobox-option">Amsterdam</div><div role="option" aria-disabled="true" class="odd-combobox-option">Atlantis</div><div role="option" class="odd-combobox-option">Berlin</div></div></div></div>',
+        '<div class="odd-field"><label class="odd-label" for="city" id="city-label">City</label><div class="odd-combobox"><input id="city" aria-describedby="city-hint" class="odd-input" role="combobox" aria-controls="city-list" aria-autocomplete="list" aria-expanded="false" name="city"/><div class="odd-combobox-list" id="city-list" popover="manual" role="listbox" aria-labelledby="city-label"><div class="odd-combobox-option" role="option">Amsterdam</div><div class="odd-combobox-option" role="option" aria-disabled="true">Atlantis</div><div class="odd-combobox-option" id="city-list-empty" role="option" aria-disabled="true" hidden="">No results</div></div></div><p class="odd-hint" id="city-hint">Type to filter.</p></div>',
     },
-  ],
-  ComboboxList: [
     {
-      name: "a list that your code filters",
-      element: <ComboboxList id="people" popover="manual" role="listbox" aria-label="People" data-filter="manual" className="wide" />,
-      markup: '<div id="people" popover="manual" role="listbox" aria-label="People" data-filter="manual" class="odd-combobox-list wide"></div>',
+      name: "filtered by your code, with an error, a hidden label, and a generated id",
+      element: <Combobox label="Assignee" hideLabel filter="manual" error="Pick someone on the team." className="wide" />,
     },
   ],
   ComboboxOption: [
     {
-      name: "in a named list",
-      uses: ["ComboboxList"],
+      name: "with className and an app data attribute",
+      uses: ["Combobox"],
       element: (
-        <ComboboxList id="players" popover="manual" role="listbox" aria-label="Players">
-          <ComboboxOption role="option">Mira Okafor</ComboboxOption>
-        </ComboboxList>
+        <Combobox id="player" label="Player">
+          <ComboboxOption className="pinned" data-id="mira">
+            Mira Okafor
+          </ComboboxOption>
+        </Combobox>
       ),
     },
   ],
@@ -687,19 +674,16 @@ const FIXTURES: { readonly [K in ExportName]: readonly [Fixture, ...Fixture[]] }
   ],
   Search: [
     {
-      name: "with a hidden label and a leading icon",
-      uses: ["Input", "VisuallyHidden"],
-      element: (
-        <Search className="deck-search">
-          <label htmlFor="card-search">
-            <VisuallyHidden>Search cards</VisuallyHidden>
-          </label>
-          <svg aria-hidden="true" viewBox="0 0 24 24" />
-          <input className="odd-input" type="search" id="card-search" placeholder="Search cards" />
-        </Search>
-      ),
+      name: "a hidden label, the magnifier, and the input",
+      element: <Search id="card-search" label="Search cards" placeholder="Search cards" className="deck-search" />,
       markup:
-        '<search class="odd-search deck-search"><label for="card-search"><span class="odd-visually-hidden">Search cards</span></label><svg aria-hidden="true" viewBox="0 0 24 24"></svg><input class="odd-input" type="search" id="card-search" placeholder="Search cards"/></search>',
+        '<search class="odd-search deck-search"><label class="odd-visually-hidden" for="card-search">Search cards</label><svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"></circle><path d="m21 21-4.3-4.3"></path></svg><input placeholder="Search cards" id="card-search" type="search" class="odd-input"/></search>',
+    },
+    {
+      name: "in a form that submits",
+      element: <Search id="site-search" label="Search the docs" name="q" onSubmit={() => {}} />,
+      markup:
+        '<search><form class="odd-search"><label class="odd-visually-hidden" for="site-search">Search the docs</label><svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"></circle><path d="m21 21-4.3-4.3"></path></svg><input id="site-search" type="search" class="odd-input" name="q"/></form></search>',
     },
   ],
   Segmented: [
@@ -844,9 +828,14 @@ const FIXTURES: { readonly [K in ExportName]: readonly [Fixture, ...Fixture[]] }
   ],
   Slider: [
     {
-      name: "a disabled range",
-      element: <Slider type="range" id="locked" min={5} max={9} defaultValue={7} disabled className="wide" />,
-      markup: '<input type="range" id="locked" min="5" max="9" disabled="" class="odd-slider wide" value="7"/>',
+      name: "with its value shown and a hint",
+      element: <Slider id="copies" label="Copies per card" min={1} max={4} defaultValue={3} hint="Most formats allow up to 4." showValue formatValue={(value) => `${value} of 4`} />,
+      markup:
+        '<div class="odd-field"><label class="odd-label" for="copies" id="copies-label">Copies per card</label><input min="1" max="4" id="copies" aria-describedby="copies-hint" type="range" class="odd-slider" value="3"/><output class="odd-stat-value" id="copies-value" for="copies">3 of 4</output><p class="odd-hint" id="copies-hint">Most formats allow up to 4.</p></div>',
+    },
+    {
+      name: "disabled, with a hidden label, an error, and the browser's midpoint shown",
+      element: <Slider label="Hand size" hideLabel min={5} max={9} disabled error="Your format locks the hand size." showValue className="wide" />,
     },
   ],
   Spinner: [
