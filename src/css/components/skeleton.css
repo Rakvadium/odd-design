@@ -1,11 +1,11 @@
 /*
  * <div aria-busy="true">
  *   <span class="odd-visually-hidden">Loading decks…</span>
- *   <div class="odd-skeleton" aria-hidden="true" style="inline-size: 60%"></div>
+ *   <div class="odd-skeleton" aria-hidden="true"></div>
  *   <div class="odd-skeleton" aria-hidden="true" data-shape="avatar"></div>
  * </div>
  * Skeletons are decoration. Say "loading" in text, set aria-busy on the region that's filling in,
- * and remove both when the content arrives. Size each block with inline-size / block-size.
+ * and remove both when the content arrives. A block fills its container's width at 1em tall, so size it through its container.
  * The pulse is timed from --duration-slow, so reduced motion stops it.
  */
 .odd-skeleton {

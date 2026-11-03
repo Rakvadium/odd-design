@@ -2,7 +2,7 @@ import { existsSync, globSync, readFileSync } from "node:fs";
 import { basename } from "node:path";
 import { GlobalRegistrator } from "@happy-dom/global-registrator";
 import { catalog, renderHtml, type Entry } from "../stories/catalog.ts";
-import { CLASS_REGISTRY, USAGE, VOCABULARY, WRAPPERS, type UsageRule } from "../src/js/usage/contract.ts";
+import { CLASS_REGISTRY, CLASSES, USAGE, VOCABULARY, type UsageRule } from "../src/js/usage/contract.ts";
 
 type Family = {
   readonly name: string;
@@ -38,16 +38,16 @@ const FAMILIES: readonly Family[] = [
   { name: "Breadcrumb", classes: ["odd-breadcrumb"], css: "components/breadcrumb.css", js: [], react: ["Breadcrumb"] },
   { name: "Kbd", classes: ["odd-kbd"], css: "components/kbd.css", js: [], react: ["Kbd"] },
   { name: "Code", classes: ["odd-code", "odd-pre"], css: "components/code.css", js: [], react: ["Code", "Pre"] },
-  { name: "Table", classes: ["odd-table-wrap", "odd-table", "odd-table-sort"], css: "components/table.css", js: ["enhance.ts:47-100"], react: ["TableWrap", "Table", "TableSort"] },
+  { name: "Table", classes: ["odd-table-wrap", "odd-table", "odd-table-sort"], css: "components/table.css", js: ["enhance.ts:47-100"], react: ["Table"] },
   { name: "Popover", classes: ["odd-popover", "odd-hover-card", "odd-tooltip"], css: "components/popover.css", js: ["fallbacks.ts:9-81"], react: ["Popover"] },
   {
     name: "Dialog",
     classes: ["odd-dialog", "odd-dialog-title", "odd-dialog-body", "odd-dialog-actions"],
     css: "components/dialog.css",
     js: ["fallbacks.ts:83-97"],
-    react: ["Dialog", "DialogActions"],
+    react: ["Dialog", "AlertDialog"],
   },
-  { name: "Sheet", classes: ["odd-sheet", "odd-sheet-header", "odd-sheet-body", "odd-sheet-footer"], css: "components/sheet.css", js: [], react: ["Sheet", "SheetHeader", "SheetFooter"] },
+  { name: "Sheet", classes: ["odd-sheet", "odd-sheet-header", "odd-sheet-body", "odd-sheet-footer"], css: "components/sheet.css", js: [], react: ["Sheet"] },
   { name: "Menu", classes: ["odd-menu", "odd-menu-item", "odd-menu-label", "odd-menu-shortcut"], css: "components/menu.css", js: ["menu.ts", "roving.ts"], react: ["Menu", "MenuItem"] },
   { name: "Tabs", classes: ["odd-tabs"], css: "components/tabs.css", js: ["tabs.ts", "roving.ts"], react: ["Tabs"] },
   {
@@ -554,9 +554,7 @@ const report = FAMILIES.map((family) => {
       bad: codes.filter((code) => fixture(code, "bad")).length,
       missingFixtures: codes.flatMap((code) => (["good", "bad"] as const).filter((kind) => !fixture(code, kind)).map((kind) => `${code}.${kind}`)),
       vocabulary: vocabularyKey !== undefined ? { key: vocabularyKey, attributes: VOCABULARY[vocabularyKey as keyof typeof VOCABULARY] } : undefined,
-      wrappers: Object.entries(WRAPPERS)
-        .filter(([, wrapper]) => family.classes.includes(wrapper.className))
-        .map(([name]) => name),
+      exports: [...new Set(family.classes.flatMap((name) => (CLASSES as Readonly<Record<string, { readonly by: readonly string[] }>>)[name]?.by ?? []))],
       usagePage,
     },
     tests: { unit: familyTests(testFiles), e2e: familyTests(e2eFiles) },
@@ -651,7 +649,7 @@ const markdown = [
   ),
   table(
     "Contract",
-    ["Family", "Usage codes", "Codes", "Borrowed codes", "Good fixtures", "Bad fixtures", "Missing fixtures", "VOCABULARY", "WRAPPERS", "Usage page"],
+    ["Family", "Usage codes", "Codes", "Borrowed codes", "Good fixtures", "Bad fixtures", "Missing fixtures", "VOCABULARY", "Exports", "Usage page"],
     report.map((r) => [
       r.family,
       String(r.contract.codes.length),
@@ -661,7 +659,7 @@ const markdown = [
       String(r.contract.bad),
       r.contract.missingFixtures.join(", "),
       r.contract.vocabulary === undefined ? "" : `${r.contract.vocabulary.key}: ${code(r.contract.vocabulary.attributes)}`,
-      r.contract.wrappers.join(", "),
+      r.contract.exports.join(", "),
       r.contract.usagePage === undefined ? "" : `\`${r.contract.usagePage}\``,
     ]),
   ),

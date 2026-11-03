@@ -2,18 +2,37 @@
 
 These codes apply to `odd-scope` and `odd-skip-link`. `odd-stack`, `odd-row`, `odd-muted`, and `odd-visually-hidden` have no codes. Shared codes are in [General usage rules](general.md).
 
-```html
-<a class="odd-skip-link" href="#main">Skip to content</a>
-<main id="main" class="odd-stack" style="--gap: var(--space-5)">
-  <div class="odd-row">
-    <button class="odd-button" type="button">Save</button>
-    <span class="odd-muted">Saved 2 minutes ago</span>
-  </div>
-  <section class="odd-scope" data-chrome="glass" data-palette="aurora" data-mode="dark">…</section>
+In React, render `SkipLink`, `Stack`, `Row`, `Muted`, `VisuallyHidden`, and `Scope` from `odd-design/react`. [Lay out a page](react.md#lay-out-a-page) covers their props.
+
+```tsx
+<SkipLink href="#main">Skip to content</SkipLink>
+<main id="main">
+  <Stack>
+    <Row>
+      <Button>Save</Button>
+      <Muted as="span">Saved 2 minutes ago</Muted>
+    </Row>
+    <Scope as="section" chrome="glass" palette="aurora" mode="dark">…</Scope>
+  </Stack>
 </main>
 ```
 
-`odd-stack` lays its children out in a column and `odd-row` in a wrapping row. `--gap` sets the space between them. `odd-muted` dims secondary text. `odd-visually-hidden` hides text until it takes focus. The skip link is the first focusable element on the page and slides in when it takes focus. `odd-scope` gives a subtree its own chrome, palette, and mode. None of these classes has a React part. Write them as native markup.
+The components compile to this HTML:
+
+```html
+<a class="odd-skip-link" href="#main">Skip to content</a>
+<main id="main">
+  <div class="odd-stack">
+    <div class="odd-row">
+      <button class="odd-button" type="button">Save</button>
+      <span class="odd-muted">Saved 2 minutes ago</span>
+    </div>
+    <section class="odd-scope" data-chrome="glass" data-palette="aurora" data-mode="dark">…</section>
+  </div>
+</main>
+```
+
+`odd-stack` lays its children out in a column and `odd-row` in a wrapping row. `--gap` sets the space between them in hand-written HTML. The React components keep the default gap. `odd-muted` dims secondary text. `odd-visually-hidden` hides text until it takes focus. The skip link is the first focusable element on the page and slides in when it takes focus. `odd-scope` gives a subtree its own chrome, palette, and mode.
 
 ## ODD-SCOPE-001
 

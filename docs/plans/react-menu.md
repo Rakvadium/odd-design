@@ -69,6 +69,8 @@ Not added, each measured:
 - **A separator inside a `group`.** It loses the 4px menu margin. That is cosmetic, so it is a follow-up.
 - **`aria-haspopup` on the trigger.** It sits on a different element, and no rule kind checks across elements.
 
+Superseded: `docs/plans/react-drop-in.md` makes components own their tags, ids, and ARIA, so this no longer holds. The state-ownership decisions here stay.
+
 ## Shape
 
 ### Rows

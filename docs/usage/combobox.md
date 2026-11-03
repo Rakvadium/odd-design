@@ -2,6 +2,18 @@
 
 These codes apply to `odd-combobox`, `odd-combobox-list`, and `odd-combobox-option`. The input is Field's `odd-input`, so [ODD-FIELD-001](field.md#odd-field-001) and [ODD-FIELD-003](field.md#odd-field-003) govern it: an `input`, disabled with `disabled`, never `aria-disabled`. Shared codes are in [General usage rules](general.md).
 
+In React, render `Combobox` with a `ComboboxOption` per option from `odd-design/react`. It renders the whole field, wires the input to its list, and renders the hidden No results option, so the structural codes below cannot happen. [Suggest values as someone types](react.md#suggest-values-as-someone-types) covers the props.
+
+```tsx
+<Combobox id="city" label="City" name="city">
+  <ComboboxOption>Amsterdam</ComboboxOption>
+  <ComboboxOption disabled>Atlantis</ComboboxOption>
+  <ComboboxOption>Berlin</ComboboxOption>
+</Combobox>
+```
+
+The component compiles to this HTML:
+
 ```html
 <div class="odd-field">
   <label class="odd-label" for="city" id="city-label">City</label>
@@ -11,6 +23,7 @@ These codes apply to `odd-combobox`, `odd-combobox-list`, and `odd-combobox-opti
       <div class="odd-combobox-option" role="option">Amsterdam</div>
       <div class="odd-combobox-option" role="option" aria-disabled="true">Atlantis</div>
       <div class="odd-combobox-option" role="option">Berlin</div>
+      <div class="odd-combobox-option" id="city-list-empty" role="option" aria-disabled="true" hidden>No results</div>
     </div>
   </div>
 </div>
@@ -29,7 +42,7 @@ Use a combobox for a text field with suggestions that narrow as you type. A clos
 
 Choosing writes the option's text into the input and dispatches `input` (with `inputType` `insertReplacementText`) and `change`. The form submits the input's `name`, and any text is a valid value. Listen for `click` on the options to act on a choice: Enter clicks the active option, so one listener covers keyboard and pointer. A click on a disabled option never reaches your listeners.
 
-When the built-in filter matches nothing, the open list shows one disabled option that reads "No results". The arrow keys skip it, and a click on it does nothing. A listbox may only hold options and groups, and a disabled option is the one row that keeps axe at 0 violations and is read in the accessibility tree in Firefox and WebKit. A plain row, a row with `role="none"`, and a group with text inside the listbox all fail axe `aria-required-children`.
+When the built-in filter matches nothing, the open list shows its No results option: the disabled option whose id is the list's id plus `-empty`, which the markup carries with `hidden`. `enhanceCombobox` only toggles its `hidden`, so a list that React renders never gains a node React does not own. Hand-written HTML carries the option too, and a list without it shows nothing when no option matches. The arrow keys skip it, and a click on it does nothing. A listbox may only hold options and groups, and a disabled option is the one row that keeps axe at 0 violations and is read in the accessibility tree in Firefox and WebKit. A plain row, a row with `role="none"`, and a group with text inside the listbox all fail axe `aria-required-children`.
 
 ## Options from your code
 
@@ -43,29 +56,19 @@ input.addEventListener("input", async (event) => {
 });
 ```
 
-In React, `Combobox` renders the root and runs `enhanceCombobox` on it, `ComboboxList` renders the list, and `ComboboxOption` renders each option. The input is Field's `Input`. A controlled `Input` gets one `onChange` when an option is chosen.
+In React, pass `filter="manual"` to `Combobox` and render the results as children. A controlled input gets one `onChange` when an option is chosen. With `filter="manual"`, `Combobox` renders no No results option of its own.
 
 ```tsx
-import { Combobox, ComboboxList, ComboboxOption, Field, Input, Label } from "odd-design/react";
+import { Combobox, ComboboxOption } from "odd-design/react";
 
-<Field>
-  <Label htmlFor="assignee" id="assignee-label">Assignee</Label>
-  <Combobox>
-    <Input id="assignee" role="combobox" aria-controls="assignee-list" aria-expanded="false" aria-autocomplete="list" value={query} onChange={(event) => setQuery(event.target.value)} />
-    <ComboboxList id="assignee-list" popover="manual" role="listbox" aria-labelledby="assignee-label" data-filter="manual">
-      {people.map((person) => (
-        <ComboboxOption key={person.id} role="option" onClick={() => assign(person.id)}>
-          {person.name}
-        </ComboboxOption>
-      ))}
-      {searched && people.length === 0 && (
-        <ComboboxOption role="option" aria-disabled="true">
-          No results
-        </ComboboxOption>
-      )}
-    </ComboboxList>
-  </Combobox>
-</Field>;
+<Combobox label="Assignee" filter="manual" value={query} onChange={(event) => setQuery(event.target.value)}>
+  {people.map((person) => (
+    <ComboboxOption key={person.id} onClick={() => assign(person.id)}>
+      {person.name}
+    </ComboboxOption>
+  ))}
+  {searched && people.length === 0 && <ComboboxOption disabled>No results</ComboboxOption>}
+</Combobox>;
 ```
 
 ## ODD-COMBOBOX-001
@@ -74,7 +77,7 @@ Fails when `odd-combobox`, `odd-combobox-list`, or `odd-combobox-option` is on a
 
 A `button` option inside a form submits the form when it is clicked.
 
-Put each class on a `div`. In React, use `Combobox`, `ComboboxList`, and `ComboboxOption`, which render divs.
+Put each class on a `div`. In React, use `Combobox` and `ComboboxOption`, which render divs.
 
 ## ODD-COMBOBOX-002
 
@@ -98,7 +101,7 @@ Fails when `odd-combobox-list` has no `popover`, or a `popover` other than `manu
 
 Without `popover`, the list sits in the page, always visible. With `popover` or `popover="auto"`, a press in the input closes the list as it opens.
 
-Set `popover="manual"`. `enhanceCombobox` opens and closes the list. In React, `ComboboxList` requires `popover="manual"`.
+Set `popover="manual"`. `enhanceCombobox` opens and closes the list. In React, `Combobox` writes it.
 
 ## ODD-COMBOBOX-005
 
@@ -106,7 +109,7 @@ Fails when `odd-combobox-list` has no `role`, or a `role` other than `listbox`.
 
 Options inside a list with no role, or with `role="menu"`, fail axe `aria-required-children` and `aria-required-parent`.
 
-Set `role="listbox"`. A list of actions opened from a button is an `odd-menu`. In React, `ComboboxList` requires `role="listbox"`.
+Set `role="listbox"`. A list of actions opened from a button is an `odd-menu`. In React, `Combobox` writes it.
 
 ## ODD-COMBOBOX-006
 
@@ -114,7 +117,7 @@ Fails when `odd-combobox-list` has no non-empty `aria-label` or `aria-labelledby
 
 The accessibility tree reads an unnamed `listbox`, and axe says nothing.
 
-Point `aria-labelledby` at the label's `id`, or set `aria-label`. In React, `ComboboxList` with neither name is a type error.
+Point `aria-labelledby` at the label's `id`, or set `aria-label`. In React, `Combobox` points it at its label, and a blank `label` throws this code outside production.
 
 ## ODD-COMBOBOX-007
 
@@ -130,7 +133,7 @@ Fails when `odd-combobox-option` has no `role`, or a `role` other than `option`.
 
 `enhanceCombobox` finds options by their role, so an option without it is never shown or chosen, and a list of them never opens.
 
-Set `role="option"`. In React, `ComboboxOption` requires `role="option"`.
+Set `role="option"`. In React, `ComboboxOption` writes it.
 
 ## ODD-COMBOBOX-009
 
@@ -138,7 +141,7 @@ Fails when an option has `disabled`, or `aria-disabled` with a value other than 
 
 A `div` ignores `disabled`. The option can still be chosen, is not announced as unavailable, and is drawn like the others.
 
-Replace `disabled` with `aria-disabled="true"`. The arrow keys skip the option, a click on it does nothing, and a screen reader announces it as unavailable. In React, `disabled` on `ComboboxOption` is a type error.
+Replace `disabled` with `aria-disabled="true"`. The arrow keys skip the option, a click on it does nothing, and a screen reader announces it as unavailable. In React, `disabled` on `ComboboxOption` writes `aria-disabled="true"`.
 
 ## ODD-COMBOBOX-010
 
@@ -146,7 +149,7 @@ Fails when an option has `aria-selected`.
 
 `enhanceCombobox` owns `aria-selected`. It marks the active option and erases a written value when the list opens, so in React the prop and the page disagree.
 
-Remove `aria-selected`. In React, it is a type error on `ComboboxOption`.
+Remove `aria-selected`. In React, it is a type error on `ComboboxOption` (`ODD-REACT-001`).
 
 ## ODD-COMBOBOX-011
 

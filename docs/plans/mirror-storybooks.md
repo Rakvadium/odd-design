@@ -165,6 +165,8 @@ Both architect runners built Storybook 10.6.2 labs. Their records are in the loc
 | A neutral story vocabulary with one adapter per framework | The React props are already typed from `USAGE`, and `toHtml` reads `WRAPPERS`. A third vocabulary adds an adapter and no safety. |
 | Compare normalized DOM attribute maps instead of pixels | The cross-judge proposed this because the pixel lab had no fonts. Pixels already catch every attribute that matters, and both previews load the same fonts. If byte equality flakes, add a pixel tolerance and keep the check. |
 
+Superseded: `docs/plans/react-drop-in.md` makes components own their tags, ids, and ARIA, so this no longer holds. The state-ownership decisions here stay.
+
 ## Appendix C. Risks
 
 - **Byte-equal screenshots may flake with real fonts.** Both previews share one font setup, and `openStory` waits for `document.fonts.ready`. Commit 7 measures it. On a flake, compare with a small pixel tolerance rather than dropping the check.

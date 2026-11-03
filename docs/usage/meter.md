@@ -2,6 +2,16 @@
 
 These codes apply to `odd-meter` and `odd-progress`. Shared codes are in [General usage rules](general.md).
 
+In React, render `Progress` from `odd-design/react` or `Meter` with a `label`, which names the bar. [The React guide](react.md#show-progress-or-a-measurement) covers the props.
+
+```tsx
+<Progress label="Importing decks" value={40} max={100} />
+<Meter label="Actions" min={0} max={60} value={22} tone="info" />
+<Meter label="Storage" value={0.93} low={0.6} high={0.85} optimum={0} />
+```
+
+The component compiles to this HTML:
+
 ```html
 <progress class="odd-progress" value="40" max="100" aria-label="Importing decks"></progress>
 <meter class="odd-meter" min="0" max="60" value="22" data-tone="info" aria-label="Actions"></meter>

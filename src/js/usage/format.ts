@@ -1,4 +1,4 @@
-import { APPEARANCE_AXES, HEADLESS_ALLOWLIST, USAGE, WRAPPERS } from "./contract.ts";
+import { APPEARANCE_AXES, HEADLESS_ALLOWLIST, USAGE } from "./contract.ts";
 
 export const USAGE_CODES = [
   "ODD-CLASS-001",
@@ -110,6 +110,12 @@ export const USAGE_CODES = [
   "ODD-TABLE-006",
   "ODD-SCOPE-001",
   "ODD-SKIP-001",
+  "ODD-TOOLTIP-001",
+  "ODD-HOVER-CARD-001",
+  "ODD-LOG-001",
+  "ODD-LOG-002",
+  "ODD-LOG-003",
+  "ODD-LOG-004",
   "ODD-GRID-001",
   "ODD-SHELL-001",
   "ODD-TYPOGRAPHY-001",
@@ -149,6 +155,9 @@ export const USAGE_CODES = [
   "ODD-STATIC-001",
   "ODD-STATIC-002",
   "ODD-STATIC-003",
+  "ODD-REACT-001",
+  "ODD-REACT-002",
+  "ODD-REACT-003",
 ] as const;
 
 export type UsageCode = (typeof USAGE_CODES)[number];
@@ -189,30 +198,30 @@ const variantRule = USAGE.button[1];
 const sizeRule = USAGE.button[2];
 const variantAllowed = enumAllowed(variantRule.values, variantRule.omit);
 const sizeAllowed = enumAllowed(sizeRule.values, sizeRule.omit);
-const buttonAttributes = comma([WRAPPERS.Button.props.variant, WRAPPERS.Button.props.size, WRAPPERS.Button.props.iconOnly]);
+const buttonAttributes = comma([variantRule.attribute, sizeRule.attribute, USAGE.button[3].attribute]);
 const toneRule = USAGE.badge[1];
-const badgeAttributes = comma([WRAPPERS.Badge.props.tone, WRAPPERS.Badge.props.solid]);
+const badgeAttributes = comma([toneRule.attribute, USAGE.badge[2].attribute]);
 const alertToneRule = USAGE.alert[1];
 const alertToneAllowed = enumAllowed(alertToneRule.values, alertToneRule.omit);
-const alertAttributes = WRAPPERS.Alert.props.tone;
+const alertAttributes = alertToneRule.attribute;
 const avatarSizeRule = USAGE.avatar[1];
 const avatarSizeAllowed = enumAllowed(avatarSizeRule.values, avatarSizeRule.omit);
-const avatarAttributes = WRAPPERS.Avatar.props.size;
+const avatarAttributes = avatarSizeRule.attribute;
 const shapeRule = USAGE.skeleton[1];
 const shapeAllowed = enumAllowed(shapeRule.values, shapeRule.omit);
-const skeletonAttributes = WRAPPERS.Skeleton.props.shape;
-const cardAttributes = WRAPPERS.Card.props.interactive;
+const skeletonAttributes = shapeRule.attribute;
+const cardAttributes = USAGE.card[1].attribute;
 const meterToneRule = USAGE.meter[2];
 const meterToneAllowed = enumAllowed(meterToneRule.values, meterToneRule.omit);
-const meterAttributes = WRAPPERS.Meter.props.tone;
+const meterAttributes = meterToneRule.attribute;
 const dialogRoleRule = USAGE.dialog[2] satisfies { kind: "enum"; attribute: "role" };
 const dialogRoleAllowed = enumAllowed(dialogRoleRule.values, dialogRoleRule.omit);
 const sideRule = USAGE.sheet[6] satisfies { kind: "enum"; attribute: "data-side" };
 const sideAllowed = enumAllowed(sideRule.values, sideRule.omit);
-const sheetAttributes = WRAPPERS.Sheet.props.side;
+const sheetAttributes = sideRule.attribute;
 const menuToneRule = USAGE.menuItem[3] satisfies { kind: "enum"; attribute: "data-tone" };
 const menuItemRoles = comma((USAGE.menuItem[2] satisfies { kind: "enum"; attribute: "role" }).values);
-const menuAttributes = WRAPPERS.MenuItem.props.tone;
+const menuAttributes = menuToneRule.attribute;
 const headingSizeRule = USAGE.heading[1];
 const headingSizeAllowed = enumAllowed(headingSizeRule.values, headingSizeRule.omit);
 const filterRule = USAGE.comboboxList[6] satisfies { kind: "enum"; attribute: "data-filter" };
@@ -952,7 +961,7 @@ export const MESSAGES = {
     "ODD-TABLE-001",
     "this table class is on the wrong element. A span.odd-table-wrap does not scroll, so a wide table runs off the page. A p.odd-table-wrap ends before the table, so the table falls out of the border and the scroll. odd-table on anything but the table leaves the table at its content width. A span sort control is not in the Tab order, and an a sort control is underlined and skipped by Tab in Safari.",
     "odd-table-wrap on div, odd-table on table, odd-table-sort on button",
-    "put odd-table-wrap on the div around the table, odd-table on the table itself, and odd-table-sort on a button in the column header. In React, use TableWrap, Table, and TableSort.",
+    "put odd-table-wrap on the div around the table, odd-table on the table itself, and odd-table-sort on a button in the column header. In React, use Table.",
     "docs/usage/table.md#odd-table-001",
   ),
   "ODD-TABLE-002": text(
@@ -1003,6 +1012,48 @@ export const MESSAGES = {
     "odd-skip-link on a, with href=#id",
     "put odd-skip-link on an a whose href is # and the id of the main content, such as #main, and give that element the id.",
     "docs/usage/base.md#odd-skip-001",
+  ),
+  "ODD-TOOLTIP-001": text(
+    "ODD-TOOLTIP-001",
+    "odd-tooltip needs popover hint and role tooltip. Without popover hint, interestfor does not open it and it sits in the page as text. Without role tooltip, a screen reader does not read it as the tooltip of the button that points at it.",
+    "popover hint and role tooltip on the odd-tooltip element",
+    "set popover to hint and role to tooltip. In React, pass label to an icon-only Button, or tooltip to a Button, and it renders the tooltip.",
+    "docs/usage/tooltip.md#odd-tooltip-001",
+  ),
+  "ODD-HOVER-CARD-001": text(
+    "ODD-HOVER-CARD-001",
+    "odd-hover-card needs popover hint. Without a popover it sits in the page as content, and interestfor does not open it. An auto popover closes an open menu or popover when it opens and takes light dismiss, which a preview on hover should not.",
+    "popover hint on the odd-hover-card element",
+    "set popover to hint. In React, render HoverCard around the block that holds a HoverCardLink, and it renders the card.",
+    "docs/usage/hover-card.md#odd-hover-card-001",
+  ),
+  "ODD-LOG-001": text(
+    "ODD-LOG-001",
+    "odd-log has no role=log. Without it the log is not a live region, so a screen reader never reads the lines that arrive.",
+    "role=log on the odd-log element",
+    "set role=log. For a fast log, also set aria-live=off and announce what matters some other way. In React, render Log, and it writes the role.",
+    "docs/usage/log.md#odd-log-001",
+  ),
+  "ODD-LOG-002": text(
+    "ODD-LOG-002",
+    "odd-log has no tabindex=0. log.css caps its height and scrolls it, so a keyboard user cannot reach the older lines.",
+    "tabindex=0 on the odd-log element",
+    "set tabindex=0. In React, render Log, and it puts the log in the Tab order.",
+    "docs/usage/log.md#odd-log-002",
+  ),
+  "ODD-LOG-003": text(
+    "ODD-LOG-003",
+    "this log has role=log and no name. A screen reader announces an unnamed live region, so the user cannot tell which log a new line came from.",
+    "aria-label or aria-labelledby on the role=log element",
+    "name the log with aria-label, or point aria-labelledby at a visible heading. In React, pass label to Log.",
+    "docs/usage/log.md#odd-log-003",
+  ),
+  "ODD-LOG-004": text(
+    "ODD-LOG-004",
+    "this log line has a data-tone outside the four that log.css draws. The line gets no tint and no stripe, and its time still changes color.",
+    "info, success, warning, danger",
+    "set data-tone to info, success, warning, or danger, or remove it for a plain line. Put the level in the text too, since the tone is only color. In React, pass tone to LogLine.",
+    "docs/usage/log.md#odd-log-004",
   ),
   "ODD-GRID-001": text(
     "ODD-GRID-001",
@@ -1276,6 +1327,27 @@ export const MESSAGES = {
     "a written reason",
     "add a reason after the disable comment.",
     "docs/usage/general.md#odd-static-003",
+  ),
+  "ODD-REACT-001": text(
+    "ODD-REACT-001",
+    "an odd-design/react component writes role and the attributes it owns.",
+    "the component props",
+    "remove the attribute, and pass the prop that sets it, such as label, title, current, disabled, or busy.",
+    "docs/usage/react.md#odd-react-001",
+  ),
+  "ODD-REACT-002": text(
+    "ODD-REACT-002",
+    "an odd-design/react component writes its own data- attributes, and a system data- attribute repaints another family.",
+    "app data- attributes such as data-testid",
+    "remove the attribute, and pass the prop that sets it, such as tone, variant, size, side, or shape.",
+    "docs/usage/react.md#odd-react-002",
+  ),
+  "ODD-REACT-003": text(
+    "ODD-REACT-003",
+    "an odd- class in JSX hand-writes markup that odd-design/react renders, without the roles, ids, and wiring the component owns.",
+    "odd-design/react components",
+    "remove the class, and render the component this message names.",
+    "docs/usage/react.md#odd-react-003",
   ),
 } as const satisfies Record<UsageCode, string>;
 

@@ -1,7 +1,6 @@
 import { act, createElement } from "react";
 import { createRoot } from "react-dom/client";
 import { flush } from "odd-design/usage";
-import { Button } from "odd-design/react";
 import { test } from "vitest";
 
 test("flush from odd-design/usage reports the disabled button", () => {
@@ -42,7 +41,7 @@ test("afterEach fails a React test that never calls flush", async () => {
   const root = createRoot(host);
   Object.assign(globalThis, { IS_REACT_ACT_ENVIRONMENT: true });
   await act(() => {
-    root.render(createElement(Button, { disabled: true, children: "Save" }));
+    root.render(createElement("button", { className: "odd-button", disabled: true }, "Save"));
   });
 });
 

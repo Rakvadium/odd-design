@@ -472,6 +472,27 @@ const places: Record<string, readonly (readonly [string, number, number, string]
     ["ODD-SKIP-001", 4, 26, "href"],
     ["ODD-SKIP-001", 5, 26, "href"],
   ],
+  "odd-hover-card-001.bad.html": [
+    ["ODD-HOVER-CARD-001", 2, 1, "<div"],
+    ["ODD-HOVER-CARD-001", 3, 44, "popover"],
+    ["ODD-HOVER-CARD-001", 4, 44, "popover"],
+  ],
+  "odd-log-001.bad.html": [
+    ["ODD-LOG-001", 2, 1, "<div"],
+    ["ODD-LOG-001", 3, 22, "role"],
+  ],
+  "odd-log-002.bad.html": [
+    ["ODD-LOG-002", 2, 1, "<div"],
+    ["ODD-LOG-002", 3, 55, "tabindex"],
+  ],
+  "odd-log-003.bad.html": [["ODD-LOG-003", 2, 1, "<div"]],
+  "odd-log-004.bad.html": [["ODD-LOG-004", 2, 94, "data-tone"]],
+  "odd-tooltip-001.bad.html": [
+    ["ODD-TOOLTIP-001", 2, 1, "<span"],
+    ["ODD-TOOLTIP-001", 3, 42, "popover"],
+    ["ODD-TOOLTIP-001", 4, 1, "<span"],
+    ["ODD-TOOLTIP-001", 5, 59, "role"],
+  ],
   "odd-grid-001.bad.html": [
     ["ODD-GRID-001", 2, 1, "<div"],
     ["ODD-GRID-001", 2, 1, "<div"],
@@ -733,7 +754,7 @@ function storySources(dir: string): string[] {
 
 test("stories have no odd/usage findings, so a new warning fails here", () => {
   const files = storySources("stories");
-  expect(files).toContain("stories/mirrored/Button.stories.ts");
+  expect(files).toContain("stories/Showcase.stories.ts");
   const found = files.flatMap((file) =>
     lint(file).map((message) => [file, codeOf(message.message), message.line, message.column, message.ruleId, message.severity]),
   );

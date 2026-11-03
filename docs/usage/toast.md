@@ -2,13 +2,16 @@
 
 These codes apply to `odd-toaster`. Shared codes are in [General usage rules](general.md).
 
+In React, render `Toaster` from `odd-design/react` once, with a `label`. It writes `popover="manual"` and the name, so ODD-TOAST-002 and ODD-TOAST-003 cannot happen. [The React guide](react.md#show-a-toast) covers the props.
+
+```tsx
+<Toaster label="Notifications" />
+```
+
+The component compiles to this HTML:
+
 ```html
 <section class="odd-toaster" popover="manual" aria-label="Notifications"></section>
-<script type="module">
-  import { enhance, toast } from "odd-design/enhance";
-  enhance();
-  save.addEventListener("click", () => toast({ title: "Deck saved", tone: "success" }));
-</script>
 ```
 
 Write the region once per page, empty. `enhance()`, or `enhanceToaster(region)`, builds the list and a hidden polite live region inside it and opens it. `toast({ title, description, tone, duration, action })` shows a toast on the newest wired region still in the document, and throws when there is none. Only `toast()` writes `odd-toast` and its parts, so no rule covers them.
@@ -21,7 +24,7 @@ import { toast } from "odd-design/enhance";
 
 <body>
   {children}
-  <Toaster popover="manual" aria-label="Notifications" />
+  <Toaster label="Notifications" />
 </body>;
 
 <Button onClick={() => toast({ title: "Deck saved", description: "Midnight Control, version 15.", tone: "success" })}>Save</Button>;
@@ -41,7 +44,7 @@ Fails when `odd-toaster` has no `popover`, or a `popover` other than `manual`.
 
 An auto or hint popover, including `popover=""`, closes on any click outside it and when a menu opens, and every toast inside closes with it. So `enhanceToaster` wires only a manual popover. With no `popover` or any other value, it leaves the region unwired and returns a cleanup that does nothing. `toast()` then throws `toast() found no toaster`, or shows the toast on another wired region.
 
-Set `popover="manual"`. In React, `Toaster` requires it.
+Set `popover="manual"`. In React, `Toaster` writes it.
 
 ## ODD-TOAST-003
 
@@ -49,7 +52,7 @@ Fails when `odd-toaster` has no `aria-label`.
 
 A `section` with no name is no landmark, so a screen reader cannot jump to the notifications.
 
-Set `aria-label`, such as `Notifications`. In React, `Toaster` requires it.
+Set `aria-label`, such as `Notifications`. In React, `Toaster` writes it from `label`.
 
 ## ODD-TOAST-004
 

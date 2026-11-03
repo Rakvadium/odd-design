@@ -13,7 +13,7 @@ Overlays built on the Popover API and `<dialog>`, with no JS. `.odd-popover` ope
 
 ## How to get to it (user POV)
 
-- In Storybook, open **Components → Overlays**, which has Tooltip, Hover Card, Alert Dialog, Popover, and Sheet. Alert Dialog, Popover, and Sheet sort last because they load from `stories/mirrored/`. The React section has Alert Dialog, Popover, and Sheet.
+- In Storybook, open **Components → Overlays**, which has Tooltip, Hover Card, Alert Dialog, Popover, and Sheet. Alert Dialog, Popover, and Sheet sort last because they load from `stories/components/`. The React section has Alert Dialog, Popover, and Sheet.
 
 ## Driving it with ctl.ts
 
@@ -33,19 +33,19 @@ Preconditions:
 
 Build the composed Storybook and serve it, as in the React Field section of `forms.md`. Open `http://127.0.0.1:6106/?path=/story/react_components-overlays--popover`. The preview is the Popover story built from two `Button` triggers and two `Popover` parts holding `Choice`, `Separator`, and `Button`, with the same ids and text as `components-overlays--popover`. The browser owns the open state on both sides, so the Popover recipe above works on the React side too.
 
-The pair sweep checks the closed story against the `aria` literal in `stories/mirrored/Popover.stories.ts`, two `button "Filters"` lines, and the two screenshots are byte-identical. Closed parity cannot see the open state, so `bunx playwright test e2e/behavior.spec.ts --project firefox -g popover` runs the anchor, Escape, focus-return, and flip test once per Storybook.
+The pair sweep checks the closed story against the `aria` literal in `stories/components/Popover.stories.tsx`, two `button "Filters"` lines, and the two screenshots are byte-identical. Closed parity cannot see the open state, so `bunx playwright test e2e/behavior.spec.ts --project firefox -g popover` runs the anchor, Escape, focus-return, and flip test once per Storybook.
 
 ## React Alert Dialog
 
 In the same composed Storybook, open `http://127.0.0.1:6106/?path=/story/react_components-overlays--alert-dialog`. The preview is the Alert Dialog story built from `Button`, `Dialog` with `role="alertdialog"`, a `div.odd-dialog-body`, and `DialogActions`, with the same ids and text as `components-overlays--alert-dialog`. The Alert dialog recipe above works on the React side too. Focus starts on `Keep editing` on both sides.
 
-The pair sweep checks the closed story against the `aria` literal in `stories/mirrored/AlertDialog.stories.ts`, the one `button "Discard changes…"` line. `bunx playwright test e2e/behavior.spec.ts --project firefox -g "alert dialog"` runs the backdrop, Escape, initial-focus, and focus-return test once per Storybook.
+The pair sweep checks the closed story against the `aria` literal in `stories/components/AlertDialog.stories.tsx`, the one `button "Discard changes…"` line. `bunx playwright test e2e/behavior.spec.ts --project firefox -g "alert dialog"` runs the backdrop, Escape, initial-focus, and focus-return test once per Storybook.
 
 ## React Sheet
 
 In the same composed Storybook, open `http://127.0.0.1:6106/?path=/story/react_components-overlays--sheet`. The preview is the Sheet story built from three `Button` triggers and three `Sheet` parts, each with a `SheetHeader`, a `div.odd-sheet-body` holding a `Field` and a `fieldset` of `Choice`s, and a `SheetFooter`, with the same ids and text as `components-overlays--sheet`. The end sheet has no `side`. The Sheets recipe above works on the React side too.
 
-The pair sweep checks the closed story against the `aria` literal in `stories/mirrored/Sheet.stories.ts`, the three `button` lines `Filters (end)`, `Start`, and `Bottom`. `bunx playwright test e2e/behavior.spec.ts --project firefox -g sheets` runs the edge, initial-focus, Escape, and backdrop test once per Storybook.
+The pair sweep checks the closed story against the `aria` literal in `stories/components/Sheet.stories.tsx`, the three `button` lines `Filters (end)`, `Start`, and `Bottom`. `bunx playwright test e2e/behavior.spec.ts --project firefox -g sheets` runs the edge, initial-focus, Escape, and backdrop test once per Storybook.
 
 ## Gotchas
 

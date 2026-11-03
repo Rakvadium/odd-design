@@ -283,6 +283,30 @@ export const USAGE = {
     { kind: "required-attribute", code: "ODD-SKIP-001", element: "a", attribute: "href" },
     { kind: "fragment-link", code: "ODD-SKIP-001", attribute: "href" },
   ] as const satisfies readonly UsageRule[],
+  tooltip: [
+    { kind: "class", code: "ODD-TOOLTIP-001", className: "odd-tooltip" },
+    { kind: "required-attribute", code: "ODD-TOOLTIP-001", attribute: "popover" },
+    { kind: "enum", code: "ODD-TOOLTIP-001", attribute: "popover", values: ["hint"], omit: [] },
+    { kind: "required-attribute", code: "ODD-TOOLTIP-001", attribute: "role" },
+    { kind: "enum", code: "ODD-TOOLTIP-001", attribute: "role", values: ["tooltip"], omit: [] },
+  ] as const satisfies readonly UsageRule[],
+  hoverCard: [
+    { kind: "class", code: "ODD-HOVER-CARD-001", className: "odd-hover-card" },
+    { kind: "required-attribute", code: "ODD-HOVER-CARD-001", attribute: "popover" },
+    { kind: "enum", code: "ODD-HOVER-CARD-001", attribute: "popover", values: ["hint"], omit: [] },
+  ] as const satisfies readonly UsageRule[],
+  log: [
+    { kind: "class", code: "ODD-LOG-001", className: "odd-log" },
+    { kind: "required-attribute", code: "ODD-LOG-001", attribute: "role" },
+    { kind: "enum", code: "ODD-LOG-001", attribute: "role", values: ["log"], omit: [] },
+    { kind: "required-attribute", code: "ODD-LOG-002", attribute: "tabindex" },
+    { kind: "enum", code: "ODD-LOG-002", attribute: "tabindex", values: ["0"], omit: [] },
+    { kind: "accessible-name", code: "ODD-LOG-003", attribute: "role", names: ["aria-label", "aria-labelledby"] },
+  ] as const satisfies readonly UsageRule[],
+  logLine: [
+    { kind: "class", code: "ODD-LOG-004", className: "odd-log-line" },
+    { kind: "enum", code: "ODD-LOG-004", attribute: "data-tone", values: ["info", "success", "warning", "danger"], omit: [] },
+  ] as const satisfies readonly UsageRule[],
   grid: [
     { kind: "class", code: "ODD-GRID-001", className: "odd-grid" },
     { kind: "child-value", code: "ODD-GRID-001", attribute: "data-span", values: ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"] },
@@ -372,150 +396,158 @@ export const USAGE = {
   ] as const satisfies readonly UsageRule[],
 };
 
-export type WrapperElement = string | { readonly attribute: string; readonly present: string; readonly absent: string };
+/** Every rendering export of odd-design/react. */
+export type ExportName =
+  | "Alert"
+  | "AlertDialog"
+  | "Avatar"
+  | "AvatarGroup"
+  | "Badge"
+  | "Breadcrumb"
+  | "Button"
+  | "Card"
+  | "Checkbox"
+  | "Code"
+  | "Combobox"
+  | "ComboboxOption"
+  | "Dialog"
+  | "Disclosure"
+  | "Eyebrow"
+  | "Grid"
+  | "GridItem"
+  | "Heading"
+  | "HoverCard"
+  | "HoverCardLink"
+  | "Input"
+  | "Kbd"
+  | "Log"
+  | "LogLine"
+  | "Menu"
+  | "MenuCheckboxItem"
+  | "MenuGroup"
+  | "MenuItem"
+  | "MenuRadioGroup"
+  | "MenuRadioItem"
+  | "MenuSeparator"
+  | "Meter"
+  | "Muted"
+  | "Popover"
+  | "Pre"
+  | "Progress"
+  | "RadioGroup"
+  | "Row"
+  | "Scope"
+  | "Search"
+  | "Segmented"
+  | "Select"
+  | "Separator"
+  | "Sheet"
+  | "Shell"
+  | "Skeleton"
+  | "SkipLink"
+  | "Slider"
+  | "Spinner"
+  | "Stack"
+  | "StatValue"
+  | "Switch"
+  | "Table"
+  | "Tabs"
+  | "TextLink"
+  | "Textarea"
+  | "Toaster"
+  | "VisuallyHidden";
 
-export type Wrapper = {
-  readonly source: string;
-  readonly className: string;
-  readonly props: Readonly<Record<string, string>>;
-  readonly element: WrapperElement;
+type Owner = {
+  /** The exports whose rendered markup carries the class. */
+  readonly by: readonly ExportName[];
+  /** How a React app reaches the class, when no export renders it. */
+  readonly via?: string;
 };
 
-export const WRAPPERS = {
-  Button: {
-    source: "odd-design/react",
-    className: "odd-button",
-    props: { variant: "data-variant", size: "data-size", iconOnly: "data-icon-only" },
-    element: { attribute: "href", present: "a", absent: "button" },
-  },
-  Field: { source: "odd-design/react", className: "odd-field", props: {}, element: "div" },
-  Label: { source: "odd-design/react", className: "odd-label", props: {}, element: "label" },
-  Input: { source: "odd-design/react", className: "odd-input", props: {}, element: "input" },
-  Textarea: { source: "odd-design/react", className: "odd-textarea", props: {}, element: "textarea" },
-  Select: { source: "odd-design/react", className: "odd-select", props: {}, element: "select" },
-  Hint: { source: "odd-design/react", className: "odd-hint", props: {}, element: "p" },
-  FieldError: { source: "odd-design/react", className: "odd-error", props: {}, element: "p" },
-  Choice: { source: "odd-design/react", className: "odd-choice", props: {}, element: "label" },
-  Switch: { source: "odd-design/react", className: "odd-switch", props: {}, element: "input" },
-  Segmented: { source: "odd-design/react", className: "odd-segmented", props: {}, element: "fieldset" },
-  Badge: { source: "odd-design/react", className: "odd-badge", props: { tone: "data-tone", solid: "data-solid" }, element: "span" },
-  Alert: { source: "odd-design/react", className: "odd-alert", props: { tone: "data-tone" }, element: "div" },
-  AlertTitle: { source: "odd-design/react", className: "odd-alert-title", props: {}, element: "p" },
-  Avatar: { source: "odd-design/react", className: "odd-avatar", props: { size: "data-size" }, element: "span" },
-  AvatarGroup: { source: "odd-design/react", className: "odd-avatar-group", props: {}, element: "div" },
-  Separator: { source: "odd-design/react", className: "odd-separator", props: {}, element: "hr" },
-  Skeleton: { source: "odd-design/react", className: "odd-skeleton", props: { shape: "data-shape" }, element: "div" },
-  Card: { source: "odd-design/react", className: "odd-card", props: { interactive: "data-interactive" }, element: "article" },
-  CardLink: { source: "odd-design/react", className: "odd-card-link", props: {}, element: "a" },
-  CardFooter: { source: "odd-design/react", className: "odd-card-footer", props: {}, element: "div" },
-  Disclosure: { source: "odd-design/react", className: "odd-disclosure", props: {}, element: "details" },
-  Tabs: { source: "odd-design/react", className: "odd-tabs", props: {}, element: "div" },
-  Search: { source: "odd-design/react", className: "odd-search", props: {}, element: "search" },
-  Slider: { source: "odd-design/react", className: "odd-slider", props: {}, element: "input" },
-  Meter: { source: "odd-design/react", className: "odd-meter", props: { tone: "data-tone" }, element: "meter" },
-  Progress: { source: "odd-design/react", className: "odd-progress", props: { tone: "data-tone" }, element: "progress" },
-  Toaster: { source: "odd-design/react", className: "odd-toaster", props: {}, element: "section" },
-  Popover: { source: "odd-design/react", className: "odd-popover", props: {}, element: "div" },
-  Dialog: { source: "odd-design/react", className: "odd-dialog", props: {}, element: "dialog" },
-  DialogActions: { source: "odd-design/react", className: "odd-dialog-actions", props: {}, element: "div" },
-  Sheet: { source: "odd-design/react", className: "odd-sheet", props: { side: "data-side" }, element: "dialog" },
-  SheetHeader: { source: "odd-design/react", className: "odd-sheet-header", props: {}, element: "div" },
-  SheetFooter: { source: "odd-design/react", className: "odd-sheet-footer", props: {}, element: "div" },
-  Menu: { source: "odd-design/react", className: "odd-menu", props: {}, element: "div" },
-  MenuItem: { source: "odd-design/react", className: "odd-menu-item", props: { tone: "data-tone" }, element: "button" },
-  TableWrap: { source: "odd-design/react", className: "odd-table-wrap", props: {}, element: "div" },
-  Table: { source: "odd-design/react", className: "odd-table", props: {}, element: "table" },
-  TableSort: { source: "odd-design/react", className: "odd-table-sort", props: {}, element: "button" },
-  TextLink: { source: "odd-design/react", className: "odd-link", props: {}, element: "a" },
-  Spinner: { source: "odd-design/react", className: "odd-spinner", props: {}, element: "span" },
-  Combobox: { source: "odd-design/react", className: "odd-combobox", props: {}, element: "div" },
-  ComboboxList: { source: "odd-design/react", className: "odd-combobox-list", props: {}, element: "div" },
-  ComboboxOption: { source: "odd-design/react", className: "odd-combobox-option", props: {}, element: "div" },
-  Breadcrumb: { source: "odd-design/react", className: "odd-breadcrumb", props: {}, element: "nav" },
-  Kbd: { source: "odd-design/react", className: "odd-kbd", props: {}, element: "kbd" },
-  Code: { source: "odd-design/react", className: "odd-code", props: {}, element: "code" },
-  Pre: { source: "odd-design/react", className: "odd-pre", props: {}, element: "pre" },
-} as const satisfies Record<string, Wrapper>;
+/** Every odd- class, and who renders it. A class's ODD-REACT-003 message names its owners. */
+export const CLASSES = {
+  "odd-alert": { by: ["Alert"] },
+  "odd-alert-title": { by: ["Alert"] },
+  "odd-avatar": { by: ["Avatar"] },
+  "odd-avatar-group": { by: ["AvatarGroup"] },
+  "odd-badge": { by: ["Badge"] },
+  "odd-breadcrumb": { by: ["Breadcrumb"] },
+  "odd-button": { by: ["Button"] },
+  "odd-card": { by: ["Card"] },
+  "odd-card-footer": { by: ["Card"] },
+  "odd-card-link": { by: ["Card"] },
+  "odd-card-title": { by: ["Card"] },
+  "odd-choice": { by: ["Checkbox", "Switch", "RadioGroup"] },
+  "odd-code": { by: ["Code"] },
+  "odd-combobox": { by: ["Combobox"] },
+  "odd-combobox-list": { by: ["Combobox"] },
+  "odd-combobox-option": { by: ["ComboboxOption"] },
+  "odd-dialog": { by: ["Dialog", "AlertDialog"] },
+  "odd-dialog-actions": { by: ["Dialog", "AlertDialog"] },
+  "odd-dialog-body": { by: ["Dialog", "AlertDialog"] },
+  "odd-dialog-title": { by: ["Dialog", "AlertDialog", "Sheet"] },
+  "odd-disclosure": { by: ["Disclosure"] },
+  "odd-error": { by: ["Input", "Textarea", "Select", "Slider", "Combobox"] },
+  "odd-eyebrow": { by: ["Eyebrow"] },
+  "odd-field": { by: ["Input", "Textarea", "Select", "Slider", "Combobox"] },
+  "odd-grid": { by: ["Grid", "Shell"] },
+  "odd-heading": { by: ["Heading"] },
+  "odd-hint": { by: ["Input", "Textarea", "Select", "Slider", "Combobox"] },
+  "odd-hover-card": { by: ["HoverCard"] },
+  "odd-input": { by: ["Input", "Search", "Combobox"] },
+  "odd-kbd": { by: ["Kbd"] },
+  "odd-label": { by: ["Input", "Textarea", "Select", "RadioGroup", "Slider", "Combobox"] },
+  "odd-link": { by: ["TextLink", "HoverCardLink"] },
+  "odd-log": { by: ["Log"] },
+  "odd-log-line": { by: ["LogLine"] },
+  "odd-menu": { by: ["Menu"] },
+  "odd-menu-item": { by: ["MenuItem", "MenuCheckboxItem", "MenuRadioItem"] },
+  "odd-menu-label": { by: ["MenuGroup", "MenuRadioGroup"] },
+  "odd-menu-shortcut": { by: ["MenuItem"] },
+  "odd-meter": { by: ["Meter"] },
+  "odd-muted": { by: ["Muted"] },
+  "odd-popover": { by: ["Popover"] },
+  "odd-pre": { by: ["Pre"] },
+  "odd-progress": { by: ["Progress"] },
+  "odd-row": { by: ["Row"] },
+  "odd-scope": { by: ["Scope"] },
+  "odd-search": { by: ["Search"] },
+  "odd-segmented": { by: ["Segmented"] },
+  "odd-select": { by: ["Select"] },
+  "odd-separator": { by: ["Separator"] },
+  "odd-sheet": { by: ["Sheet"] },
+  "odd-sheet-body": { by: ["Sheet"] },
+  "odd-sheet-footer": { by: ["Sheet"] },
+  "odd-sheet-header": { by: ["Sheet"] },
+  "odd-shell": { by: ["Shell"] },
+  "odd-shell-actions": { by: ["Shell"] },
+  "odd-shell-header": { by: ["Shell"] },
+  "odd-shell-main": { by: ["Shell"] },
+  "odd-shell-status": { by: ["Shell"] },
+  "odd-skeleton": { by: ["Skeleton"] },
+  "odd-skip-link": { by: ["SkipLink"] },
+  "odd-slider": { by: ["Slider"] },
+  "odd-spinner": { by: ["Spinner"] },
+  "odd-stack": { by: ["Stack", "RadioGroup"] },
+  "odd-stat-value": { by: ["StatValue", "Slider"] },
+  "odd-switch": { by: ["Switch"] },
+  "odd-table": { by: ["Table"] },
+  "odd-table-sort": { by: ["Table"] },
+  "odd-table-wrap": { by: ["Table"] },
+  "odd-tabs": { by: ["Tabs"] },
+  "odd-textarea": { by: ["Textarea"] },
+  "odd-toast": { by: [], via: "toast() from odd-design/enhance" },
+  "odd-toast-body": { by: [], via: "toast() from odd-design/enhance" },
+  "odd-toast-description": { by: [], via: "toast() from odd-design/enhance" },
+  "odd-toast-title": { by: [], via: "toast() from odd-design/enhance" },
+  "odd-toaster": { by: ["Toaster"] },
+  "odd-tooltip": { by: ["Button", "TextLink"] },
+  "odd-visually-hidden": { by: ["VisuallyHidden", "Button", "Input", "Textarea", "Select", "Search", "Slider", "Combobox", "Table"] },
+} as const satisfies Record<`odd-${string}`, Owner>;
 
-export const CLASS_REGISTRY = [
-  "odd-alert",
-  "odd-alert-title",
-  "odd-avatar",
-  "odd-avatar-group",
-  "odd-badge",
-  "odd-breadcrumb",
-  "odd-button",
-  "odd-card",
-  "odd-card-footer",
-  "odd-card-link",
-  "odd-card-title",
-  "odd-choice",
-  "odd-code",
-  "odd-combobox",
-  "odd-combobox-list",
-  "odd-combobox-option",
-  "odd-dialog",
-  "odd-dialog-actions",
-  "odd-dialog-body",
-  "odd-dialog-title",
-  "odd-disclosure",
-  "odd-error",
-  "odd-eyebrow",
-  "odd-field",
-  "odd-grid",
-  "odd-heading",
-  "odd-hint",
-  "odd-hover-card",
-  "odd-input",
-  "odd-kbd",
-  "odd-label",
-  "odd-link",
-  "odd-log",
-  "odd-log-line",
-  "odd-menu",
-  "odd-menu-item",
-  "odd-menu-label",
-  "odd-menu-shortcut",
-  "odd-meter",
-  "odd-muted",
-  "odd-popover",
-  "odd-pre",
-  "odd-progress",
-  "odd-row",
-  "odd-scope",
-  "odd-search",
-  "odd-segmented",
-  "odd-select",
-  "odd-separator",
-  "odd-sheet",
-  "odd-sheet-body",
-  "odd-sheet-footer",
-  "odd-sheet-header",
-  "odd-shell",
-  "odd-shell-actions",
-  "odd-shell-header",
-  "odd-shell-main",
-  "odd-shell-status",
-  "odd-skeleton",
-  "odd-skip-link",
-  "odd-slider",
-  "odd-spinner",
-  "odd-stack",
-  "odd-stat-value",
-  "odd-switch",
-  "odd-table",
-  "odd-table-sort",
-  "odd-table-wrap",
-  "odd-tabs",
-  "odd-textarea",
-  "odd-toast",
-  "odd-toast-body",
-  "odd-toast-description",
-  "odd-toast-title",
-  "odd-toaster",
-  "odd-tooltip",
-  "odd-visually-hidden",
-] as const;
+export type ClassName = keyof typeof CLASSES;
+
+export const CLASS_REGISTRY = Object.keys(CLASSES) as readonly ClassName[];
 
 export const VOCABULARY = {
   alert: ["data-tone"],
@@ -584,6 +616,7 @@ export type MenuRule = (typeof USAGE.menu)[number];
 export type MenuItemRule = (typeof USAGE.menuItem)[number];
 export type TableWrapRule = (typeof USAGE.tableWrap)[number];
 export type TableRule = (typeof USAGE.table)[number];
+export type LogLineRule = (typeof USAGE.logLine)[number];
 export type TableSortRule = (typeof USAGE.tableSort)[number];
 export type LinkRule = (typeof USAGE.link)[number];
 export type SpinnerRule = (typeof USAGE.spinner)[number];
@@ -593,3 +626,6 @@ export type ComboboxOptionRule = (typeof USAGE.comboboxOption)[number];
 export type BreadcrumbRule = (typeof USAGE.breadcrumb)[number];
 export type KbdRule = (typeof USAGE.kbd)[number];
 export type CodeRule = (typeof USAGE.code)[number];
+export type GridRule = (typeof USAGE.grid)[number];
+export type HeadingRule = (typeof USAGE.heading)[number];
+export type EyebrowRule = (typeof USAGE.eyebrow)[number];

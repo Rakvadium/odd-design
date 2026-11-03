@@ -11,7 +11,7 @@ The surface components are cards (`.odd-card`, where `data-interactive` plus `.o
 
 ## How to get to it (user POV)
 
-- In Storybook, open **Components → Surfaces**, which has Badge, Card, Dialog, and Disclosure in both sections. Every Surfaces story loads from `stories/mirrored/`.
+- In Storybook, open **Components → Surfaces**, which has Badge, Card, Dialog, and Disclosure in both sections. Every Surfaces story loads from `stories/components/`.
 
 ## Driving it with ctl.ts
 
@@ -29,21 +29,21 @@ Preconditions:
 
 Build the composed Storybook and serve it, as in the React Field section of `forms.md`. Open `http://127.0.0.1:6106/?path=/story/react_components-surfaces--badge`. The preview is the Badge story built from `Badge`. It shows a soft row and a solid row of the six tones, the same as `components-surfaces--badge`.
 
-Run the pair sweep with `bunx playwright test e2e/usage.spec.ts --project firefox`. The Badge pair matches the `aria` literal in `stories/mirrored/Badge.stories.ts`, and the two screenshots are byte-identical.
+Run the pair sweep with `bunx playwright test e2e/usage.spec.ts --project firefox`. The Badge pair matches the `aria` literal in `stories/components/Badge.stories.tsx`, and the two screenshots are byte-identical.
 
 ## React Card
 
-In the same composed Storybook, open `http://127.0.0.1:6106/?path=/story/react_components-surfaces--card`. The preview is the Card story built from `Card`, `CardLink`, `CardFooter`, and `Badge`, the same as `components-surfaces--card`. The pair sweep matches the `aria` literal in `stories/mirrored/Card.stories.ts`, which has one link, "Ember Aggro", inside the interactive card's level-3 heading. The two screenshots are byte-identical. The Card link recipe above works on the React side too.
+In the same composed Storybook, open `http://127.0.0.1:6106/?path=/story/react_components-surfaces--card`. The preview is the Card story built from `Card`, `CardLink`, `CardFooter`, and `Badge`, the same as `components-surfaces--card`. The pair sweep matches the `aria` literal in `stories/components/Card.stories.tsx`, which has one link, "Ember Aggro", inside the interactive card's level-3 heading. The two screenshots are byte-identical. The Card link recipe above works on the React side too.
 
 ## React Disclosure
 
-In the same composed Storybook, open `http://127.0.0.1:6106/?path=/story/react_components-surfaces--disclosure`. The preview is the Disclosure story built from `Disclosure` with native `summary` and `div` children, the same as `components-surfaces--disclosure`. The pair sweep matches the `aria` literal in `stories/mirrored/Disclosure.stories.ts`, three groups with the first open, and the two screenshots are byte-identical. The Disclosure exclusive recipe above works on the React side too.
+In the same composed Storybook, open `http://127.0.0.1:6106/?path=/story/react_components-surfaces--disclosure`. The preview is the Disclosure story built from `Disclosure` with native `summary` and `div` children, the same as `components-surfaces--disclosure`. The pair sweep matches the `aria` literal in `stories/components/Disclosure.stories.tsx`, three groups with the first open, and the two screenshots are byte-identical. The Disclosure exclusive recipe above works on the React side too.
 
 ## React Dialog
 
 In the same composed Storybook, open `http://127.0.0.1:6106/?path=/story/react_components-surfaces--dialog`. The preview is the Dialog story built from `Button`, `Dialog`, a `div.odd-dialog-body`, and `DialogActions`, with the same ids and text as `components-surfaces--dialog`. The browser owns the open state on both sides, so the Dialog open and close recipes above work on the React side too. Focus starts on `Close` on both sides, because `showModal()` focuses the first button and neither side writes `autofocus`.
 
-The pair sweep checks the closed story against the `aria` literal in `stories/mirrored/Dialog.stories.ts`, the one `button "Delete deck…"` line, because a closed dialog is `display: none`. The two screenshots are byte-identical. Closed parity cannot see the open state, so `bunx playwright test e2e/behavior.spec.ts --project firefox -g "closedby=any|alert dialog"` runs the backdrop test and the alert-dialog test once per Storybook.
+The pair sweep checks the closed story against the `aria` literal in `stories/components/Dialog.stories.tsx`, the one `button "Delete deck…"` line, because a closed dialog is `display: none`. The two screenshots are byte-identical. Closed parity cannot see the open state, so `bunx playwright test e2e/behavior.spec.ts --project firefox -g "closedby=any|alert dialog"` runs the backdrop test and the alert-dialog test once per Storybook.
 
 ## Gotchas
 

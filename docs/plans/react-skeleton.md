@@ -74,6 +74,9 @@ The scene keeps `aria-hidden="true"` on each `article.odd-card` and adds it to a
 Each item is the default the build uses. Each one can be reversed after review.
 
 1. **The caller writes `aria-hidden="true"`.** The part could set it, but ESLint and the HTML Storybook read only the `WRAPPERS` row. A correct `<Skeleton />` would then fail ESLint, and the two Storybooks would render different DOM. The Choice port turned down a fixed-attributes field for Switch for the same reason.
+
+Superseded: `docs/plans/react-drop-in.md` makes components own their tags, ids, and ARIA, so this no longer holds. The state-ownership decisions here stay.
+
 2. **`aria-hidden` is the string `"true"`.** `aria-hidden={true}` and a bare `aria-hidden` fail TypeScript, although React renders both as `"true"`. ESLint reads the bare form as empty, so the string is the one spelling that every checker accepts.
 3. **A missing `aria-hidden` prints "Property missing" in TypeScript, not the code.** Switch and AvatarGroup do the same. Printing the code belongs in `Pinned` for all three parts, as a follow-up.
 4. **One code for text, `aria-busy`, `role`, `aria-label`, and `aria-labelledby`.** They have one fix. The cross-judge moved `aria-label` and `aria-labelledby` in from the Grok candidate.

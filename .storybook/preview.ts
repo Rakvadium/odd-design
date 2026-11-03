@@ -1,17 +1,32 @@
-import type { Preview } from "@storybook/html-vite";
+import type { Decorator, Preview } from "@storybook/html-vite";
 import "@fontsource-variable/outfit";
 import "@fontsource-variable/jetbrains-mono";
 import "@fontsource-variable/bricolage-grotesque";
 import "../src/css/index.css";
 import { applyAppearance, CHROMES, MODES, PALETTES, type Appearance } from "../src/js/appearance.ts";
 import { A11Y_OPTIONS } from "./a11y.ts";
-import { avatarFallback, closedByFallback, enhanceCombobox, enhanceMenu, enhanceSelectAll, enhanceTabs, enhanceToaster, interestForFallback } from "../src/js/enhance.ts";
-import { mirrorOf, toHtml } from "../stories/mirror.ts";
+import { renderToStaticMarkup } from "react-dom/server";
+import { avatarFallback, closedByFallback, enhance, interestForFallback } from "../src/js/enhance.ts";
+import { sceneOf } from "../stories/story.ts";
 
-// Page-wide fallbacks, installed once as an app would. Each is a no-op where the browser has the feature.
-interestForFallback();
-closedByFallback();
+// A page-wide fallback, installed once as an app would. It is a no-op where the browser has the feature.
 avatarFallback();
+
+/** Sets the toolbar's appearance on the page. The React Storybook uses it alone. */
+export const appearance: Decorator = (story, { globals }) => {
+  applyAppearance(globals as Appearance);
+  return story();
+};
+
+// The HTML stories rely on page-wide interest and closedby fallbacks. The React Storybook leaves them out,
+// so its tooltips, hover cards, and dismissible dialogs prove that the components install them themselves.
+let pageFallbacks: readonly (() => void)[] | undefined;
+const fallbacks: Decorator = (story) => {
+  pageFallbacks ??= [interestForFallback(), closedByFallback()];
+  return story();
+};
+
+let unenhance: (() => void) | undefined;
 
 const toolbar = (title: string, icon: string, items: readonly string[]) => ({
   description: title,
@@ -25,12 +40,7 @@ const preview: Preview = {
     mode: toolbar("Mode", "mirror", MODES),
   },
   initialGlobals: { chrome: "calm", palette: "default", mode: "system" },
-  decorators: [
-    (story, { globals }) => {
-      applyAppearance(globals as Appearance);
-      return story();
-    },
-  ],
+  decorators: [appearance, fallbacks],
   parameters: {
     layout: "padded",
     a11y: { test: "error", options: A11Y_OPTIONS },
@@ -38,15 +48,14 @@ const preview: Preview = {
       storySort: { order: ["Introduction", "Showcase", "Foundations", "Components"] },
     },
   },
+  // React only produces the string. The canvas runs the compiled markup with vanilla enhance() and no React.
   render: (args, { parameters, canvasElement }) => {
+    unenhance?.();
+    unenhance = undefined;
     queueMicrotask(() => {
-      canvasElement.querySelectorAll<HTMLElement>(".odd-tabs").forEach(enhanceTabs);
-      canvasElement.querySelectorAll<HTMLElement>(".odd-toaster").forEach(enhanceToaster);
-      canvasElement.querySelectorAll<HTMLElement>('.odd-menu[role="menu"]').forEach(enhanceMenu);
-      canvasElement.querySelectorAll<HTMLElement>(".odd-combobox").forEach(enhanceCombobox);
-      canvasElement.querySelectorAll<HTMLTableElement>("table:has([data-select-all])").forEach(enhanceSelectAll);
+      unenhance = enhance(canvasElement);
     });
-    return toHtml(mirrorOf(parameters).scene(args));
+    return renderToStaticMarkup(sceneOf(parameters)(args));
   },
 };
 

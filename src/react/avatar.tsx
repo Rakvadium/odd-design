@@ -1,24 +1,70 @@
-import type { ReactElement } from "react";
-import type { AvatarGroupRule, AvatarRule } from "../js/usage/contract.ts";
-import { part, type Contract, type Message, type Native, type Values } from "./part.ts";
+"use client";
+
+import { useState, type ComponentPropsWithRef, type ReactElement, type ReactNode } from "react";
+import type { AvatarRule } from "../js/usage/contract.ts";
+import { cx, rejectBlank, type Passthrough, type Root, type Values } from "./own.ts";
 
 export type AvatarSize = Values<AvatarRule, "data-size">;
 
-interface AvatarContract extends Contract<"Avatar", AvatarRule> {
-  role?: Values<AvatarRule, "role">;
-  /** avatarFallback replaces the children of an avatar with data-initials, and React throws on its next render of them. Render the initials yourself when the image fails. */
-  "data-initials"?: never;
+type Named = "aria-label" | "aria-labelledby";
+
+export type AvatarProps = Root &
+  Passthrough<"span", Named | "aria-hidden" | "data-initials"> & {
+    /** The person's name: the image's alt text, or the name of the initials. */
+    readonly name: string;
+    readonly src?: string;
+    /** Shown when there is no image, or the image fails to load. The first letters of the first two words of name when omitted. */
+    readonly initials?: string;
+    readonly size?: AvatarSize;
+    /** Beside a visible name, so a screen reader does not read the name twice. */
+    readonly decorative?: boolean;
+  };
+
+function initialsOf(name: string): string {
+  return name
+    .trim()
+    .split(/\s+/)
+    .slice(0, 2)
+    .map((word) => Array.from(word)[0] ?? "")
+    .join("")
+    .toUpperCase();
 }
 
-export interface AvatarProps extends AvatarContract, Native<"Avatar", keyof AvatarContract> {}
+/**
+ * span.odd-avatar with an img, or with initials when there is no image or it fails. The fallback is
+ * React state, and data-initials is owned, so a page-level avatarFallback() never replaces children React renders.
+ */
+export function Avatar({ name, src, initials, size, decorative, className, ...rest }: AvatarProps): ReactElement {
+  const [failed, setFailed] = useState<string>();
+  const label = rejectBlank(name, "ODD-AVATAR-004");
+  const own = { ...(rest as ComponentPropsWithRef<"span">), className: cx("odd-avatar", className), "data-size": size, "aria-hidden": decorative ? ("true" as const) : undefined };
+  if (src !== undefined && failed !== src) {
+    return (
+      <span {...own}>
+        <img src={src} alt={decorative ? "" : label} onError={() => setFailed(src)} />
+      </span>
+    );
+  }
+  return (
+    <span {...own} role={decorative ? undefined : "img"} aria-label={decorative ? undefined : label}>
+      {initials ?? initialsOf(label)}
+    </span>
+  );
+}
 
-interface AvatarGroupContract extends Contract<"AvatarGroup", AvatarGroupRule> {}
+export type AvatarGroupProps = Root &
+  Passthrough<"div", Named> & {
+    /** The group's name, such as "Collaborators". */
+    readonly label: string;
+    /** Avatars. Each sets its own size. */
+    readonly children: ReactNode;
+  };
 
-export interface AvatarGroupProps extends AvatarGroupContract, Native<"AvatarGroup", keyof AvatarGroupContract> {}
-
-type Unnamed<Rule> = { [Name in Extract<Rule, { kind: "accessible-name"; names: readonly string[] }>["names"][number]]?: undefined };
-
-type NamedWhenRole<P, Rule> = P extends { role: Values<Rule, "role"> } & Unnamed<Rule> ? Message<"ODD-AVATAR-004"> : P;
-
-export const Avatar: <const P extends AvatarProps>(props: NamedWhenRole<P, AvatarRule> & AvatarProps) => ReactElement = part("Avatar");
-export const AvatarGroup: <const P extends AvatarGroupProps>(props: NamedWhenRole<P, AvatarGroupRule> & AvatarGroupProps) => ReactElement = part("AvatarGroup");
+/** div.odd-avatar-group[role=group], named. */
+export function AvatarGroup({ label, className, children, ...rest }: AvatarGroupProps): ReactElement {
+  return (
+    <div {...(rest as ComponentPropsWithRef<"div">)} className={cx("odd-avatar-group", className)} role="group" aria-label={rejectBlank(label, "ODD-AVATAR-004")}>
+      {children}
+    </div>
+  );
+}

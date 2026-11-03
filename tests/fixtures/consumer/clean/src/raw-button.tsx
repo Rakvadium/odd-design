@@ -1,1 +1,1 @@
-export const view = <button className="odd-button">Save</button>;
+export const view = <button type="button" className="save">Save</button>;

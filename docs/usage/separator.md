@@ -2,16 +2,29 @@
 
 These codes apply to `odd-separator`. Shared codes are in [General usage rules](general.md).
 
+In React, render `Separator` from `odd-design/react` and pass `orientation="vertical"` inside a `Row` for a line between inline items. [The React guide](react.md#split-sections-with-a-separator) covers the props.
+
+```tsx
+<Separator />
+<Row>
+  <TextLink href="/edit">Edit</TextLink>
+  <Separator orientation="vertical" />
+  <TextLink href="/export">Export</TextLink>
+</Row>
+```
+
+The component compiles to this HTML:
+
 ```html
 <hr class="odd-separator">
 <div class="odd-row">
-  <a href="/edit">Edit</a>
+  <a class="odd-link" href="/edit">Edit</a>
   <hr class="odd-separator" aria-orientation="vertical">
-  <a href="/export">Export</a>
+  <a class="odd-link" href="/export">Export</a>
 </div>
 ```
 
-A separator is an `hr`, and screen readers announce it as a separator. A horizontal line needs no attribute. A line between inline items is `aria-orientation="vertical"` inside an `odd-row`, which stretches it to the row's height. In React, `Separator` renders the `hr`, and you pass `aria-orientation` as on the element. `Separator` takes no children.
+A separator is an `hr`, and screen readers announce it as a separator. A horizontal line needs no attribute. A line between inline items is `aria-orientation="vertical"` inside an `odd-row`, which stretches it to the row's height. In React, `Separator` renders the `hr`, and `orientation="vertical"` writes `aria-orientation`. `Separator` takes no children.
 
 ## ODD-SEPARATOR-001
 
@@ -27,7 +40,7 @@ Fails when `aria-orientation` is not `horizontal` or `vertical`, or when `odd-se
 
 `separator.css` turns the line only for `aria-orientation="vertical"`. Any other value, such as `verticle` or `Vertical`, draws a horizontal line between the items of a row. `data-orientation` is the attribute shadcn and Radix separators set, and the stylesheet does not read it, so `data-orientation="vertical"` also leaves the line horizontal.
 
-Set `aria-orientation="vertical"` for a vertical line, or remove `aria-orientation` for a horizontal line. Remove `data-orientation`. In React, `aria-orientation` takes only `"horizontal"` or `"vertical"`, and `data-orientation` is a type error.
+Set `aria-orientation="vertical"` for a vertical line, or remove `aria-orientation` for a horizontal line. Remove `data-orientation`. In React, `orientation` takes only `"horizontal"` or `"vertical"`.
 
 ## ODD-SEPARATOR-003
 
@@ -35,7 +48,7 @@ Fails when `odd-separator` has a `role` other than `separator`, or has `aria-hid
 
 An `hr` is already a separator. `role="none"`, `role="presentation"`, or `aria-hidden="true"` hides it, so the line shows a break that screen readers skip. A component library's decorative separator renders `role="none"`. `separator.css` asks for a border on the container instead of a separator element when the line means nothing.
 
-Remove `role` and `aria-hidden`. For a line that means nothing, draw a border on the container. In React, `role` on `Separator` takes only `"separator"`, and `aria-hidden` is a type error.
+Remove `role` and `aria-hidden`. For a line that means nothing, draw a border on the container. In React, `aria-hidden` on `Separator` is a type error.
 
 ## ODD-SEPARATOR-004
 

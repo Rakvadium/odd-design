@@ -1,20 +1,19 @@
 "use client";
 
-import { createElement, useImperativeHandle, useLayoutEffect, useRef, type ReactElement } from "react";
+import { useImperativeHandle, useLayoutEffect, useRef, type ComponentPropsWithRef, type ReactElement } from "react";
 import { enhanceToaster } from "../js/toast.ts";
-import { WRAPPERS, type ToasterRule } from "../js/usage/contract.ts";
-import { lower, type Contract, type Native } from "./part.ts";
+import { cx, rejectBlank, type Passthrough, type Root } from "./own.ts";
 
-interface ToasterContract extends Contract<"Toaster", ToasterRule> {
-  /** enhanceToaster builds the list and the live region inside, and toast() fills them. */
-  children?: never;
-}
+export type ToasterProps = Root &
+  Passthrough<"section", "popover" | "aria-label" | "aria-labelledby"> & {
+    /** The region's name, such as "Notifications". */
+    readonly label: string;
+  };
 
-export interface ToasterProps extends ToasterContract, Native<"Toaster", keyof ToasterContract> {}
-
-export function Toaster({ ref, ...props }: ToasterProps): ReactElement {
+/** section.odd-toaster[popover=manual], named. enhanceToaster builds its list and live region, and toast() fills them. */
+export function Toaster({ label, className, ref, ...rest }: ToasterProps): ReactElement {
   const root = useRef<HTMLElement>(null);
   useImperativeHandle(ref, () => root.current!, []);
   useLayoutEffect(() => enhanceToaster(root.current!), []);
-  return createElement(WRAPPERS.Toaster.element, { ...lower("Toaster", props), ref: root });
+  return <section {...(rest as ComponentPropsWithRef<"section">)} ref={root} className={cx("odd-toaster", className)} popover="manual" aria-label={rejectBlank(label, "ODD-TOAST-003")} />;
 }

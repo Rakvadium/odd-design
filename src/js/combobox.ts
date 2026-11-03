@@ -8,6 +8,7 @@ const holders = new WeakMap<HTMLElement, Holder>();
  *   <div class="odd-combobox-list" id="city-list" popover="manual" role="listbox" aria-labelledby="city-label">
  *     <div class="odd-combobox-option" role="option">Amsterdam</div>
  *     <div class="odd-combobox-option" role="option" aria-disabled="true">Atlantis</div>
+ *     <div class="odd-combobox-option" id="city-list-empty" role="option" aria-disabled="true" hidden>No results</div>
  *   </div>
  * </div>
  *
@@ -29,7 +30,8 @@ const holders = new WeakMap<HTMLElement, Holder>();
  * The options are the list's children, read on every event and watched, so options rendered later
  * (async results, React) are filtered and shown as they land. With data-filter="manual" on the list,
  * your code filters and every option present is shown. When the built-in filter matches nothing, the
- * list shows a disabled No results option.
+ * list shows the option whose id is the list's id plus -empty, a disabled No results option the
+ * markup carries hidden. This module only toggles its hidden, so it never adds a node to a list React owns.
  *
  * Open and the active option live here, not in the DOM. Each enhanceCombobox call writes them onto
  * aria-expanded, the popover, aria-activedescendant, and aria-selected, so the attributes follow this
@@ -64,12 +66,14 @@ function wire(root: HTMLElement): Omit<Holder, "count"> {
     const id = input()?.getAttribute("aria-controls");
     return id ? root.querySelector<HTMLElement>(`:scope > #${CSS.escape(id)}`) : null;
   };
-  const empty = document.createElement("div");
-  empty.className = "odd-combobox-option";
-  empty.setAttribute("role", "option");
-  empty.setAttribute("aria-disabled", "true");
-  empty.textContent = "No results";
-  const options = () => [...(list()?.querySelectorAll<HTMLElement>(OPTION) ?? [])].filter((option) => option !== empty);
+  const empty = () => {
+    const popup = list();
+    return popup ? popup.querySelector<HTMLElement>(`:scope > #${CSS.escape(`${popup.id}-empty`)}`) : null;
+  };
+  const options = () => {
+    const none = empty();
+    return [...(list()?.querySelectorAll<HTMLElement>(OPTION) ?? [])].filter((option) => option !== none);
+  };
   const shown = () => options().filter((option) => !option.hidden);
   const enabled = () => shown().filter((option) => !unavailable(option));
   const manual = () => list()?.dataset.filter === "manual";
@@ -83,9 +87,9 @@ function wire(root: HTMLElement): Omit<Holder, "count"> {
     const field = input();
     const popup = list();
     if (!field || !popup) return;
-    const noResults = open && !manual() && shown().length === 0;
-    if (noResults && empty.parentElement !== popup) popup.append(empty);
-    if (!noResults && empty.isConnected) empty.remove();
+    const none = empty();
+    const hidden = !(open && !manual() && shown().length === 0);
+    if (none && none.hidden !== hidden) none.hidden = hidden;
     field.setAttribute("aria-expanded", String(open));
     if (open !== popup.matches(":popover-open")) {
       if (open) popup.showPopover();

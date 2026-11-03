@@ -2,6 +2,19 @@
 
 These codes apply to `odd-spinner`. Shared codes are in [General usage rules](general.md).
 
+In React, render `Spinner` from `odd-design/react` in a busy region. It writes `aria-hidden="true"`, and `label` writes the hidden loading words, so ODD-SPINNER-002 cannot happen. [The React guide](react.md#show-that-something-is-loading) covers the props.
+
+```tsx
+<Row aria-busy="true">
+  <Spinner /> Loading projects…
+</Row>
+<Row aria-busy="true">
+  <Spinner label="Loading reports…" />
+</Row>
+```
+
+The component compiles to this HTML:
+
 ```html
 <div class="odd-row" aria-busy="true">
   <span class="odd-spinner" aria-hidden="true"></span> Loading projects…
@@ -14,7 +27,7 @@ These codes apply to `odd-spinner`. Shared codes are in [General usage rules](ge
 
 A spinner is the moving form of a skeleton block. It is decoration: an empty `span` with `aria-hidden="true"`. The region that is loading has `aria-busy="true"` and says what is loading, in visible words beside the ring or in an `odd-visually-hidden` span. Remove the spinner, the words, and `aria-busy` when the content arrives. The ring is 1em across in the text color, so it takes its size and color from where it sits. Under reduced motion it turns slower instead of stopping. In React, `Spinner` renders the `span`, and you pass `aria-hidden="true"` as on the element.
 
-A button that is working is a Button with `aria-busy="true"`, which draws its own ring. Don't put a spinner inside a button.
+A button that is working is a `Button` with `busy`, which writes `aria-busy="true"` and draws its own ring. Don't put a spinner inside a button.
 
 No checker reads the region. A spinner without a busy region and loading words beside it passes every code below, and a screen reader then hears nothing while the page loads.
 

@@ -1,12 +1,13 @@
 import { globSync } from "node:fs";
 import { resolve } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
+import { renderToStaticMarkup } from "react-dom/server";
 import { isExportStory, storyNameFromExport, toId } from "storybook/internal/csf";
-import { toHtml, type Mirror } from "./mirror.ts";
+import { isMirror, type Mirror } from "./story.ts";
 
 export const STORYBOOKS = {
-  html: { title: "HTML", configDir: ".storybook", stories: "stories/**/*.stories.ts" },
-  react: { title: "React", configDir: ".storybook-react", stories: "stories/mirrored/*.stories.ts" },
+  html: { title: "HTML", configDir: ".storybook", stories: "stories/**/*.stories.{ts,tsx}" },
+  react: { title: "React", configDir: ".storybook-react", stories: "stories/components/*.stories.tsx" },
 } as const;
 
 export type Storybook = keyof typeof STORYBOOKS;
@@ -77,10 +78,6 @@ function descriptor(value: unknown): StoryDescriptor | undefined {
   return undefined;
 }
 
-function isMirror(value: unknown): value is Mirror<Args> {
-  return isRecord(value) && typeof value.scene === "function" && typeof value.aria === "string";
-}
-
 async function load(file: string): Promise<Record<string, unknown>> {
   return await import(pathToFileURL(resolve(repo, file)).href);
 }
@@ -111,7 +108,7 @@ export async function catalog(): Promise<Catalog> {
       const mirror = isRecord(value.parameters) ? value.parameters.mirror : undefined;
       const hasMirror = isMirror(mirror);
       if (mirroredFiles.has(file) !== hasMirror) {
-        throw new Error(`${owner}: mirrored stories live in stories/mirrored/, and only there`);
+        throw new Error(`${owner}: mirrored stories live in stories/components/, and only there`);
       }
       const storyRender = isRender(value.render) ? value.render : undefined;
       if (hasMirror && (storyRender !== undefined || metaRender !== undefined)) {
@@ -141,7 +138,7 @@ export async function catalog(): Promise<Catalog> {
 
 export function renderHtml(entry: Entry, args: Args = {}): unknown {
   const merged = { ...entry.meta.args, ...entry.story.args, ...args };
-  if ("mirror" in entry && isMirror(entry.mirror)) return toHtml(entry.mirror.scene(merged));
+  if ("mirror" in entry && isMirror(entry.mirror)) return renderToStaticMarkup(entry.mirror.scene(merged));
   const render = entry.story.render ?? entry.meta.render;
   if (render === undefined) throw new Error(`${entry.label} has no render`);
   return render(merged, { globals: previewGlobals });

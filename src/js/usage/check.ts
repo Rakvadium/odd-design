@@ -1,4 +1,4 @@
-import { APPEARANCE_AXES, CLASS_REGISTRY, HEADLESS_ALLOWLIST, USAGE, VOCABULARY, WRAPPERS, type UsageRule, type Wrapper } from "./contract.ts";
+import { APPEARANCE_AXES, CLASS_REGISTRY, HEADLESS_ALLOWLIST, USAGE, VOCABULARY, type UsageRule } from "./contract.ts";
 import { message, type MessageDetail, type UsageCode } from "./format.ts";
 
 export type Computed = { readonly computed: readonly string[] };
@@ -28,17 +28,19 @@ type Scope = {
 };
 
 const { shared, ...byComponent } = USAGE;
-const wrappers: readonly Wrapper[] = Object.values(WRAPPERS);
 const registry: readonly string[] = CLASS_REGISTRY;
 const systemData = new Set<string>(Object.values(VOCABULARY).flat());
 const alwaysAllowed = new Set<string>([...APPEARANCE_AXES, ...HEADLESS_ALLOWLIST]);
 
-function ownAttributes(className: string): readonly string[] {
-  return wrappers.flatMap((wrapper) => (wrapper.className === className ? Object.values(wrapper.props) : []));
-}
-
 function placesClass(rule: UsageRule): rule is Extract<UsageRule, { kind: "element" | "class" }> {
   return rule.kind === "element" || rule.kind === "class";
+}
+
+/** A class's own data- attributes: the ones its group's enum and boolean-attribute rules give values. */
+export function ownAttributes(className: string): readonly string[] {
+  const groups: readonly (readonly UsageRule[])[] = Object.values(byComponent);
+  const group = groups.find((rules) => rules.some((rule) => placesClass(rule) && rule.className === className)) ?? [];
+  return group.flatMap((rule) => ((rule.kind === "enum" || rule.kind === "boolean-attribute") && rule.attribute.startsWith("data-") ? [rule.attribute] : []));
 }
 
 const components: readonly Component[] = Object.values(byComponent).flatMap((rules: readonly UsageRule[]) =>

@@ -2,15 +2,23 @@
 
 These codes apply to `odd-slider`. Shared codes are in [General usage rules](general.md).
 
+In React, render `Slider` from `odd-design/react`. It renders the whole field, writes `type="range"`, and with `showValue` renders the value in `output.odd-stat-value`. [Build a slider](react.md#build-a-slider) covers the props.
+
+```tsx
+<Slider id="copies" label="Copies per card" min={1} max={4} defaultValue={3} hint="Most formats allow up to 4." />
+```
+
+The component compiles to this HTML:
+
 ```html
 <div class="odd-field">
-  <label class="odd-label" for="copies">Copies per card</label>
+  <label class="odd-label" for="copies" id="copies-label">Copies per card</label>
   <input class="odd-slider" type="range" id="copies" min="1" max="4" value="3" aria-describedby="copies-hint">
   <p class="odd-hint" id="copies-hint">Most formats allow up to 4.</p>
 </div>
 ```
 
-A slider is a native range input, so the arrow keys, Page Up and Page Down, Home and End, and forms come from the browser. Name it with a `label`, and point `aria-describedby` at its hint. To show the value as text, write it on `input`, as `slider.css` says. In React, `Slider` renders the input and takes `type="range"`.
+A slider is a native range input, so the arrow keys, Page Up and Page Down, Home and End, and forms come from the browser. Name it with a `label`, and point `aria-describedby` at its hint. To show the value as text, write it on `input`, as `slider.css` says. In React, `Slider` renders the field and writes `type="range"`.
 
 ## ODD-SLIDER-001
 
@@ -26,7 +34,7 @@ Fails when `odd-slider` has no `type`, or a `type` other than `range`.
 
 An input with no `type` is a text box, and `odd-slider` gives it slider sizing and no border. `type="number"` and the other types get no thumb or rail.
 
-Set `type="range"`. In React, `Slider` requires it.
+Set `type="range"`. In React, `Slider` writes it.
 
 ## ODD-SLIDER-003
 

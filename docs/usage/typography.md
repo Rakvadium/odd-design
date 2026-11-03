@@ -2,12 +2,21 @@
 
 These codes apply to `odd-heading` and `odd-eyebrow`. Shared codes are in [General usage rules](general.md).
 
+In React, render `Heading` and `Eyebrow` from `odd-design/react`. `level` is required, and `size` and `tone` take only the values below, so ODD-TYPOGRAPHY-002 and ODD-TYPOGRAPHY-003 are type errors.
+
+```tsx
+<Eyebrow tone="primary">Season 4</Eyebrow>
+<Heading level={2} size="xl">Your collection</Heading>
+```
+
+The components compile to this HTML:
+
 ```html
 <p class="odd-eyebrow" data-tone="primary">Season 4</p>
 <h2 class="odd-heading" data-size="xl">Your collection</h2>
 ```
 
-`odd-heading` sets a heading's size apart from its level. Pick the level for the outline and `data-size` for the layout. A heading without `data-size` is the md size. `odd-eyebrow` is a short label above a heading. It is muted unless `data-tone` sets `primary` or `foreground`. Neither class has a React part. Write them as native markup.
+`odd-heading` sets a heading's size apart from its level. Pick the level for the outline and `data-size` for the layout. A heading without `data-size` is the md size. `odd-eyebrow` is a short label above a heading. It is muted unless `data-tone` sets `primary` or `foreground`.
 
 ## ODD-TYPOGRAPHY-001
 

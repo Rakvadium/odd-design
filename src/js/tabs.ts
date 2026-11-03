@@ -1,7 +1,9 @@
 import { defaultToButtonType } from "./button-type.ts";
 import { roving } from "./roving.ts";
 
-const holders = new WeakMap<HTMLElement, { count: number; tablist: HTMLElement; stop: () => void }>();
+type Wiring = { stop: () => void; project: () => void };
+
+const holders = new WeakMap<HTMLElement, Wiring & { count: number; tablist: HTMLElement }>();
 
 /*
  * <div class="odd-tabs">
@@ -22,20 +24,22 @@ const holders = new WeakMap<HTMLElement, { count: number; tablist: HTMLElement; 
  * A root is wired once however many callers enhance it, and its listeners go when the last caller
  * cleans up. A root with no tablist yet is
  * left alone, so a later call can still wire it. A call after the tablist was replaced wires the new one.
+ * The root keeps the tab the user chose, and a later call shows it again, so a framework that renders
+ * aria-selected or hidden again cannot undo the choice.
  */
 export function enhanceTabs(root: HTMLElement): () => void {
   const tablist = root.querySelector<HTMLElement>('[role="tablist"]');
   let hold = holders.get(root);
   if (hold === undefined) {
     if (!tablist) return () => {};
-    hold = { count: 0, tablist, stop: wire(root, tablist) };
+    hold = { count: 0, tablist, ...wire(root, tablist) };
     holders.set(root, hold);
   } else if (tablist && tablist !== hold.tablist) {
     hold.stop();
-    hold.tablist = tablist;
-    hold.stop = wire(root, tablist);
+    Object.assign(hold, { tablist }, wire(root, tablist));
   }
   hold.count++;
+  hold.project();
   let released = false;
   return () => {
     if (released) return;
@@ -46,11 +50,7 @@ export function enhanceTabs(root: HTMLElement): () => void {
   };
 }
 
-export function typeTabs(root: ParentNode): void {
-  root.querySelectorAll('[role="tablist"] [role="tab"]').forEach(defaultToButtonType);
-}
-
-function wire(root: HTMLElement, tablist: HTMLElement): () => void {
+function wire(root: HTMLElement, tablist: HTMLElement): Wiring {
   const tabs = () => [...tablist.querySelectorAll<HTMLElement>('[role="tab"]')];
   const panelOf = (tab: HTMLElement) => document.getElementById(tab.getAttribute("aria-controls") ?? "");
 
@@ -64,13 +64,15 @@ function wire(root: HTMLElement, tablist: HTMLElement): () => void {
     }
   };
 
+  let chosen: HTMLElement | undefined;
   const select = (tab: HTMLElement) => {
     if (tab.getAttribute("aria-selected") === "true") return;
+    chosen = tab;
     show(tab);
     root.dispatchEvent(new CustomEvent("odd-tab-change", { bubbles: true, detail: { tab, panel: panelOf(tab) } }));
   };
 
-  typeTabs(root);
+  tabs().forEach(defaultToButtonType);
 
   // A panel with nothing focusable inside takes focus itself, so Tab from the tab list reaches its content.
   for (const tab of tabs()) {
@@ -103,9 +105,18 @@ function wire(root: HTMLElement, tablist: HTMLElement): () => void {
   tablist.addEventListener("click", onClick);
   tablist.addEventListener("focusout", onFocusOut);
 
-  return () => {
-    stopRoving();
-    tablist.removeEventListener("click", onClick);
-    tablist.removeEventListener("focusout", onFocusOut);
+  const project = () => {
+    if (!chosen || !tablist.contains(chosen)) return;
+    const shown = tabs().every((t) => t.getAttribute("aria-selected") === String(t === chosen) && panelOf(t)?.hidden !== (t === chosen));
+    if (!shown) show(chosen);
+  };
+
+  return {
+    project,
+    stop: () => {
+      stopRoving();
+      tablist.removeEventListener("click", onClick);
+      tablist.removeEventListener("focusout", onFocusOut);
+    },
   };
 }

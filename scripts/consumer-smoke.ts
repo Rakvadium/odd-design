@@ -1,28 +1,32 @@
 import { copyFileSync, mkdtempSync, mkdirSync, readdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { basename, dirname, join } from "node:path";
-import { WRAPPERS } from "../src/js/usage/contract.ts";
+import * as OddReact from "../src/react/index.ts";
 
 const root = join(import.meta.dir, "..");
 const fixtures = join(root, "tests/fixtures/consumer");
 const manifest = JSON.parse(readFileSync(join(root, "package.json"), "utf8")) as { name: string; version: string };
 const expectedTarball = join(root, `${manifest.name}-${manifest.version}.tgz`);
-const CLIENT_MODULES = ["button.js", "combobox.js", "tabs.js", "toast.js"];
 
 const FORBIDDEN =
   "ODD-BUTTON-007: the disabled attribute is forbidden on odd-button. Allowed values: none. Fix: remove disabled and set aria-disabled. docs/usage/button.md#odd-button-007";
 
-const BAD_TYPE =
-  `src/App.tsx(4,18): error TS2322: Type 'true' is not assignable to type '"${FORBIDDEN}"'.`;
+const OWNED =
+  "ODD-REACT-001: an odd-design/react component writes role and the attributes it owns. Allowed values: the component props. Fix: remove the attribute, and pass the prop that sets it, such as label, title, current, disabled, or busy. docs/usage/react.md#odd-react-001";
 
-const BAD_ESLINT = [{ ruleId: "odd/usage", severity: 2, message: FORBIDDEN, line: 1, column: 52 }];
+const BAD_TYPE = `src/App.tsx(4,15): error TS2322: Type '"group"' is not assignable to type '"${OWNED}"'.`;
+
+const HAND_WRITTEN =
+  "ODD-REACT-003: an odd- class in JSX hand-writes markup that odd-design/react renders, without the roles, ids, and wiring the component owns. Allowed values: odd-design/react components. Fix: remove the class, and render the component this message names. docs/usage/react.md#odd-react-003 Found odd-button. Render Button from odd-design/react.";
+
+const BAD_ESLINT = [{ ruleId: "odd/usage", severity: 2, message: HAND_WRITTEN, line: 1, column: 43 }];
 
 const HOOK_TESTS = [
   "afterEach fails a DOM test that never calls flush",
   "afterEach fails a React test that never calls flush",
 ];
 
-const REACT_EXPORTS = Object.keys(WRAPPERS).sort().join();
+const REACT_EXPORTS = Object.keys(OddReact).sort().join();
 
 const REQUIRED = [
   "dist/react/index.js",
@@ -285,14 +289,29 @@ function checkVitest(app: string, name: string): void {
   }
 }
 
-let tarball = expectedTarball;
-let app: string | undefined;
-try {
-  for (const name of CLIENT_MODULES) {
-    const first = readFileSync(join(root, "dist/react", name), "utf8").split(/\r?\n/, 1)[0] ?? "";
+// A bundler ignores the directive anywhere but the first line. The scan finds every built module that names it,
+// and the source list catches a build that drops it, which a scan of dist alone would pass.
+function assertClientModules(): void {
+  const firstLine = (path: string) => readFileSync(path, "utf8").split(/\r?\n/, 1)[0] ?? "";
+  const source = readdirSync(join(root, "src/react"))
+    .filter((name) => firstLine(join(root, "src/react", name)) === '"use client";')
+    .map((name) => name.replace(/\.tsx?$/, ".js"))
+    .sort();
+  const built = readdirSync(join(root, "dist/react"))
+    .filter((name) => name.endsWith(".js") && readFileSync(join(root, "dist/react", name), "utf8").includes('"use client"'))
+    .sort();
+  if (built.length === 0 || built.join() !== source.join()) fail(`dist/react modules that name "use client" (${built.join(", ")}) differ from src/react (${source.join(", ")})`);
+  for (const name of built) {
+    const first = firstLine(join(root, "dist/react", name));
     if (first !== '"use client";') fail(`${name} first line is ${JSON.stringify(first)}`);
     console.log(`${name}: "use client"`);
   }
+}
+
+let tarball = expectedTarball;
+let app: string | undefined;
+try {
+  assertClientModules();
   assertOneState();
 
   rmSync(tarball, { force: true });

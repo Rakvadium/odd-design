@@ -1,30 +1,35 @@
 import { useRef, useState, type FormEvent, type MouseEvent } from "react";
-import { Alert, AlertTitle, type AlertTone } from "../../../../src/react/alert.tsx";
+import { Alert, type AlertTone } from "../../../../src/react/alert.tsx";
 import { Avatar, AvatarGroup, type AvatarSize } from "../../../../src/react/avatar.tsx";
 import { Badge, type BadgeTone } from "../../../../src/react/badge.tsx";
 import { Breadcrumb } from "../../../../src/react/breadcrumb.tsx";
 import { Button } from "../../../../src/react/button.tsx";
-import { Card, CardFooter, CardLink } from "../../../../src/react/card.tsx";
-import { Choice, Segmented, Switch } from "../../../../src/react/choice.tsx";
+import { Card } from "../../../../src/react/card.tsx";
+import { Shell } from "../../../../src/react/shell.tsx";
 import { Code, Pre } from "../../../../src/react/code.tsx";
-import { Combobox, ComboboxList, ComboboxOption } from "../../../../src/react/combobox.tsx";
-import { Dialog, DialogActions } from "../../../../src/react/dialog.tsx";
+import { Combobox, ComboboxOption, type ComboboxFilter } from "../../../../src/react/combobox.tsx";
+import { AlertDialog, Dialog } from "../../../../src/react/dialog.tsx";
 import { Disclosure } from "../../../../src/react/disclosure.tsx";
-import { Field, FieldError, Hint, Input, Label, Select, Textarea } from "../../../../src/react/field.tsx";
+import { Checkbox, Input, RadioGroup, Segmented, Select, Switch, Textarea, type ChoiceOption } from "../../../../src/react/field.tsx";
 import { Kbd } from "../../../../src/react/kbd.tsx";
-import { Menu, MenuItem } from "../../../../src/react/menu.tsx";
-import { Table, TableSort, TableWrap } from "../../../../src/react/table.tsx";
-import { Meter, Progress, type MeterTone } from "../../../../src/react/meter.tsx";
+import { Grid, GridItem, Row, Scope, SkipLink, Stack, VisuallyHidden, type GridSpan } from "../../../../src/react/layout.tsx";
+import { Menu, MenuCheckboxItem, MenuGroup, MenuItem, MenuRadioGroup, MenuRadioItem, MenuSeparator } from "../../../../src/react/menu.tsx";
+import { SORT_DIRECTIONS, Table, type Sort } from "../../../../src/react/table.tsx";
+import { Meter, Progress, StatValue, type MeterTone } from "../../../../src/react/meter.tsx";
 import { Popover } from "../../../../src/react/popover.tsx";
 import { Search } from "../../../../src/react/search.tsx";
 import { Separator } from "../../../../src/react/separator.tsx";
-import { Sheet, SheetFooter, SheetHeader, type SheetProps } from "../../../../src/react/sheet.tsx";
+import { Sheet, type SheetSide } from "../../../../src/react/sheet.tsx";
 import { Skeleton } from "../../../../src/react/skeleton.tsx";
 import { Slider } from "../../../../src/react/slider.tsx";
 import { Spinner } from "../../../../src/react/spinner.tsx";
+import { Log, LogLine } from "../../../../src/react/log.tsx";
 import { Tabs } from "../../../../src/react/tabs.tsx";
 import { TextLink } from "../../../../src/react/text-link.tsx";
+import { HoverCard, HoverCardLink } from "../../../../src/react/hover-card.tsx";
+import { OddProvider } from "../../../../src/react/provider.tsx";
 import { Toaster } from "../../../../src/react/toast.tsx";
+import { Eyebrow, Heading, Muted, type HeadingSize } from "../../../../src/react/typography.tsx";
 
 function save(event: MouseEvent<HTMLButtonElement>): void {
   event.currentTarget.blur();
@@ -39,20 +44,20 @@ export function Views() {
       <Button variant="primary" size="lg" onClick={save} ref={ref}>
         Save
       </Button>
-      <Button type="submit" aria-disabled="true" aria-busy="true">
+      <Button type="submit" disabled busy={flag}>
         Pay
       </Button>
       <Button type="reset" variant="ghost" size="sm" className="wide">
         Reset
       </Button>
-      <Button href="/docs" aria-current="page" interestfor="docs-card">
+      <Button href="/docs" current={flag} newTab tooltip="The full guide">
         Docs
       </Button>
-      <Button iconOnly aria-label="Close">
+      <Button iconOnly label="Close" id="close">
         ×
       </Button>
-      <Button iconOnly={flag} aria-labelledby="close-label">
-        ×
+      <Button tooltip="Anyone with the link can view it" aria-describedby="publish-note" aria-expanded={flag}>
+        Publish
       </Button>
       <Button command="show-modal" commandfor="settings">
         Settings
@@ -71,49 +76,33 @@ export function Fields({ error }: { error: string | undefined }) {
   const ref = useRef<HTMLInputElement>(null);
   return (
     <>
-      <Field className="wide">
-        <Label htmlFor="email">Email</Label>
-        <Input
-          id="email"
-          ref={ref}
-          type="email"
-          required
-          aria-invalid={error !== undefined}
-          aria-describedby={error === undefined ? "email-hint" : "email-hint email-error"}
-        />
-        <Hint id="email-hint">We never share it.</Hint>
-        {error === undefined ? null : <FieldError id="email-error">{error}</FieldError>}
-      </Field>
-      <Input id="owner" value="you" disabled readOnly />
-      <Textarea id="notes" rows={4} disabled />
-      <Select id="format" defaultValue="standard" disabled>
+      <Input label="Email" ref={ref} type="email" required hint="We never share it." error={error} aria-describedby="email-policy" className="wide" />
+      <Input label="Owner" id="owner" value="you" disabled readOnly />
+      <Input label="Search cards" hideLabel type="search" />
+      <Textarea label="Notes" id="notes" rows={4} disabled hint={<a href="#markdown">Markdown</a>} />
+      <Select label="Format" defaultValue="standard" disabled onChange={(event) => event.currentTarget.value}>
         <option value="standard">Standard</option>
       </Select>
-      <Input type="search" aria-label="Search cards" />
     </>
   );
 }
 
-export function Choices({ on, toggle }: { on: boolean; toggle: () => void }) {
+type View = "grid" | "list";
+
+const VIEWS: readonly [ChoiceOption<View>, ...ChoiceOption<View>[]] = [
+  { value: "grid", label: "Grid" },
+  { value: "list", label: "List", disabled: true },
+];
+
+export function Choices({ on, toggle, view, setView }: { on: boolean; toggle: () => void; view: View; setView: (view: View) => void }) {
   const ref = useRef<HTMLInputElement>(null);
   return (
     <>
-      <Choice className="wide">
-        <input type="checkbox" defaultChecked disabled /> Partner offers
-      </Choice>
-      <Choice>
-        <input type="radio" name="vis" value="public" /> Public
-      </Choice>
-      <Choice>
-        <Switch type="checkbox" role="switch" ref={ref} checked={on} onChange={toggle} disabled /> Compact grid
-      </Choice>
-      <Switch type="checkbox" role="switch" defaultChecked aria-label="Public" />
-      <Segmented disabled>
-        <legend>View</legend>
-        <label>
-          <input type="radio" name="view" defaultChecked /> Grid
-        </label>
-      </Segmented>
+      <Checkbox label="Partner offers" defaultChecked disabled className="wide" />
+      <Checkbox label={<>I accept the <a href="#rules">rules</a></>} name="rules" required />
+      <Switch label="Compact grid" ref={ref} checked={on} onChange={toggle} disabled />
+      <RadioGroup label="Visibility" name="vis" defaultValue="public" required options={[{ value: "public", label: "Public" }, { value: "private", label: "Private" }]} onValueChange={(value) => value === "public"} />
+      <Segmented label="View" options={VIEWS} defaultValue={view} onValueChange={setView} disabled />
     </>
   );
 }
@@ -124,12 +113,8 @@ const noticeTone: Record<"saved" | "offline", AlertTone> = { saved: "success", o
 
 export function Notice({ kind }: { kind: keyof typeof noticeTone }) {
   return (
-    <Alert tone={noticeTone[kind]}>
-      <svg aria-hidden="true" />
-      <div>
-        <AlertTitle>{kind}</AlertTitle>
-        <p>Kept on this device.</p>
-      </div>
+    <Alert tone={noticeTone[kind]} title={kind} icon={<svg />}>
+      <p>Kept on this device.</p>
     </Alert>
   );
 }
@@ -168,31 +153,19 @@ type Person = { name: string; initials: string; photo?: string };
 const avatarSize: Record<"row" | "profile", AvatarSize> = { row: "sm", profile: "lg" };
 
 export function PersonAvatar({ person, place }: { person: Person; place: keyof typeof avatarSize }) {
-  const [failed, setFailed] = useState(false);
-  if (person.photo === undefined || failed) {
-    return (
-      <Avatar size={avatarSize[place]} role="img" aria-label={person.name}>
-        {person.initials}
-      </Avatar>
-    );
-  }
-  return (
-    <Avatar size={avatarSize[place]}>
-      <img src={person.photo} alt={person.name} onError={() => setFailed(true)} />
-    </Avatar>
-  );
+  return <Avatar name={person.name} src={person.photo} initials={person.initials} size={avatarSize[place]} data-testid="person" />;
 }
 
 export function Collaborators({ people }: { people: Person[] }) {
   return (
     <>
       <h3 id="collaborators">Collaborators</h3>
-      <AvatarGroup role="group" aria-labelledby="collaborators">
+      <AvatarGroup label="Collaborators" className="row">
         {people.map((person) => (
           <PersonAvatar key={person.name} person={person} place="row" />
         ))}
       </AvatarGroup>
-      <Avatar aria-hidden="true">{people[0]?.initials}</Avatar>
+      <Avatar name={people[0]?.name ?? "Nobody"} decorative />
     </>
   );
 }
@@ -203,10 +176,10 @@ export function DeckActions() {
       <Separator />
       <div className="odd-row">
         <a href="/decks/1/edit">Edit</a>
-        <Separator aria-orientation="vertical" />
+        <Separator orientation="vertical" />
         <a href="/decks/1/export">Export</a>
       </div>
-      <Separator role="separator" data-testid="split" />
+      <Separator data-testid="split" />
     </>
   );
 }
@@ -216,8 +189,8 @@ export function DeckPlaceholder({ loading }: { loading: boolean }) {
   return (
     <div aria-busy="true">
       <span className="odd-visually-hidden">Loading decks…</span>
-      <Skeleton aria-hidden="true" shape="avatar" />
-      <Skeleton aria-hidden="true" className="title" style={{ inlineSize: "60%" }} data-testid="deck-title" />
+      <Skeleton shape="avatar" />
+      <Skeleton className="title" data-testid="deck-title" />
     </div>
   );
 }
@@ -225,12 +198,24 @@ export function DeckPlaceholder({ loading }: { loading: boolean }) {
 export function ProjectLinks({ href }: { href: string }) {
   return (
     <p>
-      Read the <TextLink href={href}>setup guide</TextLink>, then open <TextLink href="/projects" aria-current="page">Projects</TextLink> or the{" "}
-      <TextLink href="https://example.com/changelog" target="_blank" rel="noopener" className="external" data-testid="changelog">
-        changelog (opens in a new tab)
+      Read the <TextLink href={href}>setup guide</TextLink>, then open <TextLink href="/projects" current>Projects</TextLink> or the{" "}
+      <TextLink href="https://example.com/changelog" newTab tooltip="What changed this week" className="external" data-testid="changelog">
+        changelog
       </TextLink>
       .
     </p>
+  );
+}
+
+export function DeckPreview({ name, onOpen }: { name: string; onOpen: () => void }) {
+  return (
+    <OddProvider link={(props) => <a {...props} onClick={onOpen} />}>
+      <HoverCard id="preview" preview={<p>{name}, by Mira Okafor</p>} className="wide">
+        <p>
+          Last week’s winner was <HoverCardLink href="/decks/midnight" data-testid="winner">{name}</HoverCardLink>.
+        </p>
+      </HoverCard>
+    </OddProvider>
   );
 }
 
@@ -238,149 +223,116 @@ export function ProjectsLoading({ loading }: { loading: boolean }) {
   if (!loading) return null;
   return (
     <div className="odd-row" aria-busy="true">
-      <Spinner aria-hidden="true" className="slow" data-testid="projects-spinner" />
-      <span className="odd-visually-hidden">Loading projects…</span>
+      <Spinner label="Loading projects…" className="slow" data-testid="projects-spinner" />
     </div>
   );
 }
 
 export function ProjectTrail({ archived }: { archived: boolean }) {
   return (
-    <Breadcrumb aria-label="Breadcrumb" className="trail" data-testid="trail">
-      <ol>
-        <li>
-          <TextLink href="/">Home</TextLink>
-        </li>
-        {archived ? <li>Archived</li> : null}
-        <li>
-          <TextLink href="/projects/roadmap" aria-current="page">
-            Roadmap
-          </TextLink>
-        </li>
-      </ol>
-    </Breadcrumb>
+    <Breadcrumb
+      className="trail"
+      data-testid="trail"
+      items={[{ label: "Home", href: "/" }, ...(archived ? [{ label: "Archived" }] : []), { label: "Roadmap", href: "/projects/roadmap" }]}
+    />
   );
 }
 
 export function SearchHint() {
   return (
     <>
-      <h2 id="trail-heading">You are here</h2>
-      <Breadcrumb aria-labelledby="trail-heading">
-        <ol>
-          <li>Home</li>
-        </ol>
-      </Breadcrumb>
+      <Breadcrumb label="You are here" items={[{ label: "Home" }]} />
       <p>
         Press <Kbd>Ctrl</Kbd> <Kbd className="wide" data-testid="search-key">K</Kbd> to search, or set <Code data-testid="token">--primary</Code> on the scope.
       </p>
       <Pre data-language="sh" className="install">
-        <code>bun add odd-design</code>
+        bun add odd-design
       </Pre>
+      <Pre output>850 pass</Pre>
     </>
   );
 }
 
 export function DeckCard({ href, name, selected }: { href: string; name: string; selected: boolean }) {
-  return (
-    <Card interactive={selected} aria-labelledby="deck-name" className="deck" data-span="4" data-testid="deck">
-      <h2 className="odd-card-title" id="deck-name">
-        <CardLink href={href}>{name}</CardLink>
-      </h2>
-      <CardFooter>
-        <Badge tone="success">Legal</Badge>
-      </CardFooter>
-    </Card>
+  return selected ? (
+    <Card href={href} title={name} headingLevel={2} footer={<Badge tone="success">Legal</Badge>} className="deck" data-testid="deck" />
+  ) : (
+    <Card as="section" title={name} description="Not in a collection yet." />
   );
 }
 
-export function FaqItem({ question, answer }: { question: string; answer: string }) {
-  const [open, setOpen] = useState(false);
+export function OrdersPage({ synced }: { synced: boolean }) {
   return (
-    <Disclosure name="faq" open={open} onToggle={(event) => setOpen(event.newState === "open")} className="faq" data-testid="faq" data-state="open">
-      <summary>{question}</summary>
-      <div>{answer}</div>
+    <Shell title="Orders" status={synced ? <Badge tone="success">Synced</Badge> : null} actions={<Button>Export</Button>} data-testid="orders">
+      <GridItem span={8}>Panel</GridItem>
+    </Shell>
+  );
+}
+
+export function FaqItem({ question, answer, first }: { question: string; answer: string; first: boolean }) {
+  const [open, setOpen] = useState(first);
+  return (
+    <Disclosure name="faq" summary={question} defaultOpen={first} onToggle={(event) => setOpen(event.newState === "open")} className={open ? "faq open" : "faq"} data-testid="faq" data-state="open">
+      {answer}
     </Disclosure>
   );
 }
 
 export function SeasonTabs() {
   const tabs = useRef<HTMLDivElement>(null);
+  const [season, setSeason] = useState<"s7" | "s5">("s7");
   return (
-    <Tabs ref={tabs} id="season-tabs" className="seasons" data-testid="seasons" data-state="ready">
-      <div role="tablist" aria-label="Season" aria-orientation="vertical" data-activation="manual">
-        <button role="tab" id="tab-s7" aria-controls="panel-s7" aria-selected="true">
-          Season 7
-        </button>
-        <button role="tab" id="tab-s5" aria-controls="panel-s5" aria-selected="false" disabled>
-          Season 5
-        </button>
-      </div>
-      <div role="tabpanel" id="panel-s7" aria-labelledby="tab-s7">
-        Current season.
-      </div>
-      <div role="tabpanel" id="panel-s5" aria-labelledby="tab-s5" hidden>
-        Not imported yet.
-      </div>
-    </Tabs>
+    <Tabs
+      ref={tabs}
+      id="season-tabs"
+      className="seasons"
+      data-testid="seasons"
+      data-state={season}
+      label="Season"
+      orientation="vertical"
+      activation="manual"
+      defaultValue="s7"
+      onValueChange={(value) => setSeason(value)}
+      tabs={[
+        { value: "s7", label: "Season 7", content: "Current season." },
+        { value: "s5", label: "Season 5", content: "Not imported yet.", disabled: true },
+      ]}
+    />
   );
 }
 
 export function Toasts() {
   const region = useRef<HTMLElement>(null);
-  return <Toaster ref={region} id="toasts" className="toasts" popover="manual" aria-label="Notifications" />;
+  return <Toaster ref={region} id="toasts" className="toasts" label="Notifications" />;
 }
 
 export function CardFilter() {
   const [query, setQuery] = useState("");
-  return (
-    <Search id="card-filter" className="filter" data-testid="card-filter" data-state="idle">
-      <label className="odd-visually-hidden" htmlFor="card-filter-q">
-        Filter cards
-      </label>
-      <svg aria-hidden="true" viewBox="0 0 24 24" />
-      <Input type="search" id="card-filter-q" value={query} onChange={(event) => setQuery(event.target.value)} />
-    </Search>
-  );
+  return <Search id="card-filter" label="Filter cards" className="filter" data-testid="card-filter" data-state="idle" value={query} onChange={(event) => setQuery(event.target.value)} />;
 }
 
 export function SiteSearch({ onSearch }: { onSearch: (query: string) => void }) {
+  const ref = useRef<HTMLInputElement>(null);
   const submit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     onSearch(String(new FormData(event.currentTarget).get("q")));
   };
-  return (
-    <form action="/search" onSubmit={submit}>
-      <Search>
-        <label className="odd-visually-hidden" htmlFor="site-search">
-          Search the docs
-        </label>
-        <svg aria-hidden="true" viewBox="0 0 24 24" />
-        <Input type="search" id="site-search" name="q" />
-      </Search>
-    </form>
-  );
+  return <Search label="Search the docs" name="q" ref={ref} onSubmit={submit} />;
 }
 
 export function CopiesField() {
   const [copies, setCopies] = useState(3);
   return (
-    <Field>
-      <Label htmlFor="copies">Copies per card</Label>
-      <output className="odd-stat-value" htmlFor="copies">
-        {copies} of 4
-      </output>
-      <Slider
-        type="range"
-        id="copies"
-        min={1}
-        max={4}
-        value={copies}
-        onChange={(event) => setCopies(event.currentTarget.valueAsNumber)}
-        aria-describedby="copies-hint"
-      />
-      <Hint id="copies-hint">Most formats allow up to 4.</Hint>
-    </Field>
+    <Slider
+      label="Copies per card"
+      min={1}
+      max={4}
+      value={copies}
+      onChange={(event) => setCopies(event.currentTarget.valueAsNumber)}
+      hint="Most formats allow up to 4."
+      showValue
+      formatValue={(value) => `${value} of 4`}
+    />
   );
 }
 
@@ -389,17 +341,10 @@ const typeTone: Record<"unit" | "action" | "asset", MeterTone | undefined> = { u
 export function DeckMix({ count, syncing }: { count: number; syncing: boolean }) {
   return (
     <>
-      <div className="odd-stack">
-        <div className="odd-row">
-          <label className="odd-muted" htmlFor="actions">
-            Actions
-          </label>
-          <span className="odd-stat-value">{count}</span>
-        </div>
-        <Meter id="actions" min={0} max={60} value={count} tone={typeTone.action} />
-      </div>
-      <Meter id="store-high" value={0.93} low={0.6} high={0.85} optimum={0} aria-label="Storage" />
-      {syncing ? <Progress id="sync" aria-label="Syncing decks" /> : <Progress id="import" value={40} max={100} tone="success" aria-label="Importing decks" />}
+      <StatValue className="count">{count}</StatValue>
+      <Meter id="actions" label="Actions" min={0} max={60} value={count} tone={typeTone.action} />
+      <Meter id="store-high" label="Storage" value={0.93} low={0.6} high={0.85} optimum={0} />
+      {syncing ? <Progress id="sync" label="Syncing decks" /> : <Progress id="import" label="Importing decks" value={40} max={100} tone="success" />}
     </>
   );
 }
@@ -409,12 +354,14 @@ export function DeckFilters({ label }: { label: string }) {
   const [open, setOpen] = useState(false);
   return (
     <>
-      <Button commandfor="filters" command="toggle-popover">{open ? "Hide filters" : "Filters"}</Button>
-      <Popover ref={panel} id="filters" popover="auto" role="dialog" aria-labelledby="filters-title" onToggle={(event) => setOpen(event.newState === "open")} className="filters" data-testid="filters" data-state="open">
-        <p className="odd-eyebrow" id="filters-title">Filter decks</p>
+      <Popover ref={panel} id="filters" trigger={<Button>{open ? "Hide filters" : "Filters"}</Button>} title="Filter decks" onToggle={(event) => setOpen(event.newState === "open")} className="filters" data-testid="filters" data-state="open">
+        <Checkbox label="Legal only" />
+        <Button command="close">Apply</Button>
       </Popover>
-      <Popover id="notes" popover="auto" role="dialog" aria-label={label} />
-      <Popover id="rules" popover="">Banned cards are marked.</Popover>
+      <Popover trigger={<Button>Notes</Button>} title={label}>
+        Saved with the deck.
+      </Popover>
+      <Popover trigger={<Button>Rules</Button>}>Banned cards are marked.</Popover>
     </>
   );
 }
@@ -423,149 +370,173 @@ export function DeleteDeck({ title, onDelete }: { title: string; onDelete: () =>
   const dialog = useRef<HTMLDialogElement>(null);
   return (
     <>
-      <Button variant="danger" commandfor="delete-deck" command="show-modal">Delete deck…</Button>
-      <Dialog ref={dialog} id="delete-deck" aria-labelledby="delete-deck-title" closedby="any" onClose={() => dialog.current?.returnValue === "delete" && onDelete()} className="wide" data-testid="delete" data-side="end">
-        <form className="odd-dialog-body" method="dialog">
-          <h2 className="odd-dialog-title" id="delete-deck-title">{title}</h2>
-          <DialogActions>
-            <Button commandfor="delete-deck" command="request-close">Close</Button>
+      <Dialog
+        ref={dialog}
+        id="delete-deck"
+        trigger={<Button variant="danger">Delete deck…</Button>}
+        title={title}
+        headingLevel={3}
+        description="This removes its 14 saved versions."
+        dismissible
+        onClose={() => dialog.current?.returnValue === "delete" && onDelete()}
+        onSubmit={(event: FormEvent<HTMLFormElement>) => event.currentTarget.reportValidity()}
+        className="wide"
+        data-testid="delete"
+        data-state="open"
+        actions={
+          <>
+            <Button command="request-close">Close</Button>
             <Button type="submit" value="delete" variant="danger">Delete</Button>
-          </DialogActions>
-        </form>
-      </Dialog>
-      <Dialog role="alertdialog" aria-label={title} closedby="closerequest" onCancel={(event) => event.preventDefault()}>
-        <div className="odd-dialog-body">
-          <DialogActions data-testid="actions" />
-        </div>
-      </Dialog>
+          </>
+        }
+      />
+      <AlertDialog title={title} description="Your edits are lost." onCancel={(event) => event.preventDefault()} actions={<Button command="close">Keep editing</Button>} />
+      <Button command="show-modal" commandfor="delete-deck">Delete from the menu</Button>
     </>
   );
 }
 
-export function FilterSheet({ side, onApply }: { side: SheetProps["side"]; onApply: () => void }) {
+export function FilterSheet({ side, onApply }: { side: SheetSide | undefined; onApply: () => void }) {
   const sheet = useRef<HTMLDialogElement>(null);
   return (
-    <>
-      <Button commandfor="filters" command="show-modal">Filters</Button>
-      <Sheet ref={sheet} id="filters" side={side} aria-labelledby="filters-title" closedby="any" onClose={() => sheet.current?.returnValue === "apply" && onApply()} className="wide" data-testid="filters" data-state="open">
-        <SheetHeader>
-          <h2 className="odd-dialog-title" id="filters-title">Filters</h2>
-          <Button variant="ghost" iconOnly aria-label="Close" commandfor="filters" command="close">×</Button>
-        </SheetHeader>
-        <form className="odd-sheet-body" id="filters-form" method="dialog" />
-        <SheetFooter data-testid="footer">
-          <Button type="submit" form="filters-form" value="apply" variant="primary">Show 12 decks</Button>
-        </SheetFooter>
-      </Sheet>
-      <Sheet side="bottom" role="alertdialog" aria-label="Discard changes?" closedby="closerequest" onCancel={(event) => event.preventDefault()} />
-    </>
+    <Sheet
+      ref={sheet}
+      id="filters"
+      side={side}
+      trigger={<Button>Filters</Button>}
+      title="Filters"
+      closeLabel="Close filters"
+      dismissible
+      onClose={() => sheet.current?.returnValue === "apply" && onApply()}
+      onSubmit={() => {}}
+      className="wide"
+      data-testid="filters"
+      data-state="open"
+      actions={<Button type="submit" value="apply" variant="primary">Show 12 decks</Button>}
+    >
+      <Input label="Name" />
+    </Sheet>
   );
 }
 
-export function DeckMenu({ label, onRename }: { label: string; onRename: () => void }) {
+export function DeckMenu({ label, onRename, onPrices }: { label: string; onRename: () => void; onPrices: (on: boolean) => void }) {
   const menu = useRef<HTMLDivElement>(null);
   return (
     <>
-      <Button id="deck-actions-trigger" commandfor="deck-actions" command="toggle-popover" aria-haspopup="menu">Deck actions</Button>
-      <Menu ref={menu} id="deck-actions" popover="auto" role="menu" aria-labelledby="deck-actions-trigger" className="wide" data-testid="actions">
-        <MenuItem role="menuitem" onClick={onRename}>Rename</MenuItem>
-        <MenuItem role="menuitem" aria-disabled="true">Merge</MenuItem>
-        <Separator />
-        <MenuItem role="menuitemcheckbox" aria-checked="true" onClick={(event) => event.currentTarget.getAttribute("aria-checked") === "true"}>Show prices</MenuItem>
-        <div role="group" aria-label="Sort by">
-          <MenuItem role="menuitemradio" aria-checked="false" data-testid="sort-name">Name</MenuItem>
-        </div>
-        <MenuItem role="menuitem" tone="danger" onClick={() => menu.current?.hidePopover()}>Delete deck</MenuItem>
+      <Menu ref={menu} id="deck-actions" label={label} trigger={<Button iconOnly label={label}>⋯</Button>} className="wide" data-testid="actions" data-state="open">
+        <MenuItem shortcut="F2" onClick={onRename}>Rename</MenuItem>
+        <MenuItem disabled>Merge</MenuItem>
+        <MenuSeparator />
+        <MenuCheckboxItem defaultChecked onClick={(event) => onPrices(event.currentTarget.getAttribute("aria-checked") === "true")}>Show prices</MenuCheckboxItem>
+        <MenuRadioGroup label="Sort by" id="deck-sort">
+          <MenuRadioItem defaultChecked data-testid="sort-name">Name</MenuRadioItem>
+          <MenuRadioItem>Last edited</MenuRadioItem>
+        </MenuRadioGroup>
+        <MenuGroup label="Danger zone">
+          <MenuItem tone="danger" command="show-modal" commandfor="delete-deck">Delete deck…</MenuItem>
+        </MenuGroup>
       </Menu>
-      <Menu popover="" role="menu" aria-label={label} />
+      <Menu label="Sort" trigger={<Button>Sort</Button>}>
+        <MenuItem onClick={() => menu.current?.hidePopover()}>Close the other menu</MenuItem>
+      </Menu>
     </>
   );
 }
 
 export function DeckTable({ decks }: { decks: readonly { id: string; name: string; cards: number }[] }) {
   const table = useRef<HTMLTableElement>(null);
-  const [selected, setSelected] = useState<readonly string[]>([]);
+  const [selected, setSelected] = useState<ReadonlySet<string>>(new Set());
+  const [sort, setSort] = useState<Sort<"name" | "cards">>({ column: "name", direction: SORT_DIRECTIONS[0] });
   return (
     <>
-      <TableWrap tabIndex={0} role="region" aria-labelledby="decks-caption" className="wide" data-testid="decks">
-        <Table ref={table} data-testid="table">
-          <caption id="decks-caption">Your decks</caption>
-          <thead>
-            <tr>
-              <th scope="col">
-                <input type="checkbox" data-select-all aria-label="Select all decks" />
-              </th>
-              <th scope="col" aria-sort="ascending">
-                <TableSort type="button" onClick={() => table.current?.focus()} data-col="name">Deck</TableSort>
-              </th>
-              <th scope="col" data-numeric>
-                <TableSort>Cards</TableSort>
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            {decks.map((deck) => (
-              <tr key={deck.id}>
-                <td>
-                  <input type="checkbox" aria-label={`Select ${deck.name}`} checked={selected.includes(deck.id)} onChange={() => setSelected((ids) => (ids.includes(deck.id) ? ids.filter((id) => id !== deck.id) : [...ids, deck.id]))} />
-                </td>
-                <th scope="row">{deck.name}</th>
-                <td data-numeric>{deck.cards}</td>
-              </tr>
-            ))}
-          </tbody>
-        </Table>
-      </TableWrap>
-      <TableWrap>
-        <Table>
-          <tbody />
-        </Table>
-      </TableWrap>
-      <TableWrap tabIndex={0} role="region" aria-label="Archived decks" />
+      <Table
+        ref={table}
+        id="decks"
+        className="wide"
+        data-testid="decks"
+        caption="Your decks"
+        rows={decks}
+        rowKey={(deck) => deck.id}
+        columns={[
+          { key: "name", header: "Deck", rowHeader: true, cell: (deck) => deck.name, footer: `${decks.length} decks` },
+          { key: "cards", header: "Cards", numeric: true, cell: (deck) => deck.cards },
+        ]}
+        sortable={["name", "cards"]}
+        sort={sort}
+        onSortChange={setSort}
+        selection={{ selected, onChange: setSelected, label: (deck) => `Select ${deck.name}`, allLabel: "Select all decks", disabled: (deck) => deck.cards < 40 }}
+      />
+      <Table caption="Archived decks" hideCaption scrollable={false} rows={[] as readonly { id: string }[]} rowKey={(deck) => deck.id} columns={[{ key: "id", header: "Deck", cell: (deck) => deck.id }]} />
     </>
   );
 }
 
-export function CityField() {
-  const root = useRef<HTMLDivElement>(null);
+export function CityField({ filter }: { filter: ComboboxFilter | undefined }) {
+  const input = useRef<HTMLInputElement>(null);
   return (
-    <Field>
-      <Label htmlFor="city" id="city-label">
-        City
-      </Label>
-      <Combobox ref={root} className="wide" data-testid="city">
-        <Input id="city" name="city" role="combobox" aria-controls="city-list" aria-expanded="false" aria-autocomplete="list" />
-        <ComboboxList id="city-list" popover="manual" role="listbox" aria-labelledby="city-label">
-          <ComboboxOption role="option">Amsterdam</ComboboxOption>
-          <ComboboxOption role="option" aria-disabled="true">
-            Atlantis
-          </ComboboxOption>
-          <ComboboxOption role="option" aria-disabled={false} data-id="ber">
-            Berlin
-          </ComboboxOption>
-        </ComboboxList>
-      </Combobox>
-    </Field>
+    <Combobox id="city" label="City" name="city" ref={input} filter={filter} className="wide" data-testid="city" hint="Type to filter.">
+      <ComboboxOption>Amsterdam</ComboboxOption>
+      <ComboboxOption disabled>Atlantis</ComboboxOption>
+      <ComboboxOption disabled={false} data-id="ber">
+        Berlin
+      </ComboboxOption>
+    </Combobox>
   );
 }
 
 export function AssigneeField({ people, onAssign }: { people: readonly { id: string; name: string }[]; onAssign: (id: string) => void }) {
   const [query, setQuery] = useState("");
   return (
-    <Combobox>
-      <Input id="assignee" role="combobox" aria-controls="assignee-list" aria-expanded="false" aria-autocomplete="list" aria-label="Assignee" value={query} onChange={(event) => setQuery(event.target.value)} />
-      <ComboboxList id="assignee-list" popover="manual" role="listbox" aria-label="People" data-filter="manual">
-        {people.map((person) => (
-          <ComboboxOption key={person.id} role="option" onClick={() => onAssign(person.id)}>
-            {person.name}
-          </ComboboxOption>
-        ))}
-        {query !== "" && people.length === 0 && (
-          <ComboboxOption role="option" aria-disabled="true">
-            No results
-          </ComboboxOption>
-        )}
-      </ComboboxList>
+    <Combobox label="Assignee" filter="manual" value={query} onChange={(event) => setQuery(event.target.value)}>
+      {people.map((person) => (
+        <ComboboxOption key={person.id} onClick={() => onAssign(person.id)}>
+          {person.name}
+        </ComboboxOption>
+      ))}
+      {query !== "" && people.length === 0 && <ComboboxOption disabled>No results</ComboboxOption>}
     </Combobox>
+  );
+}
+
+export function Page({ span, size }: { span: GridSpan; size: HeadingSize }) {
+  return (
+    <>
+      <SkipLink href="#main" className="skip">
+        Skip to content
+      </SkipLink>
+      <Grid as="main" id="main" aria-label="Board">
+        <GridItem as="section" span={span} aria-labelledby="queue-title" data-testid="queue">
+          <Stack>
+            <Eyebrow tone="primary">Today</Eyebrow>
+            <Heading level={2} size={size} id="queue-title">
+              Queue
+            </Heading>
+            <Muted as="span">Updated just now</Muted>
+          </Stack>
+        </GridItem>
+        <GridItem>
+          <Row as="nav" aria-label="Sections">
+            <a href="#queue-title">Queue</a>
+          </Row>
+        </GridItem>
+      </Grid>
+      <Scope chrome="glass" palette="aurora" mode="dark" as="aside">
+        <VisuallyHidden as="p">4 of 5 stars</VisuallyHidden>
+      </Scope>
+    </>
+  );
+}
+
+export function SyncLog({ events }: { events: readonly { id: string; text: string; at: Date; tone?: "info" | "warning" }[] }) {
+  const log = useRef<HTMLDivElement>(null);
+  return (
+    <Log ref={log} label="Sync log" live="off" className="sync" data-testid="sync-log">
+      {events.map((event) => (
+        <LogLine key={event.id} tone={event.tone} time={event.at} data-testid={event.id}>
+          {event.text}
+        </LogLine>
+      ))}
+      <LogLine time="09:14:01">Opened Midnight Control</LogLine>
+    </Log>
   );
 }

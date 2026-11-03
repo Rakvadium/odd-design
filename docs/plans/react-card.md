@@ -103,6 +103,9 @@ The scene is the HTML Card story built from `Card`, `CardLink`, `CardFooter`, `B
 Each item is the default the build uses. Each one can be reversed after review.
 
 1. **Three parts and one ruled class.** The title has no part, so its heading level follows the page. An agent that writes shadcn's `CardTitle` gets "no exported member" and finds the class in the docs and the story.
+
+Superseded: `docs/plans/react-drop-in.md` makes components own their tags, ids, and ARIA, so this no longer holds. The state-ownership decisions here stay.
+
 2. **Each part renders one tag, and its rule allows the tags existing markup uses.** React panels that need a `section` write the raw tag, which ESLint and the runtime checker still check. The Grok runner's `as` and `level` props lost, because `mirror.ts` and `jsx.ts` do not read that shape and would both need changes.
 3. **A new rule kind for the stretched link.** It is the card's one behavior, and each failure it catches was measured. Leaving it to follow-ups would check only `"false"` and wrong tags.
 4. **`system-data` with an `allow` list on the card.** Every earlier part has `system-data`. This one keeps `data-span` legal on the card without letting Badge accept it.

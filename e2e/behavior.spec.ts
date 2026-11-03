@@ -1,5 +1,6 @@
 import { expect, test, type Page, type TestInfo } from "@playwright/test";
 import { CHROMES } from "../src/js/contract.ts";
+import { poll } from "./poll.ts";
 import { openStory } from "./story.ts";
 
 // Behavior that depends on the engine: native features each browser may or may not have, the JS
@@ -23,44 +24,43 @@ async function hoverFresh(page: Page, selector: string) {
 
 const isOpen = (page: Page, selector: string) => page.locator(selector).evaluate((el) => el.matches(":popover-open, [open]"));
 
-/**
- * Waits, inside the page, for a popover or dialog to open or close. Under load, Playwright's round
- * trips into Firefox can lag by seconds, so expect.poll timed out on tooltips that had opened on time.
- */
 const waitOpen = (page: Page, selector: string, open = true) =>
-  page.waitForFunction(
-    ([sel, want]) => document.querySelector(sel)?.matches(":popover-open, [open]") === want,
-    [selector, open] as const,
-    { timeout: 10_000 },
-  );
+  poll(() => page.evaluate(([sel, want]) => (document.querySelector(sel)?.matches(":popover-open, [open]") === want ? true : null), [selector, open] as const));
 
-/** Records, in page time, when the pointer enters and leaves `invoker` and when `target` opens and closes. */
+/**
+ * Records, in page time, when the pointer enters and leaves `invoker` and when `target` opens and closes.
+ * The listeners capture on the document, so the record survives a React story rendering fresh nodes.
+ */
 const watchHover = (page: Page, invoker: string, target: string) =>
   page.evaluate(
     ([inv, tgt]) => {
       const log: Record<string, number[]> = ((window as any).__hover = { enter: [], leave: [], open: [], closed: [] });
-      const i = document.querySelector(inv)!;
-      i.addEventListener("pointerenter", () => log.enter!.push(performance.now()));
-      i.addEventListener("pointerleave", () => log.leave!.push(performance.now()));
-      document.querySelector(tgt)!.addEventListener("toggle", (e) => log[(e as ToggleEvent).newState]!.push(performance.now()));
+      const on = (type: string, selector: string, record: (event: Event) => void) =>
+        document.addEventListener(type, (event) => (event.target instanceof Element && event.target.matches(selector) ? record(event) : undefined), true);
+      on("pointerenter", inv, () => log.enter!.push(performance.now()));
+      on("pointerleave", inv, () => log.leave!.push(performance.now()));
+      on("toggle", tgt, (event) => log[(event as ToggleEvent).newState]!.push(performance.now()));
     },
     [invoker, target] as const,
   );
 
-/** Page-time ms from the last pointer `from` event to the target's last `to` toggle, once both have happened. */
-const hoverDelay = async (page: Page, from: "enter" | "leave", to: "open" | "closed") => {
-  const handle = await page.waitForFunction(
-    ([f, t]) => {
-      const log = (window as any).__hover as Record<string, number[]>;
-      const a = log[f]!.at(-1);
-      const b = log[t]!.at(-1);
-      return a !== undefined && b !== undefined && b >= a ? { ms: b - a } : null;
-    },
-    [from, to] as const,
-    { timeout: 10_000 },
+/**
+ * Page-time ms from the last pointer `from` event before the target's last `to` toggle to that toggle.
+ * Firefox can fire another pointerenter after the page changes under a resting pointer, so the last
+ * entry overall may come after the open it caused.
+ */
+const hoverDelay = (page: Page, from: "enter" | "leave", to: "open" | "closed") =>
+  poll(() =>
+    page.evaluate(
+      ([f, t]) => {
+        const log = (window as any).__hover as Record<string, number[]>;
+        const b = log[t]!.at(-1);
+        const a = b === undefined ? undefined : log[f]!.filter((at) => at <= b).at(-1);
+        return a !== undefined && b !== undefined ? b - a : null;
+      },
+      [from, to] as const,
+    ),
   );
-  return ((await handle.jsonValue()) as { ms: number }).ms;
-};
 
 async function note(page: Page, testInfo: TestInfo, feature: string, check: string) {
   const native = await page.evaluate(check);
@@ -73,48 +73,57 @@ async function shot(page: Page, testInfo: TestInfo, name: string, selector?: str
 }
 
 test.describe("tooltips and hover cards (interestfor)", () => {
-  test("a tooltip opens on hover, centered above its button, and closes when the pointer leaves", async ({ page }, testInfo) => {
-    await openStory(page, "components-overlays--tooltip", "mode:light");
-    await note(page, testInfo, "interestfor", `"interestForElement" in HTMLButtonElement.prototype`);
-    await watchHover(page, '[interestfor="tip-delete"]', "#tip-delete");
-    await hoverFresh(page, '[interestfor="tip-delete"]');
-    // Both engines here use the fallback: 500 ms to show, 250 ms to hide, timed in the page.
-    const shown = await hoverDelay(page, "enter", "open");
-    expect(shown, "opens after the show delay, not at once").toBeGreaterThanOrEqual(450);
-    expect(shown, "opens after the show delay, not much later").toBeLessThan(1000);
-    const button = await rect(page, '[interestfor="tip-delete"]');
-    const tip = await rect(page, "#tip-delete");
-    expect(Math.abs(tip.cx - button.cx), "tooltip centered on its button").toBeLessThan(2);
-    expect(Math.abs(button.top - tip.bottom - 8), "8px above the button").toBeLessThan(1.5);
-    await shot(page, testInfo, "tooltip-hover.png");
-    await page.mouse.move(0, 0);
-    const hidden = await hoverDelay(page, "leave", "closed");
-    expect(hidden, "closes after the hide delay").toBeGreaterThanOrEqual(200);
-    expect(hidden, "closes after the hide delay, not much later").toBeLessThan(750);
-  });
+  // The React Storybook installs no page-wide interest fallback, so there the tooltip opens through the one Button installs.
+  for (const storybook of ["html", "react"] as const) {
+    test(`a tooltip opens on hover, centered above its button, and closes when the pointer leaves (${storybook})`, async ({ page }, testInfo) => {
+      await openStory(page, "components-overlays--tooltip", "mode:light", "", storybook);
+      await note(page, testInfo, "interestfor", `"interestForElement" in HTMLButtonElement.prototype`);
+      await watchHover(page, '[interestfor="delete-tooltip"]', "#delete-tooltip");
+      await hoverFresh(page, '[interestfor="delete-tooltip"]');
+      // Both engines here use the fallback: 500 ms to show, 250 ms to hide, timed in the page.
+      const shown = await hoverDelay(page, "enter", "open");
+      expect(shown, "opens after the show delay, not at once").toBeGreaterThanOrEqual(450);
+      expect(shown, "opens after the show delay, not much later").toBeLessThan(1000);
+      const button = await rect(page, '[interestfor="delete-tooltip"]');
+      const tip = await rect(page, "#delete-tooltip");
+      expect(Math.abs(tip.cx - button.cx), "tooltip centered on its button").toBeLessThan(2);
+      expect(Math.abs(button.top - tip.bottom - 8), "8px above the button").toBeLessThan(1.5);
+      await expect(page.getByRole("button", { name: "Delete deck" }), "the tooltip names its icon-only button").toHaveAttribute("aria-labelledby", "delete-tooltip");
+      await shot(page, testInfo, `tooltip-hover-${storybook}.png`);
+      await page.mouse.move(0, 0);
+      const hidden = await hoverDelay(page, "leave", "closed");
+      expect(hidden, "closes after the hide delay").toBeGreaterThanOrEqual(200);
+      expect(hidden, "closes after the hide delay, not much later").toBeLessThan(750);
+    });
 
-  test("a tooltip opens on keyboard focus and Escape closes it", async ({ page }) => {
-    await openStory(page, "components-overlays--tooltip", "mode:light");
-    for (let i = 0; i < 4; i++) await page.keyboard.press("Tab");
-    await expect(page.locator('[interestfor="tip-publish"]')).toBeFocused();
-    await waitOpen(page, "#tip-publish");
-    await page.keyboard.press("Escape");
-    await waitOpen(page, "#tip-publish", false);
-  });
+    test(`a tooltip opens on keyboard focus and Escape closes it (${storybook})`, async ({ page }) => {
+      await openStory(page, "components-overlays--tooltip", "mode:light", "", storybook);
+      for (let i = 0; i < 4; i++) await page.keyboard.press("Tab");
+      await expect(page.locator('[interestfor="publish-tooltip"]')).toBeFocused();
+      await expect(page.getByRole("button", { name: "Publish" })).toHaveAccessibleDescription("Anyone with the link can view it");
+      await waitOpen(page, "#publish-tooltip");
+      await page.keyboard.press("Escape");
+      await waitOpen(page, "#publish-tooltip", false);
+    });
+  }
 
-  test("a hover card opens under its link and stays open while the pointer is inside it", async ({ page }, testInfo) => {
-    await openStory(page, "components-overlays--hover-card", "mode:light");
-    await hoverFresh(page, 'a[interestfor="preview-midnight"]');
-    await waitOpen(page, "#preview-midnight");
-    const link = await rect(page, 'a[interestfor="preview-midnight"]');
-    const card = await rect(page, "#preview-midnight");
-    expect(Math.abs(card.left - link.left), "aligned to the link's start edge").toBeLessThan(2);
-    expect(Math.abs(card.top - link.bottom - 8), "8px below the link").toBeLessThan(1.5);
-    await page.locator("#preview-midnight .odd-badge").first().hover();
-    await page.waitForTimeout(800);
-    expect(await isOpen(page, "#preview-midnight"), "still open with the pointer inside").toBe(true);
-    await shot(page, testInfo, "hover-card.png");
-  });
+  // The React Storybook installs no page-wide interest fallback, so there the card opens through the one HoverCard installs.
+  for (const storybook of ["html", "react"] as const) {
+    test(`a hover card opens under its link and stays open while the pointer is inside it (${storybook})`, async ({ page }, testInfo) => {
+      await openStory(page, "components-overlays--hover-card", "mode:light", "", storybook);
+      await note(page, testInfo, "interestfor", `"interestForElement" in HTMLAnchorElement.prototype`);
+      await hoverFresh(page, 'a[interestfor="preview-midnight"]');
+      await waitOpen(page, "#preview-midnight");
+      const link = await rect(page, 'a[interestfor="preview-midnight"]');
+      const card = await rect(page, "#preview-midnight");
+      expect(Math.abs(card.left - link.left), "aligned to the link's start edge").toBeLessThan(2);
+      expect(Math.abs(card.top - link.bottom - 8), "8px below the link").toBeLessThan(1.5);
+      await page.locator("#preview-midnight .odd-badge").first().hover();
+      await page.waitForTimeout(800);
+      expect(await isOpen(page, "#preview-midnight"), "still open with the pointer inside").toBe(true);
+      await shot(page, testInfo, `hover-card-${storybook}.png`);
+    });
+  }
 });
 
 test.describe("popovers and dialogs", () => {
@@ -183,8 +192,18 @@ test.describe("popovers and dialogs", () => {
         if (side === "end") expect(Math.round(r.right)).toBe(viewport.width);
         if (side === "start") expect(Math.round(r.left)).toBe(0);
         if (side === "bottom") expect(Math.round(r.bottom)).toBe(viewport.height);
-        await expect(page.locator(`#sheet-${side} button[aria-label="Close"]`)).toBeFocused();
+        const close = page.locator(`#sheet-${side}`).getByRole("button", { name: "Close" });
+        await expect(close).toBeFocused();
         await shot(page, testInfo, `sheet-${side}-${storybook}.png`);
+        // WebKit counts the focus showModal gives the close button as keyboard focus, so its tooltip opens.
+        // Escape then closes the tooltip first, as WCAG 1.4.13 asks, and a second Escape closes the sheet.
+        const tip = `#${await close.getAttribute("aria-labelledby")}`;
+        if (await isOpen(page, tip)) {
+          testInfo.annotations.push({ type: "sheet close tooltip", description: `${side}: open on focus, closed by the first Escape` });
+          await page.keyboard.press("Escape");
+          await waitOpen(page, tip, false);
+          expect(await isOpen(page, `#sheet-${side}`), "the first Escape closes only the tooltip").toBe(true);
+        }
         await page.keyboard.press("Escape");
         await waitOpen(page, `#sheet-${side}`, false);
       }
@@ -239,28 +258,28 @@ test.describe("keyboard widgets", () => {
   for (const storybook of ["html", "react"] as const) {
     test(`tabs follow the arrow keys, and manual tabs wait for Enter (${storybook})`, async ({ page }) => {
       await openStory(page, "components-interactive--tabs", "mode:light", "", storybook);
-      await expect(page.locator("#tab-s5"), "enhanceTabs ran").toHaveAttribute("tabindex", "-1");
-      await page.locator("#tab-cards").focus();
+      await expect(page.locator("#deck-tabs-panel-0"), "enhanceTabs ran: a panel with nothing focusable takes focus").toHaveAttribute("tabindex", "0");
+      await page.locator("#deck-tabs-tab-0").focus();
       await page.keyboard.press("ArrowRight");
-      await expect(page.locator("#tab-stats")).toHaveAttribute("aria-selected", "true");
-      await expect(page.locator("#panel-stats")).toBeVisible();
+      await expect(page.locator("#deck-tabs-tab-1")).toHaveAttribute("aria-selected", "true");
+      await expect(page.locator("#deck-tabs-panel-1")).toBeVisible();
       await page.keyboard.press("End");
       await page.keyboard.press("ArrowRight");
-      await expect(page.locator("#tab-cards")).toBeFocused();
-      await page.locator("#tab-s7").focus();
+      await expect(page.locator("#deck-tabs-tab-0")).toBeFocused();
+      await page.locator("#manual-tabs-tab-0").focus();
       await page.keyboard.press("ArrowRight");
-      await expect(page.locator("#tab-s6")).toBeFocused();
-      await expect(page.locator("#tab-s7")).toHaveAttribute("aria-selected", "true");
+      await expect(page.locator("#manual-tabs-tab-1")).toBeFocused();
+      await expect(page.locator("#manual-tabs-tab-0")).toHaveAttribute("aria-selected", "true");
       await page.keyboard.press("ArrowRight");
-      await expect(page.locator("#tab-s7"), "ArrowRight skips the disabled tab").toBeFocused();
+      await expect(page.locator("#manual-tabs-tab-0"), "ArrowRight skips the disabled tab").toBeFocused();
       await page.keyboard.press("ArrowLeft");
       await page.keyboard.press("Enter");
-      await expect(page.locator("#tab-s6")).toHaveAttribute("aria-selected", "true");
-      await expect(page.locator("#panel-s6")).toBeVisible();
-      await page.locator("#tab-cards").click();
-      await expect(page.locator("#panel-cards")).toBeVisible();
+      await expect(page.locator("#manual-tabs-tab-1")).toHaveAttribute("aria-selected", "true");
+      await expect(page.locator("#manual-tabs-panel-1")).toBeVisible();
+      await page.locator("#deck-tabs-tab-0").click();
+      await expect(page.locator("#deck-tabs-panel-0")).toBeVisible();
       await page.keyboard.press("Tab");
-      await expect(page.locator("#panel-cards"), "Tab leaves the list for the chosen panel").toBeFocused();
+      await expect(page.locator("#deck-tabs-panel-0"), "Tab leaves the list for the chosen panel").toBeFocused();
     });
   }
 
@@ -283,29 +302,39 @@ test.describe("keyboard widgets", () => {
 
     test(`a toast is announced as one sentence, without its buttons (${storybook})`, async ({ page }) => {
       await openStory(page, "components-interactive--toast", "mode:light", "", storybook);
-      await page.getByRole("button", { name: "Save deck" }).click();
+      await page.getByRole("button", { name: "Fail to sync" }).click();
       await expect(page.locator(".odd-toast")).toHaveCount(1);
       const live = page.locator('.odd-toaster [aria-live="polite"]');
       await expect(live).toHaveCount(1);
-      await expect(live).toHaveText("Deck saved. Midnight Control, version 15.");
+      await expect(live).toHaveText("Couldn’t sync. Check your connection. Your changes are safe on this device.");
       await expect(live.locator("button")).toHaveCount(0);
       await page.locator('.odd-toast button[aria-label^="Dismiss"]').click();
       await expect(live).toHaveText("");
     });
   }
 
-  test("ArrowDown opens the menu after the HTML story renders it again", async ({ page }) => {
-    const errors: Error[] = [];
-    page.on("pageerror", (error) => errors.push(error));
-    await openStory(page, "components-interactive--menu", "mode:light");
-    const old = await page.locator("#deck-actions").elementHandle();
-    await page.evaluate(() => (window as any).__STORYBOOK_PREVIEW__.channel.emit("forceReRender"));
-    await page.waitForFunction((menu) => !menu!.isConnected, old);
-    await page.locator('button[commandfor="deck-actions"]').focus();
-    await page.keyboard.press("ArrowDown");
-    await expect(page.locator(".odd-menu-item", { hasText: "Duplicate" })).toBeFocused();
-    expect(errors.map((error) => error.message)).toEqual([]);
-  });
+  // The HTML story renders fresh markup, which leaves the old menu detached. The React story keeps its nodes.
+  for (const storybook of ["html", "react"] as const) {
+    test(`ArrowDown opens the menu after the story renders it again (${storybook})`, async ({ page }) => {
+      const errors: Error[] = [];
+      page.on("pageerror", (error) => errors.push(error));
+      await openStory(page, "components-interactive--menu", "mode:light", "", storybook);
+      const old = await page.locator("#deck-actions").elementHandle();
+      await page.evaluate(
+        () =>
+          new Promise<void>((resolve) => {
+            const channel = (window as any).__STORYBOOK_PREVIEW__.channel;
+            channel.once("storyRendered", () => resolve());
+            channel.emit("forceReRender");
+          }),
+      );
+      expect(await old!.evaluate((menu) => menu.isConnected)).toBe(storybook === "react");
+      await page.locator('button[commandfor="deck-actions"]').focus();
+      await page.keyboard.press("ArrowDown");
+      await expect(page.locator(".odd-menu-item", { hasText: "Duplicate" })).toBeFocused();
+      expect(errors.map((error) => error.message)).toEqual([]);
+    });
+  }
 
   for (const storybook of ["html", "react"] as const) {
     test(`select-all checks every row, shows mixed, and clears (${storybook})`, async ({ page }) => {
@@ -316,7 +345,7 @@ test.describe("keyboard widgets", () => {
           const a = document.querySelector<HTMLInputElement>("[data-select-all]")!;
           return { all: a.checked, mixed: a.indeterminate, rows: [...document.querySelectorAll<HTMLInputElement>("tbody input")].map((c) => c.checked) };
         });
-      expect(await state()).toEqual({ all: false, mixed: true, rows: [false, true, false, false] });
+      expect(await state()).toEqual({ all: false, mixed: true, rows: [true, false, false, false] });
       await all.click();
       expect(await state()).toEqual({ all: true, mixed: false, rows: [true, true, true, true] });
       await page.locator('input[aria-label="Select Tidecaller"]').click();
@@ -357,41 +386,54 @@ test.describe("machine controls", () => {
     await expect(page.locator('[role="group"] button', { hasText: "+5" })).toHaveAttribute("aria-disabled", "false");
   });
 
-  test("the log follows new lines until the reader scrolls up", async ({ page }) => {
-    await openStory(page, "components-feedback--log", "mode:light");
-    const log = page.locator("#arm-log");
-    const fromBottom = () => log.evaluate((el) => Math.round(el.scrollHeight - el.scrollTop - el.clientHeight));
-    const add = page.locator("#add-log-line");
-    await add.click();
-    await expect.poll(fromBottom).toBe(0);
-    await log.hover();
-    await page.mouse.wheel(0, -1000);
-    await expect.poll(() => log.evaluate((el) => el.scrollTop)).toBe(0);
-    await add.click();
-    await page.waitForTimeout(100);
-    expect(await log.evaluate((el) => el.scrollTop), "scrolled up, so the log stays put").toBe(0);
-    await log.hover();
-    await page.mouse.wheel(0, 5000);
-    await expect.poll(fromBottom).toBe(0);
-    await add.click();
-    await expect.poll(fromBottom).toBe(0);
-  });
+  for (const storybook of ["html", "react"] as const) {
+    test(`the log follows new lines until the reader scrolls up (${storybook})`, async ({ page }) => {
+      await openStory(page, "components-feedback--log", "mode:light", "", storybook);
+      const log = page.locator("#sync-log");
+      const fromBottom = () => log.evaluate((el) => Math.round(el.scrollHeight - el.scrollTop - el.clientHeight));
+      // A wheel scroll animates over frames, and under load Firefox and WebKit render none for up to a minute.
+      const scrollTo = (top: number) =>
+        log.evaluate(
+          (el, to) =>
+            new Promise<void>((resolve) => {
+              el.addEventListener("scroll", () => resolve(), { once: true });
+              el.scrollTop = to;
+            }),
+          top,
+        );
+      const add = page.locator("#add-log-line");
+      expect(await log.evaluate((el) => el.scrollHeight > el.clientHeight), "the story's lines overflow the log").toBe(true);
+      await add.click();
+      await expect.poll(fromBottom).toBe(0);
+      await scrollTo(0);
+      await add.click();
+      await expect(log.locator(".odd-log-line"), "Add line added a line").toHaveCount(18);
+      expect(await log.evaluate((el) => el.scrollTop), "scrolled up, so the log stays put").toBe(0);
+      await scrollTo(1e6);
+      expect(await fromBottom()).toBe(0);
+      await add.click();
+      await expect(log.locator(".odd-log-line")).toHaveCount(19);
+      await expect.poll(fromBottom).toBe(0);
+    });
+  }
 
-  test("the app grid narrows panels to half, then to one column, by its own width", async ({ page }, testInfo) => {
-    await openStory(page, "components-layout--app-shell", "mode:light");
-    const fractions = () =>
-      page.locator("#shell-grid").evaluate((grid) => {
-        const content = grid.clientWidth - parseFloat(getComputedStyle(grid).paddingLeft) - parseFloat(getComputedStyle(grid).paddingRight);
-        return [...grid.children].map((panel) => Math.round((panel.getBoundingClientRect().width / content) * 100));
-      });
-    expect(await fractions()).toEqual([66, 32, 100]);
-    await shot(page, testInfo, "shell-wide.png", "#storybook-root");
-    await page.setViewportSize({ width: 900, height: 900 });
-    expect(await fractions()).toEqual([66, 49, 100]);
-    await page.setViewportSize({ width: 560, height: 900 });
-    expect(await fractions()).toEqual([100, 100, 100]);
-    await shot(page, testInfo, "shell-narrow.png", "#storybook-root");
-  });
+  for (const storybook of ["html", "react"] as const) {
+    test(`the app grid narrows panels to half, then to one column, by its own width (${storybook})`, async ({ page }, testInfo) => {
+      await openStory(page, "components-layout--app-shell", "mode:light", "", storybook);
+      const fractions = () =>
+        page.locator("#storybook-root .odd-shell-main").evaluate((grid) => {
+          const content = grid.clientWidth - parseFloat(getComputedStyle(grid).paddingLeft) - parseFloat(getComputedStyle(grid).paddingRight);
+          return [...grid.children].map((panel) => Math.round((panel.getBoundingClientRect().width / content) * 100));
+        });
+      expect(await fractions()).toEqual([66, 32, 100]);
+      await shot(page, testInfo, `shell-wide-${storybook}.png`, "#storybook-root");
+      await page.setViewportSize({ width: 900, height: 900 });
+      expect(await fractions()).toEqual([66, 49, 100]);
+      await page.setViewportSize({ width: 560, height: 900 });
+      expect(await fractions()).toEqual([100, 100, 100]);
+      await shot(page, testInfo, `shell-narrow-${storybook}.png`, "#storybook-root");
+    });
+  }
 });
 
 test.describe("text and loading", () => {

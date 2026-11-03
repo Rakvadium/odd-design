@@ -77,6 +77,15 @@ function filterValues(): { options: readonly string[]; absent: string } {
   return { options, absent: absent[0] };
 }
 
+const tablePlayground = react.find((entry) => entry.id === "components-data-display--table-playground") ?? fail("Table stories have no Playground");
+
+/** One row per sortDirection option, which the story reads from SORT_DIRECTIONS, plus "none". */
+function sortRows(): readonly (readonly [string, string, string, number])[] {
+  const options = tablePlayground.meta.argTypes?.sortDirection?.options;
+  if (options === undefined || !options.includes("none")) throw new Error("Table Playground argTypes.sortDirection has no none option");
+  return options.map((value) => [tablePlayground.id, `sortDirection:${value}`, value === "none" ? "th[aria-sort]" : `th[aria-sort="${value}"]`, value === "none" ? 0 : 1] as const);
+}
+
 const variantControl = enumValues("data-variant", "variant");
 const sizeControl = enumValues("data-size", "size");
 
@@ -251,6 +260,12 @@ test("usage and mirror: every story in both Storybooks, each pair, the Playgroun
     ["components-breadcrumb--playground", "levels:5", ".odd-breadcrumb li", 5],
     ["components-kbd--playground", "keys:Ctrl Shift P", ".odd-kbd", 3],
     ["components-code--playground", "kind:block", ".odd-pre > code", 1],
+    ...sortRows(),
+    [tablePlayground.id, "sortColumn:cards", 'th[data-numeric][aria-sort="ascending"] > .odd-table-sort:only-child', 1],
+    [tablePlayground.id, "numeric:!false", "[data-numeric]", 0],
+    [tablePlayground.id, "selectable:!false", "[data-select-all], tbody input", 0],
+    [tablePlayground.id, "scrollable:!false", '.odd-table-wrap[role="region"], .odd-table-wrap[tabindex]', 0],
+    [tablePlayground.id, "hideCaption:!true", "caption.odd-visually-hidden", 1],
   ] as const) {
     const htmlSide = await see(page, "html", id, args);
     const htmlCount = await page.locator(`#storybook-root ${selector}`).count();

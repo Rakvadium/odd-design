@@ -222,6 +222,8 @@ Each commit ends with `bun run check`. The boxes under a commit name its extra c
 | Double wiring | Hold-counted `enhanceTabs` | S1. Two wirings move two tabs per arrow |
 | HTML story wiring | Preview microtask, mirrored stories only | Keeps the React side on the part's own wiring |
 
+Superseded: `docs/plans/react-drop-in.md` makes components own their tags, ids, and ARIA, so this no longer holds. The state-ownership decisions here stay.
+
 ## Appendix B. Alternatives rejected
 
 | Alternative | Why it lost |

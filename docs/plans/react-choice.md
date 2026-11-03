@@ -83,6 +83,9 @@ The build waits for your go. Each item has a default, and the build uses it unle
 
 1. **Move `part` and `Forbidden` from `field.tsx` into a shared internal `src/react/part.ts`.** This edits a Field file, with no change to Field's exports, props, or tests. The alternative copies both helpers into `choice.tsx`, which leaves two copies to drift.
 2. **`Switch` requires `type="checkbox"` and `role="switch"` from the caller.** The call site repeats two literals, and in exchange all three checkers see the markup React renders. The alternative writes them inside `Switch` and adds an "injected attributes" field to `WRAPPERS` that `jsx.ts` and `toHtml` read. That is a new contract mechanism for every wrapper, which Button and Field never needed.
+
+Superseded: `docs/plans/react-drop-in.md` makes components own their tags, ids, and ARIA, so this no longer holds. The state-ownership decisions here stay.
+
 3. **`ODD-CHOICE-003` bans `aria-disabled` on all three parts.** One rule for the family is easier to learn, and `<Choice aria-disabled>` is a likely guess. The weak case is `odd-segmented`, which has no disabled styling at all, but `fieldset disabled` does stop its radios. The alternative bans it on `odd-switch` only.
 4. **Accept a new sidebar order in the HTML Storybook's Forms group.** Choices, Switch, and Segmented move after Search, because the mirrored file loads later. Their ids do not change. This is the same trade as the Field Storybook plan's decision 2.
 
@@ -186,6 +189,8 @@ Each commit ends with `bun run check`. The boxes under a commit name its extra c
 | `Switch` writes `type` and `role`, and `WRAPPERS` gains an injected-attributes field | It is a new contract field plus changes to `jsx.ts` and `toHtml` to save two props. |
 | A composite `<Choice label type>` that renders the label and the input | It breaks one export to one element and has to re-expose `name`, `checked`, and `disabled`. |
 | No `type` and `role` rules | `<input class="odd-switch">`, a text box drawn as a track, would pass every checker. |
+
+Superseded: `docs/plans/react-drop-in.md` makes components own their tags, ids, and ARIA, so this no longer holds. The state-ownership decisions here stay.
 
 ## Appendix C. Evidence and reading list
 

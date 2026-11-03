@@ -16,7 +16,7 @@ Native form controls styled by `.odd-field`, `.odd-label`, `.odd-input`, `.odd-t
 
 ## How to get to it (user POV)
 
-- In Storybook, open **Components → Forms**, which has Choices, Switch, Segmented, Text Fields, Select, Search, and Slider. Every Forms story loads from `stories/mirrored/`, so they sort in that file order.
+- In Storybook, open **Components → Forms**, which has Choices, Switch, Segmented, Text Fields, Select, Search, and Slider. Every Forms story loads from `stories/components/`, so they sort in that file order.
 - The Showcase Sample App's "Deck settings" card uses the same controls.
 
 ## Driving it with ctl.ts
@@ -52,7 +52,7 @@ bun e2e/serve.ts storybook-static 6106
 
 Open `http://127.0.0.1:6106/?path=/story/react_components-forms--text-fields`. The preview is the React TextFields story, built from `Field`, `Label`, `Input`, `Textarea`, `Hint`, and `FieldError`. The React Select story is `react_components-forms--select`. The Choice stories are under React Choice below, Search is under React Search, and Slider is under React Slider.
 
-Run the pair sweep with `bunx playwright test e2e/usage.spec.ts --project firefox`. A pass prints the story count and `0 diagnostics`. For each Field and Choice story, both sides then match the `aria` literal in its file under `stories/mirrored/`, and the two screenshots are byte-identical.
+Run the pair sweep with `bunx playwright test e2e/usage.spec.ts --project firefox`. A pass prints the story count and `0 diagnostics`. For each Field and Choice story, both sides then match the `aria` literal in its file under `stories/components/`, and the two screenshots are byte-identical.
 
 ## React Choice
 
@@ -62,19 +62,19 @@ Use the same composed build. These stories are built from `Choice`, `Switch`, an
 - **Switch.** Open `http://127.0.0.1:6106/?path=/story/react_components-forms--switch`. Click "Compact grid" and the accessibility tree shows `switch "Compact grid" [checked]`.
 - **Segmented.** Open `http://127.0.0.1:6106/?path=/story/react_components-forms--segmented`. Focus Grid and press the right arrow. List becomes checked.
 
-The pair sweep above also checks these three stories against the `aria` literals in `stories/mirrored/Choice.stories.ts`.
+The pair sweep above also checks these three stories against the `aria` literals in `stories/components/Choice.stories.tsx`.
 
 ## React Search
 
 Use the same composed build. Open `http://127.0.0.1:6106/?path=/story/react_components-forms--search`. The preview is the Search story built from a `Search` part around a native hidden `label`, the magnifier `svg`, and an `Input`, inside a `form method="dialog"`, with the same ids and text as `components-forms--search`. The Search landmark recipe above works on the React side too.
 
-The pair sweep checks the story against the `aria` literal in `stories/mirrored/Search.stories.ts`, and the two screenshots are byte-identical. `bunx playwright test e2e/behavior.spec.ts --project firefox -g "clear button"` finds `#card-search` in the HTML Storybook.
+The pair sweep checks the story against the `aria` literal in `stories/components/Search.stories.tsx`, and the two screenshots are byte-identical. `bunx playwright test e2e/behavior.spec.ts --project firefox -g "clear button"` finds `#card-search` in the HTML Storybook.
 
 ## React Slider
 
 Use the same composed build. Open `http://127.0.0.1:6106/?path=/story/react_components-forms--slider`. The preview is the Slider story built from `Field`, `Label`, three `Slider` parts, `Hint`, and a native `output`, with the same ids and text as `components-forms--slider`. Its `play` wires `#copies-value` on both sides. Wait for `#copies` to have an `oninput` function, as in the slider recipe above, then focus `#copies` and press the left arrow twice. `#copies-value` reads `1 of 4`.
 
-The pair sweep checks the story against the `aria` literal in `stories/mirrored/Slider.stories.ts`, and the two screenshots are byte-identical. `bunx playwright test e2e/behavior.spec.ts --project firefox -g "slider"` runs the keyboard and readout check on both Storybooks.
+The pair sweep checks the story against the `aria` literal in `stories/components/Slider.stories.tsx`, and the two screenshots are byte-identical. `bunx playwright test e2e/behavior.spec.ts --project firefox -g "slider"` runs the keyboard and readout check on both Storybooks.
 
 ## React Combobox
 

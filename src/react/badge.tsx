@@ -1,11 +1,22 @@
-import type { ReactElement } from "react";
+import type { ComponentPropsWithRef, ReactElement, ReactNode } from "react";
 import type { BadgeRule } from "../js/usage/contract.ts";
-import { part, type Contract, type Native, type Values } from "./part.ts";
+import { cx, type Passthrough, type Root, type Values } from "./own.ts";
 
 export type BadgeTone = Values<BadgeRule, "data-tone">;
 
-interface BadgeContract extends Contract<"Badge", BadgeRule> {}
+export type BadgeProps = Root &
+  Passthrough<"span"> & {
+    /** Neutral when omitted. */
+    readonly tone?: BadgeTone;
+    /** Fills the badge with its tone. */
+    readonly solid?: boolean;
+    readonly children: ReactNode;
+  };
 
-export interface BadgeProps extends BadgeContract, Native<"Badge", keyof BadgeContract> {}
-
-export const Badge: (props: BadgeProps) => ReactElement = part("Badge");
+export function Badge({ tone, solid, className, children, ...rest }: BadgeProps): ReactElement {
+  return (
+    <span {...(rest as ComponentPropsWithRef<"span">)} className={cx("odd-badge", className)} data-tone={tone} data-solid={solid ? "" : undefined}>
+      {children}
+    </span>
+  );
+}

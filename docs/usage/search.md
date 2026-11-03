@@ -2,6 +2,14 @@
 
 These codes apply to `odd-search`. Shared codes are in [General usage rules](general.md). For search with suggestions, wrap an `odd-combobox` in a plain `<search>` element instead ([Combobox usage rules](combobox.md)), because `odd-search` needs its own search input as a direct child.
 
+In React, render `Search` from `odd-design/react`. It writes the hidden label, the magnifier, and the input, so the structural codes below cannot happen. [Build a search](react.md#build-a-search) covers the props.
+
+```tsx
+<Search id="card-search" label="Search cards" placeholder="Search cards" />
+```
+
+The component compiles to this HTML:
+
 ```html
 <search class="odd-search">
   <label class="odd-visually-hidden" for="card-search">Search cards</label>
@@ -10,7 +18,7 @@ These codes apply to `odd-search`. Shared codes are in [General usage rules](gen
 </search>
 ```
 
-A search is a `search` element, the search landmark, with three direct children: a visually hidden `label`, the magnifier `svg` with `aria-hidden="true"`, and an `input.odd-input` with `type="search"`. Enter does nothing, so filter as the user types. To submit on Enter, put a `form` around the search. `odd-search` on a `form` directly inside a plain `search` also works, as `search.css` documents. In React, `Search` renders the `search`, and a `form` around it submits.
+A search is a `search` element, the search landmark, with three direct children: a visually hidden `label`, the magnifier `svg` with `aria-hidden="true"`, and an `input.odd-input` with `type="search"`. Enter does nothing, so filter as the user types. To submit on Enter, put a `form` around the search. `odd-search` on a `form` directly inside a plain `search` also works, as `search.css` documents. In React, `Search` with `onSubmit` renders `form.odd-search` inside the `search`.
 
 ## ODD-SEARCH-001
 
@@ -26,7 +34,7 @@ Fails when a search has no direct child with `odd-input` and `type="search"`.
 
 `search.css` pads only a direct `.odd-input` to clear the icon. An input wrapped in a `div` keeps its normal padding, so the icon covers the first letters. A raw `input` with no class has no field styles at all. A `form` between the `search.odd-search` and the input unstyles the input and leaves the icon unsized. An input with another `type` is a `textbox`, not a `searchbox`, and `search.css` restyles the clear button only on `type="search"`.
 
-Make the input an `Input` with `type="search"`, or an `input` with `odd-input` and `type="search"`, directly inside `odd-search`. To submit, put the `form` around the search. When the input, its class, or its `type` comes from a component, an expression, or a spread, ESLint cannot see it and stays silent. A class from an expression still reports when the `type` is missing or not `search`. The runtime checker still reads the rendered page.
+Make the input an `Input` with `type="search"`, or an `input` with `odd-input` and `type="search"`, directly inside `odd-search`. To submit, put the `form` around the search. When the input, its class, or its `type` comes from an expression, ESLint cannot see it and stays silent. The runtime checker still reads the rendered page.
 
 ## ODD-SEARCH-003
 
@@ -34,7 +42,7 @@ Fails when a search has no direct `svg` child with `aria-hidden="true"`.
 
 The input always keeps room for the icon. With no icon, the text starts after an empty gap. An icon wrapped in a `span` or a `button` is neither placed nor sized. An `svg` without `aria-hidden="true"` is read out as an image in Chromium and Firefox.
 
-Put the magnifier `svg`, with `aria-hidden="true"`, directly inside `odd-search` before the input. In JSX, write `aria-hidden="true"`. ESLint reads a bare `aria-hidden` as empty, as in HTML, and reports it. An icon component that renders an `svg`, such as one from an icon library, counts. ESLint cannot see inside it, or read an `aria-hidden` that comes from an expression or a spread, and stays silent. Any component child, such as an icon from an icon library, also silences `ODD-SEARCH-002` in ESLint, because ESLint cannot see what it renders. The runtime checker still reads the rendered page.
+Put the magnifier `svg`, with `aria-hidden="true"`, directly inside `odd-search` before the input. ESLint reads a bare `aria-hidden` as empty and reports it. An icon component that renders an `svg`, such as one from an icon library, counts. The runtime checker reads the rendered page, so it sees inside it.
 
 ## ODD-SEARCH-004
 

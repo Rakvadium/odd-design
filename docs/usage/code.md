@@ -2,15 +2,25 @@
 
 These codes apply to `odd-code` and `odd-pre`. Shared codes are in [General usage rules](general.md).
 
+In React, render `Code` from `odd-design/react` inside a sentence, and `Pre` for a block. `Pre` writes the inner `code`, and `output` leaves it out for command output. [The React guide](react.md#show-code) covers the props.
+
+```tsx
+<p>Set <Code>--primary</Code> on the scope.</p>
+<Pre>bun add odd-design</Pre>
+<Pre output>3 files changed, 12 insertions</Pre>
+```
+
+The component compiles to this HTML:
+
 ```html
 <p>Set <code class="odd-code">--primary</code> on the scope.</p>
-<pre class="odd-pre"><code>import { Button } from "odd-design/react";</code></pre>
+<pre class="odd-pre"><code>bun add odd-design</code></pre>
 <pre class="odd-pre">3 files changed, 12 insertions</pre>
 ```
 
 `odd-code` is a short piece of code inside a sentence: a `code` in the mono font, on a muted chip with a border. `odd-pre` is a block: a `pre` in the mono font on the page color, with a border. Put a bare `code` inside a `pre` when the block is code, so the tree reads it as code. Leave the `code` out for command output or other text that is not code. A `code` inside `odd-pre` loses the chip, even with `odd-code` on it.
 
-Long lines in a block wrap instead of scrolling. A block that scrolls needs a tab stop, so a keyboard user can scroll it, and WebKit leaves a scrolling `pre` out of the tab order. A wrapped block never needs one. In React, `Code` renders the `code` and `Pre` renders the `pre`, and you write the inner `code` yourself.
+Long lines in a block wrap instead of scrolling. A block that scrolls needs a tab stop, so a keyboard user can scroll it, and WebKit leaves a scrolling `pre` out of the tab order. A wrapped block never needs one. In React, `Code` renders the `code`, and `Pre` renders the `pre` and its inner `code`.
 
 ## ODD-CODE-001
 

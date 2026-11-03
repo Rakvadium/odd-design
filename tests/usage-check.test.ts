@@ -115,6 +115,12 @@ const RUNTIME_CODES = [
   "ODD-TABLE-006",
   "ODD-SCOPE-001",
   "ODD-SKIP-001",
+  "ODD-TOOLTIP-001",
+  "ODD-HOVER-CARD-001",
+  "ODD-LOG-001",
+  "ODD-LOG-002",
+  "ODD-LOG-003",
+  "ODD-LOG-004",
   "ODD-GRID-001",
   "ODD-SHELL-001",
   "ODD-TYPOGRAPHY-001",
@@ -225,6 +231,12 @@ test("primray suggests primary", () => {
 test("data-varient suggests data-variant", () => {
   expect(diagnose(`<button class="odd-button" data-varient="primary">Save</button>`).map((diagnostic) => diagnostic.message)).toEqual([
     "ODD-BUTTON-015: this button does not take that data attribute. Allowed values: the button attributes, any app data attribute, the appearance axes, and the headless allowlist. Fix: remove the attribute, or correct its name. Button attributes: data-variant, data-size, data-icon-only. Appearance axes: data-chrome, data-palette, data-mode. Headless allowlist: data-state, data-side, data-disabled, data-orientation, data-highlighted. docs/usage/button.md#odd-button-015 Found data-varient. Did you mean data-variant?",
+  ]);
+});
+
+test("data-filtr on a combobox list suggests data-filter, which the list's own rules give values", () => {
+  expect(diagnose(`<div class="odd-combobox-list" id="cities" popover="manual" role="listbox" aria-label="Cities" data-filtr="manual"></div>`).map((diagnostic) => diagnostic.message)).toEqual([
+    "ODD-COMBOBOX-012: this combobox part does not take that data attribute. Allowed values: any app data attribute, the appearance axes, and the headless allowlist. Fix: remove the attribute. combobox.css reads no data attributes, and data-filter=manual goes on the list. Appearance axes: data-chrome, data-palette, data-mode. Headless allowlist: data-state, data-side, data-disabled, data-orientation, data-highlighted. docs/usage/combobox.md#odd-combobox-012 Found data-filtr. Did you mean data-filter?",
   ]);
 });
 

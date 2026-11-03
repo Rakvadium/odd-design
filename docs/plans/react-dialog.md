@@ -144,6 +144,9 @@ Each item is the default the build uses. Each one can be reversed after review.
 1. **Two parts, `Dialog` and `DialogActions`.** The body takes `div` or `form`, and the title level is the caller's, so both stay classes, as Card's title does. The actions row is a fixed `div`, the `CardFooter` shape.
 2. **Stateless `part()`, no `open` prop, no trigger part.** The browser is the only state owner, as for Disclosure and Popover. `Button` is the trigger. `ref.showModal()`, `onClose`, and `onCancel` are the escape hatches.
 3. **A required name as either attribute.** `required-attribute aria-labelledby` would reject a valid `aria-label` dialog. `role="dialog"` is redundant ARIA.
+
+Superseded: `docs/plans/react-drop-in.md` makes components own their tags, ids, and ARIA, so this no longer holds. The state-ownership decisions here stay.
+
 4. **`closedby` takes `any` or `closerequest`.** A missing attribute is IDL `closerequest`, so spelling it is correct. `none` is rejected, because it stops Escape.
 5. **One new kind, `forbidden-value`, for the alert pair, with its own code.** It is the likeliest copy-paste mistake when an agent turns the Dialog story into an alert dialog.
 6. **The runtime checker ignores the `open` that `showModal()` writes.** Otherwise `checkRoot` lies on every open modal.
